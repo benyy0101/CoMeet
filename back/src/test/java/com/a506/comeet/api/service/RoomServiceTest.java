@@ -4,7 +4,7 @@ import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.RoomCreateRequestDto;
 import com.a506.comeet.room.controller.RoomJoinRequestDto;
 import com.a506.comeet.room.controller.RoomUpdateRequestDto;
-import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomConstraint;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.room.entity.Room;
 import static org.assertj.core.api.Assertions.*;
@@ -15,7 +15,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ class RoomServiceTest {
     @Test
     void validationTest(){
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                mangerId("멤버1").description("설명").capacity(-1).constraint(RoomConstraint.FREE).type(RoomType.DISPOSABLE).
                 build();
         boolean res = isValidating(req);
         assertThat(res).isTrue();
@@ -86,7 +85,7 @@ class RoomServiceTest {
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                title("title").description("설명").capacity(10).constraint(RoomConstraint.FREE).type(RoomType.DISPOSABLE).
                 build();
 
         Room room = roomService.createRoom(req);
@@ -106,7 +105,7 @@ class RoomServiceTest {
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                title("title").description("설명").capacity(10).constraint(RoomConstraint.FREE).type(RoomType.DISPOSABLE).
                 build();
 
         Room room = roomService.createRoom(req);
@@ -115,8 +114,8 @@ class RoomServiceTest {
         roomService.updateRoom(req2, "멤버1", room.getId());
 
 
-        assertThat(room.getManagerId()).isEqualTo(req2.getMangerId());
-        log.info("room manager Id : {}", room.getManagerId());
+        assertThat(room.getManager().getMemberId()).isEqualTo(req2.getMangerId());
+        log.info("room manager Id : {}", room.getManager().getMemberId());
     }
 
     @Test
@@ -132,7 +131,7 @@ class RoomServiceTest {
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
+                title("title").description("설명").capacity(10).constraint(RoomConstraint.FREE).type(RoomType.PERMANENT).
                 build();
         Room newRoom = roomService.createRoom(reqR);
         // 생성된 방의 id
@@ -149,7 +148,6 @@ class RoomServiceTest {
         log.info("멤버 방 가입");
         RoomJoinRequestDto req = new RoomJoinRequestDto("member1");
         roomService.joinMember(req, "멤버1", roomId);
-        log.info("member의 roomMember : {}", member.getRoomMembers());
 
         //assert
         Room room = roomRepository.findById(roomId).get();
