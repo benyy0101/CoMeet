@@ -1,5 +1,6 @@
 package com.a506.comeet.member.controller;
 
+import com.a506.comeet.common.enums.MemberFeature;
 import lombok.Getter;
 
 @Getter
@@ -12,9 +13,9 @@ public class MemberUpdateRequestDto {
     private String profileImage;
     private String email;
     private String description;
-    private String feature;
+    private MemberFeature feature;
 
-    public MemberUpdateRequestDto(String name, String password, String nickname, String link, String profileImage, String email, String description, String feature) {
+    public MemberUpdateRequestDto(String name, String password, String nickname, String link, String profileImage, String email, String description, MemberFeature feature) {
         this.name = name;
         this.password = password;
         this.nickname = nickname;

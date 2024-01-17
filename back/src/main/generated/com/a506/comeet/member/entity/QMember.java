@@ -31,7 +31,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath email = createString("email");
 
-    public final StringPath feature = createString("feature");
+    public final EnumPath<com.a506.comeet.common.enums.MemberFeature> feature = createEnum("feature", com.a506.comeet.common.enums.MemberFeature.class);
 
     //inherited
     public final BooleanPath isDeleted = _super.isDeleted;

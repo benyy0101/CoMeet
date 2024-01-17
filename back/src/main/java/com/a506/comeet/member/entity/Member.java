@@ -1,5 +1,6 @@
 package com.a506.comeet.member.entity;
 
+import com.a506.comeet.common.enums.MemberFeature;
 import com.a506.comeet.member.controller.MemberUpdateRequestDto;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.room.entity.Room;
@@ -31,7 +32,9 @@ public class Member extends BaseEntityWithSoftDelete {
     private String email;
     private String description;
     private String authority;
-    private String feature;
+
+    @Enumerated(EnumType.STRING)
+    private MemberFeature feature;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<RoomMember> roomMembers = new ArrayList<>();
