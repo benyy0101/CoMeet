@@ -156,12 +156,14 @@ class RoomServiceTest {
         assertThat(room.getRoomMembers().get(0).getMember().getMemberId()).isEqualTo("member1");
         assertThat(room.getRoomMembers().size()).isEqualTo(1);
         assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
+        assertThat(room.getMcount()).isEqualTo(1);
         // 새로 생성된 방은 entityManager의 범위 밖?
         assertThat(newRoom.getRoomMembers().size()).isEqualTo(0);
 
         log.info("멤버 방 나가기");
         roomService.leaveRoom("member1", roomId);
         assertThat(room.getRoomMembers().size()).isEqualTo(0);
+        assertThat(room.getMcount()).isEqualTo(0);
     }
 
 

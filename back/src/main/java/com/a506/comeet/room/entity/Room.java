@@ -80,10 +80,12 @@ public class Room extends BaseEntityWithSoftDelete {
 
     public void addRoomMember(RoomMember roomMember){
         roomMembers.add(roomMember);
+        this.mcount = roomMembers.size();
     }
 
     public void removeRoomMember(RoomMember roomMember){
         roomMembers.removeIf(rm -> rm.getMember().getMemberId().equals(roomMember.getMember().getMemberId()) && rm.getRoom().getId().equals(roomMember.getRoom().getId()));
+        this.mcount = roomMembers.size();
     }
 
 }
