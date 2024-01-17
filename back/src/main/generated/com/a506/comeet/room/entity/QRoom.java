@@ -28,7 +28,7 @@ public class QRoom extends EntityPathBase<Room> {
 
     public final ListPath<Channel, QChannel> channels = this.<Channel, QChannel>createList("channels", Channel.class, QChannel.class, PathInits.DIRECT2);
 
-    public final StringPath constraints = createString("constraints");
+    public final EnumPath<com.a506.comeet.common.enums.RoomConstraints> constraints = createEnum("constraints", com.a506.comeet.common.enums.RoomConstraints.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -60,7 +60,7 @@ public class QRoom extends EntityPathBase<Room> {
 
     public final StringPath title = createString("title");
 
-    public final StringPath type = createString("type");
+    public final EnumPath<com.a506.comeet.common.enums.RoomType> type = createEnum("type", com.a506.comeet.common.enums.RoomType.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

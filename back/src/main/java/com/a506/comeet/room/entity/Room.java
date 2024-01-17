@@ -1,9 +1,12 @@
 package com.a506.comeet.room.entity;
 
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.RoomUpdateRequestDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,14 +46,17 @@ public class Room extends BaseEntityWithSoftDelete {
     @Column(name = "is_locked")
     private boolean isLocked;
     private String password;
-    private String constraints;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    private RoomConstraints constraints;
+    @Enumerated(EnumType.STRING)
+    private RoomType type;
 
     protected Room(){
     }
 
     @Builder
-    public Room(Member manager, String title, String description, int capacity, String constraints, String type, String link) {
+    public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
         this.manager = manager;
         this.title = title;
         this.description = description;

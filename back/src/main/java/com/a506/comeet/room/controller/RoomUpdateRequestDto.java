@@ -1,5 +1,8 @@
 package com.a506.comeet.room.controller;
 
+import com.a506.comeet.common.enums.RoomConstraints;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +17,10 @@ public class RoomUpdateRequestDto {
     private int capacity;
     private boolean isLocked;
     private String password;
-    private String constraints;
+    private RoomConstraints constraints;
 
     @Builder
-    public RoomUpdateRequestDto(String mangerId, String title, String description, String roomImage, String notice, int capacity, boolean isLocked, String password, String constraints) {
+    public RoomUpdateRequestDto(String mangerId, String title, String description, String roomImage, String notice, int capacity, boolean isLocked, String password, RoomConstraints constraints) {
         this.mangerId = mangerId;
         this.title = title;
         this.description = description;

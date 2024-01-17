@@ -56,7 +56,7 @@ class RoomServiceTest {
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE.get()).type(RoomType.DISPOSABLE.get()).
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
         Room room = roomService.createRoom(req);
@@ -76,7 +76,7 @@ class RoomServiceTest {
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE.get()).type(RoomType.DISPOSABLE.get()).
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
         Room room = roomService.createRoom(req);
@@ -102,7 +102,7 @@ class RoomServiceTest {
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
                 mangerId(manager.getMemberId()).
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE.get()).type(RoomType.PERMANENT.get()).
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         Room newRoom = roomService.createRoom(reqR);
         // 생성된 방의 id

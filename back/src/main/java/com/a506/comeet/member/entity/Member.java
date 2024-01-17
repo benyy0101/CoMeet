@@ -32,7 +32,6 @@ public class Member extends BaseEntityWithSoftDelete {
     private String email;
     private String description;
     private String authority;
-
     @Enumerated(EnumType.STRING)
     private MemberFeature feature;
 
