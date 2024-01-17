@@ -1,6 +1,6 @@
 package com.a506.comeet;
 
-import com.a506.comeet.common.enums.RoomConstraint;
+import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.RoomCreateRequestDto;
@@ -45,7 +45,7 @@ public class SimpleTests {
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraint(RoomConstraint.FREE).type(RoomType.PERMANENT).
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         Room newRoom = roomService.createRoom(reqR);
 

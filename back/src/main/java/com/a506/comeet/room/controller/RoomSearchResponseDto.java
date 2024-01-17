@@ -1,6 +1,6 @@
 package com.a506.comeet.room.controller;
 
-import com.a506.comeet.common.enums.RoomConstraint;
+import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
@@ -21,11 +21,11 @@ public class RoomSearchResponseDto {
     private int capacity;
     private Boolean isLocked;
     private String password;
-    private RoomConstraint constraint;
+    private RoomConstraints constraints;
     private RoomType type;
 
     @QueryProjection
-    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String url, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraint constraint, RoomType type) {
+    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String url, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
@@ -37,7 +37,7 @@ public class RoomSearchResponseDto {
         this.capacity = capacity;
         this.isLocked = isLocked;
         this.password = password;
-        this.constraint = constraint;
+        this.constraints = constraints;
         this.type = type;
     }
 }

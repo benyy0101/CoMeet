@@ -1,8 +1,6 @@
 package com.a506.comeet.room.controller;
 
 import com.a506.comeet.common.enums.RoomConstraints;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

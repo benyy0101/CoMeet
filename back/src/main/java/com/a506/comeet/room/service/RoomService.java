@@ -33,7 +33,7 @@ public class RoomService {
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
         Room room = Room.builder().
-                managerId(req.getMangerId()).
+                manager(memberRepository.findById(req.getMangerId()).get()).
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
@@ -46,10 +46,8 @@ public class RoomService {
     @Transactional
     public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
         Room room = roomRepository.findById(roomId).get();
-        if (room.getManagerId() != reqMemberId) return false;
-
-        room.updateRoom(req);
-        room.setManagerId(req.getMangerId());
+        if (room.getManager().getMemberId() != reqMemberId) return false;
+        room.updateRoom(req, memberRepository.findById(req.getMangerId()).get());
 
         try {
             roomRepository.save(room);
@@ -63,7 +61,7 @@ public class RoomService {
     @Transactional
     public boolean deleteRoom(String reqMemberId, Long roomId){
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
-        if (!room.getManagerId().equals(reqMemberId)) return false;
+        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
         room.deleteSoftly();
         return true;
     }
@@ -72,7 +70,7 @@ public class RoomService {
     public boolean joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
         Room room = roomRepository.findById(roomId).get();
         if (room.getType().equals(RoomType.DISPOSABLE)) return false;
-        if (!room.getManagerId().equals(reqMemberId)) return false;
+        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
 
         Member member = memberRepository.findById(req.getMemberId()).get();
         RoomMember roomMember = new RoomMember(member, room);

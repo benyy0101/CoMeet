@@ -6,10 +6,8 @@ import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.RoomUpdateRequestDto;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +19,9 @@ public class Room extends BaseEntityWithSoftDelete {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @JoinColumn(name="member_id")
-    @Setter
-    private String managerId;
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Member manager;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Lounge> lounges = new ArrayList<>();;
@@ -41,6 +38,8 @@ public class Room extends BaseEntityWithSoftDelete {
     @Column(name = "room_image")
     private String roomImage;
     private String notice;
+
+    private String url;
     private int mcount;
     private int capacity;
     @Column(name = "is_locked")
@@ -56,8 +55,8 @@ public class Room extends BaseEntityWithSoftDelete {
     }
 
     @Builder
-    public Room(String managerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
-        this.managerId = managerId;
+    public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
+        this.manager = manager;
         this.title = title;
         this.description = description;
         this.capacity = capacity;
@@ -66,8 +65,8 @@ public class Room extends BaseEntityWithSoftDelete {
         this.link = link;
     }
 
-    public void updateRoom(RoomUpdateRequestDto dto) {
-        this.managerId = dto.getMangerId();
+    public void updateRoom(RoomUpdateRequestDto dto, Member newManager) {
+        this.manager = newManager;
         this.title = dto.getTitle();
         this.description = dto.getDescription();
         this.roomImage = dto.getRoomImage();
