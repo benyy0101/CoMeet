@@ -21,10 +21,10 @@ public class Room extends BaseEntityWithSoftDelete {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name="member_id")
     @Setter
-    private Member manager;
+    private String managerId;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Lounge> lounges = new ArrayList<>();;
@@ -44,7 +44,7 @@ public class Room extends BaseEntityWithSoftDelete {
     private int mcount;
     private int capacity;
     @Column(name = "is_locked")
-    private boolean isLocked;
+    private Boolean isLocked;
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -56,8 +56,8 @@ public class Room extends BaseEntityWithSoftDelete {
     }
 
     @Builder
-    public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
-        this.manager = manager;
+    public Room(String managerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
+        this.managerId = managerId;
         this.title = title;
         this.description = description;
         this.capacity = capacity;
@@ -67,12 +67,13 @@ public class Room extends BaseEntityWithSoftDelete {
     }
 
     public void updateRoom(RoomUpdateRequestDto dto) {
+        this.managerId = dto.getMangerId();
         this.title = dto.getTitle();
         this.description = dto.getDescription();
         this.roomImage = dto.getRoomImage();
         this.notice = dto.getNotice();
         this.capacity = dto.getCapacity();
-        this.isLocked = dto.isLocked();
+        this.isLocked = dto.getIsLocked();
         this.password = dto.getPassword();
         this.constraints = dto.getConstraints();
     }

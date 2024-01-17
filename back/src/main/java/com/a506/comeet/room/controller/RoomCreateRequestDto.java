@@ -4,27 +4,30 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-//@Validated
+@Validated
 public class RoomCreateRequestDto {
 
     @Setter
     private String mangerId;
-//    @NotNull
+    @NotNull
+    @Size(min = 2, max = 30, message = "이름은 2자 이상, 30자 이하여야 합니다.")
     private String title;
+    @Size(max = 140, message = "설명은 140자 이하여야 합니다.")
     private String description;
-//    @Min(1)
+    @Min(value = 1, message = "최소값은 1입니다.")
+    @Max(value = 20, message = "최대값은 20입니다.")
     private int capacity;
-    @Enumerated(EnumType.STRING)
     private RoomConstraints constraints;
-    @Enumerated(EnumType.STRING)
     private RoomType type;
 
     @Builder

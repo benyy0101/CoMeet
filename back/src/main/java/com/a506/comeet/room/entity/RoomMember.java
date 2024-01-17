@@ -31,7 +31,6 @@ public class RoomMember {
         setId(member, room);
         this.member = member;
         this.room = room;
-        joinRoom();
     }
 
     public void setId(Member member, Room room){

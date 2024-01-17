@@ -8,10 +8,12 @@ import com.a506.comeet.room.controller.RoomJoinRequestDto;
 import com.a506.comeet.room.controller.RoomUpdateRequestDto;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
+import com.a506.comeet.room.entity.RoomMemberId;
 import com.a506.comeet.room.repository.RoomMemberRepository;
 import com.a506.comeet.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +33,7 @@ public class RoomService {
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
         Room room = Room.builder().
-                manager(memberRepository.findById(req.getMangerId()).get()).
+                managerId(req.getMangerId()).
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
@@ -42,35 +44,56 @@ public class RoomService {
     }
 
     @Transactional
-    public void updateRoom(RoomUpdateRequestDto req, long roomId) {
+    public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
         Room room = roomRepository.findById(roomId).get();
+        if (room.getManagerId() != reqMemberId) return false;
+
         room.updateRoom(req);
-        room.setManager(memberRepository.findById(req.getMangerId()).get());
-        roomRepository.save(room);
+        room.setManagerId(req.getMangerId());
+
+        try {
+            roomRepository.save(room);
+            return true;
+        } catch (JpaSystemException e){
+            return false;
+        }
+
     }
 
     @Transactional
-    public void deleteRoom(Long id){
-        Room room = roomRepository.findById(id).orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+    public boolean deleteRoom(String reqMemberId, Long roomId){
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+        if (!room.getManagerId().equals(reqMemberId)) return false;
         room.deleteSoftly();
+        return true;
     }
 
     @Transactional
-    public void joinMember(RoomJoinRequestDto req, long roomId) {
+    public boolean joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
         Room room = roomRepository.findById(roomId).get();
-        if (room.getType().equals(RoomType.DISPOSABLE.get())) return;
+        if (room.getType().equals(RoomType.DISPOSABLE)) return false;
+        if (!room.getManagerId().equals(reqMemberId)) return false;
 
         Member member = memberRepository.findById(req.getMemberId()).get();
         RoomMember roomMember = new RoomMember(member, room);
+
+        try {
+            roomMemberRepository.save(roomMember);
+            roomMember.joinRoom();
+            return true;
+        } catch (JpaSystemException e){
+            return false;
+        }
     }
 
     @Transactional
-    public void leaveMember(String memberId, long roomId) {
+    public boolean leaveRoom(String reqMemberId, long roomId) {
         Room room = roomRepository.findById(roomId).get();
-        if (room.getType().equals(RoomType.DISPOSABLE.get())) return;
+        if (room.getType().equals(RoomType.DISPOSABLE)) return false;
 
-        Member member = memberRepository.findById(memberId).get();
-        RoomMember roomMember = new RoomMember(member, room);
+        RoomMember roomMember = roomMemberRepository.findById(new RoomMemberId(reqMemberId, roomId)).get();
+        roomMemberRepository.delete(roomMember);
         roomMember.leaveRoom();
+        return true;
     }
 }
