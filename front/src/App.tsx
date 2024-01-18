@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { TailwindComponent } from "tailwind-styled-components/dist/tailwind";
-
 import { NavBar } from "./components/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
@@ -12,6 +11,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { Room } from "./pages/Room";
 import RoomChannel from "./components/RoomChannel";
+import NewRoom from "./pages/NewRoom";
+import ConditionCheck from "./pages/ConditionCheck";
 
 function App() {
   //임시
@@ -22,7 +23,7 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
-          <Route path="/" element={<Mainpage />}></Route>
+        <Route path="/" element={<Mainpage />}></Route>
           {isLogin ? (
             <>
               <Route path="/roomlist" element={<RoomList />}></Route>
@@ -39,6 +40,8 @@ function App() {
               <Route path="/signup" element={<SignupPage />}></Route>
             </>
           )}
+          <Route path="/new-room" element={<NewRoom />}></Route>
+          <Route path="/before-entrance" element={<ConditionCheck />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
