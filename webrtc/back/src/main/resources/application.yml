@@ -4,18 +4,5 @@ server:
     enabled: false
 
 # openvidu
-# OPENVIDU_URL: http://localhost:4443/
-OPENVIDU_URL: https://i8b302.p.ssafy.io/
-OPENVIDU_SECRET: ssafy
-
-# log level setting
-logging:
-  level:
-    root: info
-    com:
-      ssafy: debug
-
-# feign
-feign:
-  hystrix:
-    enabled: true
+OPENVIDU_URL: http://localhost:4443/
+OPENVIDU_SECRET: MY_SECRET
