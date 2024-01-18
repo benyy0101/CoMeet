@@ -13,10 +13,16 @@ import { Room } from "./pages/Room";
 import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
+import Modal from "./components/Modal";
 
 function App() {
   //임시
   const isLogin = true;
+  const [isModal, setIsModal] = React.useState<boolean>(false);
+
+  const modalHandler = () => {
+    setIsModal(!isModal);
+  };
 
   return (
     <div className="App">
@@ -44,6 +50,8 @@ function App() {
           <Route path="/before-entrance" element={<ConditionCheck />}></Route>
         </Routes>
       </BrowserRouter>
+      <button onClick={modalHandler}> dhkfkfkfkf</button>
+      {isModal && <Modal toggleModal={modalHandler}/>}
     </div>
   );
 }
