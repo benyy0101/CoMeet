@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/comeet?serverTimezone=UTC # mysql 8.2, mysql workbench 8.0.21
+    url: jdbc:mysql://127.0.0.1:3306/comeet?serverTimezone=UTC # mysql 8.2, mysql workbench 8.0.21 / mac은 8.0.34
     username: comeet
     password: comeet
     driver-class-name: com.mysql.cj.jdbc.Driver

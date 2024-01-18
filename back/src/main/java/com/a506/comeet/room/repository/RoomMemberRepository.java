@@ -1,9 +1,16 @@
 package com.a506.comeet.room.repository;
 
 
+import com.a506.comeet.member.entity.Member;
+import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
-import com.a506.comeet.room.entity.RoomMemberId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoomMemberRepository extends JpaRepository<RoomMember, RoomMemberId> {
+import java.util.Optional;
+
+public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
+
+    Optional<RoomMember> findByRoomAndMember(Room room, Member member);
+
+    boolean existsByRoomAndMember(Room room, Member member);
 }

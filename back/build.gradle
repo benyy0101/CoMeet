@@ -35,6 +35,9 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	//validation
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
 	//Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	// @Entity 어노테이션 선언한 클래스 탐색하고 Q클래스를 생성

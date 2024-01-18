@@ -29,10 +29,6 @@ public class BaseEntityWithSoftDelete {
         this.isDeleted = Boolean.TRUE;
     }
 
-    public boolean isSoftDeleted() {
-        return this.isDeleted = Boolean.TRUE;
-    }
-
     public void undoDeletion() {
         this.isDeleted = Boolean.FALSE;
     }
