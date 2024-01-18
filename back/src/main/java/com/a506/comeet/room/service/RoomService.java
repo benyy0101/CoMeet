@@ -3,9 +3,7 @@ package com.a506.comeet.room.service;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.member.repository.MemberRepository;
-import com.a506.comeet.room.controller.RoomCreateRequestDto;
-import com.a506.comeet.room.controller.RoomJoinRequestDto;
-import com.a506.comeet.room.controller.RoomUpdateRequestDto;
+import com.a506.comeet.room.controller.*;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
 import com.a506.comeet.room.entity.RoomMemberId;
@@ -13,6 +11,9 @@ import com.a506.comeet.room.repository.RoomMemberRepository;
 import com.a506.comeet.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class RoomService {
 
     private final RoomRepository roomRepository;
@@ -93,5 +93,9 @@ public class RoomService {
         roomMemberRepository.delete(roomMember);
         roomMember.leaveRoom();
         return true;
+    }
+
+    public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto){
+        return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 }

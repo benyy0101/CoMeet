@@ -87,4 +87,12 @@ public class Room extends BaseEntityWithSoftDelete {
         this.mcount = roomMembers.size();
     }
 
+    public void addChannel(Channel channel){
+        this.channels.add(channel);
+    }
+
+    public void addLounge(Lounge lounge){
+        this.lounges.add(lounge);
+    }
+
 }
