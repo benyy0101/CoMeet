@@ -112,6 +112,7 @@ class RoomServiceTest {
     @DisplayName("유저가 방에 가입 후 나간다")
     @Transactional
     void joinLeaveTest(){
+
         //given
         // Manager 멤버 생성
         Member manager = Member.builder().memberId("멤버1").build();

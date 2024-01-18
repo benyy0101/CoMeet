@@ -93,10 +93,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         )
                 ))).
                 from(room).
-                innerJoin(room.roomMembers, roomMember).
-                innerJoin(roomMember.member, member).
                 innerJoin(room.lounges, lounge).
                 innerJoin(room.channels, channel).
+                join(roomMember).on(roomMember.room.eq(room)).
+                innerJoin(member).on(roomMember.member.eq(member)).
                 where(room.id.eq(roomId)).fetch();
         return res.isEmpty() ? null : res.get(0);
     }

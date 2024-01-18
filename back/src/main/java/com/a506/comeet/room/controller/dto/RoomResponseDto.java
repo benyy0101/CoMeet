@@ -5,10 +5,12 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class RoomResponseDto {
     private Long roomId;
     private String managerId;
@@ -19,7 +21,6 @@ public class RoomResponseDto {
     private String notice;
     private int mcount;
     private int capacity;
-    private String keyword;
     private Boolean isLocked;
     private String password;
     private RoomConstraints constraints;
@@ -29,7 +30,7 @@ public class RoomResponseDto {
     private List<RoomLoungeResponseDto> lounges;
 
     @QueryProjection
-    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, String keyword, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, List<RoomMemberResponseDto> members, List<RoomChannelResponseDto> channels, List<RoomLoungeResponseDto> lounges) {
+    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, List<RoomMemberResponseDto> members, List<RoomChannelResponseDto> channels, List<RoomLoungeResponseDto> lounges) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
@@ -39,7 +40,6 @@ public class RoomResponseDto {
         this.notice = notice;
         this.mcount = mcount;
         this.capacity = capacity;
-        this.keyword = keyword;
         this.isLocked = isLocked;
         this.password = password;
         this.constraints = constraints;
