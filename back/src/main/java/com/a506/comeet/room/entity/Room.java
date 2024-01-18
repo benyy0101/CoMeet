@@ -95,4 +95,12 @@ public class Room extends BaseEntityWithSoftDelete {
         this.lounges.add(lounge);
     }
 
+    public void delete(){
+        deleteSoftly();
+        this.getLounges().forEach(Lounge::deleteSoftly);
+        this.getChannels().forEach(Channel::deleteSoftly);
+        this.lounges = new ArrayList<>();
+        this.channels = new ArrayList<>();
+    }
+
 }

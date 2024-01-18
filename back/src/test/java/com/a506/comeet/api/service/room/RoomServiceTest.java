@@ -1,4 +1,4 @@
-package com.a506.comeet.api.service;
+package com.a506.comeet.api.service.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.member.entity.Member;
@@ -38,18 +38,9 @@ class RoomServiceTest {
     @PersistenceContext
     private EntityManager em;
 
-//    @BeforeEach
-//    void before(){
-//        RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-//                mangerId("멤버1").
-//                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE.get()).type(RoomType.DISPOSABLE.get()).
-//                build();
-//
-//        Room room = roomService.createRoom(req);
-//    }
-
     @DisplayName("validation 검사를 한다")
     @Test
+    @Transactional
     void validationTest(){
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
@@ -76,7 +67,7 @@ class RoomServiceTest {
     }
 
     @Test
-    @Rollback(value = false)
+    @Transactional
     void createTest(){
         Member manager = Member.builder().memberId("멤버1").build();
         em.persist(manager);
@@ -94,6 +85,7 @@ class RoomServiceTest {
     }
 
     @Test
+    @Transactional
     void updateTest(){
 
         Member manager = Member.builder().memberId("멤버1").build();
@@ -113,13 +105,13 @@ class RoomServiceTest {
         RoomUpdateRequestDto req2 = RoomUpdateRequestDto.builder().mangerId("멤버2").build();
         roomService.updateRoom(req2, "멤버1", room.getId());
 
-
         assertThat(room.getManager().getMemberId()).isEqualTo(req2.getMangerId());
         log.info("room manager Id : {}", room.getManager().getMemberId());
     }
 
     @Test
-    @DisplayName("유저가 방에 가입한다")
+    @DisplayName("유저가 방에 가입 후 나간다")
+    @Transactional
     void joinLeaveTest(){
         //given
         // Manager 멤버 생성
@@ -133,9 +125,8 @@ class RoomServiceTest {
                 mangerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
-        Room newRoom = roomService.createRoom(reqR);
         // 생성된 방의 id
-        Long roomId = newRoom.getId();
+        Long roomId = roomService.createRoom(reqR).getId();
 
         // 가입할 멤버 생성
         Member member = Member.builder().memberId("member1").build();
@@ -150,16 +141,22 @@ class RoomServiceTest {
         roomService.joinMember(req, "멤버1", roomId);
 
         //assert
-        Room room = roomRepository.findById(roomId).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
         assertThat(room.getRoomMembers().get(0).getMember().getMemberId()).isEqualTo("member1");
         assertThat(room.getRoomMembers().size()).isEqualTo(1);
         assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
         assertThat(room.getMcount()).isEqualTo(1);
-        // 새로 생성된 방은 entityManager의 범위 밖?
-        assertThat(newRoom.getRoomMembers().size()).isEqualTo(0);
 
+        roomService.joinMember(req, "멤버1", roomId);
+        assertThat(room.getRoomMembers().size()).isEqualTo(1);
+        assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
+        assertThat(room.getMcount()).isEqualTo(1);
+
+        // leave
         log.info("멤버 방 나가기");
         roomService.leaveRoom("member1", roomId);
+        room = roomRepository.findByIdAndIsDeletedFalse(roomId).get(); // 다시 가져와야?
+        // assert
         assertThat(room.getRoomMembers().size()).isEqualTo(0);
         assertThat(room.getMcount()).isEqualTo(0);
     }

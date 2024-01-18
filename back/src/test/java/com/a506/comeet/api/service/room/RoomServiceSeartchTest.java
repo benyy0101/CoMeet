@@ -1,4 +1,6 @@
-package com.a506.comeet.api.service;
+
+
+package com.a506.comeet.api.service.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomSortBy;
@@ -19,14 +21,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-@Transactional
 @Slf4j
 public class RoomServiceSeartchTest {
 
@@ -37,7 +37,7 @@ public class RoomServiceSeartchTest {
     private EntityManager em;
 
     @Test
-    @Rollback(value = false)
+    @Transactional
     void basicTest(){
 
         Member member = Member.builder().memberId("testMember").nickname("닉네임").build();
