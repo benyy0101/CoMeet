@@ -1,11 +1,14 @@
 package com.a506.comeet.room.entity;
 
+import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.room.controller.LoungeUpdateRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 
 @Entity
 @Getter
-public class Lounge {
+public class Lounge extends BaseEntityWithSoftDelete {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,5 +23,14 @@ public class Lounge {
     protected Lounge() {
     }
 
+    @Builder
+    public Lounge(Long id, Room room, String name) {
+        this.id = id;
+        this.room = room;
+        this.name = name;
+    }
 
+    public void update(LoungeUpdateRequestDto req){
+        this.name = req.getName();
+    }
 }
