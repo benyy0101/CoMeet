@@ -1,4 +1,4 @@
-package com.a506.comeet;
+package com.a506.comeet.functional;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -17,8 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Transactional
 @Slf4j
+@Transactional
 public class SimpleTests {
 
     @PersistenceContext
@@ -32,6 +32,7 @@ public class SimpleTests {
 
     @Test
     @DisplayName("프록시 객체의 pk로 접근할 때, 프록시 객체는 초기화되지 않는다")
+    @Transactional
     void proxyPkTest() {
         //given
         // Manager 멤버 생성
@@ -54,5 +55,29 @@ public class SimpleTests {
         Room newRoom2 = roomRepository.findById(newRoom.getId()).get();
 
         log.info("매니저 이름 : {}", newRoom2.getManager().getMemberId());
+    }
+
+    @Test
+    @Transactional
+    void springdatajpaqueryTest(){
+        Member manager = Member.builder().memberId("멤버1").build();
+        Member newManager = Member.builder().memberId("멤버2").build();
+        em.persist(manager);
+        em.persist(newManager);
+        em.flush();
+        em.clear();
+
+        RoomCreateRequestDto req = RoomCreateRequestDto.builder().
+                mangerId("멤버1").
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                build();
+
+        Room room = roomService.createRoom(req);
+
+        Room foundRoom = roomRepository.findByIdAndIsDeletedFalse(room.getId()).get();
+
+        log.info("room : {}", foundRoom.getTitle());
+        log.info("deleted? : {}", foundRoom.isDeleted());
+
     }
 }
