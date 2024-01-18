@@ -1,10 +1,11 @@
 package com.a506.comeet.room.controller;
 
+import com.a506.comeet.room.controller.dto.ChannelCreateRequestDto;
+import com.a506.comeet.room.controller.dto.ChannelUpdateRequestDto;
 import com.a506.comeet.room.entity.Channel;
 import com.a506.comeet.room.service.ChannelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

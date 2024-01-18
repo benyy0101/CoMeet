@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

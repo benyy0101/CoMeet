@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomOrder;

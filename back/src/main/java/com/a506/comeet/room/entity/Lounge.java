@@ -1,7 +1,7 @@
 package com.a506.comeet.room.entity;
 
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
-import com.a506.comeet.room.controller.LoungeUpdateRequestDto;
+import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

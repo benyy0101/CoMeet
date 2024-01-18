@@ -4,7 +4,7 @@ import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.RoomUpdateRequestDto;
+import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +39,6 @@ public class Room extends BaseEntityWithSoftDelete {
     private String roomImage;
     private String notice;
 
-    private String url;
     private int mcount;
     private int capacity;
     @Column(name = "is_locked")

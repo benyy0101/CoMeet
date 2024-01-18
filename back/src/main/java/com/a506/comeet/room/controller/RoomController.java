@@ -1,5 +1,6 @@
 package com.a506.comeet.room.controller;
 
+import com.a506.comeet.room.controller.dto.*;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.service.RoomService;
 import jakarta.validation.Valid;
@@ -77,5 +78,13 @@ public class RoomController {
         Slice<RoomSearchResponseDto> res = roomService.searchRoom(req);
         return new ResponseEntity<Slice<RoomSearchResponseDto>>(res, HttpStatus.OK);
     }
+
+    @GetMapping("{roomId}")
+    public ResponseEntity search(@PathVariable Long roomId){
+        RoomResponseDto res = roomService.enterRoom(roomId);
+        if (res == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<RoomResponseDto>(res, HttpStatus.OK);
+    }
+
 
 }

@@ -1,7 +1,7 @@
 package com.a506.comeet.room.service;
 
-import com.a506.comeet.room.controller.ChannelCreateRequestDto;
-import com.a506.comeet.room.controller.ChannelUpdateRequestDto;
+import com.a506.comeet.room.controller.dto.ChannelCreateRequestDto;
+import com.a506.comeet.room.controller.dto.ChannelUpdateRequestDto;
 import com.a506.comeet.room.entity.Channel;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.repository.ChannelRepository;
