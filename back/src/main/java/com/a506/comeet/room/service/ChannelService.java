@@ -26,7 +26,7 @@ public class ChannelService {
     public Channel createChannel(ChannelCreateRequestDto req) {
         // 사용자가 방장인지 확인하는 로직 필요
 
-        Room room = roomRepository.findById(req.getRoomId()).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).get();
         // 이름 중복 확인 로직
         for(Channel c : room.getChannels()){
             if (c.getName().equals(req.getName())) return null;
@@ -55,8 +55,8 @@ public class ChannelService {
     @Transactional
     public boolean deleteChannel(long channelId) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RuntimeException("Channel not found with id: " + channelId));
-        channel.deleteSoftly();
+        Channel channel = channelRepository.findByIdAndIsDeletedFalse(channelId).orElseThrow(() -> new RuntimeException("Channel not found with id: " + channelId));
+        channel.delete();
         return true;
     }
 }

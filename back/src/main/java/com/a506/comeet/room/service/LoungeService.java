@@ -27,7 +27,7 @@ public class LoungeService {
     @Transactional
     public Lounge createLounge(LoungeCreateRequestDto req) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Room room = roomRepository.findById(req.getRoomId()).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).get();
 
         // 이름 중복 확인 로직
         for(Lounge l : room.getLounges()){
@@ -56,8 +56,8 @@ public class LoungeService {
     @Transactional
     public boolean deleteLounge(long loungeId) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RuntimeException("Lounge not found with id: " + loungeId));
-        lounge.deleteSoftly();
+        Lounge lounge = loungeRepository.findByIdAndIsDeletedFalse(loungeId).orElseThrow(() -> new RuntimeException("Lounge not found with id: " + loungeId));
+        lounge.delete();
         return true;
     }
 }

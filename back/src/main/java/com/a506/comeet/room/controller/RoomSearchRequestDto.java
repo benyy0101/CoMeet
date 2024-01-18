@@ -33,7 +33,6 @@ public class RoomSearchRequestDto {
     private Integer pageSize;
 
     @Builder
-
     public RoomSearchRequestDto(String searchKeyword, Boolean isLocked, Integer minMcount, Integer maxMcount, Integer minCapacity, Integer maxCapacity, List<RoomConstraints> constraints, RoomSortBy sortBy, Boolean isDesc, Integer pageNo, Integer pageSize) {
         this.searchKeyword = searchKeyword;
         this.isLocked = isLocked;

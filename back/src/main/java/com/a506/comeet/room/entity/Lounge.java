@@ -33,4 +33,10 @@ public class Lounge extends BaseEntityWithSoftDelete {
     public void update(LoungeUpdateRequestDto req){
         this.name = req.getName();
     }
+
+
+    public void delete(){
+        deleteSoftly();
+        room.getLounges().remove(this);
+    }
 }

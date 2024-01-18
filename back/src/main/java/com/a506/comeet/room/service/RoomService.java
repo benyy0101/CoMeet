@@ -6,18 +6,15 @@ import com.a506.comeet.member.repository.MemberRepository;
 import com.a506.comeet.room.controller.*;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
-import com.a506.comeet.room.entity.RoomMemberId;
 import com.a506.comeet.room.repository.RoomMemberRepository;
 import com.a506.comeet.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +30,7 @@ public class RoomService {
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
         Room room = Room.builder().
-                manager(memberRepository.findById(req.getMangerId()).get()).
+                manager(memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get()).
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
@@ -45,10 +42,10 @@ public class RoomService {
 
     @Transactional
     public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findById(roomId).get();
-        if (room.getManager().getMemberId() != reqMemberId) return false;
-        room.updateRoom(req, memberRepository.findById(req.getMangerId()).get());
-
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
+        if (room.isDeleted()) return false;
+        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
+        room.updateRoom(req, memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get());
         try {
             roomRepository.save(room);
             return true;
@@ -60,21 +57,22 @@ public class RoomService {
 
     @Transactional
     public boolean deleteRoom(String reqMemberId, Long roomId){
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
         if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
-        room.deleteSoftly();
+        room.delete();
         return true;
     }
 
     @Transactional
     public boolean joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findById(roomId).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
         if (room.getType().equals(RoomType.DISPOSABLE)) return false;
         if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
 
-        Member member = memberRepository.findById(req.getMemberId()).get();
-        RoomMember roomMember = new RoomMember(member, room);
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).get();
 
+        RoomMember roomMember = new RoomMember(member, room);
+        if(roomMemberRepository.existsByRoomAndMember(room, member)) return false;
         try {
             roomMemberRepository.save(roomMember);
             roomMember.joinRoom();
@@ -86,12 +84,13 @@ public class RoomService {
 
     @Transactional
     public boolean leaveRoom(String reqMemberId, long roomId) {
-        Room room = roomRepository.findById(roomId).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
         if (room.getType().equals(RoomType.DISPOSABLE)) return false;
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(reqMemberId).get();
 
-        RoomMember roomMember = roomMemberRepository.findById(new RoomMemberId(reqMemberId, roomId)).get();
-        roomMemberRepository.delete(roomMember);
+        RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).get();
         roomMember.leaveRoom();
+        roomMemberRepository.delete(roomMember);
         return true;
     }
 

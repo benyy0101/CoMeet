@@ -21,15 +21,17 @@ public class Channel extends BaseEntityWithSoftDelete {
 
     protected Channel() {
     }
-
     @Builder
     public Channel(Long id, Room room, String name) {
         this.id = id;
         this.room = room;
         this.name = name;
     }
-
     public void update(ChannelUpdateRequestDto req){
         this.name = req.getName();
+    }
+    public void delete(){
+        deleteSoftly();
+        room.getChannels().remove(this);
     }
 }
