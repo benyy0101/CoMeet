@@ -1,5 +1,8 @@
 package com.a506.comeet.api.service;
 
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomSortBy;
+import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.RoomSearchRequestDto;
 import com.a506.comeet.room.controller.RoomSearchResponseDto;
@@ -12,9 +15,14 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
@@ -34,28 +42,36 @@ public class RoomServiceSeartchTest {
 
         Member member = Member.builder().memberId("testMember").nickname("닉네임").build();
         em.persist(member);
-
-        Room room1 = Room.builder().manager(member).title("방1").capacity(10).build();
-        Room room2 = Room.builder().manager(member).title("방1").capacity(1).build();
-        Room room3 = Room.builder().manager(member).title("방2").capacity(10).build();
-        Room room4 = Room.builder().manager(member).title("바아앙").capacity(10).build();
-        em.persist(room1);
-        em.persist(room2);
-        em.persist(room3);
-        em.persist(room4);
+        for (int t = 0; t < 4; t++) {
+            for (int i = 0; i < 100; i++) {
+                Room room = Room.builder().manager(member).title("방"+i).capacity(t * 4).type(RoomType.DISPOSABLE).constraints(RoomConstraints.FREE).build();
+                em.persist(room);
+            }
+        }
+        for (int i = 0; i < 100; i++) {
+            Room room = Room.builder().manager(member).title("test방"+i).capacity(10).type(RoomType.DISPOSABLE).constraints(RoomConstraints.MICOFF).build();
+            em.persist(room);
+        }
         em.flush();
         em.clear();
 
-        RoomSearchRequestDto req = RoomSearchRequestDto.builder().searchKeyword("방").maxCapacity(10).minCapacity(5).build();
+        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
+                searchKeyword("방").
+                maxCapacity(10).
+                minCapacity(4).
+                constraints(List.of(RoomConstraints.MICOFF, RoomConstraints.FREE)).
+                sortBy(RoomSortBy.capacity).isDesc(true).
+                pageNo(0).pageSize(50).
+                build();
 
-        List<RoomSearchResponseDto> list = roomRepository.findRoomCustom(req);
+        Slice<RoomSearchResponseDto> list = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
         for (RoomSearchResponseDto roomSearchResponseDto : list) {
-            System.out.println("roomId = " + roomSearchResponseDto.getRoomId());
-            System.out.println("managerNickname = " + roomSearchResponseDto.getManagerNickname());
-            System.out.println("title = " + roomSearchResponseDto.getTitle());
-            System.out.println("capacity = " + roomSearchResponseDto.getCapacity());
-            System.out.println("type = " + roomSearchResponseDto.getType());
+            log.info("roomId = {}",roomSearchResponseDto.getRoomId());
+            log.info("managerNickname = {}",roomSearchResponseDto.getManagerNickname());
+            log.info("title = {}",roomSearchResponseDto.getTitle());
+            log.info("capacity = {}",roomSearchResponseDto.getCapacity());
+            log.info("type = {}",roomSearchResponseDto.getType());
         }
-        Assertions.assertThat(list.size()).isEqualTo(2);
+        Assertions.assertThat(list.getContent().size()).isEqualTo(50);
     }
 }
