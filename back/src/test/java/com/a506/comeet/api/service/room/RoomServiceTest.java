@@ -2,9 +2,9 @@ package com.a506.comeet.api.service.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.RoomCreateRequestDto;
-import com.a506.comeet.room.controller.RoomJoinRequestDto;
-import com.a506.comeet.room.controller.RoomUpdateRequestDto;
+import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.room.controller.dto.RoomJoinRequestDto;
+import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.room.entity.Room;
 import static org.assertj.core.api.Assertions.*;
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -113,6 +112,7 @@ class RoomServiceTest {
     @DisplayName("유저가 방에 가입 후 나간다")
     @Transactional
     void joinLeaveTest(){
+
         //given
         // Manager 멤버 생성
         Member manager = Member.builder().memberId("멤버1").build();

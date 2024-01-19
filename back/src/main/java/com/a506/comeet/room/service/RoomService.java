@@ -3,7 +3,7 @@ package com.a506.comeet.room.service;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.member.repository.MemberRepository;
-import com.a506.comeet.room.controller.*;
+import com.a506.comeet.room.controller.dto.*;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
 import com.a506.comeet.room.repository.RoomMemberRepository;
@@ -15,6 +15,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -96,5 +98,9 @@ public class RoomService {
 
     public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto){
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+    }
+
+    public List<RoomResponseDto> enterRoom(Long roomId) {
+        return roomRepository.enterRoomCustom(roomId);
     }
 }

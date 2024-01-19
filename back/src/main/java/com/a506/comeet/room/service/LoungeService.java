@@ -1,15 +1,13 @@
 package com.a506.comeet.room.service;
 
-import com.a506.comeet.room.controller.LoungeCreateRequestDto;
-import com.a506.comeet.room.controller.LoungeUpdateRequestDto;
-import com.a506.comeet.room.entity.Channel;
+import com.a506.comeet.room.controller.dto.LoungeCreateRequestDto;
+import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
 import com.a506.comeet.room.entity.Lounge;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.repository.LoungeRepository;
 import com.a506.comeet.room.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

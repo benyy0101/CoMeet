@@ -1,11 +1,8 @@
 package com.a506.comeet.board.controller;
 
 import com.a506.comeet.board.service.BoardService;
-import com.a506.comeet.room.controller.RoomCreateRequestDto;
-import com.a506.comeet.room.entity.Room;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

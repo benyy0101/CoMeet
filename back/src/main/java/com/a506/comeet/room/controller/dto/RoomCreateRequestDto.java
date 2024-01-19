@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -14,7 +14,6 @@ import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-@Validated
 public class RoomCreateRequestDto {
 
     @Setter

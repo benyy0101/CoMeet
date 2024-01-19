@@ -1,13 +1,20 @@
 package com.a506.comeet.room.entity;
 
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
-import com.a506.comeet.room.controller.LoungeUpdateRequestDto;
+import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 public class Lounge extends BaseEntityWithSoftDelete {
 
     @Id
@@ -19,16 +26,6 @@ public class Lounge extends BaseEntityWithSoftDelete {
     private Room room;
 
     private String name;
-
-    protected Lounge() {
-    }
-
-    @Builder
-    public Lounge(Long id, Room room, String name) {
-        this.id = id;
-        this.room = room;
-        this.name = name;
-    }
 
     public void update(LoungeUpdateRequestDto req){
         this.name = req.getName();

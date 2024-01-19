@@ -8,9 +8,12 @@ import com.a506.comeet.room.entity.RoomMember;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static lombok.AccessLevel.PROTECTED;
 
 /**
  * 미완성
@@ -18,6 +21,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = PROTECTED)
 public class Member extends BaseEntityWithSoftDelete {
 
     @Id
@@ -45,9 +49,6 @@ public class Member extends BaseEntityWithSoftDelete {
         this.password = password;
         this.nickname = nickname;
         this.email = email;
-    }
-
-    protected Member(){
     }
 
     public void updateUser(MemberUpdateRequestDto dto){

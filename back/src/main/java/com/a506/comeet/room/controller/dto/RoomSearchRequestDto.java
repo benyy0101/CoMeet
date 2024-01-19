@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomOrder;
@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
-@Validated
 @Getter
 public class RoomSearchRequestDto {
     @Size(min = 2, max = 10, message = "검색키워드는 2자 이상, 10자 이하여야 합니다.")

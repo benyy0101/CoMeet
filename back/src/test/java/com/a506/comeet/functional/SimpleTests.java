@@ -3,7 +3,7 @@ package com.a506.comeet.functional;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.RoomCreateRequestDto;
+import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.repository.RoomRepository;
 import com.a506.comeet.room.service.RoomService;
