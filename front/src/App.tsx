@@ -29,7 +29,7 @@ function App() {
       <BrowserRouter>
         <NavBar />
         <Routes>
-        <Route path="/" element={<Mainpage />}></Route>
+          <Route path="/" element={<Mainpage />}></Route>
           {isLogin ? (
             <>
               <Route path="/roomlist" element={<RoomList />}></Route>
@@ -50,8 +50,9 @@ function App() {
           <Route path="/before-entrance" element={<ConditionCheck />}></Route>
         </Routes>
       </BrowserRouter>
-      <button onClick={modalHandler}> dhkfkfkfkf</button>
-      {isModal && <Modal toggleModal={modalHandler}/>}
+      {/* 모달 정상작동 되는지 확인하는 버튼: 추후에 없어질것 */}
+      <button onClick={modalHandler}> 모달 체크 버튼</button>
+      {isModal && <Modal toggleModal={modalHandler} />}
     </div>
   );
 }
