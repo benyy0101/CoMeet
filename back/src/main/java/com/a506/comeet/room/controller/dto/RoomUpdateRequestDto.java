@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import jakarta.validation.constraints.Max;
@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-@Validated
 public class RoomUpdateRequestDto {
     @Setter
     private String mangerId;

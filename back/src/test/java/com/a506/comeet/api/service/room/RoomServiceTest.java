@@ -2,13 +2,15 @@ package com.a506.comeet.api.service.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.RoomCreateRequestDto;
-import com.a506.comeet.room.controller.RoomJoinRequestDto;
-import com.a506.comeet.room.controller.RoomUpdateRequestDto;
+import com.a506.comeet.member.repository.MemberRepository;
+import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.room.controller.dto.RoomJoinRequestDto;
+import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.room.entity.Room;
 import static org.assertj.core.api.Assertions.*;
 
+import com.a506.comeet.room.repository.RoomMemberRepository;
 import com.a506.comeet.room.repository.RoomRepository;
 import com.a506.comeet.room.service.RoomService;
 import jakarta.persistence.EntityManager;
@@ -34,6 +36,12 @@ class RoomServiceTest {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private RoomMemberRepository roomMemberRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -68,6 +76,7 @@ class RoomServiceTest {
 
     @Test
     @Transactional
+    @Rollback(value = false)
     void createTest(){
         Member manager = Member.builder().memberId("멤버1").build();
         em.persist(manager);
@@ -76,12 +85,13 @@ class RoomServiceTest {
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
                 mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
 
         Room room = roomService.createRoom(req);
         assertThat(room.getTitle()).isEqualTo(req.getTitle());
         log.info("room id : {}", room.getId());
+        assertThat(roomMemberRepository.findByRoomAndMember(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
     }
 
     @Test
@@ -113,10 +123,13 @@ class RoomServiceTest {
     @DisplayName("유저가 방에 가입 후 나간다")
     @Transactional
     void joinLeaveTest(){
+
         //given
         // Manager 멤버 생성
         Member manager = Member.builder().memberId("멤버1").build();
+        Member tmpMember = Member.builder().memberId("멤버2").build();
         em.persist(manager);
+        em.persist(tmpMember);
         em.flush();
         em.clear();
 
@@ -142,23 +155,25 @@ class RoomServiceTest {
 
         //assert
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
-        assertThat(room.getRoomMembers().get(0).getMember().getMemberId()).isEqualTo("member1");
-        assertThat(room.getRoomMembers().size()).isEqualTo(1);
+        assertThat(room.getRoomMembers().get(0).getMember().getMemberId()).isEqualTo("멤버1");
+        assertThat(room.getRoomMembers().get(1).getMember().getMemberId()).isEqualTo("member1");
+        assertThat(room.getRoomMembers().size()).isEqualTo(2);
         assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
-        assertThat(room.getMcount()).isEqualTo(1);
+        assertThat(room.getMcount()).isEqualTo(2);
 
-        roomService.joinMember(req, "멤버1", roomId);
-        assertThat(room.getRoomMembers().size()).isEqualTo(1);
+        RoomJoinRequestDto req2 = new RoomJoinRequestDto("멤버2");
+        roomService.joinMember(req2, "멤버1", roomId);
+        assertThat(room.getRoomMembers().size()).isEqualTo(3);
         assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
-        assertThat(room.getMcount()).isEqualTo(1);
+        assertThat(room.getMcount()).isEqualTo(3);
 
         // leave
         log.info("멤버 방 나가기");
         roomService.leaveRoom("member1", roomId);
         room = roomRepository.findByIdAndIsDeletedFalse(roomId).get(); // 다시 가져와야?
         // assert
-        assertThat(room.getRoomMembers().size()).isEqualTo(0);
-        assertThat(room.getMcount()).isEqualTo(0);
+        assertThat(room.getRoomMembers().size()).isEqualTo(2);
+        assertThat(room.getMcount()).isEqualTo(2);
     }
 
 

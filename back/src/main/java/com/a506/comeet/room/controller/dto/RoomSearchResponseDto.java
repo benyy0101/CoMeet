@@ -1,4 +1,4 @@
-package com.a506.comeet.room.controller;
+package com.a506.comeet.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -15,7 +15,7 @@ public class RoomSearchResponseDto {
     private String managerNickname;
     private String title;
     private String description;
-    private String url;
+    private String link;
     private String roomImage;
     private int mcount;
     private int capacity;
@@ -25,13 +25,13 @@ public class RoomSearchResponseDto {
     private RoomType type;
 
     @QueryProjection
-    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String url, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
+    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String link, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
         this.title = title;
         this.description = description;
-        this.url = url;
+        this.link = link;
         this.roomImage = roomImage;
         this.mcount = mcount;
         this.capacity = capacity;

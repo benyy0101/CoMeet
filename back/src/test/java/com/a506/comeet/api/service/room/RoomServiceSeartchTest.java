@@ -6,8 +6,8 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomSortBy;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.RoomSearchRequestDto;
-import com.a506.comeet.room.controller.RoomSearchResponseDto;
+import com.a506.comeet.room.controller.dto.RoomSearchRequestDto;
+import com.a506.comeet.room.controller.dto.RoomSearchResponseDto;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.repository.RoomRepository;
 import jakarta.persistence.EntityManager;
@@ -18,12 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest

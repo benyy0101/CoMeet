@@ -1,6 +1,7 @@
 package com.a506.comeet.room.controller;
 
-import com.a506.comeet.room.entity.Channel;
+import com.a506.comeet.room.controller.dto.LoungeCreateRequestDto;
+import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
 import com.a506.comeet.room.entity.Lounge;
 import com.a506.comeet.room.service.LoungeService;
 import jakarta.validation.Valid;

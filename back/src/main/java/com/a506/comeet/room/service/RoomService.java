@@ -3,7 +3,7 @@ package com.a506.comeet.room.service;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.member.repository.MemberRepository;
-import com.a506.comeet.room.controller.*;
+import com.a506.comeet.room.controller.dto.*;
 import com.a506.comeet.room.entity.Room;
 import com.a506.comeet.room.entity.RoomMember;
 import com.a506.comeet.room.repository.RoomMemberRepository;
@@ -15,6 +15,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,21 +31,25 @@ public class RoomService {
 
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get();
         Room room = Room.builder().
-                manager(memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get()).
+                manager(member).
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
                 constraints(req.getConstraints()).
                 type(req.getType()).link("임시 Link, 추후 구현 필요").build();
 
-        return roomRepository.save(room);
+        Room created = roomRepository.save(room);
+        joinMember(new RoomJoinRequestDto(req.getMangerId()), req.getMangerId(), created.getId());
+
+        return created;
     }
 
     @Transactional
     public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
-        if (room.isDeleted()) return false;
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseGet(null);
+        if (room == null) return false;
         if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
         room.updateRoom(req, memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get());
         try {
@@ -96,5 +102,9 @@ public class RoomService {
 
     public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto){
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+    }
+
+    public List<RoomResponseDto> enterRoom(Long roomId) {
+        return roomRepository.enterRoomCustom(roomId);
     }
 }
