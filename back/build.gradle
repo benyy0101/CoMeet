@@ -35,6 +35,9 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 
+	//validation
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
 	//Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	// @Entity 어노테이션 선언한 클래스 탐색하고 Q클래스를 생성
@@ -44,17 +47,17 @@ dependencies {
 
 }
 
-// querydsl 저장 위치
-def querydslSrcDir = 'src/main/generated'
-tasks.withType(JavaCompile) {
-	options.generatedSourceOutputDirectory = file(querydslSrcDir)
-}
+//// querydsl 저장 위치
+//def querydslSrcDir = 'src/main/generated'
+//tasks.withType(JavaCompile) {
+//	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+//}
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-clean {
-	// clean 실행 시 생성된 QClass 삭제
-	delete file('src/main/generated')
-}
+//clean {
+//	// clean 실행 시 생성된 QClass 삭제
+//	delete file('src/main/generated')
+//}
