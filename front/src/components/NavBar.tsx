@@ -17,10 +17,6 @@ const StyleNavBar = tw.div`
     text-white
     flex
     items-center
-    fixed
-    top-0
-    w-full
-    z-12
 
     `;
 
