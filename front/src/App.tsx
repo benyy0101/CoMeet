@@ -13,7 +13,6 @@ import { Room } from "./pages/Room";
 import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
-import Modal from "./components/Modal";
 
 function App() {
   //임시
@@ -50,9 +49,6 @@ function App() {
           <Route path="/before-entrance" element={<ConditionCheck />}></Route>
         </Routes>
       </BrowserRouter>
-      {/* 모달 정상작동 되는지 확인하는 버튼: 추후에 없어질것 */}
-      <button onClick={modalHandler}> 모달 체크 버튼</button>
-      {isModal && <Modal toggleModal={modalHandler} />}
     </div>
   );
 }
