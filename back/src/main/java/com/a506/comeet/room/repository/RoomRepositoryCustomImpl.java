@@ -1,6 +1,7 @@
 package com.a506.comeet.room.repository;
 
 import com.a506.comeet.room.controller.dto.*;
+import com.a506.comeet.room.entity.Room;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
@@ -52,8 +53,8 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 .where(makeBooleanBuilder(req)).
                 orderBy(makeOrder(req)).
                 offset(pageable.getOffset()).
-                limit(pageable.getPageSize()+1). // 1개를 더 가져온다
-                fetch();
+                limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
+                        fetch();
 
         boolean hasNext = content.size() > pageable.getPageSize(); // 뒤에 더 있는지 확인
         content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
@@ -61,51 +62,69 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     }
 
     @Override
-    public List<RoomResponseDto> enterRoomCustom(Long roomId) {
-        List<RoomResponseDto> res = jpaQueryFactory.select(
-                Projections.constructor(RoomResponseDto.class,
-                room.id,
-                member.memberId,
-                member.nickname,
-                room.title,
-                room.description,
-                room.link,
-                room.roomImage,
-                room.mcount,
-                room.capacity,
-                room.isLocked,
-                room.password,
-                room.constraints,
-                room.type,
-                Projections.list(
+    public RoomResponseDto enterRoomCustom(Long roomId) {
+        RoomResponseDto res = jpaQueryFactory.select(
+                        Projections.constructor(RoomResponseDto.class,
+                                room.id,
+                                member.memberId,
+                                member.nickname,
+                                room.title,
+                                room.description,
+                                room.link,
+                                room.roomImage,
+                                room.mcount,
+                                room.capacity,
+                                room.isLocked,
+                                room.password,
+                                room.constraints,
+                                room.type
+                        )
+                ).
+                from(room).
+                leftJoin(room.roomMembers, roomMember).
+                leftJoin(roomMember.member, member).
+                where(room.id.eq(roomId).and(room.manager.eq(member))).fetchOne();
+
+        res.setMembers(getMembers(roomId));
+        res.setLounges(getLounges(roomId));
+        res.setChannels(getChannels(roomId));
+        return res;
+    }
+
+    private List<RoomMemberResponseDto> getMembers(Long roomId) {
+        return jpaQueryFactory.select(
                         Projections.constructor(RoomMemberResponseDto.class,
                                 roomMember.member.memberId,
                                 roomMember.member.nickname,
                                 roomMember.member.profileImage,
                                 roomMember.member.feature
-                        )
-                ),
-                Projections.list(
-                        Projections.constructor(RoomLoungeResponseDto.class,
-                                lounge.id,
-                                lounge.name
-                        )
-                ),
-                Projections.list(
-                        Projections.constructor(RoomChannelResponseDto.class,
-                                channel.id,
-                                channel.name
-                        )
-                ))
-                ).
+                        )).
                 from(room).
                 leftJoin(room.roomMembers, roomMember).
                 leftJoin(roomMember.member, member).
+                where(room.id.eq(roomId)).fetch();
+    }
+
+    private List<RoomLoungeResponseDto> getLounges(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomLoungeResponseDto.class,
+                                lounge.id,
+                                lounge.name
+                        )).
+                from(room).
                 leftJoin(room.lounges, lounge).
+                where(room.id.eq(roomId)).fetch();
+    }
+
+    private List<RoomChannelResponseDto> getChannels(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomChannelResponseDto.class,
+                                channel.id,
+                                channel.name
+                        )).
+                from(room).
                 leftJoin(room.channels, channel).
                 where(room.id.eq(roomId)).fetch();
-
-        return res;
     }
 
     private List<RoomResponseDto> mergeResults(List<Tuple> results) {
@@ -127,7 +146,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return new ArrayList<>(roomMap.values());
     }
 
-    private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req){
+    private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
         ComparableExpressionBase<?> path = switch (req.getSortBy()) {
             case mcount -> room.mcount;
             case capacity -> room.capacity;
@@ -137,7 +156,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return req.getIsDesc() ? path.desc() : path.asc();
     }
 
-    private BooleanBuilder makeBooleanBuilder(RoomSearchRequestDto req){
+    private BooleanBuilder makeBooleanBuilder(RoomSearchRequestDto req) {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (req.getSearchKeyword() != null) {

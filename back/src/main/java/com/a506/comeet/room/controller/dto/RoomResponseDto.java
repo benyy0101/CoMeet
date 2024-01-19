@@ -33,8 +33,7 @@ public class RoomResponseDto {
     @Setter
     private List<RoomLoungeResponseDto> lounges;
 
-    @QueryProjection
-    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, List<RoomMemberResponseDto> members, List<RoomChannelResponseDto> channels, List<RoomLoungeResponseDto> lounges) {
+    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
@@ -48,8 +47,5 @@ public class RoomResponseDto {
         this.password = password;
         this.constraints = constraints;
         this.type = type;
-        this.members = members;
-        this.channels = channels;
-        this.lounges = lounges;
     }
 }

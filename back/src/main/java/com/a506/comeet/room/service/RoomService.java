@@ -100,7 +100,7 @@ public class RoomService {
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
-    public List<RoomResponseDto> enterRoom(Long roomId) {
+    public RoomResponseDto enterRoom(Long roomId) {
         return roomRepository.enterRoomCustom(roomId);
     }
 }

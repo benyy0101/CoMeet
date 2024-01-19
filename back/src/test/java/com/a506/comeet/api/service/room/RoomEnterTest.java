@@ -39,26 +39,21 @@ public class RoomEnterTest {
     @Transactional
     @Rollback(value = false)
     void roomEnterTest(){
-
         Long roomId = 3L;
-        List<RoomResponseDto> response = roomService.enterRoom(roomId);
+        RoomResponseDto res = roomService.enterRoom(roomId);
+        log.info("멤버 수 : {}", res.getMembers().size());
+        for (RoomMemberResponseDto member : res.getMembers()) {
+            log.info("멤버 닉네임 : {}", member.getNickname());
+        }
 
-        for (RoomResponseDto res : response) {
-            log.info("멤버 수 : {}", res.getMembers().size());
-            for (RoomMemberResponseDto member : res.getMembers()) {
-                log.info("멤버 닉네임 : {}", member.getNickname());
-            }
+        log.info("채널 수 : {}", res.getChannels().size());
+        for (RoomChannelResponseDto channel : res.getChannels()) {
+            log.info("채널 명 : {}", channel.getName());
+        }
 
-            log.info("채널 수 : {}", res.getChannels().size());
-            log.info("타입 : {}", res.getChannels().get(0).getClass());
-//            for (RoomChannelResponseDto channel : res.getChannels()) {
-//                log.info("채널 명 : ", channel.getName());
-//            }
-//
-//            log.info("라운지 수 : {}", res.getLounges().size());
-//            for (RoomLoungeResponseDto lounge : res.getLounges()) {
-//                log.info("라운지 명 : ", lounge.getName());
-//            }
+        log.info("라운지 수 : {}", res.getLounges().size());
+        for (RoomLoungeResponseDto lounge : res.getLounges()) {
+            log.info("라운지 명 : {}", lounge.getName());
         }
 
     }
