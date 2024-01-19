@@ -6,6 +6,7 @@ import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -25,8 +26,11 @@ public class RoomResponseDto {
     private String password;
     private RoomConstraints constraints;
     private RoomType type;
+    @Setter
     private List<RoomMemberResponseDto> members;
+    @Setter
     private List<RoomChannelResponseDto> channels;
+    @Setter
     private List<RoomLoungeResponseDto> lounges;
 
     @QueryProjection

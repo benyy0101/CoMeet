@@ -6,7 +6,9 @@ import com.a506.comeet.room.controller.dto.RoomSearchResponseDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
+import java.util.List;
+
 public interface RoomRepositoryCustom {
     Slice<RoomSearchResponseDto> findRoomCustom(RoomSearchRequestDto req, Pageable pageable);
-    RoomResponseDto enterRoomCustom(Long roomId);
+    List<RoomResponseDto> enterRoomCustom(Long roomId);
 }

@@ -16,6 +16,8 @@ import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -98,7 +100,7 @@ public class RoomService {
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
-    public RoomResponseDto enterRoom(Long roomId) {
+    public List<RoomResponseDto> enterRoom(Long roomId) {
         return roomRepository.enterRoomCustom(roomId);
     }
 }

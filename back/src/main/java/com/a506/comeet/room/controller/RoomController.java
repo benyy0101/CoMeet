@@ -79,9 +79,11 @@ public class RoomController {
         return new ResponseEntity<Slice<RoomSearchResponseDto>>(res, HttpStatus.OK);
     }
 
+
+    // 수정 필요합니다
     @GetMapping("{roomId}")
     public ResponseEntity search(@PathVariable Long roomId){
-        RoomResponseDto res = roomService.enterRoom(roomId);
+        RoomResponseDto res = roomService.enterRoom(roomId).get(0);
         if (res == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<RoomResponseDto>(res, HttpStatus.OK);
     }

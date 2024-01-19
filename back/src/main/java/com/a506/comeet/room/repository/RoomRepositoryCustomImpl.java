@@ -2,6 +2,7 @@ package com.a506.comeet.room.repository;
 
 import com.a506.comeet.room.controller.dto.*;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
@@ -12,7 +13,10 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.a506.comeet.room.entity.QRoom.room;
 import static com.a506.comeet.member.entity.QMember.member;
@@ -57,8 +61,9 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     }
 
     @Override
-    public RoomResponseDto enterRoomCustom(Long roomId) {
-        List<RoomResponseDto> res = jpaQueryFactory.select(Projections.constructor(RoomResponseDto.class,
+    public List<RoomResponseDto> enterRoomCustom(Long roomId) {
+        List<RoomResponseDto> res = jpaQueryFactory.select(
+                Projections.constructor(RoomResponseDto.class,
                 room.id,
                 member.memberId,
                 member.nickname,
@@ -91,14 +96,35 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 channel.id,
                                 channel.name
                         )
-                ))).
+                ))
+                ).
                 from(room).
-                innerJoin(room.lounges, lounge).
-                innerJoin(room.channels, channel).
-                join(roomMember).on(roomMember.room.eq(room)).
-                innerJoin(member).on(roomMember.member.eq(member)).
+                leftJoin(room.roomMembers, roomMember).
+                leftJoin(roomMember.member, member).
+                leftJoin(room.lounges, lounge).
+                leftJoin(room.channels, channel).
                 where(room.id.eq(roomId)).fetch();
-        return res.isEmpty() ? null : res.get(0);
+
+        return res;
+    }
+
+    private List<RoomResponseDto> mergeResults(List<Tuple> results) {
+        Map<Long, RoomResponseDto> roomMap = new LinkedHashMap<>();
+
+        for (Tuple tuple : results) {
+            RoomResponseDto roomResponseDto = tuple.get(0, RoomResponseDto.class);
+            List<RoomMemberResponseDto> members = tuple.get(1, List.class);
+            List<RoomLoungeResponseDto> lounges = tuple.get(2, List.class);
+            List<RoomChannelResponseDto> channels = tuple.get(3, List.class);
+
+            roomResponseDto.setMembers(members);
+            roomResponseDto.setLounges(lounges);
+            roomResponseDto.setChannels(channels);
+
+            roomMap.put(roomResponseDto.getRoomId(), roomResponseDto);
+        }
+
+        return new ArrayList<>(roomMap.values());
     }
 
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req){
