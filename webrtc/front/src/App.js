@@ -13,19 +13,15 @@ function App() {
     session: undefined,
     mainStreamManager: undefined, // Main video of the page. Will be the 'publisher' or one of the 'subscribers'
     publisher: undefined,
-    subscribers: [],
   });
+  const [subscribers, setSubscribers] = useState([]);
 
   useEffect(() => {
-    window.addEventListener("beforeunload", onbeforeunload);
+    window.addEventListener("beforeunload", leaveSession);
     return () => {
-      window.removeEventListener("beforeunload", onbeforeunload);
+      window.removeEventListener("beforeunload", leaveSession);
     };
   }, []);
-
-  const onbeforeunload = (event) => {
-    leaveSession();
-  };
 
   const handleChangeSessionId = (e) => {
     setRtcState((prev) => ({
@@ -51,31 +47,17 @@ function App() {
   };
 
   const deleteSubscriber = (streamManager) => {
-    let subscribers = rtcState.subscribers;
-    let index = subscribers.indexOf(streamManager, 0);
-    if (index > -1) {
-      subscribers.splice(index, 1);
-      setRtcState((prev) => ({
-        ...prev,
-        subscribers,
-      }));
-    }
+    setSubscribers((prev) => prev.filter((sub) => sub.id !== streamManager.id));
   };
 
   const joinSession = async () => {
     const newOv = await new OpenVidu();
-    console.log(newOv);
-    setOv(newOv);
     const mySession = await newOv.initSession();
+    setOv(newOv);
 
     mySession.on("streamCreated", (event) => {
       const subscriber = mySession.subscribe(event.stream, undefined);
-      let subscribers = rtcState.subscribers;
-      subscribers.push(subscriber);
-      setRtcState((prev) => ({
-        ...prev,
-        subscribers,
-      }));
+      setSubscribers((prev) => [...prev, subscriber]);
     });
 
     mySession.on("streamDestroyed", (event) => {
@@ -99,7 +81,6 @@ function App() {
             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
             mirror: false, // Whether to mirror your local video or not
           });
-          console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
           mySession.publish(publisher);
 
           let devices = await newOv.getDevices();
@@ -139,9 +120,9 @@ function App() {
     }
 
     setOv(null);
+    setSubscribers([]);
     setRtcState({
       session: undefined,
-      subscribers: [],
       mySessionId: "SessionA",
       myUserName: "Participant" + Math.floor(Math.random() * 100),
       mainStreamManager: undefined,
@@ -149,40 +130,40 @@ function App() {
     });
   };
 
-  // const switchCamera = async () => {
-  //   try {
-  //     const devices = await ov.getDevices();
-  //     let videoDevices = devices.filter((device) => device.kind === "videoinput");
+  const switchCamera = async () => {
+    try {
+      const devices = await ov.getDevices();
+      let videoDevices = devices.filter((device) => device.kind === "videoinput");
 
-  //     if (videoDevices && videoDevices.length > 1) {
-  //       let newVideoDevice = videoDevices.filter(
-  //         (device) => device.deviceId !== rtcState.currentVideoDevice.deviceId
-  //       );
+      if (videoDevices && videoDevices.length > 1) {
+        let newVideoDevice = videoDevices.filter(
+          (device) => device.deviceId !== rtcState.currentVideoDevice.deviceId
+        );
 
-  //       if (newVideoDevice.length > 0) {
-  //         let newPublisher = ov.initPublisher(undefined, {
-  //           videoSource: newVideoDevice[0].deviceId,
-  //           publishAudio: true,
-  //           publishVideo: true,
-  //           mirror: true,
-  //         });
+        if (newVideoDevice.length > 0) {
+          let newPublisher = ov.initPublisher(undefined, {
+            videoSource: newVideoDevice[0].deviceId,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
 
-  //         await rtcState.session.unpublish(rtcState.mainStreamManager);
+          await rtcState.session.unpublish(rtcState.mainStreamManager);
 
-  //         await rtcState.session.publish(newPublisher);
+          await rtcState.session.publish(newPublisher);
 
-  //         setRtcState((prev) => ({
-  //           ...prev,
-  //           currentVideoDevice: newVideoDevice[0],
-  //           mainStreamManager: newPublisher,
-  //           publisher: newPublisher,
-  //         }));
-  //       }
-  //     }
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // };
+          setRtcState((prev) => ({
+            ...prev,
+            currentVideoDevice: newVideoDevice[0],
+            mainStreamManager: newPublisher,
+            publisher: newPublisher,
+          }));
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const getToken = async () => {
     const sessionId = await createSession(rtcState.mySessionId);
@@ -210,7 +191,9 @@ function App() {
     );
     return response.data; // The token
   };
-  console.log(rtcState);
+
+  console.log(subscribers);
+
   return (
     <div className="App">
       {rtcState.session === undefined && (
@@ -247,26 +230,47 @@ function App() {
       <h1>webrtc</h1>
       {rtcState.session && (
         <div>
-          {rtcState.publisher !== undefined ? (
-            <div
-              className="stream-container col-md-6 col-xs-6"
-              onClick={() => handleMainVideoStream(rtcState.publisher)}
-            >
-              <UserVideoComponent streamManager={rtcState.publisher} />
-            </div>
-          ) : null}
-          {rtcState.subscribers.map((sub, i) => (
-            <div
-              key={sub.id}
-              className="stream-container col-md-6 col-xs-6"
-              onClick={() => {
-                handleMainVideoStream(sub);
-              }}
-            >
-              <span>{sub.id}</span>
-              <UserVideoComponent streamManager={sub} />
-            </div>
-          ))}
+          <div id="session-header">
+            <h1 id="session-title">{rtcState.mySessionId}</h1>
+            <input
+              className="btn btn-large btn-danger"
+              type="button"
+              id="buttonLeaveSession"
+              onClick={leaveSession}
+              value="Leave session"
+            />
+            <input
+              className="btn btn-large btn-success"
+              type="button"
+              id="buttonSwitchCamera"
+              onClick={switchCamera}
+              value="Switch Camera"
+            />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(300px, auto)" }}>
+            {rtcState.publisher !== undefined ? (
+              <div
+                className="stream-container col-md-6 col-xs-6"
+                style={{ width: "300px" }}
+                onClick={() => handleMainVideoStream(rtcState.publisher)}
+              >
+                <UserVideoComponent streamManager={rtcState.publisher} />
+              </div>
+            ) : null}
+            {subscribers.map((sub, i) => (
+              <div
+                key={sub.id}
+                className="stream-container col-md-6 col-xs-6"
+                style={{ width: "300px" }}
+                onClick={() => {
+                  handleMainVideoStream(sub);
+                }}
+              >
+                <span>{sub.id}</span>
+                <UserVideoComponent streamManager={sub} />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
