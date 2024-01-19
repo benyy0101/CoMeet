@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-@Validated
 public class RoomUpdateRequestDto {
     @Setter
     private String mangerId;

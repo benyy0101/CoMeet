@@ -16,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @SpringBootTest
 @Slf4j
 public class RoomEnterTest {
@@ -36,25 +38,29 @@ public class RoomEnterTest {
     @Test
     @Transactional
     @Rollback(value = false)
-    void test(){
+    void roomEnterTest(){
 
         Long roomId = 3L;
-        RoomResponseDto res = roomService.enterRoom(roomId);
+        List<RoomResponseDto> response = roomService.enterRoom(roomId);
 
-        log.info("멤버 수 : {}", res.getMembers().size());
-        for (RoomMemberResponseDto member : res.getMembers()) {
-            log.info("멤버 닉네임 : {}", member.getNickname());
+        for (RoomResponseDto res : response) {
+            log.info("멤버 수 : {}", res.getMembers().size());
+            for (RoomMemberResponseDto member : res.getMembers()) {
+                log.info("멤버 닉네임 : {}", member.getNickname());
+            }
+
+            log.info("채널 수 : {}", res.getChannels().size());
+            log.info("타입 : {}", res.getChannels().get(0).getClass());
+//            for (RoomChannelResponseDto channel : res.getChannels()) {
+//                log.info("채널 명 : ", channel.getName());
+//            }
+//
+//            log.info("라운지 수 : {}", res.getLounges().size());
+//            for (RoomLoungeResponseDto lounge : res.getLounges()) {
+//                log.info("라운지 명 : ", lounge.getName());
+//            }
         }
 
-        log.info("채널 수 : {}", res.getChannels().size());
-        for (RoomChannelResponseDto channel : res.getChannels()) {
-            log.info("채널 명 : ", channel.getName());
-        }
-
-        log.info("라운지 수 : {}", res.getLounges().size());
-        for (RoomLoungeResponseDto lounge : res.getLounges()) {
-            log.info("라운지 명 : ", lounge.getName());
-        }
     }
 
     @BeforeEach

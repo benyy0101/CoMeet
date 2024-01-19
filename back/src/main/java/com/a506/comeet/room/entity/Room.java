@@ -8,12 +8,16 @@ import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
+@NoArgsConstructor(access = PROTECTED)
 public class Room extends BaseEntityWithSoftDelete {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +53,6 @@ public class Room extends BaseEntityWithSoftDelete {
     private RoomConstraints constraints;
     @Enumerated(EnumType.STRING)
     private RoomType type;
-
-    protected Room(){
-    }
 
     @Builder
     public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {

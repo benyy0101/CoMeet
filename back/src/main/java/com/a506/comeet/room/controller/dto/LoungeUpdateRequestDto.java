@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-@Validated
 public class LoungeUpdateRequestDto {
 
     @Size(min = 2, max = 15)

@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
-@Validated
 public class ChannelCreateRequestDto {
     private Long roomId;
     @Size(min = 2, max = 15)
