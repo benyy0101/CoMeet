@@ -1,6 +1,7 @@
 import React from "react";
 import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomItem";
+import Search from "../assets/img/search.svg";
 
 const Items = tw(RoomItem)`
 flex
@@ -11,6 +12,9 @@ gap-5
 
 const Wrapper = tw.div`
 flex
+flex-col
+items-center
+gap-5
 `;
 
 const RightContainer = tw.div`
@@ -42,16 +46,31 @@ focus:text-white
 transition
 `;
 const MainContainer = tw.div`
-`
-const SearchBarContainer = tw.div`
+flex
+w-full
 `;
-const DropDowns = tw.div`
+const SearchBarContainer = tw.div`
+w-full
+flex
+justify-center
+`;
+const DropDowns = tw.select`
 `;
 const Shoot = tw.button`
 `;
-
 const SearchBar = tw.input`
+  focus:outline-none
 `;
+const Img = tw.img`
+w-4
+`;
+const Form = tw.form`
+  flex
+  w-4/6
+  items-center
+  justify-end
+`;
+
 type RoomItemProps = {
   title: string;
   roomId: string;
@@ -105,9 +124,16 @@ export const RoomList = () => {
   return (
     <Wrapper>
       <SearchBarContainer>
-        <DropDowns></DropDowns>
-        <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
-        <Shoot></Shoot>
+        <Form>
+          <DropDowns>
+            <option value="제목+설명">제목+설명</option>
+            <option value="방장명">방장명</option>
+          </DropDowns>
+          <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
+          <Shoot>
+            <Img src={Search} alt="" />
+          </Shoot>
+        </Form>
       </SearchBarContainer>
       <MainContainer>
         <LeftContainer>
