@@ -15,6 +15,7 @@ const StyleRoomOutline: styledType = tw.div`
     flex
     justify-center
     h-[95vh]
+    pt-12
 `;
 
 //StyleRoomLayout: 룸의 레이아웃
