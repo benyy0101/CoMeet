@@ -14,12 +14,14 @@ import { ServerDropDownList } from "./ServerDropDownList";
 const StyleNavBar = tw.div`
     bg-[#282828]
     h-12
-    border-black-200
-    border
     text-white
     flex
     items-center
-    
+    fixed
+    top-0
+    w-full
+    z-12
+
     `;
 
 //StyleLogo: 로고 메뉴
