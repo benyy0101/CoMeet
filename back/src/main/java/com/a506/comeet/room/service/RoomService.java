@@ -31,21 +31,25 @@ public class RoomService {
 
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get();
         Room room = Room.builder().
-                manager(memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get()).
+                manager(member).
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
                 constraints(req.getConstraints()).
                 type(req.getType()).link("임시 Link, 추후 구현 필요").build();
 
-        return roomRepository.save(room);
+        Room created = roomRepository.save(room);
+        joinMember(new RoomJoinRequestDto(req.getMangerId()), req.getMangerId(), created.getId());
+
+        return created;
     }
 
     @Transactional
     public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
-        if (room.isDeleted()) return false;
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseGet(null);
+        if (room == null) return false;
         if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
         room.updateRoom(req, memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get());
         try {

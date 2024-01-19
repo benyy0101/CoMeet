@@ -1,5 +1,6 @@
 package com.a506.comeet.room.entity;
 
+import com.a506.comeet.common.BaseEntity;
 import com.a506.comeet.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class RoomMember {
+public class RoomMember extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -40,13 +40,13 @@ public class Room extends BaseEntityWithSoftDelete {
     private String description;
     private String link;
     @Column(name = "room_image")
-    private String roomImage;
+    private String roomImage = "default_room_image_letsgo";
     private String notice;
 
     private int mcount;
-    private int capacity;
+    private int capacity = 8;
     @Column(name = "is_locked")
-    private Boolean isLocked;
+    private Boolean isLocked = Boolean.FALSE;
     private String password;
 
     @Enumerated(EnumType.STRING)

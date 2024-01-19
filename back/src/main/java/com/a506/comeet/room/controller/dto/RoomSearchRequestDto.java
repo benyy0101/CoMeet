@@ -4,6 +4,7 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomOrder;
 import com.a506.comeet.common.enums.RoomSortBy;
 import com.a506.comeet.common.enums.RoomType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Getter
 public class RoomSearchRequestDto {
+    @NotBlank
     @Size(min = 2, max = 10, message = "검색키워드는 2자 이상, 10자 이하여야 합니다.")
     private String searchKeyword;
     private Boolean isLocked;
