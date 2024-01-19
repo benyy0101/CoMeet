@@ -24,9 +24,9 @@ public class BaseEntityWithSoftDelete {
     @Column(name = "is_deleted")
     private boolean isDeleted = Boolean.FALSE;
 
-    // soft delete는 BaseEntity 내에 직접 구현
     public void deleteSoftly() {
         this.isDeleted = Boolean.TRUE;
+        updatedAt = LocalDateTime.now();
     }
 
     public void undoDeletion() {
