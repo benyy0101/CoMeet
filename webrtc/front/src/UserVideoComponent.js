@@ -25,6 +25,7 @@ export default function UserVideoComponent({ streamManager }) {
 const UserVideoContainer = tw.div`
 rounded-lg
 overflow-hidden
+shadow-2xl
 `;
 
 const StreamContainer = tw.div`

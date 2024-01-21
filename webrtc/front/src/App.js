@@ -5,6 +5,19 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import UserVideoComponent from "./UserVideoComponent";
 import tw from "tailwind-styled-components";
 
+import {
+  UserGroupIcon,
+  ArrowRightStartOnRectangleIcon,
+  CameraIcon,
+  XMarkIcon,
+  SpeakerXMarkIcon,
+  SpeakerWaveIcon,
+  VideoCameraSlashIcon,
+  VideoCameraIcon,
+  SignalIcon,
+  SignalSlashIcon,
+} from "@heroicons/react/24/solid";
+
 const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export default function App() {
@@ -20,6 +33,10 @@ export default function App() {
   const [subscribers, setSubscribers] = useState([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
 
+  const [isMuted, setIsMuted] = useState(true);
+  const [isVideoDisabled, setIsVideoDisabled] = useState(true);
+  const [isScreenShared, setIsScreenShared] = useState(false);
+
   const OV = useRef(new OpenVidu());
 
   const moveChannel = (sessionId) => {
@@ -28,9 +45,9 @@ export default function App() {
     joinSession();
   };
 
-  const handleChangeSessionId = useCallback((e) => {
-    setMySessionId(e.target.value);
-  }, []);
+  // const handleChangeSessionId = useCallback((e) => {
+  //   setMySessionId(e.target.value);
+  // }, []);
 
   const handleChangeUserName = useCallback((e) => {
     setMyUserName(e.target.value);
@@ -74,8 +91,8 @@ export default function App() {
           let publisher = await OV.current.initPublisherAsync(undefined, {
             audioSource: undefined,
             videoSource: undefined,
-            publishAudio: true,
-            publishVideo: true,
+            publishAudio: !isMuted,
+            publishVideo: !isVideoDisabled,
             resolution: "640x480",
             frameRate: 30,
             insertMode: "APPEND",
@@ -121,7 +138,7 @@ export default function App() {
     setSession(undefined);
     setSubscribers([]);
     setMySessionId("");
-    setMyUserName("사용자 " + Math.floor(Math.random() * 100));
+    // setMyUserName("사용자 " + Math.floor(Math.random() * 100));
     setMainStreamManager(undefined);
     setPublisher(undefined);
   }, [session]);
@@ -212,6 +229,20 @@ export default function App() {
     return response.data; // The token
   };
 
+  useEffect(() => {
+    if (publisher) {
+      publisher.publishAudio(!isMuted);
+    }
+  }, [isMuted]);
+
+  useEffect(() => {
+    if (publisher) {
+      publisher.publishVideo(!isVideoDisabled);
+    }
+  }, [isVideoDisabled]);
+
+  useEffect(() => {}, [isScreenShared]);
+
   return (
     <Container>
       {isJoined === false ? (
@@ -247,18 +278,16 @@ export default function App() {
             </RoomTitleContainer>
             <RoomButtonContainer>
               <RoomButton
-                type="button"
                 onClick={() => {
                   leaveSession();
                   setIsJoined(false);
                 }}
-                value="나가기"
-              />
-              <RoomButtonContainer
-                type="button"
-                onClick={switchCamera}
-                value="캠전환"
-              />
+              >
+                <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
+              </RoomButton>
+              <RoomButton onClick={switchCamera}>
+                <CameraIcon className="w-8 h-8" />
+              </RoomButton>
             </RoomButtonContainer>
           </RoomHeader>
           <RoomContent>
@@ -269,7 +298,7 @@ export default function App() {
                     moveChannel("channel1");
                   }}
                 >
-                  🧑🏻‍💻
+                  <UserGroupIcon className="text-white w-8 h-8" />
                 </ChannelButton>
                 <ChannelButtonTitle>채널 1</ChannelButtonTitle>
               </ChannelButtonContainer>
@@ -279,7 +308,7 @@ export default function App() {
                     moveChannel("channel2");
                   }}
                 >
-                  🧑🏻‍💻
+                  <UserGroupIcon className="text-white w-8 h-8" />
                 </ChannelButton>
                 <ChannelButtonTitle>채널 2</ChannelButtonTitle>
               </ChannelButtonContainer>
@@ -289,7 +318,7 @@ export default function App() {
                     moveChannel("channel3");
                   }}
                 >
-                  🧑🏻‍💻
+                  <UserGroupIcon className="text-white w-8 h-8" />
                 </ChannelButton>
                 <ChannelButtonTitle>채널 3</ChannelButtonTitle>
               </ChannelButtonContainer>
@@ -297,10 +326,13 @@ export default function App() {
             <ChannelContent>
               {session !== undefined && (
                 <ChannelHeader>
-                  <ChannelTitle>🧑🏻‍💻 {mySessionId}</ChannelTitle>
+                  <ChannelTitle>
+                    <UserGroupIcon className="text-white w-8 h-8 mr-3" />
+                    {mySessionId}
+                  </ChannelTitle>
                   <ChannelHeaderButtonContainer>
                     <ChannelHeaderButton onClick={leaveSession}>
-                      ✕
+                      <XMarkIcon className="text-white w-6 h-6" />
                     </ChannelHeaderButton>
                   </ChannelHeaderButtonContainer>
                 </ChannelHeader>
@@ -333,6 +365,33 @@ export default function App() {
               </VideoContainer>
             </ChannelContent>
           </RoomContent>
+          <ControlPanel>
+            <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+              {isMuted ? (
+                <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
+              ) : (
+                <SpeakerWaveIcon className="w-8 h-8" />
+              )}
+            </ControlPanelButton>
+            <ControlPanelButton
+              onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+            >
+              {isVideoDisabled ? (
+                <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
+              ) : (
+                <VideoCameraIcon className="w-8 h-8" />
+              )}
+            </ControlPanelButton>
+            <ControlPanelButton
+              onClick={() => setIsScreenShared(!isScreenShared)}
+            >
+              {isScreenShared ? (
+                <SignalIcon className="w-8 h-8" />
+              ) : (
+                <SignalSlashIcon className="w-8 h-8 text-red-400" />
+              )}
+            </ControlPanelButton>
+          </ControlPanel>
         </RoomContainer>
       ) : null}
     </Container>
@@ -373,14 +432,16 @@ const UsernameInput = tw.input`
 w-60
 h-10
 rounded-sm
-p-3
 shadow-sm
+text-center
+p-3
 `;
 
 const JoinBtn = tw.input`
 w-60
 h-8
 rounded-sm
+shadow-sm
 bg-slate-200
 `;
 
@@ -389,6 +450,7 @@ w-screen
 h-screen
 flex
 flex-col
+relative
 bg-[#3b3b3b]
 `;
 
@@ -428,13 +490,13 @@ const RoomButtonContainer = tw.div`
 h-full
 flex
 items-center
-space-x-5
+space-x-3
 `;
 
-const RoomButton = tw.input`
+const RoomButton = tw.button`
 cursor-pointer
 text-slate-200
-w-20
+w-10
 h-10
 font-medium
 text-lg
@@ -506,6 +568,7 @@ justify-between
 const ChannelTitle = tw.h1`
 text-slate-100
 text-2xl
+flex
 `;
 
 const ChannelHeaderButtonContainer = tw.div`
@@ -554,4 +617,28 @@ flex
 justify-center
 items-center
 bg-[#333333]
+`;
+
+const ControlPanel = tw.div`
+w-80
+h-16
+bottom-6
+left-1/2
+-translate-x-1/2
+absolute
+rounded-xl
+bg-[#171717]
+shadow-xl
+flex
+items-center
+justify-around
+`;
+
+const ControlPanelButton = tw.button`
+w-10
+text-slate-100
+cursor-pointer
+flex
+justify-center
+items-center
 `;
