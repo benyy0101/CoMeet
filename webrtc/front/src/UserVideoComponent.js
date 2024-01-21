@@ -1,24 +1,46 @@
-import React, { Component } from "react";
+import React from "react";
 import OpenViduVideoComponent from "./OvVideo";
+import tw from "tailwind-styled-components";
 
-export default class UserVideoComponent extends Component {
-  getNicknameTag() {
+export default function UserVideoComponent({ streamManager }) {
+  const getNicknameTag = () => {
     // Gets the nickName of the user
-    return JSON.parse(this.props.streamManager.stream.connection.data).clientData;
-  }
+    return JSON.parse(streamManager.stream.connection.data).clientData;
+  };
 
-  render() {
-    return (
-      <div style={{ width: "500px" }}>
-        {this.props.streamManager !== undefined ? (
-          <div className="streamcomponent">
-            <OpenViduVideoComponent streamManager={this.props.streamManager} />
-            <div>
-              <p>{this.getNicknameTag()}</p>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
+  return (
+    <UserVideoContainer>
+      {streamManager !== undefined ? (
+        <StreamContainer>
+          <OpenViduVideoComponent streamManager={streamManager} />
+          <NickNameTagContainer>
+            <NicknameTag>{getNicknameTag()}</NicknameTag>
+          </NickNameTagContainer>
+        </StreamContainer>
+      ) : null}
+    </UserVideoContainer>
+  );
 }
+
+const UserVideoContainer = tw.div`
+rounded-lg
+overflow-hidden
+`;
+
+const StreamContainer = tw.div`
+relative
+`;
+
+const NickNameTagContainer = tw.div`
+absolute
+left-4
+top-2
+py-1
+px-4
+rounded-xl
+bg-green-500
+`;
+
+const NicknameTag = tw.p`
+text-slate-100
+`;

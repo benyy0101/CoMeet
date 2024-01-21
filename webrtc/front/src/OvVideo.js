@@ -1,24 +1,18 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef } from "react";
+import tw from "tailwind-styled-components";
 
-export default class OpenViduVideoComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.videoRef = React.createRef();
-  }
+export default function OpenViduVideoComponent({ streamManager }) {
+  const videoRef = useRef(React.createRef());
 
-  componentDidUpdate(props) {
-    if (props && !!this.videoRef) {
-      this.props.streamManager.addVideoElement(this.videoRef.current);
+  useEffect(() => {
+    if (streamManager && !!videoRef) {
+      streamManager.addVideoElement(videoRef.current);
     }
-  }
+  }, [streamManager]);
 
-  componentDidMount() {
-    if (this.props && !!this.videoRef) {
-      this.props.streamManager.addVideoElement(this.videoRef.current);
-    }
-  }
-
-  render() {
-    return <video style={{ width: "300px" }} autoPlay={true} ref={this.videoRef} />;
-  }
+  return <StreamVideo autoPlay={true} ref={videoRef} />;
 }
+
+const StreamVideo = tw.video`
+w-78
+`;
