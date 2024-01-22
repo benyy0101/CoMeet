@@ -1,36 +1,31 @@
 package com.a506.comeet.member.service;
 
-import com.a506.comeet.common.enums.RoomConstraints;
-import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.controller.FollowRequestDto;
-import com.a506.comeet.member.controller.FollowerRequestDto;
-import com.a506.comeet.member.controller.FollowingReqeustDto;
-import com.a506.comeet.member.controller.UnfollowRequestDto;
-import com.a506.comeet.member.controller.dto.MemberSimpleResponseDto;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.member.service.FollowService;
+import com.a506.comeet.app.member.controller.FollowRequestDto;
+import com.a506.comeet.app.member.controller.FollowerRequestDto;
+import com.a506.comeet.app.member.controller.FollowingReqeustDto;
+import com.a506.comeet.app.member.controller.UnfollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
+import com.a506.comeet.app.member.entity.Member;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Slice;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Slf4j
 @Transactional
 class FollowServiceTest {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired

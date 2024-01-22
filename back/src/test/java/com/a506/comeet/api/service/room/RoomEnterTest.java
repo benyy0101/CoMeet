@@ -1,13 +1,13 @@
 package com.a506.comeet.api.service.room;
 
+import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.*;
-import com.a506.comeet.room.repository.RoomRepository;
-import com.a506.comeet.room.service.ChannelService;
-import com.a506.comeet.room.service.LoungeService;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.ChannelService;
+import com.a506.comeet.app.room.service.LoungeService;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

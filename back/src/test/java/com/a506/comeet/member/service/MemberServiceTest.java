@@ -1,12 +1,14 @@
 package com.a506.comeet.member.service;
 
+import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.common.enums.MemberFeature;
-import com.a506.comeet.member.controller.dto.MemberDuplicationRequestDto;
-import com.a506.comeet.member.controller.dto.MemberSigninRequestDto;
-import com.a506.comeet.member.controller.dto.MemberUpdateRequestDto;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.member.repository.MemberRepository;
+import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
+import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
+import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 class MemberServiceTest {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired

@@ -2,11 +2,11 @@ package com.a506.comeet.functional;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.room.entity.Room;
-import com.a506.comeet.room.repository.RoomRepository;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
