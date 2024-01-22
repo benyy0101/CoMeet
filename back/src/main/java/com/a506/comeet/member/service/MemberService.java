@@ -1,5 +1,7 @@
 package com.a506.comeet.member.service;
 
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.member.controller.dto.MemberSigninRequestDto;
@@ -27,15 +29,12 @@ public class MemberService {
                 password(req.getPassword()).
                 email(req.getEmail()).
                 nickname(req.getNickname()).build();
-
         return memberRepository.save(member);
     }
 
     @Transactional
     public boolean update(MemberUpdateRequestDto req, String memberId){
-        // 현재 유저 정보가 수정 요청한 멤버와 같은지 확인 로직 필요
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseGet(null);
-        if (member == null) return false;
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.updateMember(req);
         return true;
     }
@@ -46,10 +45,9 @@ public class MemberService {
 
     @Transactional
     public boolean delete(String memberId) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseGet(null);
-        if (member == null) return false;
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.deleteSoftly();
-        member.getRoomMembers().forEach(roomMemberRepository::delete);
+        roomMemberRepository.deleteAll(member.getRoomMembers());
         return true;
     }
 }
