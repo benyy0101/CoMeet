@@ -1,6 +1,9 @@
 package com.a506.comeet.room.service;
 
 import com.a506.comeet.common.enums.RoomType;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.member.repository.MemberRepository;
 import com.a506.comeet.room.controller.dto.*;
@@ -12,11 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +31,7 @@ public class RoomService {
 
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get();
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Room room = Room.builder().
                 manager(member).
                 title(req.getTitle()).
@@ -42,71 +42,66 @@ public class RoomService {
 
         Room created = roomRepository.save(room);
         joinMember(new RoomJoinRequestDto(req.getMangerId()), req.getMangerId(), created.getId());
-
         return created;
     }
 
     @Transactional
-    public boolean updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseGet(null);
-        if (room == null) return false;
-        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
-        room.updateRoom(req, memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).get());
-        try {
-            roomRepository.save(room);
-            return true;
-        } catch (JpaSystemException e){
-            return false;
-        }
-
+    public void updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        authorityValidation(room, reqMemberId);
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        room.updateRoom(req, member);
+        roomRepository.save(room);
     }
 
     @Transactional
-    public boolean deleteRoom(String reqMemberId, Long roomId){
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RuntimeException("Room not found with id: " + roomId));
-        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
+    public void deleteRoom(String reqMemberId, Long roomId) {
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        if (!room.getManager().getMemberId().equals(reqMemberId))
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         room.delete();
-        return true;
     }
 
     @Transactional
-    public boolean joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
-        if (room.getType().equals(RoomType.DISPOSABLE)) return false;
-        if (!room.getManager().getMemberId().equals(reqMemberId)) return false;
+    public void joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        permanentRoomRequestValidation(room);
+        authorityValidation(room, reqMemberId);
 
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).get();
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         RoomMember roomMember = new RoomMember(member, room);
-        if(roomMemberRepository.existsByRoomAndMember(room, member)) return false;
-        try {
-            roomMemberRepository.save(roomMember);
-            roomMember.joinRoom();
-            return true;
-        } catch (JpaSystemException e){
-            return false;
-        }
+        if (roomMemberRepository.existsByRoomAndMember(room, member))
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+        roomMemberRepository.save(roomMember);
+        roomMember.joinRoom();
     }
 
     @Transactional
-    public boolean leaveRoom(String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
-        if (room.getType().equals(RoomType.DISPOSABLE)) return false;
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(reqMemberId).get();
-
-        RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).get();
+    public void leaveRoom(String reqMemberId, long roomId) {
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        permanentRoomRequestValidation(room);
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(reqMemberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         roomMember.leaveRoom();
         roomMemberRepository.delete(roomMember);
-        return true;
     }
 
-    public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto){
+    public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto) {
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
     public RoomResponseDto enterRoom(Long roomId, String memberId) {
-        // 사용자 정보 확인 로직 -> 해당 사용자가 방에 가입되어있는지 확인 -> 던져!
-        roomRepository.findMemberByRoomIdAndMemberId(roomId, memberId).orElseThrow();
+        roomRepository.findMemberByRoomIdAndMemberId(roomId, memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_AUTHORIZATION));
         return roomRepository.enterRoomCustom(roomId);
+    }
+
+    private void authorityValidation(Room room, String reqMemberId) {
+        if (!room.getManager().getMemberId().equals(reqMemberId))
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+    }
+
+    private void permanentRoomRequestValidation(Room room) {
+        if (room.getType().equals(RoomType.DISPOSABLE)) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
     }
 }
