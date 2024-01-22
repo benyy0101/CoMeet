@@ -1,4 +1,10 @@
-import { OpenVidu } from "openvidu-browser";
+import {
+  OpenVidu,
+  Session,
+  Subscriber,
+  Publisher,
+  Device,
+} from "openvidu-browser";
 
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -20,18 +26,22 @@ import {
 
 const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
-export default function App() {
+export default function Channel() {
   const [isJoined, setIsJoined] = useState(false);
 
-  const [mySessionId, setMySessionId] = useState("");
+  const [mySessionId, setMySessionId] = useState<string>("");
   const [myUserName, setMyUserName] = useState(
     `사용자 ${Math.floor(Math.random() * 100)}`
   );
-  const [session, setSession] = useState(undefined);
-  const [mainStreamManager, setMainStreamManager] = useState(undefined);
-  const [publisher, setPublisher] = useState(undefined);
-  const [subscribers, setSubscribers] = useState([]);
-  const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [mainStreamManager, setMainStreamManager] = useState<
+    Publisher | Subscriber | null
+  >(null);
+  const [publisher, setPublisher] = useState<Publisher | null>(null);
+  const [subscribers, setSubscribers] = useState<Subscriber[] | never[]>([]);
+  const [currentVideoDevice, setCurrentVideoDevice] = useState<Device | null>(
+    null
+  );
 
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
@@ -39,7 +49,7 @@ export default function App() {
 
   const OV = useRef(new OpenVidu());
 
-  const moveChannel = (sessionId) => {
+  const moveChannel = (sessionId: string) => {
     leaveSession();
     setMySessionId(sessionId);
     joinSession();
@@ -49,12 +59,15 @@ export default function App() {
   //   setMySessionId(e.target.value);
   // }, []);
 
-  const handleChangeUserName = useCallback((e) => {
-    setMyUserName(e.target.value);
-  }, []);
+  const handleChangeUserName = useCallback(
+    (e: { target: { value: React.SetStateAction<string> } }) => {
+      setMyUserName(e.target.value);
+    },
+    []
+  );
 
   const handleMainVideoStream = useCallback(
-    (stream) => {
+    (stream: Publisher | Subscriber) => {
       if (mainStreamManager !== stream) {
         setMainStreamManager(stream);
       }
@@ -67,7 +80,10 @@ export default function App() {
 
     mySession.on("streamCreated", (event) => {
       const subscriber = mySession.subscribe(event.stream, undefined);
-      setSubscribers((subscribers) => [...subscribers, subscriber]);
+      setSubscribers((subscribers: Subscriber[]) => [
+        ...subscribers,
+        subscriber,
+      ]);
     });
 
     mySession.on("streamDestroyed", (event) => {
@@ -109,14 +125,14 @@ export default function App() {
             .getMediaStream()
             .getVideoTracks()[0]
             .getSettings().deviceId;
-          const currentVideoDevice = videoDevices.find(
+          const currentVideoDevice: any = videoDevices.find(
             (device) => device.deviceId === currentVideoDeviceId
           );
 
           setMainStreamManager(publisher);
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
-        } catch (error) {
+        } catch (error: any) {
           console.log(
             "There was an error connecting to the session:",
             error.code,
@@ -135,12 +151,12 @@ export default function App() {
 
     // Reset all states and OpenVidu object
     OV.current = new OpenVidu();
-    setSession(undefined);
+    setSession(null);
     setSubscribers([]);
     setMySessionId("");
     // setMyUserName("사용자 " + Math.floor(Math.random() * 100));
-    setMainStreamManager(undefined);
-    setPublisher(undefined);
+    setMainStreamManager(null);
+    setPublisher(null);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -152,7 +168,7 @@ export default function App() {
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
-          (device) => device.deviceId !== currentVideoDevice.deviceId
+          (device) => device.deviceId !== currentVideoDevice?.deviceId
         );
 
         if (newVideoDevice.length > 0) {
@@ -164,7 +180,7 @@ export default function App() {
           });
 
           if (session) {
-            await session.unpublish(mainStreamManager);
+            await session.unpublish(publisher!);
             await session.publish(newPublisher);
             setCurrentVideoDevice(newVideoDevice[0]);
             setMainStreamManager(newPublisher);
@@ -177,9 +193,9 @@ export default function App() {
     }
   }, [currentVideoDevice, session, mainStreamManager]);
 
-  const deleteSubscriber = useCallback((streamManager) => {
+  const deleteSubscriber = useCallback((streamManager: Subscriber) => {
     setSubscribers((prevSubscribers) => {
-      const index = prevSubscribers.indexOf(streamManager);
+      const index = prevSubscribers.indexOf(streamManager as never);
       if (index > -1) {
         const newSubscribers = [...prevSubscribers];
         newSubscribers.splice(index, 1);
@@ -191,7 +207,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
+    const handleBeforeUnload = () => {
       leaveSession();
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -207,7 +223,7 @@ export default function App() {
     );
   }, [mySessionId]);
 
-  const createSession = async (sessionId) => {
+  const createSession = async (sessionId: string) => {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "api/sessions",
       { customSessionId: sessionId },
@@ -218,7 +234,7 @@ export default function App() {
     return response.data; // The sessionId
   };
 
-  const createToken = async (sessionId) => {
+  const createToken = async (sessionId: string) => {
     const response = await axios.post(
       APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
       {},
@@ -273,7 +289,7 @@ export default function App() {
     });
 
     if (session) {
-      await session.unpublish(mainStreamManager);
+      await session.unpublish(publisher!);
       await session.publish(publisherScreen);
       setMainStreamManager(publisherScreen);
       setPublisher(publisherScreen);
@@ -293,7 +309,7 @@ export default function App() {
     });
 
     if (session) {
-      await session.unpublish(mainStreamManager);
+      await session.unpublish(publisher!);
       await session.publish(publisher);
       setMainStreamManager(publisher);
       setPublisher(publisher);
@@ -403,7 +419,7 @@ export default function App() {
                   </div>
                 ) : null} */}
                 <GridContainer>
-                  {publisher !== undefined && (
+                  {publisher !== null && (
                     <StreamContainer
                       onClick={() => handleMainVideoStream(publisher)}
                     >
