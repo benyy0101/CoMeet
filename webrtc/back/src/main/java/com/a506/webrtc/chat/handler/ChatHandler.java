@@ -1,4 +1,4 @@
-package com.a506.comeet.chat.handler;
+package com.a506.webrtc.chat.handler;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;

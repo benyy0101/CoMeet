@@ -1,6 +1,7 @@
-package com.a506.comeet.chat.config;
+package com.a506.webrtc.chat.config;
 
-import com.a506.comeet.chat.handler.ChatHandler;
+import com.a506.webrtc.chat.handler.ChatHandler;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

@@ -17,6 +17,7 @@ import {
   SignalIcon,
   SignalSlashIcon,
 } from "@heroicons/react/24/solid";
+import Chat from "./Chat";
 
 const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
@@ -230,10 +231,12 @@ export default function App() {
   }, [isVideoDisabled]);
 
   useEffect(() => {
-    if (isScreenShared) {
-      startScreenShare();
-    } else {
-      stopScreenShare();
+    if (session) { 
+      if (isScreenShared) {
+        startScreenShare();
+      } else {
+        stopScreenShare();
+      }
     }
   }, [isScreenShared]);
 
@@ -383,7 +386,7 @@ export default function App() {
                 </ChannelHeader>
               )}
               <VideoContainer>
-                {session !== undefined && <ChatContainer>채팅</ChatContainer>}
+                {session !== undefined && <ChatContainer><Chat username={myUserName} /></ChatContainer>}
                 {/* 클릭시 나오는 확대 영상 */}
                 {/* {mainStreamManager !== undefined ? (
                   <div id="main-video" className="col-md-6">
