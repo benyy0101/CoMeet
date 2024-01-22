@@ -76,7 +76,6 @@ class RoomServiceTest {
 
     @Test
     @Transactional
-    @Rollback(value = false)
     void createTest(){
         Member manager = Member.builder().memberId("멤버1").build();
         em.persist(manager);
@@ -91,7 +90,7 @@ class RoomServiceTest {
         Room room = roomService.createRoom(req);
         assertThat(room.getTitle()).isEqualTo(req.getTitle());
         log.info("room id : {}", room.getId());
-        assertThat(roomMemberRepository.findByRoomAndMember(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
+        assertThat(roomMemberRepository.findByRoomAndMemberAndIsDeletedFalse(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
     }
 
     @Test

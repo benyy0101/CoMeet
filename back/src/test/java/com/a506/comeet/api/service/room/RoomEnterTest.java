@@ -9,6 +9,7 @@ import com.a506.comeet.room.service.ChannelService;
 import com.a506.comeet.room.service.LoungeService;
 import com.a506.comeet.room.service.RoomService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +22,10 @@ import java.util.List;
 
 @SpringBootTest
 @Slf4j
+@Transactional
 public class RoomEnterTest {
 
-    @Autowired
+    @PersistenceContext
     EntityManager em;
 
     @Autowired
@@ -38,26 +40,60 @@ public class RoomEnterTest {
     @Autowired
     RoomRepository roomRepository;
 
+    @BeforeEach
+    void init(){
+        Long roomId = 3L;
+        int N = 3;
+        int M = 2;
+        //given
+        for (int i = 1; i <= N; i++) {
+            em.persist(Member.builder().memberId("멤버"+i).nickname("닉네임"+i).build());
+        }
+        em.flush();
+        em.clear();
+
+        //방 생성
+        for (int i = 1; i <= N; i++) {
+            RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
+                    mangerId("멤버"+i).
+                    title("title"+i).description("설명"+i).capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
+                    build();
+            roomService.createRoom(reqR);
+        }
+
+        // 방 가입
+        for (int i = 1; i <= N; i++) {
+            if ((long) i == roomId) continue;
+            RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
+            roomService.joinMember(req, "멤버" + 3, roomId);
+        }
+
+        for (int i = 1; i <= M; i++) {
+            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
+            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
+        }
+
+    }
 
     @Test
     @Transactional
     void roomEnterTest(){
         Long roomId = 3L;
         RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
-//        log.info("멤버 수 : {}", res.getMembers().size());
-//        for (RoomMemberResponseDto member : res.getMembers()) {
-//            log.info("멤버 닉네임 : {}", member.getNickname());
-//        }
-//
-//        log.info("채널 수 : {}", res.getChannels().size());
-//        for (RoomChannelResponseDto channel : res.getChannels()) {
-//            log.info("채널 명 : {}", channel.getName());
-//        }
-//
-//        log.info("라운지 수 : {}", res.getLounges().size());
-//        for (RoomLoungeResponseDto lounge : res.getLounges()) {
-//            log.info("라운지 명 : {}", lounge.getName());
-//        }
+        log.info("멤버 수 : {}", res.getMembers().size());
+        for (RoomMemberResponseDto member : res.getMembers()) {
+            log.info("멤버 닉네임 : {}", member.getNickname());
+        }
+
+        log.info("채널 수 : {}", res.getChannels().size());
+        for (RoomChannelResponseDto channel : res.getChannels()) {
+            log.info("채널 명 : {}", channel.getName());
+        }
+
+        log.info("라운지 수 : {}", res.getLounges().size());
+        for (RoomLoungeResponseDto lounge : res.getLounges()) {
+            log.info("라운지 명 : {}", lounge.getName());
+        }
 
     }
 
@@ -66,60 +102,22 @@ public class RoomEnterTest {
     void roomEnterTestOneQuery(){
         Long roomId = 3L;
         List<RoomResponseDto> response = roomRepository.enterRoomCustomOneQuery(roomId);
-//        for (RoomResponseDto res : response) {
-//            log.info("멤버 수 : {}", res.getMembers().size());
-//            for (RoomMemberResponseDto member : res.getMembers()) {
-//                log.info("멤버 닉네임 : {}", member.getNickname());
-//            }
-//
-//            log.info("채널 수 : {}", res.getChannels().size());
-//            for (RoomChannelResponseDto channel : res.getChannels()) {
-//                log.info("채널 명 : {}", channel.getName());
-//            }
-//
-//            log.info("라운지 수 : {}", res.getLounges().size());
-//            for (RoomLoungeResponseDto lounge : res.getLounges()) {
-//                log.info("라운지 명 : {}", lounge.getName());
-//            }
-//        }
+        for (RoomResponseDto res : response) {
+            log.info("멤버 수 : {}", res.getMembers().size());
+            for (RoomMemberResponseDto member : res.getMembers()) {
+                log.info("멤버 닉네임 : {}", member.getNickname());
+            }
+
+            log.info("채널 수 : {}", res.getChannels().size());
+            for (RoomChannelResponseDto channel : res.getChannels()) {
+                log.info("채널 명 : {}", channel.getName());
+            }
+
+            log.info("라운지 수 : {}", res.getLounges().size());
+            for (RoomLoungeResponseDto lounge : res.getLounges()) {
+                log.info("라운지 명 : {}", lounge.getName());
+            }
+        }
     }
 
-
-
-    @Test
-    @Transactional
-    void initTest(){
-
-        Long roomId = 3L;
-        //given
-        // Manager 멤버 생성
-        Member manager = Member.builder().memberId("매니저").build();
-        em.persist(manager);
-        for (int i = 1; i <= 100; i++) {
-            em.persist(Member.builder().memberId("멤버"+i).nickname("닉네임"+i).build());
-        }
-        em.flush();
-        em.clear();
-
-        //방 생성
-        for (int i = 1; i < 100; i++) {
-            RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                    mangerId("멤버"+i).
-                    title("title"+i).description("설명"+i).capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
-                    build();
-            roomService.createRoom(reqR);
-        }
-
-
-        for (int i = 1; i <= 100; i++) {
-            RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
-            roomService.joinMember(req, "멤버" + roomId, roomId);
-        }
-
-        for (int i = 0; i < 20; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
-            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
-        }
-
-    }
 }
