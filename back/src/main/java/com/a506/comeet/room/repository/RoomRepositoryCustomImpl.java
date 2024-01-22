@@ -14,10 +14,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.a506.comeet.room.entity.QRoom.room;
 import static com.a506.comeet.member.entity.QMember.member;
@@ -61,6 +58,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
+
     @Override
     public RoomResponseDto enterRoomCustom(Long roomId) {
         RoomResponseDto res = jpaQueryFactory.select(
@@ -88,6 +86,66 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         res.setMembers(getMembers(roomId));
         res.setLounges(getLounges(roomId));
         res.setChannels(getChannels(roomId));
+        return res;
+    }
+
+    @Override
+    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId){
+        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
+                .from(room)
+                .innerJoin(member).on(room.manager.eq(member))
+                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
+    }
+
+    @Override
+    public List<RoomResponseDto> enterRoomCustomOneQuery(Long roomId) {
+        List<RoomResponseDto> res = jpaQueryFactory.select(
+                        Projections.constructor(RoomResponseDto.class,
+                                room.id,
+                                member.memberId,
+                                member.nickname,
+                                room.title,
+                                room.description,
+                                room.link,
+                                room.roomImage,
+                                room.mcount,
+                                room.capacity,
+                                room.isLocked,
+                                room.password,
+                                room.constraints,
+                                room.type,
+                                Projections.list(
+                                        Projections.constructor(
+                                                RoomMemberResponseDto.class,
+                                                roomMember.member.memberId,
+                                                roomMember.member.nickname,
+                                                roomMember.member.profileImage,
+                                                roomMember.member.feature
+                                        )
+                                ),
+                                Projections.list(
+                                        Projections.constructor(
+                                                RoomChannelResponseDto.class,
+                                                channel.id,
+                                                channel.name
+                                        )
+                                ),
+                                Projections.list(
+                                        Projections.constructor(
+                                                RoomLoungeResponseDto.class,
+                                                lounge.id,
+                                                lounge.name
+                                        )
+                                )
+                        )
+                ).
+                from(room).
+                leftJoin(room.roomMembers, roomMember).
+                leftJoin(roomMember.member, member).
+                leftJoin(room.lounges, lounge).
+                leftJoin(room.channels, channel).
+                where(room.id.eq(roomId)).fetch();
+
         return res;
     }
 

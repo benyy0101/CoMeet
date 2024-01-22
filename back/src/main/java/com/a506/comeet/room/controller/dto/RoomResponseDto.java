@@ -48,4 +48,23 @@ public class RoomResponseDto {
         this.constraints = constraints;
         this.type = type;
     }
+
+    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, List<RoomMemberResponseDto> members, List<RoomChannelResponseDto> channels, List<RoomLoungeResponseDto> lounges) {
+        this.roomId = roomId;
+        this.managerId = managerId;
+        this.managerNickname = managerNickname;
+        this.description = description;
+        this.link = link;
+        this.room_image = room_image;
+        this.notice = notice;
+        this.mcount = mcount;
+        this.capacity = capacity;
+        this.isLocked = isLocked;
+        this.password = password;
+        this.constraints = constraints;
+        this.type = type;
+        this.members = members;
+        this.channels = channels;
+        this.lounges = lounges;
+    }
 }
