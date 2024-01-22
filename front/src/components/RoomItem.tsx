@@ -64,6 +64,22 @@ const CountTitle = tw.div`text-gray-800 mb-2 text-sm`;
 
 const Count = tw.div`text-gray-500`;
 
+const KeywordContainer = tw.div`
+flex
+gap-2
+`;
+
+const Keyword = tw.div`
+  border-2
+  border-gray-300
+  rounded-md
+  p-1
+  px-2
+  text-sm
+  shadow-md
+  bg-gray-700
+  text-white
+`;
 const OptionContainer = tw.div`
 flex
 flex-col
@@ -90,9 +106,13 @@ function RoomItem(props: RoomItemProps) {
         </InfoContainer>
       </LeftContainer>
       <RightContainer>
+        <KeywordContainer>
+          <Keyword>C++</Keyword>
+          <Keyword>JAVA</Keyword>
+          <Keyword>PYTHON</Keyword>
+        </KeywordContainer>
         <OptionContainer>
           <Img src={Video} alt="video" />
-          <Img src={Screen} alt="screen" />
           <Img src={NoAudio} alt="audio" />
         </OptionContainer>
         <CountContainer>

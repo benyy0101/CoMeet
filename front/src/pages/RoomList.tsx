@@ -2,6 +2,8 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomItem";
 import Search from "../assets/img/search.svg";
+import FilterImg from "../assets/img/filter.png";
+import FilterMenu from "../components/FilterMenu";
 
 const Items = tw(RoomItem)`
 flex
@@ -66,10 +68,24 @@ w-4
 `;
 const Form = tw.form`
   flex
-  w-4/6
+  w-5/6
   items-center
   justify-end
 `;
+
+const FilterIcon = tw.button`
+  rounded-full
+  w-4
+`;
+
+const Filter = tw.div`
+  w-1/6
+  flex
+  justify-start
+  ml-5
+  items-start
+  relative
+  `;
 
 type RoomItemProps = {
   title: string;
@@ -86,15 +102,21 @@ type RoomItemProps = {
 
 export const RoomList = () => {
   const [roomList, setRoomList] = React.useState<RoomItemProps[]>([]);
+  const [filterActive, setFilterActive] = React.useState<boolean>(false);
   const [activeCat, setActiveCat] = React.useState<string>("전체");
   const activeHandler = (value: string) => {
     setActiveCat(value);
   };
+
+  const filterHandler = () => {
+    setFilterActive(!filterActive);
+  };
+
   React.useEffect(() => {
     // 일단 더미 데이터로 대체
     const fetchedTemps: RoomItemProps[] = [
       {
-        title: "방제목 좀 길게 해보겠습니다.",
+        title: "방제목2",
         roomId: "1",
         managerId: "방장아이디임 닉네임임?",
         description: "방설명이 짧으니가 뭐가 이상하네요",
@@ -106,7 +128,7 @@ export const RoomList = () => {
         constraint: "B",
       },
       {
-        title: "방제목 일단 생각나는대로 적어보겠습니다.",
+        title: "방제목2",
         roomId: "2",
         managerId: "zeroGun",
         description: "방설명도 좀 긴게 좋을것 같습니다.",
@@ -134,6 +156,12 @@ export const RoomList = () => {
             <Img src={Search} alt="" />
           </Shoot>
         </Form>
+        <Filter>
+          <FilterIcon onClick={filterHandler}>
+            <img src={FilterImg} alt="" />
+          </FilterIcon>
+          {filterActive && <FilterMenu />}
+        </Filter>
       </SearchBarContainer>
       <MainContainer>
         <LeftContainer>
