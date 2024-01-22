@@ -1,5 +1,8 @@
 package com.a506.comeet.room.service;
 
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.room.controller.dto.LoungeCreateRequestDto;
 import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
 import com.a506.comeet.room.entity.Lounge;
@@ -25,11 +28,13 @@ public class LoungeService {
     @Transactional
     public Lounge createLounge(LoungeCreateRequestDto req) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).get();
+        // throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+
+        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         // 이름 중복 확인 로직
         for(Lounge l : room.getLounges()){
-            if (l.getName().equals(req.getName())) return null;
+            if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
 
         Lounge lounge = Lounge.builder().name(req.getName()).room(room).build();
@@ -39,23 +44,21 @@ public class LoungeService {
 
 
     @Transactional
-    public boolean updateLounge(LoungeUpdateRequestDto req, Long loungeId) {
+    public void updateLounge(LoungeUpdateRequestDto req, Long loungeId) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RuntimeException("Lounge not found with id: " + loungeId));
+        Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 이름 중복 확인 로직
         for(Lounge l : lounge.getRoom().getLounges()){
-            if (l.getName().equals(req.getName())) return false;
+            if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
         lounge.update(req);
         loungeRepository.save(lounge);
-        return true;
     }
 
     @Transactional
-    public boolean deleteLounge(long loungeId) {
+    public void deleteLounge(long loungeId) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Lounge lounge = loungeRepository.findByIdAndIsDeletedFalse(loungeId).orElseThrow(() -> new RuntimeException("Lounge not found with id: " + loungeId));
+        Lounge lounge = loungeRepository.findByIdAndIsDeletedFalse(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         lounge.delete();
-        return true;
     }
 }

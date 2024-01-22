@@ -1,5 +1,8 @@
 package com.a506.comeet.room.service;
 
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.room.controller.dto.ChannelUpdateRequestDto;
 import com.a506.comeet.room.entity.Channel;
@@ -25,13 +28,13 @@ public class ChannelService {
     @Transactional
     public Channel createChannel(ChannelCreateRequestDto req) {
         // 사용자가 방장인지 확인하는 로직 필요
+        // throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
 
-        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).get();
+        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 이름 중복 확인 로직
         for(Channel c : room.getChannels()){
-            if (c.getName().equals(req.getName())) return null;
+            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
-
         Channel channel = Channel.builder().name(req.getName()).room(room).build();
         room.addChannel(channel);
         return channelRepository.save(channel);
@@ -39,24 +42,22 @@ public class ChannelService {
 
 
     @Transactional
-    public boolean updateChannel(ChannelUpdateRequestDto req, Long channelId) {
+    public void updateChannel(ChannelUpdateRequestDto req, Long channelId) {
         // 사용자가 방장인지 확인하는 로직 필요
 
-        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RuntimeException("Channel not found with id: " + channelId));
+        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 이름 중복 확인 로직
         for(Channel c : channel.getRoom().getChannels()){
-            if (c.getName().equals(req.getName())) return false;
+            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
         channel.update(req);
         channelRepository.save(channel);
-        return true;
     }
 
     @Transactional
-    public boolean deleteChannel(long channelId) {
+    public void deleteChannel(long channelId) {
         // 사용자가 방장인지 확인하는 로직 필요
-        Channel channel = channelRepository.findByIdAndIsDeletedFalse(channelId).orElseThrow(() -> new RuntimeException("Channel not found with id: " + channelId));
+        Channel channel = channelRepository.findByIdAndIsDeletedFalse(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         channel.delete();
-        return true;
     }
 }

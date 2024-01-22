@@ -18,27 +18,21 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody RoomCreateRequestDto req) {
         // 요청자 정보 가져오기
         req.setMangerId("요청자_임시매니저"); // 요청자 정보를 manager로 설정
         Room created = roomService.createRoom(req);
-        if (created == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+
     @PatchMapping("{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable long roomId){
         // 요청자 정보 가져오기
         String reqMemberId = "요청자";
-        if (!roomService.updateRoom(req, reqMemberId, roomId)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        roomService.updateRoom(req, reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -46,20 +40,16 @@ public class RoomController {
     public ResponseEntity<Void> delete(@PathVariable long roomId){
         // 요청자 정보 가져오기
         String reqMemberId = "요청자";
-        if(!roomService.deleteRoom(reqMemberId, roomId))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        roomService.deleteRoom(reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+
     @PostMapping("{roomId}/join")
     public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable long roomId){
         // 요청자 정보
         String memberId = "방장";
-        if(!roomService.joinMember(req, memberId, roomId)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        roomService.joinMember(req, memberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -71,8 +61,7 @@ public class RoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+
     @GetMapping("")
     public ResponseEntity<Slice<RoomSearchResponseDto>> search(@Valid RoomSearchRequestDto req){
         Slice<RoomSearchResponseDto> res = roomService.searchRoom(req);
@@ -82,11 +71,10 @@ public class RoomController {
 
     // 수정 필요합니다
     @GetMapping("/{roomId}")
-    public ResponseEntity enter(@PathVariable Long roomId){
+    public ResponseEntity<?> enter(@PathVariable Long roomId){
         // 현재 유저 정보 가져오기
         String memberId = "멤버아이디";
         RoomResponseDto res = roomService.enterRoom(roomId, memberId);
-        if (res == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<RoomResponseDto>(res, HttpStatus.OK);
     }
 
