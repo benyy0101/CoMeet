@@ -3,6 +3,9 @@ package com.a506.comeet.room.entity;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
+import com.a506.comeet.keyword.entity.Keyword;
+import com.a506.comeet.keyword.entity.MemberKeyword;
+import com.a506.comeet.keyword.entity.RoomKeyword;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
 import jakarta.persistence.*;
@@ -28,13 +31,16 @@ public class Room extends BaseEntityWithSoftDelete {
     private Member manager;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Lounge> lounges = new ArrayList<>();;
+    private List<Lounge> lounges = new ArrayList<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-    private List<Channel> channels = new ArrayList<>();;
+    private List<Channel> channels = new ArrayList<>();
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomMember> roomMembers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    private List<RoomKeyword> roomKeywords = new ArrayList<>();
 
     private String title;
     private String description;
@@ -53,6 +59,8 @@ public class Room extends BaseEntityWithSoftDelete {
     private RoomConstraints constraints;
     @Enumerated(EnumType.STRING)
     private RoomType type;
+
+
 
     @Builder
     public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
@@ -95,12 +103,20 @@ public class Room extends BaseEntityWithSoftDelete {
         this.lounges.add(lounge);
     }
 
+    public void addKeyword(RoomKeyword roomKeyword){
+        this.roomKeywords.add(roomKeyword);
+    }
+
     public void delete(){
         deleteSoftly();
         this.getLounges().forEach(Lounge::deleteSoftly);
         this.getChannels().forEach(Channel::deleteSoftly);
+        this.getRoomKeywords().forEach(RoomKeyword::deleteSoftly);
+        this.getRoomMembers().forEach(RoomMember::deleteSoftly);
         this.lounges = new ArrayList<>();
         this.channels = new ArrayList<>();
+        this.roomKeywords = new ArrayList<>();
+        this.roomMembers = new ArrayList<>();
     }
 
 }

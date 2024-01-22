@@ -29,6 +29,7 @@ public class Channel extends BaseEntityWithSoftDelete {
     public void update(ChannelUpdateRequestDto req){
         this.name = req.getName();
     }
+
     public void delete(){
         deleteSoftly();
         room.getChannels().remove(this);

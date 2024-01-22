@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
 
-    Optional<RoomMember> findByRoomAndMember(Room room, Member member);
+    Optional<RoomMember> findByRoomAndMemberAndIsDeletedFalse(Room room, Member member);
 
     boolean existsByRoomAndMember(Room room, Member member);
 }

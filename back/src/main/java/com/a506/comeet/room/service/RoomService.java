@@ -4,6 +4,10 @@ import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.keyword.entity.Keyword;
+import com.a506.comeet.keyword.entity.RoomKeyword;
+import com.a506.comeet.keyword.repository.KeywordRepository;
+import com.a506.comeet.keyword.repository.RoomKeywordRepository;
 import com.a506.comeet.member.entity.Member;
 import com.a506.comeet.member.repository.MemberRepository;
 import com.a506.comeet.room.controller.dto.*;
@@ -18,6 +22,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,6 +37,8 @@ public class RoomService {
     private final MemberRepository memberRepository;
 
     private final RoomMemberRepository roomMemberRepository;
+    private final RoomKeywordRepository roomKeywordRepository;
+    private final KeywordRepository keywordRepository;
 
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
@@ -41,7 +52,13 @@ public class RoomService {
                 type(req.getType()).link("임시 Link, 추후 구현 필요").build();
 
         Room created = roomRepository.save(room);
-        joinMember(new RoomJoinRequestDto(req.getMangerId()), req.getMangerId(), created.getId());
+        for (Long keywordId : req.getKeywordIds()) {
+            Keyword keyword = keywordRepository.findByIdAndIsDeletedFalse(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+            RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(created, keyword));
+            room.addKeyword(roomKeyword);
+        }
+        if (req.getType().equals(RoomType.PERMANENT))
+            joinMemberInnerLogic(member, created);
         return created;
     }
 
@@ -51,7 +68,7 @@ public class RoomService {
         authorityValidation(room, reqMemberId);
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         room.updateRoom(req, member);
-        roomRepository.save(room);
+        updateRoomKeywords(req, room);
     }
 
     @Transactional
@@ -67,14 +84,10 @@ public class RoomService {
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         permanentRoomRequestValidation(room);
         authorityValidation(room, reqMemberId);
-
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        RoomMember roomMember = new RoomMember(member, room);
-        if (roomMemberRepository.existsByRoomAndMember(room, member))
-            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
-        roomMemberRepository.save(roomMember);
-        roomMember.joinRoom();
+        // 실제 멤버 조인 로직
+        joinMemberInnerLogic(member, room);
     }
 
     @Transactional
@@ -82,9 +95,8 @@ public class RoomService {
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         permanentRoomRequestValidation(room);
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(reqMemberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        RoomMember roomMember = roomMemberRepository.findByRoomAndMemberAndIsDeletedFalse(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         roomMember.leaveRoom();
-        roomMemberRepository.delete(roomMember);
     }
 
     public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto) {
@@ -103,5 +115,28 @@ public class RoomService {
 
     private void permanentRoomRequestValidation(Room room) {
         if (room.getType().equals(RoomType.DISPOSABLE)) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
+    }
+
+    private void updateRoomKeywords(RoomUpdateRequestDto req, Room room){
+        Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
+        Set<Long> oldSet = room.getRoomKeywords().stream().map(RoomKeyword::getId).collect(Collectors.toSet());
+        Set<Long> pureNewSet = new HashSet<>(newSet);
+        pureNewSet.removeAll(oldSet);
+        for (Long id : pureNewSet) {
+            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))));
+        }
+        Set<Long> pureOldSet = new HashSet<>(oldSet);
+        pureOldSet.removeAll(newSet);
+        for (Long id : pureOldSet) {
+            roomKeywordRepository.deleteByRoomAndKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND)));
+        }
+    }
+
+    private void joinMemberInnerLogic(Member member, Room room){
+        RoomMember roomMember = new RoomMember(member, room);
+        if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+        roomMemberRepository.save(roomMember);
+        roomMember.joinRoom();
     }
 }

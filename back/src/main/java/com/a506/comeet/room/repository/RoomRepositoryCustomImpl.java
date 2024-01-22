@@ -1,5 +1,6 @@
 package com.a506.comeet.room.repository;
 
+import com.a506.comeet.keyword.entity.Keyword;
 import com.a506.comeet.room.controller.dto.*;
 import com.a506.comeet.room.entity.Room;
 import com.querydsl.core.BooleanBuilder;
@@ -21,6 +22,8 @@ import static com.a506.comeet.member.entity.QMember.member;
 import static com.a506.comeet.room.entity.QRoomMember.roomMember;
 import static com.a506.comeet.room.entity.QChannel.channel;
 import static com.a506.comeet.room.entity.QLounge.lounge;
+import static com.a506.comeet.keyword.entity.QKeyword.keyword;
+import static com.a506.comeet.keyword.entity.QRoomKeyword.roomKeyword;
 
 @RequiredArgsConstructor
 @Repository
@@ -45,10 +48,12 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         room.constraints,
                         room.type)).
                 from(room)
-                .innerJoin(member)
-                .on(room.manager.memberId.eq(member.memberId))
-                .where(makeBooleanBuilder(req)).
-                orderBy(makeOrder(req)).
+                .innerJoin(member).on(room.manager.memberId.eq(member.memberId))
+                .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
+                .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
+                .where(makeBooleanBuilder(req))
+                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
+                .orderBy(makeOrder(req)).
                 offset(pageable.getOffset()).
                 limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
                         fetch();
@@ -235,6 +240,9 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
             builder.and(room.constraints.in(req.getConstraints()));
         if (req.getType() != null)
             builder.and(room.type.eq(req.getType()));
+        if (req.getKeywordIds() != null && req.getKeywordIds().size() > 0){
+            builder.and(roomKeyword.keyword.id.in(req.getKeywordIds()));
+        }
 
         return builder;
     }

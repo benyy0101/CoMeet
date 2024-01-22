@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
+import java.util.List;
+
 @Getter
 public class RoomUpdateRequestDto {
     @Setter
@@ -32,9 +35,11 @@ public class RoomUpdateRequestDto {
     @Size(min = 4, max = 8, message = "비밀번호는 4자 이상, 8자 이하여야 합니다.")
     private String password;
     private RoomConstraints constraints;
+    private List<Long> keywordIds;
 
     @Builder
-    public RoomUpdateRequestDto(String mangerId, String title, String description, String roomImage, String notice, int capacity, Boolean isLocked, String password, RoomConstraints constraints) {
+
+    public RoomUpdateRequestDto(String mangerId, String title, String description, String roomImage, String notice, int capacity, Boolean isLocked, String password, RoomConstraints constraints, List<Long> keywordIds) {
         this.mangerId = mangerId;
         this.title = title;
         this.description = description;
@@ -44,5 +49,6 @@ public class RoomUpdateRequestDto {
         this.isLocked = isLocked;
         this.password = password;
         this.constraints = constraints;
+        this.keywordIds = (keywordIds != null) ? keywordIds : Collections.emptyList();
     }
 }

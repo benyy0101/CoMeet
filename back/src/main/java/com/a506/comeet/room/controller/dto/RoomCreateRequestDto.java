@@ -13,6 +13,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
+import java.util.List;
+
 @Getter
 public class RoomCreateRequestDto {
 
@@ -28,14 +31,16 @@ public class RoomCreateRequestDto {
     private int capacity;
     private RoomConstraints constraints;
     private RoomType type;
+    private List<Long> keywordIds;
 
     @Builder
-    public RoomCreateRequestDto(String mangerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type) {
+    public RoomCreateRequestDto(String mangerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, List<Long> keywordIds) {
         this.mangerId = mangerId;
         this.title = title;
         this.description = description;
         this.capacity = capacity;
         this.constraints = constraints;
         this.type = type;
+        this.keywordIds = (keywordIds != null) ? keywordIds : Collections.emptyList();
     }
 }

@@ -2,6 +2,7 @@ package com.a506.comeet.member.entity;
 
 import com.a506.comeet.common.enums.MemberAuthority;
 import com.a506.comeet.common.enums.MemberFeature;
+import com.a506.comeet.keyword.entity.MemberKeyword;
 import com.a506.comeet.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
@@ -45,6 +46,9 @@ public class Member extends BaseEntityWithSoftDelete {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<RoomMember> roomMembers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<MemberKeyword> keywords = new ArrayList<>();
+
     @Builder
     public Member(String memberId, String name, String password, String nickname, String email) {
         this.memberId = memberId;
@@ -73,7 +77,9 @@ public class Member extends BaseEntityWithSoftDelete {
         roomMembers.removeIf(rm -> rm.getMember().getMemberId().equals(roomMember.getMember().memberId) && rm.getRoom().getId().equals(roomMember.getRoom().getId()));
     }
 
-
+    public void delete(){
+        deleteSoftly();
+    }
 
 
 }

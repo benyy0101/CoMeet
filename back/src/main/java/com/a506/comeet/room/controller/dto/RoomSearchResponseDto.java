@@ -23,7 +23,6 @@ public class RoomSearchResponseDto {
     private String password;
     private RoomConstraints constraints;
     private RoomType type;
-
     @QueryProjection
     public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String link, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
         this.roomId = roomId;

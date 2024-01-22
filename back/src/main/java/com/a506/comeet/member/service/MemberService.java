@@ -46,7 +46,7 @@ public class MemberService {
     @Transactional
     public boolean delete(String memberId) {
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        member.deleteSoftly();
+        member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
         return true;
     }

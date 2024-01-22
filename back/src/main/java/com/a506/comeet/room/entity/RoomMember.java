@@ -1,6 +1,7 @@
 package com.a506.comeet.room.entity;
 
 import com.a506.comeet.common.BaseEntity;
+import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class RoomMember extends BaseEntity {
+public class RoomMember extends BaseEntityWithSoftDelete {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,6 +36,7 @@ public class RoomMember extends BaseEntity {
     }
 
     public void leaveRoom(){
+        deleteSoftly();
         this.member.removeRoomMember(this);
         this.room.removeRoomMember(this);
     }
