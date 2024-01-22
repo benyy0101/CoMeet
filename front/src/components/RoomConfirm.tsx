@@ -1,11 +1,21 @@
 import React from "react";
 import tw from "tailwind-styled-components";
+import { RoomItemProps } from "../types";
+
+const Wrapper = tw.div`
+    flex
+    flex-col  
+    justify-between
+    items-center 
+    gap-5
+    rounded-md 
+    cursor-pointer
+`;
 
 const Thumbnail = tw.img`
     w-1/2
     h-1/2
-    rounded-md
-    border
+    rounded-full  
 `;
 
 const Start = tw.button`
@@ -20,18 +30,20 @@ const Start = tw.button`
     hover:bg-blue-600
 `;
 
-function RoomConfirm() {
+const Title = tw.h1`
+    text-2xl
+    font-bold
+    mb-2
+`;
+function RoomConfirm(props: RoomItemProps) {
   return (
-    <div>
-      <h1> 방제목방제목방제목</h1>
-      <Thumbnail
-        src="https://picsum.photos/200"
-        alt="room thumbnail"
-      ></Thumbnail>
-      <p> B형 알고리즘을 위한 방입니다.</p>
-      <div> 30 / 45</div>
+    <Wrapper>
+      <Title> {props.title}</Title>
+      <Thumbnail src={props.roomImage} alt="room thumbnail"></Thumbnail>
+      <p> {props.description}</p>
+      <div> 30 / {props.maxcount}</div>
       <Start>입장하기</Start>
-    </div>
+    </Wrapper>
   );
 }
 
