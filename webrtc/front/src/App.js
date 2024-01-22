@@ -290,7 +290,7 @@ export default function App() {
 
   return (
     <Container>
-      {isJoined === false ? (
+      {isJoined === false && (
         <JoinContainer>
           <JoinForm
             onSubmit={() => {
@@ -307,9 +307,9 @@ export default function App() {
             <JoinBtn name="commit" type="submit" value="입장" />
           </JoinForm>
         </JoinContainer>
-      ) : null}
+      )}
 
-      {isJoined === true ? (
+      {isJoined === true && (
         <RoomContainer>
           <RoomHeader>
             <RoomTitleContainer>
@@ -391,11 +391,11 @@ export default function App() {
                   </div>
                 ) : null} */}
                 <GridContainer>
-                  {publisher !== undefined ? (
+                  {publisher !== undefined && (
                     <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
                       <UserVideoComponent streamManager={publisher} />
                     </StreamContainer>
-                  ) : null}
+                  )}
                   {subscribers.map((sub, i) => (
                     <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                       <UserVideoComponent streamManager={sub} />
@@ -405,31 +405,33 @@ export default function App() {
               </VideoContainer>
             </ChannelContent>
           </RoomContent>
-          <ControlPanel>
-            <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
-              {isMuted ? (
-                <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
-              ) : (
-                <SpeakerWaveIcon className="w-8 h-8" />
-              )}
-            </ControlPanelButton>
-            <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
-              {isVideoDisabled ? (
-                <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
-              ) : (
-                <VideoCameraIcon className="w-8 h-8" />
-              )}
-            </ControlPanelButton>
-            <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
-              {isScreenShared ? (
-                <SignalIcon className="w-8 h-8" />
-              ) : (
-                <SignalSlashIcon className="w-8 h-8 text-red-400" />
-              )}
-            </ControlPanelButton>
-          </ControlPanel>
+          {session !== undefined && (
+            <ControlPanel>
+              <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+                {isMuted ? (
+                  <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
+                ) : (
+                  <SpeakerWaveIcon className="w-8 h-8" />
+                )}
+              </ControlPanelButton>
+              <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+                {isVideoDisabled ? (
+                  <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
+                ) : (
+                  <VideoCameraIcon className="w-8 h-8" />
+                )}
+              </ControlPanelButton>
+              <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
+                {isScreenShared ? (
+                  <SignalIcon className="w-8 h-8" />
+                ) : (
+                  <SignalSlashIcon className="w-8 h-8 text-red-400" />
+                )}
+              </ControlPanelButton>
+            </ControlPanel>
+          )}
         </RoomContainer>
-      ) : null}
+      )}
     </Container>
   );
 }
