@@ -38,7 +38,7 @@ const StyleMemberTitle = tw.h1`
 
 //StyleMemberList: 프로필사진, 닉네임, 시간이 나타나는 멤버들의 목록
 const StyleMemberList = tw.div`
-    m-3
+    mx-3
 
 `;
 
