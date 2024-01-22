@@ -47,17 +47,17 @@ dependencies {
 
 }
 
-//// querydsl 저장 위치
-//def querydslSrcDir = 'src/main/generated'
-//tasks.withType(JavaCompile) {
-//	options.generatedSourceOutputDirectory = file(querydslSrcDir)
-//}
+// querydsl 저장 위치
+def querydslSrcDir = 'src/main/generated'
+tasks.withType(JavaCompile) {
+	options.generatedSourceOutputDirectory = file(querydslSrcDir)
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
 
-//clean {
-//	// clean 실행 시 생성된 QClass 삭제
-//	delete file('src/main/generated')
-//}
+clean {
+	// clean 실행 시 생성된 QClass 삭제
+	delete file('src/main/generated')
+}
