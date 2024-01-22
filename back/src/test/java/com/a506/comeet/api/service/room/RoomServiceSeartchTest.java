@@ -78,7 +78,7 @@ public class RoomServiceSeartchTest {
                 constraints(List.of(RoomConstraints.MICOFF, RoomConstraints.FREE)).
                 sortBy(RoomSortBy.capacity).isDesc(true).
                 keywordIds(List.of(1L,2L)).
-                pageNo(0).pageSize(50).
+                pageNo(0).pageSize(20).
                 build();
 
         Slice<RoomSearchResponseDto> list = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
@@ -89,6 +89,6 @@ public class RoomServiceSeartchTest {
             log.info("capacity = {}",roomSearchResponseDto.getCapacity());
             log.info("type = {}",roomSearchResponseDto.getType());
         }
-        Assertions.assertThat(list.getContent().size()).isEqualTo(50);
+        Assertions.assertThat(list.getContent().size()).isEqualTo(20);
     }
 }
