@@ -81,9 +81,11 @@ public class RoomController {
 
 
     // 수정 필요합니다
-    @GetMapping("{roomId}")
-    public ResponseEntity search(@PathVariable Long roomId){
-        RoomResponseDto res = roomService.enterRoom(roomId).get(0);
+    @GetMapping("/{roomId}")
+    public ResponseEntity enter(@PathVariable Long roomId){
+        // 현재 유저 정보 가져오기
+        String memberId = "멤버아이디";
+        RoomResponseDto res = roomService.enterRoom(roomId, memberId);
         if (res == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<RoomResponseDto>(res, HttpStatus.OK);
     }

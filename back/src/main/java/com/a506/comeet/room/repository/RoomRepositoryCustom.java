@@ -7,8 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RoomRepositoryCustom {
     Slice<RoomSearchResponseDto> findRoomCustom(RoomSearchRequestDto req, Pageable pageable);
-    List<RoomResponseDto> enterRoomCustom(Long roomId);
+
+    RoomResponseDto enterRoomCustom(Long roomId);
+
+    List<RoomResponseDto> enterRoomCustomOneQuery(Long roomId);
+
+    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId);
 }

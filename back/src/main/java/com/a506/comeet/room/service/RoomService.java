@@ -104,7 +104,9 @@ public class RoomService {
         return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
-    public List<RoomResponseDto> enterRoom(Long roomId) {
+    public RoomResponseDto enterRoom(Long roomId, String memberId) {
+        // 사용자 정보 확인 로직 -> 해당 사용자가 방에 가입되어있는지 확인 -> 던져!
+        roomRepository.findMemberByRoomIdAndMemberId(roomId, memberId).orElseThrow();
         return roomRepository.enterRoomCustom(roomId);
     }
 }
