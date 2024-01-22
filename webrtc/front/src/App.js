@@ -24,9 +24,7 @@ export default function App() {
   const [isJoined, setIsJoined] = useState(false);
 
   const [mySessionId, setMySessionId] = useState("");
-  const [myUserName, setMyUserName] = useState(
-    `사용자 ${Math.floor(Math.random() * 100)}`
-  );
+  const [myUserName, setMyUserName] = useState(`사용자 ${Math.floor(Math.random() * 100)}`);
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
@@ -102,9 +100,7 @@ export default function App() {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -117,11 +113,7 @@ export default function App() {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -146,9 +138,7 @@ export default function App() {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -202,9 +192,7 @@ export default function App() {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   const createSession = async (sessionId) => {
@@ -241,7 +229,64 @@ export default function App() {
     }
   }, [isVideoDisabled]);
 
-  useEffect(() => {}, [isScreenShared]);
+  useEffect(() => {
+    if (isScreenShared) {
+      startScreenShare();
+    } else {
+      stopScreenShare();
+    }
+  }, [isScreenShared]);
+
+  const startScreenShare = async () => {
+    let publisherScreen = await OV.current.initPublisherAsync(undefined, {
+      videoSource: "screen",
+    });
+
+    publisherScreen.once("accessAllowed", (event) => {
+      publisherScreen.stream
+        .getMediaStream()
+        .getVideoTracks()[0]
+        .addEventListener("ended", () => {
+          console.log("사용자가 공유 중지 버튼을 눌렀습니다.");
+          setIsScreenShared(false);
+        });
+    });
+
+    publisherScreen.on("videoElementCreated", (event) => {
+      setIsMuted(true);
+    });
+
+    publisherScreen.once("accessDenied", (event) => {
+      console.error("화면공유가 거절되었습니다.");
+    });
+
+    if (session) {
+      await session.unpublish(mainStreamManager);
+      await session.publish(publisherScreen);
+      setMainStreamManager(publisherScreen);
+      setPublisher(publisherScreen);
+    }
+  };
+
+  const stopScreenShare = async () => {
+    let publisher = await OV.current.initPublisherAsync(undefined, {
+      audioSource: undefined,
+      videoSource: undefined,
+      publishAudio: !isMuted,
+      publishVideo: !isVideoDisabled,
+      resolution: "640x480",
+      frameRate: 30,
+      insertMode: "APPEND",
+      mirror: false,
+    });
+
+    if (session) {
+      await session.unpublish(mainStreamManager);
+      await session.publish(publisher);
+      setMainStreamManager(publisher);
+      setPublisher(publisher);
+    }
+  };
 
   return (
     <Container>
@@ -347,17 +392,12 @@ export default function App() {
                 ) : null} */}
                 <GridContainer>
                   {publisher !== undefined ? (
-                    <StreamContainer
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
+                    <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
                       <UserVideoComponent streamManager={publisher} />
                     </StreamContainer>
                   ) : null}
                   {subscribers.map((sub, i) => (
-                    <StreamContainer
-                      key={sub.id}
-                      onClick={() => handleMainVideoStream(sub)}
-                    >
+                    <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                       <UserVideoComponent streamManager={sub} />
                     </StreamContainer>
                   ))}
@@ -373,18 +413,14 @@ export default function App() {
                 <SpeakerWaveIcon className="w-8 h-8" />
               )}
             </ControlPanelButton>
-            <ControlPanelButton
-              onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-            >
+            <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
               {isVideoDisabled ? (
                 <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
               ) : (
                 <VideoCameraIcon className="w-8 h-8" />
               )}
             </ControlPanelButton>
-            <ControlPanelButton
-              onClick={() => setIsScreenShared(!isScreenShared)}
-            >
+            <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
               {isScreenShared ? (
                 <SignalIcon className="w-8 h-8" />
               ) : (
