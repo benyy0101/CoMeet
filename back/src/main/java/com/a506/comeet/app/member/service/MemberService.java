@@ -33,10 +33,9 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean update(MemberUpdateRequestDto req, String memberId){
+    public void update(MemberUpdateRequestDto req, String memberId){
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.updateMember(req);
-        return true;
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req){
@@ -44,10 +43,9 @@ public class MemberService {
     }
 
     @Transactional
-    public boolean delete(String memberId) {
+    public void delete(String memberId) {
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
-        return true;
     }
 }

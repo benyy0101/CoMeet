@@ -1,5 +1,6 @@
 package com.a506.comeet.app.member.entity;
 
+import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.common.enums.MemberAuthority;
 import com.a506.comeet.common.enums.MemberFeature;
 import com.a506.comeet.app.keyword.entity.MemberKeyword;
@@ -47,6 +48,9 @@ public class Member extends BaseEntityWithSoftDelete {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<MemberKeyword> keywords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Til> tils = new ArrayList<>();
 
     @Builder
     public Member(String memberId, String name, String password, String nickname, String email) {
