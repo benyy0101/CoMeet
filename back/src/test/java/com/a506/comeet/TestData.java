@@ -59,7 +59,7 @@ public class TestData {
     @Rollback(value = false)
     void init() {
         em.clear();
-        int N = 10000;
+        int N = 1000;
         for (int i = 1; i <= N; i++) {
             em.persist(Member.builder().memberId("멤버" + i).build());
         }
@@ -84,36 +84,36 @@ public class TestData {
     @Rollback(value = false)
     void init2(){
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                mangerId("멤버10000").
+                mangerId("멤버1000").
                 title("title").description("설명").capacity(1000).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
-        roomService.createRoom(reqR);
+        Long roomId = roomService.createRoom(reqR).getId();
 
         for (int i = 1; i <= 999; i++) {
             RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
-            roomService.joinMember(req, "멤버10000", 1L);
+            roomService.joinMember(req, "멤버1000", roomId);
         }
 
         for (int i = 1; i <= 20; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(1L, "채널명"+i));
-            loungeService.createLounge(new LoungeCreateRequestDto(1L, "라운지명"+i));
+            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
+            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
         }
     }
 
     @Test
     @Rollback(value = false)
     void init3(){
-        keywordRepository.save(new Keyword("자바"));
-        keywordRepository.save(new Keyword("파이썬"));
-        keywordRepository.save(new Keyword("자바스크립트"));
+        Long keywordId1 = keywordRepository.save(new Keyword("자바")).getId();
+        Long keywordId2 = keywordRepository.save(new Keyword("파이썬")).getId();
+        Long keywordId3 = keywordRepository.save(new Keyword("자바스크립트")).getId();
         keywordRepository.save(new Keyword("고"));
         keywordRepository.save(new Keyword("레츠고"));
 
         //방 생성
         for (int i = 1; i <= 1000; i++) {
             RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                    mangerId("멤버10000").
-                    title("title"+i).description("설명"+i).capacity(9).constraints(RoomConstraints.FREE).keywordIds(List.of(1L, 2L, 3L)).type(RoomType.PERMANENT).
+                    mangerId("멤버1000").
+                    title("title"+i).description("설명"+i).capacity(9).constraints(RoomConstraints.FREE).keywordIds(List.of(keywordId1, keywordId2, keywordId3)).type(RoomType.PERMANENT).
                     build();
             roomService.createRoom(reqR);
         }
