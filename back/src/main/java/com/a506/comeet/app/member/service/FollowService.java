@@ -44,10 +44,10 @@ public class FollowService {
     }
 
     public Slice<MemberSimpleResponseDto> getFollower(FollowerRequestDto req, String memberId){
-        return followRepository.getFollowers(PageRequest.of(req.getPageNo(), req.getPageSize()), memberId);
+        return followRepository.getFollowers(PageRequest.of(req.getPageNo(), req.getPageSize()), memberId, req.getPrevMemberId());
     }
 
     public Slice<MemberSimpleResponseDto> getFollowing(FollowingReqeustDto req, String memberId){
-        return followRepository.getFollowings(PageRequest.of(req.getPageNo(), req.getPageSize()), memberId);
+        return followRepository.getFollowings(PageRequest.of(req.getPageNo(), req.getPageSize()), memberId, req.getPrevMemberId());
     }
 }

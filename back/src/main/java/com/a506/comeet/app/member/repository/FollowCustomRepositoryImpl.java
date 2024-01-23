@@ -3,6 +3,7 @@ package com.a506.comeet.app.member.repository;
 
 import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<MemberSimpleResponseDto> getFollowers(Pageable pageable, String memberId) {
+    public Slice<MemberSimpleResponseDto> getFollowers(Pageable pageable, String memberId, String prevMemberId) {
         List<MemberSimpleResponseDto> content = jpaQueryFactory.select(Projections.constructor(MemberSimpleResponseDto.class,
                 member.memberId,
                 member.nickname,
@@ -32,7 +33,9 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
                 )).from(follow)
                 .join(member)
                 .on(follow.from.eq(member))
-                .where(follow.to.memberId.eq(memberId))
+                .where( gtMemberId(memberId),
+                        follow.to.memberId.eq(memberId)
+                )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
@@ -43,7 +46,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
     }
 
     @Override
-    public Slice<MemberSimpleResponseDto> getFollowings(Pageable pageable, String memberId) {
+    public Slice<MemberSimpleResponseDto> getFollowings(Pageable pageable, String memberId, String prevMemberId) {
         List<MemberSimpleResponseDto> content = jpaQueryFactory.select(Projections.constructor(MemberSimpleResponseDto.class,
                         member.memberId,
                         member.nickname,
@@ -52,7 +55,8 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
                 )).from(follow)
                 .join(member)
                 .on(follow.to.eq(member))
-                .where(follow.from.memberId.eq(memberId))
+                .where( gtMemberId(memberId),
+                        follow.from.memberId.eq(memberId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
@@ -60,5 +64,10 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
         boolean hasNext = content.size() > pageable.getPageSize(); // 뒤에 더 있는지 확인
         content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    private BooleanExpression gtMemberId(String prevMemberId) {
+        if (prevMemberId == null) return null;
+        return member.memberId.gt(prevMemberId);
     }
 }
