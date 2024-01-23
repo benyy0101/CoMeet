@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoomRepositoryCustom {
-    Slice<RoomSearchResponseDto> findRoomCustom(RoomSearchRequestDto req, Pageable pageable);
+    Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable);
 
     RoomResponseDto enterRoomCustom(Long roomId);
 

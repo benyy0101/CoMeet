@@ -99,7 +99,7 @@ public class RoomService {
     }
 
     public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto) {
-        return roomRepository.findRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+        return roomRepository.searchRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
     public RoomResponseDto enterRoom(Long roomId, String memberId) {

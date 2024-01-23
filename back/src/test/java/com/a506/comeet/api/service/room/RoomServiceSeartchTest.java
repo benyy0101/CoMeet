@@ -83,7 +83,7 @@ public class RoomServiceSeartchTest {
                 pageNo(0).pageSize(20).
                 build();
 
-        Slice<RoomSearchResponseDto> list = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+        Slice<RoomSearchResponseDto> list = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
         for (RoomSearchResponseDto roomSearchResponseDto : list) {
             log.info("roomId = {}",roomSearchResponseDto.getRoomId());
             log.info("managerNickname = {}",roomSearchResponseDto.getManagerNickname());
@@ -94,34 +94,33 @@ public class RoomServiceSeartchTest {
         Assertions.assertThat(list.getContent().size()).isEqualTo(20);
     }
 
-    @Test
-    @Transactional
-    void roomSearchVs(){
-        Long srt = System.currentTimeMillis();
-        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
-                searchKeyword("title").
-                maxCapacity(1000).
-                minCapacity(4).
-                pageNo(99).pageSize(10).
-                build();
-        Slice<RoomSearchResponseDto> legacy = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
-        log.info("legacy : {}",System.currentTimeMillis() - srt);
-        assertThat(legacy.getContent().size()).isEqualTo(10);
-        log.info("{}", legacy.getContent().get(9).getRoomId());
-
-        Long srt2 = System.currentTimeMillis();
-        RoomSearchRequestDto req2 = RoomSearchRequestDto.builder().
-                searchKeyword("title").
-                maxCapacity(1000).
-                minCapacity(4).
-                pageNo(99).pageSize(10).
-                prevRoomId(20L).
-                build();
-        Slice<RoomSearchResponseDto> noOffset = roomRepository.findRoomCustom(req2, PageRequest.of(req2.getPageNo(), req2.getPageSize()));
-        log.info("noOffset : {}",System.currentTimeMillis() - srt2);
-        assertThat(noOffset.getContent().size()).isEqualTo(10);
-        log.info("{}", noOffset.getContent().get(9).getRoomId());
-
-
-    }
+    // 정렬 조건이 pk가 아니라서 no offset을 사용할 수 없다
+//    @Test
+//    @Transactional
+//    void roomSearchVs(){
+//        Long srt = System.currentTimeMillis();
+//        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
+//                searchKeyword("title").
+//                maxCapacity(1000).
+//                minCapacity(4).
+//                pageNo(99).pageSize(10).sortBy(RoomSortBy.capacity).isDesc(false).
+//                build();
+//        Slice<RoomSearchResponseDto> legacy = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+//        log.info("legacy : {}",System.currentTimeMillis() - srt);
+//        assertThat(legacy.getContent().size()).isEqualTo(10);
+//        log.info("{}", legacy.getContent().get(0).getRoomId());
+//
+//        Long srt2 = System.currentTimeMillis();
+//        RoomSearchRequestDto req2 = RoomSearchRequestDto.builder().
+//                searchKeyword("title").
+//                maxCapacity(1000).
+//                minCapacity(4).
+//                pageNo(0).pageSize(10).
+//                prevRoomId(990L).
+//                build();
+//        Slice<RoomSearchResponseDto> noOffset = roomRepository.searchRoomCustom(req2, PageRequest.of(req2.getPageNo(), req2.getPageSize()));
+//        log.info("noOffset : {}",System.currentTimeMillis() - srt2);
+//        assertThat(noOffset.getContent().size()).isEqualTo(10);
+//        log.info("{}", noOffset.getContent().get(0).getRoomId());
+//    }
 }
