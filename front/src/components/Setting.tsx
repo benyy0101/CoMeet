@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useEffect } from "react";
+import React, { ChangeEventHandler } from "react";
 
 import tw from "tailwind-styled-components";
 
@@ -6,6 +6,7 @@ import VideoBlack from "../assets/img/video-black.svg";
 import MicMute from "../assets/img/mic-mute.svg";
 import LockSvg from "../assets/img/lock-svg.svg";
 import Unlock from "../assets/img/unlock.svg";
+import Search from "../assets/img/search.svg";
 
 //css
 
@@ -28,7 +29,7 @@ const SettingContainer = tw.div`
 const SettingCore = tw.div`
     flex
     bg-[#EDEDED]
-    rounded-lg
+    rounded-xl
     p-3
 `;
 
@@ -36,7 +37,7 @@ const SettingCore = tw.div`
 const SettingButton = tw.button`
     flex
     bg-[#EDEDED]
-    rounded-lg
+    rounded-xl
     p-3
     w-full
     items-center
@@ -77,9 +78,22 @@ const MicSelect = tw.select`
 
 //SettingImg: 이미지
 const SettingImg = tw.img`
-    w-6
-    h-6
+    w-5
+    h-5
     mr-3
+`;
+
+const LockButton = tw.button`
+  flex
+  text-black
+  mx-3
+`;
+
+const LockInput = tw.input`
+w-[30%]
+text-black
+bg-gray-300
+text-center
 `;
 
 //CountRange: 최대 인원 바
@@ -90,6 +104,65 @@ w-[90%]
 const CountMaxNumber = tw.p`
 text-black
 ml-2
+`;
+
+const SearchKeyword = tw.div`
+relative
+flex w-full
+
+`;
+
+const SearchInput = tw.input`
+relative
+m-0
+block
+min-w-0
+flex-auto
+rounded
+border
+border-solid
+border-neutral-300
+bg-transparent
+bg-clip-padding
+px-3
+py-[0.25rem]
+text-base
+font-normal
+leading-[1.6]
+text-neutral-700
+outline-none
+transition
+duration-200
+ease-in-out
+focus:z-[3]
+focus:border-primary
+focus:text-neutral-700
+focus:shadow-[inset_0_0_0_1px_rgb(59,113,202)]
+focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200 dark:focus:border-primary
+`;
+
+//저장버튼
+const SaveButton = tw.button`
+w-full
+
+text-white
+bg-gradient-to-r
+from-purple-500
+to-pink-500
+hover:bg-gradient-to-l
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
+font-medium
+rounded-lg
+text-sm
+px-5
+py-2.5
+text-center
+me-2
+mb-2
+mt-3
 `;
 
 export const Setting = () => {
@@ -103,10 +176,12 @@ export const Setting = () => {
   const [isLock, setIsLock] = React.useState<boolean>(false);
 
   //lockPwd: 방 잠금시 패스워드
-  const [lockPwd, setLockPwd] = React.useState<string>("0000");
+  const [lockPwd, setLockPwd] = React.useState<string>("");
 
   //maxCount: 최대 인원
   const [maxCount, setMaxCount] = React.useState<number>(30);
+
+  const [keyword, setKeyword] = React.useState<string>("");
 
   const handleVideoSelect: React.ChangeEventHandler<HTMLSelectElement> =
     function (e) {
@@ -119,11 +194,31 @@ export const Setting = () => {
     };
 
   const handleIsLock = function () {
-    setIsLock(true);
+    setIsLock(!isLock);
+  };
+
+  const handleLockPwd = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLockPwd(e.target.value);
   };
 
   const handlermaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMaxCount(Number(e.target.value));
+  };
+
+  const handleKeyword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.target.value);
+  };
+
+  const handleTmpCheck = function () {
+    console.log("video :" + videoOn);
+    console.log("micMute :" + micMuteOn);
+    console.log("잠금 유무 :" + isLock);
+    console.log("패스워드:" + lockPwd);
+    console.log("최대인원:" + maxCount);
+  };
+
+  const handleTmpCheck2 = function () {
+    console.log("키워드 검색: " + keyword);
   };
 
   return (
@@ -152,10 +247,20 @@ export const Setting = () => {
       {/* 방 잠금 설정 */}
       <SettingContainer>
         <Title>방 잠금 설정</Title>
-        <SettingButton>
-          <SettingImg src={Unlock} />
-          잠금 안 함
-        </SettingButton>
+        {isLock ? (
+          <SettingCore>
+            <LockButton onClick={handleIsLock}>
+              <SettingImg src={LockSvg} />
+              비밀번호 설정
+            </LockButton>
+            <LockInput type="text" value={lockPwd} onChange={handleLockPwd} />
+          </SettingCore>
+        ) : (
+          <SettingButton onClick={handleIsLock}>
+            <SettingImg src={Unlock} />
+            잠금 안 함
+          </SettingButton>
+        )}
       </SettingContainer>
 
       {/* 방 최대 인원수 설정 */}
@@ -173,14 +278,29 @@ export const Setting = () => {
       </SettingContainer>
 
       {/* 방 키워드 설정 */}
-      <div>
+      <SettingContainer>
         <Title>방 키워드 설정</Title>
-        <SettingButton>
-          <p>검색</p>
-        </SettingButton>
-      </div>
+        <SettingCore>
+          <SearchKeyword>
+            <SearchInput
+              type="search"
+              placeholder="검색"
+              value={keyword}
+              onChange={handleKeyword}
+            />
+            <button onClick={handleTmpCheck2}>
+              <SettingImg src={Search} className="ml-2" />
+            </button>
+          </SearchKeyword>
+        </SettingCore>
+      </SettingContainer>
 
-      <button>완료</button>
+      {/* 저장 버튼 */}
+      <div className="flex justify-end">
+        <SaveButton type="button" onClick={handleTmpCheck}>
+          저장
+        </SaveButton>
+      </div>
     </SettingAll>
   );
 };
