@@ -3,9 +3,7 @@ package com.a506.comeet.app.room.repository;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
@@ -34,7 +32,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<RoomSearchResponseDto> findRoomCustom(RoomSearchRequestDto req, Pageable pageable) {
+    public Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable) {
         List<RoomSearchResponseDto> content = jpaQueryFactory.select(Projections.constructor(RoomSearchResponseDto.class,
                         room.id,
                         member.memberId,
@@ -54,17 +52,18 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
                 .where(
-                        ltRoomId(req.getPrevRoomId()),
                         eqKeyword(req.getSearchKeyword()),
                         isLocked(req.getIsLocked()),
                         eqConstraints(req.getConstraints()),
                         eqKeywordIds(req.getKeywordIds()),
                         eqType(req.getType()),
                         btwMcount(req.getMinMcount(), req.getMaxMcount()),
-                        btwCapacity(req.getMinCapacity(), req.getMaxCapacity()))
+                        btwCapacity(req.getMinCapacity(), req.getMaxCapacity())
+                        )
 //                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
-                .orderBy(makeOrder(req)).
-                limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
+                .orderBy(makeOrder(req))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
                         fetch();
 
         boolean hasNext = content.size() > pageable.getPageSize(); // 뒤에 더 있는지 확인
@@ -280,12 +279,5 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if(keywordIds == null || keywordIds.isEmpty()) return null;
         return roomKeyword.keyword.id.in(keywordIds);
     }
-
-    private BooleanExpression ltRoomId(Long prevRoomId) {
-        if (prevRoomId == null) return null;
-        return room.id.lt(prevRoomId);
-    }
-
-
 
 }
