@@ -3,6 +3,14 @@ server:
   ssl:
     enabled: false
 
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: chatdb
+
 # openvidu
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
+
