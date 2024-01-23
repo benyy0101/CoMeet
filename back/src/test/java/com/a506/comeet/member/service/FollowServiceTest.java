@@ -16,6 +16,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.Rollback;
@@ -121,17 +122,23 @@ class FollowServiceTest {
     @Test
     @Transactional
     void noOffset(){
+        // memberId가 멤버99가 멤버 989보다 뒤에있다. 그러나 이건 제대로 된 결과이다! PK 기준으로 정렬하는 것은 가능하다
         Long srt = System.currentTimeMillis();
-        Slice<MemberSimpleResponseDto> legacy = followService.getFollower(FollowerRequestDto.builder().pageNo(98).pageSize(100).build(), "멤버10000");
+
+        FollowerRequestDto req = FollowerRequestDto.builder().pageNo(98).pageSize(10).build();
+        Slice<MemberSimpleResponseDto> legacy =
+                followRepository.getFollowersLegacy(PageRequest.of(req.getPageNo(), req.getPageSize()), "멤버1000", req.getPrevMemberId());
         log.info("legacy : {}",System.currentTimeMillis() - srt);
-        log.info("{}", legacy.getContent().get(99).getMemberId());
-        assertThat(legacy.getContent().size()).isEqualTo(100);
+        log.info("{}", legacy.getContent().get(9).getMemberId());
+        assertThat(legacy.getContent().size()).isEqualTo(10);
 
         Long srt2 = System.currentTimeMillis();
-        Slice<MemberSimpleResponseDto> noOffset = followService.getFollower(FollowerRequestDto.builder().pageNo(98).pageSize(100).prevMemberId("멤버9801").build(), "멤버10000");
+        Slice<MemberSimpleResponseDto> noOffset =
+                followService.getFollower(
+                        FollowerRequestDto.builder().pageNo(0).pageSize(10).prevMemberId("멤버990").build(), "멤버1000");
         log.info("noOffset : {}",System.currentTimeMillis() - srt2);
-        log.info("{}", noOffset.getContent().get(99).getMemberId());
-        assertThat(noOffset.getContent().size()).isEqualTo(100);
+        log.info("{}", noOffset.getContent().get(0).getMemberId());
+        assertThat(noOffset.getContent().size()).isEqualTo(10);
     }
 
 
