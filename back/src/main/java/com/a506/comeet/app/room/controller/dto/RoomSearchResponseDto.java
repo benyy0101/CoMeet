@@ -6,6 +6,8 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 public class RoomSearchResponseDto {
@@ -23,8 +25,10 @@ public class RoomSearchResponseDto {
     private String password;
     private RoomConstraints constraints;
     private RoomType type;
+    private LocalDateTime createdAt;
+
     @QueryProjection
-    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String link, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
+    public RoomSearchResponseDto(Long roomId, String managerId, String managerNickname, String title, String description, String link, String roomImage, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, LocalDateTime createdAt) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
@@ -38,5 +42,6 @@ public class RoomSearchResponseDto {
         this.password = password;
         this.constraints = constraints;
         this.type = type;
+        this.createdAt = createdAt;
     }
 }

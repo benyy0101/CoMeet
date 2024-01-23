@@ -34,8 +34,10 @@ public class RoomSearchRequestDto {
     @NotNull
     private Integer pageSize;
 
+    private Long prevRoomId;
+
     @Builder
-    public RoomSearchRequestDto(String searchKeyword, Boolean isLocked, Integer minMcount, Integer maxMcount, Integer minCapacity, Integer maxCapacity, List<Long> keywordIds, List<RoomConstraints> constraints, RoomType type, RoomSortBy sortBy, Boolean isDesc, Integer pageNo, Integer pageSize) {
+    public RoomSearchRequestDto(String searchKeyword, Boolean isLocked, Integer minMcount, Integer maxMcount, Integer minCapacity, Integer maxCapacity, List<Long> keywordIds, List<RoomConstraints> constraints, RoomType type, RoomSortBy sortBy, Boolean isDesc, Integer pageNo, Integer pageSize, Long prevRoomId) {
         this.searchKeyword = searchKeyword;
         this.isLocked = isLocked;
         this.minMcount = minMcount;
@@ -49,5 +51,6 @@ public class RoomSearchRequestDto {
         this.isDesc = isDesc;
         this.pageNo = pageNo;
         this.pageSize = pageSize;
+        this.prevRoomId = prevRoomId;
     }
 }

@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Slf4j
 public class RoomServiceSeartchTest {
@@ -90,5 +92,36 @@ public class RoomServiceSeartchTest {
             log.info("type = {}",roomSearchResponseDto.getType());
         }
         Assertions.assertThat(list.getContent().size()).isEqualTo(20);
+    }
+
+    @Test
+    @Transactional
+    void roomSearchVs(){
+        Long srt = System.currentTimeMillis();
+        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
+                searchKeyword("title").
+                maxCapacity(1000).
+                minCapacity(4).
+                pageNo(99).pageSize(10).
+                build();
+        Slice<RoomSearchResponseDto> legacy = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+        log.info("legacy : {}",System.currentTimeMillis() - srt);
+        assertThat(legacy.getContent().size()).isEqualTo(10);
+        log.info("{}", legacy.getContent().get(9).getRoomId());
+
+        Long srt2 = System.currentTimeMillis();
+        RoomSearchRequestDto req2 = RoomSearchRequestDto.builder().
+                searchKeyword("title").
+                maxCapacity(1000).
+                minCapacity(4).
+                pageNo(99).pageSize(10).
+                prevRoomId(20L).
+                build();
+        Slice<RoomSearchResponseDto> noOffset = roomRepository.findRoomCustom(req2, PageRequest.of(req2.getPageNo(), req2.getPageSize()));
+        log.info("noOffset : {}",System.currentTimeMillis() - srt2);
+        assertThat(noOffset.getContent().size()).isEqualTo(10);
+        log.info("{}", noOffset.getContent().get(9).getRoomId());
+
+
     }
 }

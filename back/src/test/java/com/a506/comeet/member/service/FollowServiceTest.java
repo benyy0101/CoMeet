@@ -16,6 +16,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,11 +122,16 @@ class FollowServiceTest {
     @Transactional
     void noOffset(){
         Long srt = System.currentTimeMillis();
-        followService.getFollower(FollowerRequestDto.builder().pageNo(100).pageSize(100).build(), "멤버10000");
+        Slice<MemberSimpleResponseDto> legacy = followService.getFollower(FollowerRequestDto.builder().pageNo(98).pageSize(100).build(), "멤버10000");
         log.info("legacy : {}",System.currentTimeMillis() - srt);
+        log.info("{}", legacy.getContent().get(99).getMemberId());
+        assertThat(legacy.getContent().size()).isEqualTo(100);
+
         Long srt2 = System.currentTimeMillis();
-        followService.getFollower(FollowerRequestDto.builder().pageNo(100).pageSize(100).prevMemberId("멤버9901").build(), "멤버10000");
+        Slice<MemberSimpleResponseDto> noOffset = followService.getFollower(FollowerRequestDto.builder().pageNo(98).pageSize(100).prevMemberId("멤버9801").build(), "멤버10000");
         log.info("noOffset : {}",System.currentTimeMillis() - srt2);
+        log.info("{}", noOffset.getContent().get(99).getMemberId());
+        assertThat(noOffset.getContent().size()).isEqualTo(100);
     }
 
 

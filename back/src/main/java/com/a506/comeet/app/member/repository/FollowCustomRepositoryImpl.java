@@ -33,10 +33,9 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
                 )).from(follow)
                 .join(member)
                 .on(follow.from.eq(member))
-                .where( gtMemberId(memberId),
+                .where( ltMemberId(prevMemberId),
                         follow.to.memberId.eq(memberId)
                 )
-                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
 
@@ -55,9 +54,8 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
                 )).from(follow)
                 .join(member)
                 .on(follow.to.eq(member))
-                .where( gtMemberId(memberId),
+                .where( ltMemberId(prevMemberId),
                         follow.from.memberId.eq(memberId))
-                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .fetch();
 
@@ -66,8 +64,8 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    private BooleanExpression gtMemberId(String prevMemberId) {
+    private BooleanExpression ltMemberId(String prevMemberId) {
         if (prevMemberId == null) return null;
-        return member.memberId.gt(prevMemberId);
+        return member.memberId.lt(prevMemberId);
     }
 }

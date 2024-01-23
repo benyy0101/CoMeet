@@ -5,6 +5,7 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
@@ -47,12 +48,13 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         room.isLocked,
                         room.password,
                         room.constraints,
-                        room.type)).distinct().
+                        room.type, room.createdAt)).distinct().
                 from(room)
                 .innerJoin(member).on(room.manager.memberId.eq(member.memberId))
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
                 .where(
+                        ltRoomId(req.getPrevRoomId()),
                         eqKeyword(req.getSearchKeyword()),
                         isLocked(req.getIsLocked()),
                         eqConstraints(req.getConstraints()),
@@ -62,7 +64,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         btwCapacity(req.getMinCapacity(), req.getMaxCapacity()))
 //                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
                 .orderBy(makeOrder(req)).
-                offset(pageable.getOffset()).
                 limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
                         fetch();
 
@@ -70,7 +71,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
         return new SliceImpl<>(content, pageable, hasNext);
     }
-
 
 
     @Override
@@ -103,13 +103,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
-    @Override
-    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId){
-        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
-                .from(room)
-                .innerJoin(member).on(room.manager.eq(member))
-                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
-    }
 
     @Override
     public List<RoomResponseDto> enterRoomCustomOneQuery(Long roomId) {
@@ -163,6 +156,14 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
+    @Override
+    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId){
+        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
+                .from(room)
+                .innerJoin(member).on(room.manager.eq(member))
+                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
+    }
+
     private List<RoomMemberResponseDto> getMembers(Long roomId) {
         return jpaQueryFactory.select(
                         Projections.constructor(RoomMemberResponseDto.class,
@@ -199,26 +200,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 where(room.id.eq(roomId)).fetch();
     }
 
-    private List<RoomResponseDto> mergeResults(List<Tuple> results) {
-        Map<Long, RoomResponseDto> roomMap = new LinkedHashMap<>();
-
-        for (Tuple tuple : results) {
-            RoomResponseDto roomResponseDto = tuple.get(0, RoomResponseDto.class);
-            List<RoomMemberResponseDto> members = tuple.get(1, List.class);
-            List<RoomLoungeResponseDto> lounges = tuple.get(2, List.class);
-            List<RoomChannelResponseDto> channels = tuple.get(3, List.class);
-
-            roomResponseDto.setMembers(members);
-            roomResponseDto.setLounges(lounges);
-            roomResponseDto.setChannels(channels);
-
-            roomMap.put(roomResponseDto.getRoomId(), roomResponseDto);
-        }
-
-        return new ArrayList<>(roomMap.values());
-    }
-
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
+        // default는 최신순으로 가져오기로 함
+        if (req.getSortBy() == null) return room.createdAt.desc();
+
         ComparableExpressionBase<?> path = switch (req.getSortBy()) {
             case mcount -> room.mcount;
             case capacity -> room.capacity;
@@ -295,6 +280,12 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if(keywordIds == null || keywordIds.isEmpty()) return null;
         return roomKeyword.keyword.id.in(keywordIds);
     }
+
+    private BooleanExpression ltRoomId(Long prevRoomId) {
+        if (prevRoomId == null) return null;
+        return room.id.lt(prevRoomId);
+    }
+
 
 
 }

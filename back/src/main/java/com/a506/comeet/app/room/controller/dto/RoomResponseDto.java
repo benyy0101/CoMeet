@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,6 +26,7 @@ public class RoomResponseDto {
     private String password;
     private RoomConstraints constraints;
     private RoomType type;
+
     @Setter
     private List<RoomMemberResponseDto> members;
     @Setter
