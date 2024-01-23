@@ -242,10 +242,12 @@ export default function App() {
   }, [isVideoDisabled]);
 
   useEffect(() => {
-    if (isScreenShared) {
-      startScreenShare();
-    } else {
-      stopScreenShare();
+    if (session) {
+      if (isScreenShared) {
+        startScreenShare();
+      } else {
+        stopScreenShare();
+      }
     }
   }, [isScreenShared]);
 
