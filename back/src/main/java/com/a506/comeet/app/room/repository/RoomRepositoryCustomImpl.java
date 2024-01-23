@@ -3,7 +3,6 @@ package com.a506.comeet.app.room.repository;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -53,7 +52,8 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 .innerJoin(member).on(room.manager.memberId.eq(member.memberId))
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
-                .where(eqKeyword(req.getSearchKeyword()),
+                .where(
+                        eqKeyword(req.getSearchKeyword()),
                         isLocked(req.getIsLocked()),
                         eqConstraints(req.getConstraints()),
                         eqKeywordIds(req.getKeywordIds()),
@@ -70,6 +70,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
 
 
     @Override
@@ -294,7 +295,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if(keywordIds == null || keywordIds.isEmpty()) return null;
         return roomKeyword.keyword.id.in(keywordIds);
     }
-
 
 
 }
