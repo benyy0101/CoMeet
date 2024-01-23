@@ -1,12 +1,16 @@
 package com.a506.comeet.app.room.repository;
 
 import com.a506.comeet.app.room.controller.dto.*;
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -49,7 +53,13 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 .innerJoin(member).on(room.manager.memberId.eq(member.memberId))
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
-                .where(makeBooleanBuilder(req))
+                .where(eqKeyword(req.getSearchKeyword()),
+                        isLocked(req.getIsLocked()),
+                        eqConstraints(req.getConstraints()),
+                        eqKeywordIds(req.getKeywordIds()),
+                        eqType(req.getType()),
+                        btwMcount(req.getMinMcount(), req.getMaxMcount()),
+                        btwCapacity(req.getMinCapacity(), req.getMaxCapacity()))
 //                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
                 .orderBy(makeOrder(req)).
                 offset(pageable.getOffset()).
@@ -217,31 +227,74 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return req.getIsDesc() ? path.desc() : path.asc();
     }
 
-    private BooleanBuilder makeBooleanBuilder(RoomSearchRequestDto req) {
-        BooleanBuilder builder = new BooleanBuilder();
+//    private BooleanBuilder makeBooleanBuilder(RoomSearchRequestDto req) {
+//        BooleanBuilder builder = new BooleanBuilder();
+//
+//        if (req.getSearchKeyword() != null) {
+//            builder.andAnyOf(
+//                    room.title.contains(req.getSearchKeyword()),
+//                    room.description.contains(req.getSearchKeyword())
+//            );
+//        }
+//        if (req.getIsLocked() != null)
+//            builder.and(room.isLocked.eq(req.getIsLocked()));
+//        if (req.getMinMcount() != null || req.getMaxMcount() != null) {
+//            builder.and(room.mcount.between(req.getMinMcount(), req.getMaxMcount()));
+//        }
+//        if (req.getMinCapacity() != null || req.getMaxCapacity() != null) {
+//            builder.and(room.capacity.between(req.getMinCapacity(), req.getMaxCapacity()));
+//        }
+//        if (req.getConstraints() != null && !req.getConstraints().isEmpty())
+//            builder.and(room.constraints.in(req.getConstraints()));
+//        if (req.getType() != null)
+//            builder.and(room.type.eq(req.getType()));
+//        if (req.getKeywordIds() != null && req.getKeywordIds().size() > 0){
+//            builder.and(roomKeyword.keyword.id.in(req.getKeywordIds()));
+//        }
+//
+//        return builder;
+//    }
 
-        if (req.getSearchKeyword() != null) {
-            builder.andAnyOf(
-                    room.title.contains(req.getSearchKeyword()),
-                    room.description.contains(req.getSearchKeyword())
-            );
-        }
-        if (req.getIsLocked() != null)
-            builder.and(room.isLocked.eq(req.getIsLocked()));
-        if (req.getMinMcount() != null || req.getMaxMcount() != null) {
-            builder.and(room.mcount.between(req.getMinMcount(), req.getMaxMcount()));
-        }
-        if (req.getMinCapacity() != null || req.getMaxCapacity() != null) {
-            builder.and(room.capacity.between(req.getMinCapacity(), req.getMaxCapacity()));
-        }
-        if (req.getConstraints() != null && !req.getConstraints().isEmpty())
-            builder.and(room.constraints.in(req.getConstraints()));
-        if (req.getType() != null)
-            builder.and(room.type.eq(req.getType()));
-        if (req.getKeywordIds() != null && req.getKeywordIds().size() > 0){
-            builder.and(roomKeyword.keyword.id.in(req.getKeywordIds()));
-        }
-
-        return builder;
+    private BooleanExpression eqKeyword(String keyword){
+        if(StringUtils.isEmpty(keyword)) return null;
+        return room.title.contains(keyword)
+                .or(room.description.contains(keyword));
     }
+
+    private BooleanExpression isLocked(Boolean isLocked){
+        if(isLocked == null) return null;
+        return room.isLocked.eq(isLocked);
+    }
+
+    private BooleanExpression btwMcount(Integer min, Integer max){
+        if(min == null && max == null) return null;
+        if (min == null) return room.mcount.lt(max);
+        if (max == null) return room.mcount.gt(min);
+        return room.mcount.between(min, max);
+    }
+
+    private BooleanExpression btwCapacity(Integer minCapacity, Integer maxCapacity){
+        if(minCapacity == null && maxCapacity == null) return null;
+        if (minCapacity == null) return room.capacity.lt(maxCapacity);
+        if (maxCapacity == null) return room.capacity.gt(minCapacity);
+        return room.capacity.between(minCapacity, maxCapacity);
+    }
+
+    private BooleanExpression eqConstraints(List<RoomConstraints> constraints){
+        if(constraints == null || constraints.isEmpty()) return null;
+        return room.constraints.in(constraints);
+    }
+
+    private BooleanExpression eqType(RoomType type){
+        if(type == null) return null;
+        return room.type.eq(type);
+    }
+
+    private BooleanExpression eqKeywordIds(List<Long> keywordIds){
+        if(keywordIds == null || keywordIds.isEmpty()) return null;
+        return roomKeyword.keyword.id.in(keywordIds);
+    }
+
+
+
 }
