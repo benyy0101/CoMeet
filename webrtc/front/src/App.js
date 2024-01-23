@@ -18,7 +18,7 @@ import {
   SignalSlashIcon,
 } from "@heroicons/react/24/solid";
 
-const APPLICATION_SERVER_URL = "http://localhost:5000/";
+const APPLICATION_SERVER_URL = "https://localhost:5443/";
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);
