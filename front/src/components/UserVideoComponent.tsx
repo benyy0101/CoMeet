@@ -1,8 +1,13 @@
 import React from "react";
 import OpenViduVideoComponent from "./OvVideo";
 import tw from "tailwind-styled-components";
+import { StreamManager } from "openvidu-browser";
 
-export default function UserVideoComponent({ streamManager }: { streamManager: any }) {
+export default function UserVideoComponent({
+  streamManager,
+}: {
+  streamManager: StreamManager;
+}) {
   const getNicknameTag = () => {
     // Gets the nickName of the user
     return JSON.parse(streamManager.stream.connection.data).clientData;

@@ -24,33 +24,44 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App h-dvh">
       <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Mainpage />}></Route>
-          {isLogin ? (
-            <>
-              <Route path="/roomlist" element={<RoomList />}></Route>
+        <NavBarContainer>
+          <NavBar />
+        </NavBarContainer>
+        <RoutesContainer>
+          <Routes>
+            <Route path="/" element={<Mainpage />}></Route>
+            {isLogin ? (
+              <>
+                <Route path="/roomlist" element={<RoomList />}></Route>
 
-              <Route path="/community" element={<Community />}></Route>
+                <Route path="/community" element={<Community />}></Route>
 
-              <Route path="/mypage" element={<Mypage />}></Route>
+                <Route path="/mypage" element={<Mypage />}></Route>
 
-              <Route path="/room/:roomId/*" element={<Room />}></Route>
-            </>
-          ) : (
-            <>
-              <Route path="/login" element={<LoginPage />}></Route>
-              <Route path="/signup" element={<SignupPage />}></Route>
-            </>
-          )}
-          <Route path="/new-room" element={<NewRoom />}></Route>
-          <Route path="/before-entrance" element={<ConditionCheck />}></Route>
-        </Routes>
+                <Route path="/room/:roomId/*" element={<Room />}></Route>
+              </>
+            ) : (
+              <>
+                <Route path="/login" element={<LoginPage />}></Route>
+                <Route path="/signup" element={<SignupPage />}></Route>
+              </>
+            )}
+            <Route path="/new-room" element={<NewRoom />}></Route>
+            <Route path="/before-entrance" element={<ConditionCheck />}></Route>
+          </Routes>
+        </RoutesContainer>
       </BrowserRouter>
     </div>
   );
 }
 
+const NavBarContainer = tw.div`
+  h-12
+`;
+
+const RoutesContainer = tw.div`
+  h-[calc(100vh-3rem)]
+`;
 export default App;
