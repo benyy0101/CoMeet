@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
@@ -9,6 +9,7 @@ import VideoWhite from "../assets/img/video-white.svg";
 import RoomDefault from "../assets/img/room-default.svg";
 
 import { ServerDropDownList } from "./ServerDropDownList";
+import useOutsideClick from "../hooks/useOutsideClick";
 
 //NavBarContainer: 네비게이션바 전체 틀
 const NavBarContainer = tw.div`
@@ -95,6 +96,14 @@ export const NavBar = () => {
     setIsServerOpen(!isServerOpen);
   };
 
+  //외부 클릭시 서버 드롭다운 닫힘
+  const serverRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(serverRef, () => {
+    if (isServerOpen) {
+      setIsServerOpen(false);
+    }
+  });
+
   return (
     <NavBarContainer>
       <Logo>
@@ -127,7 +136,7 @@ export const NavBar = () => {
             ) : null}
 
             <Menu2>
-              <ul>
+              <ul ref={serverRef}>
                 <button onClick={showServerList}>
                   <img src={IMac} width={30} alt="server" />
                 </button>
