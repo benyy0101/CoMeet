@@ -388,7 +388,7 @@ export default function App() {
               <VideoContainer>
                 {session !== undefined && (
                   <ChatContainer>
-                    <Chat username={myUserName} />
+                    <Chat channelId={mySessionId} username={myUserName} />
                   </ChatContainer>
                 )}
                 {/* 클릭시 나오는 확대 영상 */}

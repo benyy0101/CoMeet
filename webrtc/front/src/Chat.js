@@ -1,53 +1,56 @@
 import { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 
-export default function Chat({ username }) {
+export default function Chat({ channelId, username }) {
   const [rows, setRows] = useState([]);
   const [message, setMessage] = useState("");
-  const websocket = useRef(null);
+  const stompClient = useRef(null);
 
   useEffect(() => {
-    if (!websocket.current) {
-      websocket.current = new WebSocket("ws://localhost:5000/ws/chat");
-      websocket.current.onmessage = onMessage;
-      // websocket.current.onopen = onOpen;
-      // websocket.current.onclose = onClose;
-    }
-  }, []);
+    setRows([]);
 
-  const send = (e) => {
+    stompClient.current = Stomp.over(() => {
+      const sock = new SockJS("http://localhost:5000/chatting");
+      return sock;
+    });
+
+    // connect(header,연결 성공시 콜백,에러발생시 콜백)
+    stompClient.current.connect(
+      {},
+      function () {
+        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+        stompClient.current.subscribe(`/topic/${channelId}`, function (e) {
+          //e.body에 전송된 data가 들어있다
+          showMessage(JSON.parse(e.body));
+        });
+      },
+      function (e) {
+        //에러 콜백
+        alert("에러발생!!!!!!");
+      }
+    );
+  }, [channelId]);
+
+  //화면에 메시지를 표시하는 함수
+  function showMessage(data) {
+    setRows((prev) => [...prev, data.sender + ":" + data.contents]);
+  }
+
+  //메시지 브로커로 메시지 전송
+  function send(e) {
     e.preventDefault();
 
-    console.log(username + " : " + message);
-    websocket.current.send(username + ":" + message);
+    const data = {
+      channelId,
+      sender: username,
+      contents: message,
+    };
+    // send(destination,헤더,페이로드)
+    stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
     setMessage("");
-  };
-
-  //채팅창에서 나갔을 때
-  const onClose = (evt) => {
-    let str = username + " : 님이 방을 나가셨습니다.";
-    websocket.current.send(str);
-  };
-
-  //채팅창에 들어왔을 때
-  const onOpen = (evt) => {
-    let str = username + " : 님이 입장하셨습니다.";
-    console.log(str);
-    websocket.current.send(str);
-  };
-
-  const onMessage = (msg) => {
-    let data = msg.data;
-    // let sessionId = null;
-    // //데이터를 보낸 사람
-    // let message = null;
-    // let arr = data.split(":");
-
-    // sessionId = arr[0];
-    // message = arr[1];
-
-    setRows((prev) => [...prev, data]);
-  };
+  }
 
   useEffect(() => {
     const chatcontent = document.getElementById("chatcontent");
