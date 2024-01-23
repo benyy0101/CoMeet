@@ -11,6 +11,7 @@ import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,8 @@ public class RoomEnterTest {
     @Transactional
     void roomEnterTest(){
         Long roomId = 3L;
+        int N = 100;
+        int M = 100;
         RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
         log.info("멤버 수 : {}", res.getMembers().size());
         for (RoomMemberResponseDto member : res.getMembers()) {
@@ -93,6 +96,9 @@ public class RoomEnterTest {
         for (RoomLoungeResponseDto lounge : res.getLounges()) {
             log.info("라운지 명 : {}", lounge.getName());
         }
+        Assertions.assertThat(res.getRoomId()).isEqualTo(3L);
+        Assertions.assertThat(res.getMembers().size()).isEqualTo(N);
+        Assertions.assertThat(res.getChannels().size()).isEqualTo(M);
 
     }
 

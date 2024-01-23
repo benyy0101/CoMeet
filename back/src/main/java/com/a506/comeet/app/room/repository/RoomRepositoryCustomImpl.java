@@ -44,13 +44,13 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         room.isLocked,
                         room.password,
                         room.constraints,
-                        room.type)).
+                        room.type)).distinct().
                 from(room)
                 .innerJoin(member).on(room.manager.memberId.eq(member.memberId))
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
                 .where(makeBooleanBuilder(req))
-                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
+//                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
                 .orderBy(makeOrder(req)).
                 offset(pageable.getOffset()).
                 limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
