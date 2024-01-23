@@ -1,5 +1,6 @@
 package com.a506.comeet.api.service.room;
 
+import com.a506.comeet.app.member.controller.FollowerRequestDto;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -40,40 +42,25 @@ public class RoomEnterTest {
     @Autowired
     RoomRepository roomRepository;
 
-    @BeforeEach
-    void init(){
-        Long roomId = 3L;
-        int N = 3;
-        int M = 2;
-        //given
-        for (int i = 1; i <= N; i++) {
-            em.persist(Member.builder().memberId("멤버"+i).nickname("닉네임"+i).build());
-        }
-        em.flush();
-        em.clear();
-
-        //방 생성
-        for (int i = 1; i <= N; i++) {
-            RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                    mangerId("멤버"+i).
-                    title("title"+i).description("설명"+i).capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
-                    build();
-            roomService.createRoom(reqR);
-        }
-
-        // 방 가입
-        for (int i = 1; i <= N; i++) {
-            if ((long) i == roomId) continue;
-            RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
-            roomService.joinMember(req, "멤버" + 3, roomId);
-        }
-
-        for (int i = 1; i <= M; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
-            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
-        }
-
-    }
+//    @Test
+//    @Rollback(value = false)
+//    void init2(){
+//        RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
+//                mangerId("멤버10000").
+//                title("title").description("설명").capacity(1000).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
+//                build();
+//        roomService.createRoom(reqR);
+//
+//        for (int i = 1; i <= 999; i++) {
+//            RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
+//            roomService.joinMember(req, "멤버10000", 1L);
+//        }
+//
+//        for (int i = 1; i <= 20; i++) {
+//            channelService.createChannel(new ChannelCreateRequestDto(1L, "채널명"+i));
+//            loungeService.createLounge(new LoungeCreateRequestDto(1L, "라운지명"+i));
+//        }
+//    }
 
     @Test
     @Transactional
@@ -123,6 +110,18 @@ public class RoomEnterTest {
                 log.info("라운지 명 : {}", lounge.getName());
             }
         }
+    }
+
+    @Test
+    @Transactional
+    void roomEnterVsTest(){
+        Long srt = System.currentTimeMillis();
+        List<RoomResponseDto> res = roomRepository.enterRoomCustomOneQuery(1L);
+        log.info("one Query : {}",System.currentTimeMillis() - srt);
+        log.info("{}", res.size());
+        Long srt2 = System.currentTimeMillis();
+        roomRepository.enterRoomCustom(1L);
+        log.info("multiple Query : {}",System.currentTimeMillis() - srt2);
     }
 
 }
