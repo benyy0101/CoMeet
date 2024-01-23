@@ -231,7 +231,7 @@ export default function App() {
   }, [isVideoDisabled]);
 
   useEffect(() => {
-    if (session) { 
+    if (session) {
       if (isScreenShared) {
         startScreenShare();
       } else {
@@ -386,7 +386,11 @@ export default function App() {
                 </ChannelHeader>
               )}
               <VideoContainer>
-                {session !== undefined && <ChatContainer><Chat username={myUserName} /></ChatContainer>}
+                {session !== undefined && (
+                  <ChatContainer>
+                    <Chat username={myUserName} />
+                  </ChatContainer>
+                )}
                 {/* 클릭시 나오는 확대 영상 */}
                 {/* {mainStreamManager !== undefined ? (
                   <div id="main-video" className="col-md-6">
