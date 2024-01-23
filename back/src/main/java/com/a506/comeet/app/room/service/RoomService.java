@@ -83,8 +83,8 @@ public class RoomService {
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         permanentRoomRequestValidation(room);
         authorityValidation(room, reqMemberId);
+        roomSizeValidation(room);
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-
         // 실제 멤버 조인 로직
         joinMemberInnerLogic(member, room);
     }
@@ -116,6 +116,19 @@ public class RoomService {
         if (room.getType().equals(RoomType.DISPOSABLE)) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
     }
 
+    private void roomSizeValidation(Room room) {
+        if (room.getMcount() == room.getCapacity()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
+    }
+
+
+    private void joinMemberInnerLogic(Member member, Room room){
+        RoomMember roomMember = new RoomMember(member, room);
+        if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+        roomMemberRepository.save(roomMember);
+        roomMember.joinRoom();
+    }
+
     private void updateRoomKeywords(RoomUpdateRequestDto req, Room room){
         Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
         Set<Long> oldSet = room.getRoomKeywords().stream().map(RoomKeyword::getId).collect(Collectors.toSet());
@@ -129,13 +142,5 @@ public class RoomService {
         for (Long id : pureOldSet) {
             roomKeywordRepository.deleteByRoomAndKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND)));
         }
-    }
-
-    private void joinMemberInnerLogic(Member member, Room room){
-        RoomMember roomMember = new RoomMember(member, room);
-        if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
-            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
-        roomMemberRepository.save(roomMember);
-        roomMember.joinRoom();
     }
 }
