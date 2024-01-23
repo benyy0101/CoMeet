@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { RoomLounge } from "../components/RoomLounge";
 import RoomSubNavBar from "../components/RoomSubNavBar";
 import RoomChannel from "../components/RoomChannel";
+import Channel from "../components/Channel";
 import { RoomMemberList } from "../components/RoomMemberList";
-
 import { Routes, Route, useParams } from "react-router-dom";
-
 import tw from "tailwind-styled-components";
 import { TailwindComponent } from "tailwind-styled-components/dist/tailwind";
-
 import Members from "../assets/img/members.svg";
 import Settings from "../assets/img/settings.svg";
 import { RoomSettingList } from "../components/RoomSettingList";
@@ -21,10 +19,53 @@ type styledType = TailwindComponent<React.HTMLAttributes<HTMLDivElement>, {}>;
 const StyleRoomOutline: styledType = tw.div`
     flex
     justify-center
-    h-[92vh]
-    mt-1
-    text-white
+    w-full
+    h-full
 `;
+
+// //StyleRoomLayout: 룸의 레이아웃
+// const StyleRoomLayout: styledType = tw.div`
+//     w-full
+//     border-black-200
+//     border
+//     rounded-xl`;
+
+// //StyleRoomHead: 룸의 헤더 (방 이름, 공지버튼, 멤버보기버튼, 환경설정버튼)
+// const StyleRoomHead: styledType = tw.div`
+//     flex justify-between
+//     `;
+
+// //StyleRoomBoth: 네비바 & RTC 부분의 레이아웃
+// const StyleRoomBoth: styledType = tw.div`
+//     flex
+//     h-[95%]
+//     `;
+
+// //StyleRoomNavBar: 룸의 네비바
+// const StyleRoomNavBar: styledType = tw.div`
+//     w-[8%]
+//     `;
+
+// //StyleRoomRTCLayout: 룸의 RTC 레이아웃
+// const StyleRoomRTCLayout: styledType = tw.div`
+//     w-full
+//     h-[95%]
+//     flex
+//     items-center
+//     justify-center
+
+// `;
+
+// //StyleRoomRTC: 룸의 RTC 부분(라운지와 채널이 보이는 부분)
+// const StyleRoomRTC: styledType = tw.div`
+//     w-[95%]
+//     h-[95%]
+//     border
+//     flex
+//     items-center
+//     justify-center
+//     `;
+
 
 //StyleRoomLayout: 룸의 레이아웃
 const StyleRoomLayout: styledType = tw.div`
@@ -147,61 +188,67 @@ export const Room = () => {
       : tw.div`h-full bg-black w-full overflow-auto rounded-md`;
 
   return (
-    <div>
-      <StyleRoomOutline>
-        <StyleRoomLayout>
-          <StyleRoomHead>
-            <div>
-              SSAFY 10기 (방 이름) <button>!공지 버튼!</button>
-            </div>
-            <div>
-              <button onClick={handleMember}>
-                <img src={Members} width={25} alt="members" />
-              </button>
-              <button onClick={handleSetting}>
-                <img src={Settings} width={25} alt="settings" />
-              </button>
-            </div>
-          </StyleRoomHead>
-          <StyleRoomBoth>
-            {isFold ? null : (
-              <StyleRoomNavBar>
-                <RoomSubNavBar
-                  handleChangeLoungeId={handleChangeLoungeId}
-                  handleChangeValue={handleChangeValue}
-                  handleChangeFoldTrue={handleFold}
-                />
-              </StyleRoomNavBar>
-            )}
 
-            <StyleRoomRTCLayout>
-              {isFold ? <button onClick={handleFold}>&gt;</button> : null}
+    <StyleRoomOutline>
+      <Channel />
+    </StyleRoomOutline>
 
-              <StyleRoomRTC>
-                <StyleRoomRTCCore>
-                  {isChannelIn && loungeId === 0 ? (
-                    <>
-                      <Routes>
-                        <Route
-                          path="channel/:channelId"
-                          element={<RoomChannel />}
-                        ></Route>
-                      </Routes>
-                    </>
-                  ) : (
-                    <RoomLounge />
-                  )}
-                </StyleRoomRTCCore>
-                {isMember || isSetting ? (
-                  <StyleMember>
-                    {isMember ? <RoomMemberList /> : <RoomSettingList />}
-                  </StyleMember>
-                ) : null}
-              </StyleRoomRTC>
-            </StyleRoomRTCLayout>
-          </StyleRoomBoth>
-        </StyleRoomLayout>
-      </StyleRoomOutline>
-    </div>
+    // <div>
+    //   <StyleRoomOutline>
+    //     <StyleRoomLayout>
+    //       <StyleRoomHead>
+    //         <div>
+    //           SSAFY 10기 (방 이름) <button>!공지 버튼!</button>
+    //         </div>
+    //         <div>
+    //           <button onClick={handleMember}>
+    //             <img src={Members} width={25} alt="members" />
+    //           </button>
+    //           <button onClick={handleSetting}>
+    //             <img src={Settings} width={25} alt="settings" />
+    //           </button>
+    //         </div>
+    //       </StyleRoomHead>
+    //       <StyleRoomBoth>
+    //         {isFold ? null : (
+    //           <StyleRoomNavBar>
+    //             <RoomSubNavBar
+    //               handleChangeLoungeId={handleChangeLoungeId}
+    //               handleChangeValue={handleChangeValue}
+    //               handleChangeFoldTrue={handleFold}
+    //             />
+    //           </StyleRoomNavBar>
+    //         )}
+
+    //         <StyleRoomRTCLayout>
+    //           {isFold ? <button onClick={handleFold}>&gt;</button> : null}
+
+    //           <StyleRoomRTC>
+    //             <StyleRoomRTCCore>
+    //               {isChannelIn && loungeId === 0 ? (
+    //                 <>
+    //                   <Routes>
+    //                     <Route
+    //                       path="channel/:channelId"
+    //                       element={<RoomChannel />}
+    //                     ></Route>
+    //                   </Routes>
+    //                 </>
+    //               ) : (
+    //                 <RoomLounge />
+    //               )}
+    //             </StyleRoomRTCCore>
+    //             {isMember || isSetting ? (
+    //               <StyleMember>
+    //                 {isMember ? <RoomMemberList /> : <RoomSettingList />}
+    //               </StyleMember>
+    //             ) : null}
+    //           </StyleRoomRTC>
+    //         </StyleRoomRTCLayout>
+    //       </StyleRoomBoth>
+    //     </StyleRoomLayout>
+    //   </StyleRoomOutline>
+    // </div>
+
   );
 };
