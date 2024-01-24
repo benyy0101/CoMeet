@@ -1,5 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
+import com.a506.comeet.Util.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.ChannelUpdateRequestDto;
 import com.a506.comeet.app.room.entity.Channel;
@@ -19,22 +20,22 @@ public class ChannelController {
 
     @PostMapping("")
     public ResponseEntity create(@Valid @RequestBody ChannelCreateRequestDto requestDto){
-        // 요청자 정보 가져오기
-        Channel created = channelService.createChannel(requestDto);
+        String memberId = MemberUtil.getMemberId();
+        Channel created = channelService.createChannel(requestDto, memberId);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
 
     @PatchMapping("{channelId}")
     public ResponseEntity update(@Valid @RequestBody ChannelUpdateRequestDto requestDto, @PathVariable Long channelId){
-        // 요청자 정보 가져오기
-        channelService.updateChannel(requestDto, channelId);
+        String memberId = MemberUtil.getMemberId();
+        channelService.updateChannel(requestDto, channelId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/{channelId}/delete")
     public ResponseEntity<Void> delete(@PathVariable long channelId){
-        // 요청자 정보 가져오기
-        channelService.deleteChannel(channelId);
+        String memberId = MemberUtil.getMemberId();
+        channelService.deleteChannel(channelId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

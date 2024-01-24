@@ -1,5 +1,6 @@
 package com.a506.comeet.app.etc.controller;
 
+import com.a506.comeet.Util.MemberUtil;
 import com.a506.comeet.app.etc.controller.dto.TilListResponseDto;
 import com.a506.comeet.app.etc.controller.dto.TilRequestDto;
 import com.a506.comeet.app.etc.controller.dto.TilResponseDto;
@@ -21,23 +22,21 @@ public class TilController {
 
     @PostMapping("")
     public ResponseEntity create(@RequestBody @Valid TilRequestDto req){
-        String memberId = "멤버아이디";
+        String memberId = MemberUtil.getMemberId();
         Til created = tilService.create(req, memberId);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
 
     @PatchMapping("/{tilId}")
     public ResponseEntity<Void> update(@Valid @RequestBody TilRequestDto req, Long tilId){
-        // 요청자 정보 가져오기
-        String memberId = "요청자";
+        String memberId = MemberUtil.getMemberId();
         tilService.update(req, tilId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/{tilId}/delete")
     public ResponseEntity<Void> delete(@PathVariable long tilId){
-        // 요청자 정보 가져오기
-        String memberId = "요청자";
+        String memberId = MemberUtil.getMemberId();
         tilService.delete(tilId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

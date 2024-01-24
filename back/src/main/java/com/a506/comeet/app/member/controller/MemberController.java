@@ -1,5 +1,6 @@
 package com.a506.comeet.app.member.controller;
 
+import com.a506.comeet.Util.MemberUtil;
 import com.a506.comeet.app.member.controller.dto.LoginReqeustDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class MemberController {
 
     @PostMapping("")
     public ResponseEntity signUp(@RequestBody @Valid MemberSigninRequestDto req){
+
         req.setRoles(List.of("USER"));
         Member created = memberService.create(req);
         return new ResponseEntity<String>(created.getMemberId(), HttpStatus.OK);
@@ -42,14 +45,14 @@ public class MemberController {
     }
 
     @PostMapping("/test")
-    public String test() {
-        return "success";
+    public String test(){
+        return MemberUtil.getMemberId();
     }
 
     @PatchMapping("")
     public ResponseEntity<Void> update(@Valid @RequestBody MemberUpdateRequestDto req){
         // 요청자 정보 가져오기
-        String memberId = "요청자";
+        String memberId = MemberUtil.getMemberId();
         memberService.update(req, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -57,7 +60,7 @@ public class MemberController {
     @PatchMapping("/delete")
     public ResponseEntity<Void> delete(@PathVariable long roomId){
         // 요청자 정보 가져오기
-        String memberId = "요청자";
+        String memberId = MemberUtil.getMemberId();
         memberService.delete(memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

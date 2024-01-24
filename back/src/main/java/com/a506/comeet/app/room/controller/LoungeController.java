@@ -1,5 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
+import com.a506.comeet.Util.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.LoungeUpdateRequestDto;
 import com.a506.comeet.app.room.entity.Lounge;
@@ -20,23 +21,23 @@ public class LoungeController {
 
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody LoungeCreateRequestDto req){
-        // 요청자 정보 가져오기
-        Lounge created = loungeService.createLounge(req);
+        String memberId = MemberUtil.getMemberId();
+        Lounge created = loungeService.createLounge(req, memberId);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
 
 
     @PatchMapping("{loungeId}")
     public ResponseEntity<?> update(@Valid @RequestBody LoungeUpdateRequestDto req, @PathVariable Long loungeId){
-        // 요청자 정보 가져오기
-        loungeService.updateLounge(req, loungeId);
+        String memberId = MemberUtil.getMemberId();
+        loungeService.updateLounge(req, loungeId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/{loungeId}/delete")
     public ResponseEntity<Void> delete(@PathVariable long loungeId){
-        // 요청자 정보 가져오기
-        loungeService.deleteLounge(loungeId);
+        String memberId = MemberUtil.getMemberId();
+        loungeService.deleteLounge(loungeId, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
