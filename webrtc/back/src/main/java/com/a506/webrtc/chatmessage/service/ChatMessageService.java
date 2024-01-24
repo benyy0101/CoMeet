@@ -6,7 +6,7 @@ import com.a506.webrtc.chatmessage.repository.ChatMessageRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,5 +28,9 @@ public class ChatMessageService {
                 .build();
 
         chatMessageRespository.save(chatMessage);
+    }
+
+    public List<ChatMessage> getMessagesByTypeAndNum(Type type, Long num) {
+        return chatMessageRespository.findByTypeAndNum(type, num);
     }
 }
