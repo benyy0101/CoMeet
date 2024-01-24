@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum CustomErrorCode implements ErrorCode{
 
     NO_AUTHORIZATION(HttpStatus.FORBIDDEN, "권한이 없습니다"),
-    DUPLICATE_VALUE(HttpStatus.BAD_REQUEST, "중복 값이 허용되지 않습니다");
+    DUPLICATE_VALUE(HttpStatus.BAD_REQUEST, "중복 값이 허용되지 않습니다"),
+    NO_MEMBER(HttpStatus.BAD_REQUEST, "해당하는 사용자가 존재하지 않습니다");
 
     private final HttpStatus httpStatus;
     private final String message;
