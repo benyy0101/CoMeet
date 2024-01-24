@@ -3,7 +3,7 @@ import tw from "tailwind-styled-components";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 
-export default function Chat({ channelId, username }) {
+export default function Chat({ chatId, username }) {
   const [rows, setRows] = useState([]);
   const [message, setMessage] = useState("");
   const stompClient = useRef(null);
@@ -21,7 +21,7 @@ export default function Chat({ channelId, username }) {
       {},
       function () {
         //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.current.subscribe(`/topic/${channelId}`, function (e) {
+        stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e) {
           //e.body에 전송된 data가 들어있다
           showMessage(JSON.parse(e.body));
         });
@@ -31,7 +31,7 @@ export default function Chat({ channelId, username }) {
         alert("에러발생!!!!!!");
       }
     );
-  }, [channelId]);
+  }, [chatId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data) {
@@ -43,9 +43,13 @@ export default function Chat({ channelId, username }) {
     e.preventDefault();
 
     const data = {
-      channelId,
-      sender: username,
-      contents: message,
+      chatId,
+      type: "CHANNEL",
+      memberId: "heeyeon3050",
+      nickname: username,
+      message,
+      imageUrl: "",
+      createdAt: new Date().now(),
     };
     // send(destination,헤더,페이로드)
     stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));

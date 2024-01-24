@@ -355,7 +355,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel1");
+                    moveChannel("1");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -365,7 +365,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel2");
+                    moveChannel("2");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -375,7 +375,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel3");
+                    moveChannel("3");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -400,7 +400,7 @@ export default function App() {
               <VideoContainer>
                 {session !== undefined && (
                   <ChatContainer>
-                    <Chat channelId={mySessionId} username={myUserName} />
+                    <Chat chatId={mySessionId} username={myUserName} />
                   </ChatContainer>
                 )}
                 {/* 클릭시 나오는 확대 영상 */}
