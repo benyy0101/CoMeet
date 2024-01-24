@@ -6,9 +6,10 @@ server:
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: chatdb
+#      host: localhost
+#      port: 27017
+#      database: chatdb
+      uri: mongodb+srv://heeyeon807:1234@cluster0.zyob3qk.mongodb.net/chatdb?retryWrites=true&w=majority
 
 # openvidu
 OPENVIDU_URL: http://localhost:4443/
