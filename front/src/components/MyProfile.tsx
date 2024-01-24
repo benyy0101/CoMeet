@@ -73,7 +73,9 @@ export const MyProfile = () => {
             )}
             {isModifyImg && (
               <ProfileDropdown>
+                {/* 변경 클릭시 이미지 업로드 모달 나오게 하기 */}
                 <DropdownButton>프로필 사진 변경</DropdownButton>
+                {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
                 <DropdownButton>제거</DropdownButton>
               </ProfileDropdown>
             )}
@@ -123,8 +125,13 @@ mb-auto
 const ProfileModImg = tw.img`
 w-7
 h-7
-pr-2
-pt-2
+mr-2
+mt-1
+rounded-full
+hover:filter
+hover:invert
+transition duration-300 ease-in-out
+hover:bg-gray-800
 `;
 
 //정보 수정 버튼, 접속 시간 제외한 모든 컨테이너
@@ -182,18 +189,23 @@ const ProfileDropdown = tw.div`
 absolute
 text-black
 top-[29%]
-translate-x-[10%]
-py-2
+
 shadow-lg
 z-50
 rounded-md
-px-2
 bg-gray-100
-text-sm
+text-base
 `;
 
 //드롭다운버튼들...
 const DropdownButton = tw.div`
+rounded-md
+w-44
+px-4
+py-2
+cursor-pointer
+transition-colors
+hover:bg-gray-300
 `;
 
 //팔로잉, 팔로우, 닉네임, 메세지, url 들어있는 오른쪽 컨테이너
@@ -222,45 +234,48 @@ flex`;
 
 //팔로잉, 팔로우 글씨
 const FollowText = tw.div`
-text-xs
+text-base
 mr-2
-mt-1
 `;
 
 //팔로잉, 팔로우 숫자
 const FollowNumber = tw.div`
 font-semibold
-text-sm
+text-base
 `;
 
 //닉네임
 const StyleNickName = tw.div`
 font-extrabold
-text-xl
+text-3xl
 mb-2
 `;
 
 //메세지
 const StyleMessage = tw.div`
-text-sm
+text-base
 mb-2
 `;
 
 //url
 const SytleUrl = tw.div`
-text-sm
+text-base
+
 `;
 
 //url의 A태그
 const StyleA = tw.a`
 border-b
+transition-colors
+hover:text-blue-500
+hover:border-blue-500
 `;
 
 //최근 접속 시간
 const RecentIn = tw.div`
 self-end
-text-xs
-pb-2
-pr-2
+text-sm
+pb-3
+pr-3
 text-[#9E9E9E]
 `;

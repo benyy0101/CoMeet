@@ -106,19 +106,21 @@ rounded-xl
 // 공부타입, 공부시간 들어있는 컨테이너
 const ThirdContainer = tw.div`
 w-[50%]
+flex
+flex-col
 `;
 
 // 공부 타입 컨테이너
 const StudyTypeContainer = tw.div`
-mb-5
-h-[47.5%]
+flex-1
 rounded-xl
 bg-[#3C334D]
+mb-5
 `;
 
 // 공부 시간 컨테이너
 const StudyTimeContainer = tw.div`
-h-[47.5%]
+flex-1
 rounded-xl
 bg-[#3C334D]
 `;

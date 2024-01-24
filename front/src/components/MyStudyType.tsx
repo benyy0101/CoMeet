@@ -23,9 +23,9 @@ items-center
 //타이틀 컨테이너
 const TitleContainer = tw.div`
 text-white
-text-lg
+text-xl
 font-bold
-mt-2
+mt-3
 `;
 
 //이미지 컨테이너

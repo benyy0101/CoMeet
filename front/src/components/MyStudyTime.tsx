@@ -30,9 +30,9 @@ items-center
 //타이틀 컨테이너
 const TitleContainer = tw.div`
 text-white
-text-lg
+text-xl
 font-bold
-mt-2
+mt-3
 `;
 
 //이미지 컨테이너
@@ -48,7 +48,7 @@ justify-center
 //시간대 표시 컨테이너
 const TimeContainer = tw.div`
 text-white
-text-lg
+text-2xl
 font-semibold
-mb-2
+mb-4
 `;
