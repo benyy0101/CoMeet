@@ -22,7 +22,6 @@ public class StompController {
     @SendTo
     public void sendMsg(@Payload Map<String, Object> data){
         System.out.println(data);
-
         chatMessageService.create(data);
 
         if(Type.CHANNEL.equals(Type.valueOf((String)data.get("type")))){

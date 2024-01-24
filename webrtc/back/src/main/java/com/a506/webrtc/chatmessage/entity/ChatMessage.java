@@ -1,5 +1,7 @@
 package com.a506.webrtc.chatmessage.entity;
 
+import java.time.LocalDateTime;
+
 import com.a506.webrtc.chatmessage.Type;
 import lombok.Builder;
 import lombok.Getter;

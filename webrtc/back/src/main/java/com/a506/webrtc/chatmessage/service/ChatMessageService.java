@@ -6,6 +6,7 @@ import com.a506.webrtc.chatmessage.repository.ChatMessageRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class ChatMessageService {
                 .nickname((String) data.get("nickname"))
                 .message((String) data.get("message"))
                 .imageUrl((String) data.get("imageUrl"))
-                .createdAt((String) data.get("24.01.24"))
+                .createdAt((String) data.get("createdAt"))
                 .build();
 
         chatMessageRespository.save(chatMessage);
