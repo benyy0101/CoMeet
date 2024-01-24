@@ -18,9 +18,9 @@ export default function Chat({ chatId, username }) {
           headers: { "Content-Type": "application/json" },
         }
       )
-    .then((response) => {
-        console.log(response)
-        setRows(JSON.parse(response.data));
+      .then((response) => {
+        console.log(response);
+        setRows(response.data);
 
         stompClient.current = Stomp.over(() => {
           const sock = new SockJS("http://localhost:5000/chatting");
@@ -53,7 +53,7 @@ export default function Chat({ chatId, username }) {
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data) {
-    setRows((prev) => [...prev, data.nickname + ":" + data.message]);
+    setRows((prev) => [...prev, data]);
   }
 
   //메시지 브로커로 메시지 전송
@@ -92,7 +92,7 @@ export default function Chat({ chatId, username }) {
       <ChatContentContainer id="chatcontent">
         <ChatContent>
           {rows.map((r, i) => (
-            <ChatRow key={i}>{r}</ChatRow>
+            <ChatRow key={i}>{`${r.nickname} : ${r.message}`}</ChatRow>
           ))}
         </ChatContent>
       </ChatContentContainer>
