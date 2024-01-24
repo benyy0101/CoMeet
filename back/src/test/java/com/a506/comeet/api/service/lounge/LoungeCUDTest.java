@@ -2,17 +2,18 @@ package com.a506.comeet.api.service.lounge;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.LoungeCreateRequestDto;
-import com.a506.comeet.room.controller.dto.LoungeUpdateRequestDto;
-import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.room.entity.Lounge;
-import com.a506.comeet.room.entity.Room;
-import com.a506.comeet.room.repository.LoungeRepository;
-import com.a506.comeet.room.repository.RoomRepository;
-import com.a506.comeet.room.service.LoungeService;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
+import com.a506.comeet.app.room.controller.dto.LoungeUpdateRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.room.entity.Lounge;
+import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.app.room.repository.LoungeRepository;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.LoungeService;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class LoungeCUDTest {
     @Autowired
     private LoungeService loungeService;
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired

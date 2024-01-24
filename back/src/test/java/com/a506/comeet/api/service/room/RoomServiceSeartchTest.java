@@ -5,11 +5,15 @@ package com.a506.comeet.api.service.room;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomSortBy;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.RoomSearchRequestDto;
-import com.a506.comeet.room.controller.dto.RoomSearchResponseDto;
-import com.a506.comeet.room.entity.Room;
-import com.a506.comeet.room.repository.RoomRepository;
+import com.a506.comeet.app.keyword.entity.Keyword;
+import com.a506.comeet.app.keyword.repository.KeywordRepository;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomSearchRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 @Slf4j
 public class RoomServiceSeartchTest {
@@ -33,35 +39,51 @@ public class RoomServiceSeartchTest {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private KeywordRepository keywordRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private RoomService roomService;
+
     @Test
     @Transactional
     void basicTest(){
 
-        Member member = Member.builder().memberId("testMember").nickname("닉네임").build();
-        em.persist(member);
-        for (int t = 0; t < 4; t++) {
-            for (int i = 0; i < 100; i++) {
-                Room room = Room.builder().manager(member).title("방"+i).capacity(t * 4).type(RoomType.DISPOSABLE).constraints(RoomConstraints.FREE).build();
-                em.persist(room);
-            }
-        }
-        for (int i = 0; i < 100; i++) {
-            Room room = Room.builder().manager(member).title("test방"+i).capacity(10).type(RoomType.DISPOSABLE).constraints(RoomConstraints.MICOFF).build();
-            em.persist(room);
-        }
+        Member manager = Member.builder().memberId("매니저").build();
+        em.persist(manager);
         em.flush();
         em.clear();
 
+        // 키워드 생성
+        keywordRepository.save(new Keyword("자바"));
+        keywordRepository.save(new Keyword("파이썬"));
+        keywordRepository.save(new Keyword("자바스크립트"));
+        keywordRepository.save(new Keyword("고"));
+        keywordRepository.save(new Keyword("레츠고"));
+
+        //방 생성
+        for (int i = 1; i <= 50; i++) {
+            RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
+                    mangerId("매니저").
+                    title("title"+i).description("설명"+i).capacity(9).constraints(RoomConstraints.FREE).keywordIds(List.of(1L, 2L, 3L)).type(RoomType.PERMANENT).
+                    build();
+            roomService.createRoom(reqR);
+        }
+
         RoomSearchRequestDto req = RoomSearchRequestDto.builder().
-                searchKeyword("방").
+                searchKeyword("title").
                 maxCapacity(10).
                 minCapacity(4).
                 constraints(List.of(RoomConstraints.MICOFF, RoomConstraints.FREE)).
                 sortBy(RoomSortBy.capacity).isDesc(true).
-                pageNo(0).pageSize(50).
+                keywordIds(List.of(1L,2L)).
+                pageNo(0).pageSize(20).
                 build();
 
-        Slice<RoomSearchResponseDto> list = roomRepository.findRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+        Slice<RoomSearchResponseDto> list = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
         for (RoomSearchResponseDto roomSearchResponseDto : list) {
             log.info("roomId = {}",roomSearchResponseDto.getRoomId());
             log.info("managerNickname = {}",roomSearchResponseDto.getManagerNickname());
@@ -69,6 +91,36 @@ public class RoomServiceSeartchTest {
             log.info("capacity = {}",roomSearchResponseDto.getCapacity());
             log.info("type = {}",roomSearchResponseDto.getType());
         }
-        Assertions.assertThat(list.getContent().size()).isEqualTo(50);
+        Assertions.assertThat(list.getContent().size()).isEqualTo(20);
     }
+
+    // 정렬 조건이 pk가 아니라서 no offset을 사용할 수 없다
+//    @Test
+//    @Transactional
+//    void roomSearchVs(){
+//        Long srt = System.currentTimeMillis();
+//        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
+//                searchKeyword("title").
+//                maxCapacity(1000).
+//                minCapacity(4).
+//                pageNo(99).pageSize(10).sortBy(RoomSortBy.capacity).isDesc(false).
+//                build();
+//        Slice<RoomSearchResponseDto> legacy = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+//        log.info("legacy : {}",System.currentTimeMillis() - srt);
+//        assertThat(legacy.getContent().size()).isEqualTo(10);
+//        log.info("{}", legacy.getContent().get(0).getRoomId());
+//
+//        Long srt2 = System.currentTimeMillis();
+//        RoomSearchRequestDto req2 = RoomSearchRequestDto.builder().
+//                searchKeyword("title").
+//                maxCapacity(1000).
+//                minCapacity(4).
+//                pageNo(0).pageSize(10).
+//                prevRoomId(990L).
+//                build();
+//        Slice<RoomSearchResponseDto> noOffset = roomRepository.searchRoomCustom(req2, PageRequest.of(req2.getPageNo(), req2.getPageSize()));
+//        log.info("noOffset : {}",System.currentTimeMillis() - srt2);
+//        assertThat(noOffset.getContent().size()).isEqualTo(10);
+//        log.info("{}", noOffset.getContent().get(0).getRoomId());
+//    }
 }

@@ -2,17 +2,18 @@ package com.a506.comeet.api.service.channel;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.room.controller.dto.ChannelCreateRequestDto;
-import com.a506.comeet.room.controller.dto.ChannelUpdateRequestDto;
-import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.room.entity.Channel;
-import com.a506.comeet.room.entity.Room;
-import com.a506.comeet.room.repository.ChannelRepository;
-import com.a506.comeet.room.repository.RoomRepository;
-import com.a506.comeet.room.service.ChannelService;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
+import com.a506.comeet.app.room.controller.dto.ChannelUpdateRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.room.entity.Channel;
+import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.app.room.repository.ChannelRepository;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.ChannelService;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class ChannelCUDTest {
     @Autowired
     private ChannelService channelService;
 
-    @Autowired
+    @PersistenceContext
     private EntityManager em;
 
     @Autowired

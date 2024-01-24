@@ -1,18 +1,18 @@
 package com.a506.comeet.api.service.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
-import com.a506.comeet.member.entity.Member;
-import com.a506.comeet.member.repository.MemberRepository;
-import com.a506.comeet.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.room.controller.dto.RoomJoinRequestDto;
-import com.a506.comeet.room.controller.dto.RoomUpdateRequestDto;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomJoinRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomUpdateRequestDto;
 import com.a506.comeet.common.enums.RoomType;
-import com.a506.comeet.room.entity.Room;
+import com.a506.comeet.app.room.entity.Room;
 import static org.assertj.core.api.Assertions.*;
 
-import com.a506.comeet.room.repository.RoomMemberRepository;
-import com.a506.comeet.room.repository.RoomRepository;
-import com.a506.comeet.room.service.RoomService;
+import com.a506.comeet.app.room.repository.RoomMemberRepository;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.*;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -76,7 +75,6 @@ class RoomServiceTest {
 
     @Test
     @Transactional
-    @Rollback(value = false)
     void createTest(){
         Member manager = Member.builder().memberId("멤버1").build();
         em.persist(manager);
@@ -91,7 +89,7 @@ class RoomServiceTest {
         Room room = roomService.createRoom(req);
         assertThat(room.getTitle()).isEqualTo(req.getTitle());
         log.info("room id : {}", room.getId());
-        assertThat(roomMemberRepository.findByRoomAndMember(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
+        assertThat(roomMemberRepository.findByRoomAndMemberAndIsDeletedFalse(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
     }
 
     @Test
