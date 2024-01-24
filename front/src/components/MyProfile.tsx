@@ -75,6 +75,8 @@ pt-2
 const FullContainer = tw.div`
 flex
 flex-grow
+items-center
+
 `;
 
 //프로필 이미지 보여주는 왼쪽 컨테이너
@@ -89,15 +91,14 @@ const StyleProfileImg = tw.img`
     rounded-full
     w-36
     h-36
-    
-    
 `;
 
 //팔로잉, 팔로우, 닉네임, 메세지, url 들어있는 오른쪽 컨테이너
 const RightContainer = tw.div`
 flex
 flex-col
-mt-3
+justify-center
+
 `;
 
 //팔로잉, 팔로우 나타내는 컨테이너

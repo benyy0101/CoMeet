@@ -4,7 +4,7 @@ import { MyKeyword } from "../components/MyKeyword";
 import { MyStudyType } from "../components/MyStudyType";
 import { MyStudyTime } from "../components/MyStudyTime";
 import { MyTILCalendar } from "../components/MyTILCalendar";
-import { MyAvgTime } from "../components/MyAvgTime";
+import { MySumTime } from "../components/MySumTime";
 
 import tw from "tailwind-styled-components";
 
@@ -43,9 +43,9 @@ export const Mypage = () => {
           <MyTILCalendar />
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
-        <AvgTimeContainer>
-          <MyAvgTime />
-        </AvgTimeContainer>
+        <SumTimeContainer>
+          <MySumTime />
+        </SumTimeContainer>
       </FirstContainerRight>
     </AllContainer>
   );
@@ -55,7 +55,7 @@ export const Mypage = () => {
 // h 고쳐야 함
 const AllContainer = tw.div`
 flex
-h-[93vh]
+h-[100vh]
 px-10
 py-2
 bg-[#180E2C]
@@ -66,7 +66,6 @@ bg-[#180E2C]
 const FirstContainerLeft = tw.div`
 flex-col
 w-[55%]
-
 mr-7
 ml-10
 my-5
@@ -77,7 +76,6 @@ my-5
 const FirstContainerRight = tw.div`
 flex-col
 w-[45%]
-
 ml-7
 mr-10
 my-5
@@ -99,8 +97,7 @@ h-[64%]
 
 // 키워드 컨테이너
 const KeywordContainer = tw.div`
-border-2
-border-blue-500
+bg-[#3C334D]
 w-[50%]
 mr-5
 rounded-xl
@@ -115,32 +112,28 @@ w-[50%]
 const StudyTypeContainer = tw.div`
 mb-5
 h-[47.5%]
-border-2
-border-yellow-500
 rounded-xl
+bg-[#3C334D]
 `;
 
 // 공부 시간 컨테이너
 const StudyTimeContainer = tw.div`
 h-[47.5%]
-border-2
-border-yellow-500
 rounded-xl
+bg-[#3C334D]
 `;
 
 // TIL 캘린더 컨테이너
 const TILCalendarContainer = tw.div`
 h-[62%]
-border-2
-border-green-500
 mb-5
 rounded-xl
+bg-[#3C334D]
 `;
 
-// 공부 평균 시간 컨테이너
-const AvgTimeContainer = tw.div`
+// 공부 합계 시간 컨테이너
+const SumTimeContainer = tw.div`
 h-[35%]
-border-2
-border-green-500
 rounded-xl
+bg-[#3C334D]
 `;
