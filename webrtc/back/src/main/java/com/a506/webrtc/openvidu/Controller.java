@@ -1,4 +1,4 @@
-package com.a506.webrtc;
+package com.a506.webrtc.openvidu;
 
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
