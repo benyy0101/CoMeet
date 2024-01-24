@@ -19,7 +19,7 @@ import {
 } from "@heroicons/react/24/solid";
 import Chat from "./Chat";
 
-const APPLICATION_SERVER_URL = "http://localhost:5000/";
+export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);

@@ -17,7 +17,7 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
     @GetMapping("/messages")
-    public ResponseEntity<?> getMessage(@RequestParam(name = "type") Type type, @RequestParam(name = "num") Long chatId){
+    public ResponseEntity<?> getMessage(@RequestParam(name = "type") Type type, @RequestParam(name = "chatId") Long chatId){
         System.out.println(type);
         System.out.println(chatId);
         return ResponseEntity.ok(chatMessageService.getMessagesByTypeAndNum(type, chatId));
