@@ -1,7 +1,6 @@
 package com.a506.webrtc.stomp.controller;
 
 import com.a506.webrtc.chatmessage.Type;
-import com.a506.webrtc.chatmessage.entity.ChatMessage;
 import com.a506.webrtc.chatmessage.service.ChatMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -26,12 +25,10 @@ public class StompController {
 
         chatMessageService.create(data);
 
-        if(Type.CHANNEL.equals(data.get("type"))){
+        if(Type.CHANNEL.equals(Type.valueOf((String)data.get("type")))){
             simpMessagingTemplate.convertAndSend("/topic/channel/" + data.get("num"), data);
         } else{
             simpMessagingTemplate.convertAndSend("/topic/lounge/" + data.get("num"), data);
         }
-
-        simpMessagingTemplate.convertAndSend("/topic/" + data.get("num"), data);
     }
 }
