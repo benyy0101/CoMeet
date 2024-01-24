@@ -23,11 +23,14 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
     private final Key key;
+    private final long tokenValidityInSeconds;
 
     // application.yml에서 secret 값 가져와서 key에 저장
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
+                            @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey); // base64로 디코딩 -> 바이트 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // hmacsha256으로 다시 암호화?
+        this.tokenValidityInSeconds = tokenValidityInSeconds;
     }
 
     // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
@@ -40,7 +43,7 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + 86400000); // 24시간 추가
+        Date accessTokenExpiresIn = new Date(now + tokenValidityInSeconds); // 24시간 추가
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -50,7 +53,7 @@ public class JwtTokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 86400000))
+                .setExpiration(new Date(now + tokenValidityInSeconds))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
