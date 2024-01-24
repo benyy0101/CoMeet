@@ -95,8 +95,8 @@ public class TestData {
         }
 
         for (int i = 1; i <= 20; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
-            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
+            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i), "멤버1000");
+            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i), "멤버1000");
         }
     }
 
