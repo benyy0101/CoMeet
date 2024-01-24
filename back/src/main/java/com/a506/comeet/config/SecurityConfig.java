@@ -1,5 +1,7 @@
 package com.a506.comeet.config;
 
+import com.a506.comeet.login.JwtAccessDeniedHandler;
+import com.a506.comeet.login.JwtAuthenticationEntryPoint;
 import com.a506.comeet.login.JwtAuthenticationFilter;
 import com.a506.comeet.login.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     // Spring Security 7.0 부터 삭제될 예정으로, 체이닝 방식에서 람다식으로 변경필요
     @Bean
@@ -32,11 +37,16 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         // 해당 API에 대해서는 모든 요청을 허가
-                        .requestMatchers("/member", "/member/login").permitAll()
+                        .requestMatchers("/member").permitAll()
+                        .requestMatchers("/member/login").permitAll()
                         // USER 권한이 있어야 요청할 수 있음
                         .requestMatchers("/member/test").hasRole("USER")
                         // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
                         .anyRequest().authenticated())
+                // 에러 핸들링링
+               .exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
                 // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class).build();
     }

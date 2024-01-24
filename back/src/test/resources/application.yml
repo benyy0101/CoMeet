@@ -6,10 +6,16 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+
+  jwt:
+    header: Authorization
+    secret: 394763e7b962d3dbb8367630e7b9e7fa02a5ad01da0387f4f68c0df9f052de83
+    token-validity-in-seconds : 86400
+
 
 logging.level:
   org.hibernate.SQL: debug
