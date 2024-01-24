@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+
+import useOutsideClick from "../hooks/useOutsideClick";
 
 import tw from "tailwind-styled-components";
 
 import ProifleImg from "../assets/img/test-user.jpeg";
 import ProifleModify from "../assets/img/profile-modify.svg";
+import CarmeraImg from "../assets/img/carmera.svg";
 
 export const MyProfile = () => {
   //임시 데이터들
@@ -14,6 +17,35 @@ export const MyProfile = () => {
   const url = "http://github.com/mangmang";
   const recentTime = "2024-01-23";
 
+  //프로필 사진 마우스 오버로 바꾸기
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+
+  //프로필 변경 이미지 클릭시
+  const [isModifyImg, setIsModifyImg] = useState<boolean>(false);
+
+  const handleMouseOver = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseOut = () => {
+    setIsHovering(false);
+  };
+
+  const handleModifyImg = () => {
+    setIsModifyImg(!isModifyImg);
+  };
+
+  const handleModifyImgFalse = () => {
+    setIsModifyImg(false);
+  };
+
+  const modifyImgRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(modifyImgRef, () => {
+    if (isModifyImg) {
+      setIsModifyImg(false);
+    }
+  });
+
   return (
     <TotalContainer>
       <ProfileModButton>
@@ -21,7 +53,31 @@ export const MyProfile = () => {
       </ProfileModButton>
       <FullContainer>
         <LeftContainer>
-          <StyleProfileImg src={ProifleImg} alt="" />
+          <ul ref={modifyImgRef}>
+            {isHovering ? (
+              <StyleProfileImgHover
+                style={{ backgroundImage: `url(${ProifleImg})` }}
+                onMouseOver={handleMouseOver}
+                onMouseOut={handleMouseOut}
+              >
+                <button onClick={handleModifyImg}>
+                  <StyleCarmera src={CarmeraImg} alt="" />
+                </button>
+              </StyleProfileImgHover>
+            ) : (
+              <StyleProfileImg
+                style={{ backgroundImage: `url(${ProifleImg})` }}
+                onMouseOver={handleMouseOver}
+                onMouseOut={handleMouseOut}
+              />
+            )}
+            {isModifyImg && (
+              <ProfileDropdown>
+                <DropdownButton>프로필 사진 변경</DropdownButton>
+                <DropdownButton>제거</DropdownButton>
+              </ProfileDropdown>
+            )}
+          </ul>
         </LeftContainer>
         <RightContainer>
           <FollowContainer>
@@ -86,11 +142,58 @@ const LeftContainer = tw.div`
 `;
 
 //프로필 이미지
-const StyleProfileImg = tw.img`
-    bg-white
-    rounded-full
-    w-36
-    h-36
+const StyleProfileImg = tw.div`
+bg-white
+rounded-full
+w-36
+h-36
+relative
+bg-cover
+bg-center
+`;
+
+//프로필 이미지 - hover 했을 때
+const StyleProfileImgHover = tw.div`
+bg-white
+rounded-full
+w-36
+h-36
+bg-cover
+bg-center
+opacity-80
+relative
+`;
+
+// hover 했을 때 뜨는 카메라 아이콘
+const StyleCarmera = tw.img`
+absolute
+top-1/2
+left-1/2
+transform
+-gpu
+translate-x-[-50%]
+translate-y-[-50%]
+w-8
+h-8
+`;
+
+//카메라 클릭 후 나오는 드롭다운
+const ProfileDropdown = tw.div`
+absolute
+text-black
+top-[29%]
+translate-x-[10%]
+py-2
+shadow-lg
+z-50
+rounded-md
+px-2
+bg-gray-100
+text-sm
+`;
+
+//드롭다운버튼들...
+const DropdownButton = tw.div`
 `;
 
 //팔로잉, 팔로우, 닉네임, 메세지, url 들어있는 오른쪽 컨테이너
