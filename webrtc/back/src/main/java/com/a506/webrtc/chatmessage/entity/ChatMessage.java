@@ -13,7 +13,7 @@ public class ChatMessage {
     @Id
     private String id;
     private Type type;  //채널 or 라운지
-    private Long num;   //채널 아이디 or 라운지 아이디
+    private Long chatId;   //채널 아이디 or 라운지 아이디
     private String memberId;
     private String nickname;
     private String message;

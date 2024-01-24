@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ChatMessageRespository extends MongoRepository<ChatMessage, String> {
-    List<ChatMessage> findByTypeAndNum(Type type, Long num);
+    List<ChatMessage> findByTypeAndChatId(Type type, Long chatId);
 }

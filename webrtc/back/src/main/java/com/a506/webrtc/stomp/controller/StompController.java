@@ -26,9 +26,9 @@ public class StompController {
         chatMessageService.create(data);
 
         if(Type.CHANNEL.equals(Type.valueOf((String)data.get("type")))){
-            simpMessagingTemplate.convertAndSend("/topic/channel/" + data.get("num"), data);
+            simpMessagingTemplate.convertAndSend("/topic/channel/" + data.get("chatId"), data);
         } else{
-            simpMessagingTemplate.convertAndSend("/topic/lounge/" + data.get("num"), data);
+            simpMessagingTemplate.convertAndSend("/topic/lounge/" + data.get("chatId"), data);
         }
     }
 }

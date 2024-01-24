@@ -20,16 +20,9 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
     @GetMapping("/messages")
-    public ResponseEntity<?> getMessage(@RequestParam(name = "type") Type type, @RequestParam(name = "num") Long num){
+    public ResponseEntity<?> getMessage(@RequestParam(name = "type") Type type, @RequestParam(name = "num") Long chatId){
         System.out.println(type);
-        System.out.println(num);
-        return ResponseEntity.ok(chatMessageService.getMessagesByTypeAndNum(type, num));
-    }
-
-    @GetMapping("/message")
-    public String create(@RequestParam(name = "num") Long num){
-        System.out.println(num);
-        System.out.println("aaa");
-        return "aaa";
+        System.out.println(chatId);
+        return ResponseEntity.ok(chatMessageService.getMessagesByTypeAndNum(type, chatId));
     }
 }

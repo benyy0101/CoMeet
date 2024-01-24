@@ -19,7 +19,7 @@ public class ChatMessageService {
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .type(Type.valueOf((String) data.get("type")))
-                .num(Long.parseLong((String) data.get("num")))
+                .chatId(Long.parseLong((String) data.get("chatId")))
                 .memberId((String) data.get("memberId"))
                 .nickname((String) data.get("nickname"))
                 .message((String) data.get("message"))
@@ -30,7 +30,7 @@ public class ChatMessageService {
         chatMessageRespository.save(chatMessage);
     }
 
-    public List<ChatMessage> getMessagesByTypeAndNum(Type type, Long num) {
-        return chatMessageRespository.findByTypeAndNum(type, num);
+    public List<ChatMessage> getMessagesByTypeAndNum(Type type, Long chatId) {
+        return chatMessageRespository.findByTypeAndChatId(type, chatId);
     }
 }
