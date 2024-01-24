@@ -55,19 +55,18 @@ export const Mypage = () => {
 // h 고쳐야 함
 const AllContainer = tw.div`
 flex
-border-2
-border-rose-600
 h-[93vh]
 px-10
-py-5
+py-2
+bg-[#180E2C]
 `;
 
 // 프로필/키워드/공부타입/공부시간 컨테이너
 // w 값, 마진 값들 바꿔야 함
 const FirstContainerLeft = tw.div`
 flex-col
-w-[50%]
-border-2
+w-[55%]
+
 mr-7
 ml-10
 my-5
@@ -77,8 +76,8 @@ my-5
 // w 값, 마진 값들 바꿔야 함
 const FirstContainerRight = tw.div`
 flex-col
-w-[50%]
-border-2
+w-[45%]
+
 ml-7
 mr-10
 my-5
@@ -86,17 +85,16 @@ my-5
 
 // 프로필 컨테이너
 const ProfileContainer = tw.div`
-border-2
 h-[33%]
 mb-5
+rounded-xl
+bg-[#3C334D]
 `;
 
 // 키워드, 공부타입, 공부시간 들어 있는 컨테이너
 const SecondContainer = tw.div`
 flex
 h-[64%]
-border-2
-border-red-500
 `;
 
 // 키워드 컨테이너
@@ -105,13 +103,12 @@ border-2
 border-blue-500
 w-[50%]
 mr-5
+rounded-xl
 `;
 
 // 공부타입, 공부시간 들어있는 컨테이너
 const ThirdContainer = tw.div`
 w-[50%]
-border
-border-green-500
 `;
 
 // 공부 타입 컨테이너
@@ -120,6 +117,7 @@ mb-5
 h-[47.5%]
 border-2
 border-yellow-500
+rounded-xl
 `;
 
 // 공부 시간 컨테이너
@@ -127,6 +125,7 @@ const StudyTimeContainer = tw.div`
 h-[47.5%]
 border-2
 border-yellow-500
+rounded-xl
 `;
 
 // TIL 캘린더 컨테이너
@@ -135,6 +134,7 @@ h-[62%]
 border-2
 border-green-500
 mb-5
+rounded-xl
 `;
 
 // 공부 평균 시간 컨테이너
@@ -142,4 +142,5 @@ const AvgTimeContainer = tw.div`
 h-[35%]
 border-2
 border-green-500
+rounded-xl
 `;
