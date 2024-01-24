@@ -381,9 +381,7 @@ export default function Channel() {
           )}
           <VideoContainer>
             {session !== undefined && (
-              <ChatContainer>
-                <Chat />
-              </ChatContainer>
+              <Chat channelId={mySessionId} username={myUserName} />
             )}
 
             {/* {mainStreamManager !== undefined ? (
@@ -484,22 +482,6 @@ const RoomTitle = tw.h1`
 font-medium
 text-2xl
 text-slate-100
-`;
-
-const RoomButtonContainer = tw.div`
-h-full
-flex
-items-center
-space-x-3
-`;
-
-const RoomButton = tw.button`
-cursor-pointer
-text-slate-200
-w-10
-h-10
-font-medium
-text-lg
 `;
 
 const RoomContent = tw.div`
@@ -606,17 +588,7 @@ justify-center
 items-center
 `;
 
-const ChatContainer = tw.div`
-mr-3
-mb-3
-w-1/4
-rounded-md
-text-white
-flex
-justify-center
-items-center
-bg-[#333333]
-`;
+
 
 const ControlPanel = tw.div`
 w-80
