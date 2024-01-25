@@ -1,24 +1,23 @@
-package com.a506.comeet.app.member.service;
+package com.a506.comeet.auth.service;
 
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
-import com.a506.comeet.login.JwtToken;
-import com.a506.comeet.login.JwtTokenProvider;
-import com.a506.comeet.login.JwtRedisRepository;
+import com.a506.comeet.auth.JwtToken;
+import com.a506.comeet.auth.JwtTokenProvider;
+import com.a506.comeet.auth.repository.JwtRedisRepository;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,9 +29,15 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtRedisRepository jwtRedisRepository;
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public JwtToken login(String memberId, String password) {
+
+        // DB에서 유저 아이디와 비밀번호가 맞는지 확인
+        memberIdAndPasswordValidation(memberId, password);
+
         // 1. username(memberId) + password 를 기반으로 Authentication 객체 생성
         // 이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberId, password);
@@ -67,6 +72,11 @@ public class AuthService {
         if (redisRefreshToken == null || !redisRefreshToken.equals(refreshToken)) throw new RestApiException(CustomErrorCode.INVALID_REFRESH_TOKEN);
         // 같다면 refreshToken을 활용하여 새로운 accessToken을 발급
         return jwtTokenProvider.generateAccessToken(memberId, claims.get("auth").toString());
+    }
+
+    private void memberIdAndPasswordValidation(String memberId, String password) {
+        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
+        if (!member.getPassword().equals(passwordEncoder.encode(password))) new RestApiException(CustomErrorCode.LOGIN_FAIL);
     }
 
 }
