@@ -24,7 +24,7 @@ import {
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid";
 
-const APPLICATION_SERVER_URL = "http://localhost:5000/";
+const APPLICATION_SERVER_URL = process.env.REACT_APP_APPLICATION_SERVER_URL;
 
 export default function Channel() {
   //const [isJoined, setIsJoined] = useState(false);
@@ -330,9 +330,9 @@ export default function Channel() {
 
       <RoomContent>
         <RoomSidebar>
-          <div className="self-end">
+          <button className="self-end">
             <ChevronDoubleRightIcon className="text-white w-6 h-6 mr-3" />
-          </div>
+          </button>
           <ChannelButtonContainer>
             <ChannelButton
               onClick={() => {
@@ -409,6 +409,8 @@ export default function Channel() {
           </VideoContainer>
         </ChannelContent>
       </RoomContent>
+
+      {/* 옵션 컨트롤러 */}
       {session !== undefined && (
         <ControlPanel>
           <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
@@ -451,6 +453,7 @@ relative
 bg-[#3b3b3b]
 pb-3
 pr-3
+text-[#EFF0FF]
 `;
 
 const RoomHeader = tw.div`
@@ -531,7 +534,9 @@ text-sm
 const ChannelContent = tw.div`
 w-[95%]
 h-full
-bg-[#282828]
+bg-gradient-to-r
+from-[#050110]
+to-[#0E032C]
 rounded-xl
 flex
 flex-col
@@ -587,8 +592,6 @@ flex
 justify-center
 items-center
 `;
-
-
 
 const ControlPanel = tw.div`
 w-80

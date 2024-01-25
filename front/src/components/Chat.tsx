@@ -101,15 +101,13 @@ export default function Chat({
         <ChatContainer>
           <InputContainer>
             <ChatInputContainer onSubmit={send}>
+              <SendButton type="submit">
+                <PaperAirplaneIcon className="w-3 h-3" />
+              </SendButton>
               <ChatInput onChange={onChangeMessage} value={message} />
             </ChatInputContainer>
-            <SendButtonContainer>
-              <SendButton type="submit">
-                <PaperAirplaneIcon className="w-5 h-5" />
-              </SendButton>
-            </SendButtonContainer>
           </InputContainer>
-
+          <Border />
           <ChatContentContainer id="chatcontent">
             <ChatContent>
               {rows.map((content, i) => (
@@ -157,7 +155,6 @@ const OptionBtn = tw.button`
 const InputContainer = tw.div`
   p-1
   flex
-  bg-black
   w-full
 `;
 
@@ -167,12 +164,15 @@ py-1
 `;
 
 const SendButton = tw.button`
+  absolute
+  right-2
+  bottom-2
   flex
   justify-center
   items-center
   bg-red-800
-  h-10
-  w-12
+  h-6
+  w-10
   rounded-sm
 `;
 
@@ -181,17 +181,9 @@ w-full
 h-12
 rounded-t-md
 `;
-
-// const ChatContainer = tw.div`
-// w-full
-// h-full
-// flex
-// flex-col-reverse
-// max-h-[561.6px]
-// `;
-
 const ChatInputContainer = tw.form`
-h-12
+relative
+h-20
 p-1
 relative
 flex-grow-[1]
@@ -233,6 +225,7 @@ text-white
 flex
 flex-col-reverse
 items-center
-bg-[#333333]
+bg-[#181422]
 max-h-[561.6px]
+
 `;
