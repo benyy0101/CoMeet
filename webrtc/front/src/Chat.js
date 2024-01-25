@@ -2,40 +2,58 @@ import { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
+import axios from "axios";
+import { APPLICATION_SERVER_URL } from "./App";
 
-export default function Chat({ channelId, username }) {
+export default function Chat({ chatId, username }) {
   const [rows, setRows] = useState([]);
   const [message, setMessage] = useState("");
   const stompClient = useRef(null);
 
   useEffect(() => {
-    setRows([]);
+    axios
+      .get(
+        APPLICATION_SERVER_URL + `chat/messages?type=CHANNEL&chatId=${chatId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        setRows(response.data);
 
-    stompClient.current = Stomp.over(() => {
-      const sock = new SockJS("http://localhost:5000/chatting");
-      return sock;
-    });
-
-    // connect(header,연결 성공시 콜백,에러발생시 콜백)
-    stompClient.current.connect(
-      {},
-      function () {
-        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.current.subscribe(`/topic/${channelId}`, function (e) {
-          //e.body에 전송된 data가 들어있다
-          showMessage(JSON.parse(e.body));
+        stompClient.current = Stomp.over(() => {
+          const sock = new SockJS("http://localhost:5000/chatting");
+          return sock;
         });
-      },
-      function (e) {
-        //에러 콜백
-        alert("에러발생!!!!!!");
-      }
-    );
-  }, [channelId]);
+
+        // connect(header,연결 성공시 콜백,에러발생시 콜백)
+        stompClient.current.connect(
+          {},
+          function () {
+            //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+            stompClient.current.subscribe(
+              `/topic/channel/${chatId}`,
+              function (e) {
+                //e.body에 전송된 data가 들어있다
+                showMessage(JSON.parse(e.body));
+              }
+            );
+          },
+          function (e) {
+            //에러 콜백
+            alert("에러발생!!!!!!");
+          }
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [chatId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data) {
-    setRows((prev) => [...prev, data.sender + ":" + data.contents]);
+    setRows((prev) => [...prev, data]);
   }
 
   //메시지 브로커로 메시지 전송
@@ -43,9 +61,13 @@ export default function Chat({ channelId, username }) {
     e.preventDefault();
 
     const data = {
-      channelId,
-      sender: username,
-      contents: message,
+      chatId,
+      type: "CHANNEL",
+      memberId: "heeyeon3050",
+      nickname: username,
+      message,
+      imageUrl: "",
+      createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
     stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
@@ -70,7 +92,7 @@ export default function Chat({ channelId, username }) {
       <ChatContentContainer id="chatcontent">
         <ChatContent>
           {rows.map((r, i) => (
-            <ChatRow key={i}>{r}</ChatRow>
+            <ChatRow key={i}>{`${r.nickname} : ${r.message}`}</ChatRow>
           ))}
         </ChatContent>
       </ChatContentContainer>
