@@ -1,10 +1,10 @@
-package com.a506.comeet.app.member.controller;
+package com.a506.comeet.auth.controller;
 
-import com.a506.comeet.Util.MemberUtil;
-import com.a506.comeet.app.member.controller.dto.LoginReqeustDto;
-import com.a506.comeet.app.member.service.AuthService;
-import com.a506.comeet.login.JwtToken;
-import com.a506.comeet.login.JwtTokenProvider;
+import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
+import com.a506.comeet.auth.service.AuthService;
+import com.a506.comeet.auth.JwtToken;
+import com.a506.comeet.auth.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

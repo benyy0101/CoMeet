@@ -1,4 +1,4 @@
-package com.a506.comeet.login;
+package com.a506.comeet.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

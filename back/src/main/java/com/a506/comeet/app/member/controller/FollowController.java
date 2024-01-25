@@ -1,6 +1,9 @@
 package com.a506.comeet.app.member.controller;
 
-import com.a506.comeet.Util.MemberUtil;
+import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowerRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowingReqeustDto;
 import com.a506.comeet.app.member.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;

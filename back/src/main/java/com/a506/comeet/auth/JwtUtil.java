@@ -1,6 +1,5 @@
-package com.a506.comeet.login;
+package com.a506.comeet.auth;
 
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;

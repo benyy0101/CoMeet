@@ -1,6 +1,6 @@
 package com.a506.comeet.app.etc.controller;
 
-import com.a506.comeet.Util.MemberUtil;
+import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.etc.controller.dto.TilListResponseDto;
 import com.a506.comeet.app.etc.controller.dto.TilRequestDto;
 import com.a506.comeet.app.etc.controller.dto.TilResponseDto;

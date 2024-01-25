@@ -1,4 +1,4 @@
-package com.a506.comeet.Util;
+package com.a506.comeet.app.member;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

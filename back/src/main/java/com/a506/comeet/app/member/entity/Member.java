@@ -31,7 +31,6 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
-//@EqualsAndHashCode(of="memberId")
 public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     @Id
@@ -53,15 +52,19 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @Builder.Default
     private String description = "default_description_letsgo";
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private MemberFeature feature = MemberFeature.EARTH;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<RoomMember> roomMembers = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<MemberKeyword> keywords = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Til> tils = new ArrayList<>();
 

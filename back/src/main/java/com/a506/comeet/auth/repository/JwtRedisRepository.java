@@ -1,4 +1,4 @@
-package com.a506.comeet.login;
+package com.a506.comeet.auth.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

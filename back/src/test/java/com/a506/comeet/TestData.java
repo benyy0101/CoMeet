@@ -2,7 +2,7 @@ package com.a506.comeet;
 
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
-import com.a506.comeet.app.member.controller.FollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.member.service.FollowService;

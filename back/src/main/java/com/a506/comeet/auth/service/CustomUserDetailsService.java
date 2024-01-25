@@ -1,4 +1,4 @@
-package com.a506.comeet.app.member.service;
+package com.a506.comeet.auth.service;
 
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         return memberRepository.findByMemberIdAndIsDeletedFalse(memberId)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-
     }
 
     // 멤버 정보를 UserDetail 객체로 변경하여 return

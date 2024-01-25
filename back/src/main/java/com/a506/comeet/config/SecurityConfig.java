@@ -1,13 +1,12 @@
 package com.a506.comeet.config;
 
-import com.a506.comeet.login.JwtAccessDeniedHandler;
-import com.a506.comeet.login.JwtAuthenticationEntryPoint;
-import com.a506.comeet.login.JwtAuthenticationFilter;
-import com.a506.comeet.login.JwtTokenProvider;
+import com.a506.comeet.auth.JwtAccessDeniedHandler;
+import com.a506.comeet.auth.JwtAuthenticationEntryPoint;
+import com.a506.comeet.auth.JwtAuthenticationFilter;
+import com.a506.comeet.auth.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;

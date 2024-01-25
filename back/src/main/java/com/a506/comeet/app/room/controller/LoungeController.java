@@ -1,6 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
-import com.a506.comeet.Util.MemberUtil;
+import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.LoungeUpdateRequestDto;
 import com.a506.comeet.app.room.entity.Lounge;

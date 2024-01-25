@@ -1,4 +1,4 @@
-package com.a506.comeet.app.member.controller.dto;
+package com.a506.comeet.auth.controller.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

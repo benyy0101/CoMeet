@@ -1,4 +1,4 @@
-package com.a506.comeet.app.member.controller;
+package com.a506.comeet.app.member.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
-import com.a506.comeet.Util.MemberUtil;
+import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
