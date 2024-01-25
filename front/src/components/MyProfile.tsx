@@ -7,6 +7,7 @@ import tw from "tailwind-styled-components";
 import ProifleImg from "../assets/img/test-user.jpeg";
 import ProifleModify from "../assets/img/profile-modify.svg";
 import CarmeraImg from "../assets/img/carmera.svg";
+import EditPencil from "../assets/img/edit-pencil.svg";
 
 export const MyProfile = () => {
   //임시 데이터들
@@ -92,8 +93,19 @@ export const MyProfile = () => {
               <FollowNumber>{followerNum}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
-          <StyleNickName>{nickName}</StyleNickName>
-          <StyleMessage>{message}</StyleMessage>
+          <div className="flex">
+            <StyleNickName>{nickName}</StyleNickName>
+            <button>
+              <StyleEdit src={EditPencil} />
+            </button>
+          </div>
+
+          <div className="flex">
+            <StyleMessage>{message}</StyleMessage>
+            <button>
+              <StyleEdit src={EditPencil} />
+            </button>
+          </div>
           <SytleUrl>
             <StyleA href={url} target="_blank" rel="noopener noreferrer">
               {url}
@@ -131,7 +143,6 @@ rounded-full
 hover:filter
 hover:invert
 transition duration-300 ease-in-out
-hover:bg-gray-800
 `;
 
 //정보 수정 버튼, 접속 시간 제외한 모든 컨테이너
@@ -249,6 +260,15 @@ const StyleNickName = tw.div`
 font-extrabold
 text-3xl
 mb-2
+`;
+
+const StyleEdit = tw.img`
+ml-1
+w-4
+h-4
+hover:filter
+hover:invert
+transition duration-300 ease-in-out
 `;
 
 //메세지
