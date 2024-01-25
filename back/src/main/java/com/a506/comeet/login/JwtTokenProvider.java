@@ -3,7 +3,9 @@ package com.a506.comeet.login;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -22,15 +25,23 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private final Key key;
-    private final long tokenValidityInSeconds;
+
+    private JwtRedisRepository jwtRedisRepository;
+    private Key key;
+    private long accessTokenValidityInSeconds;
+    private long refreshTokenValidityInSeconds;
 
     // application.yml에서 secret 값 가져와서 key에 저장
+    @Autowired
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
-                            @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+                            @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
+                            @Value("${spring.jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+                            JwtRedisRepository jwtRedisRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey); // base64로 디코딩 -> 바이트 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // hmacsha256으로 다시 암호화?
-        this.tokenValidityInSeconds = tokenValidityInSeconds;
+        this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
+        this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
+        this.jwtRedisRepository = jwtRedisRepository;
     }
 
     // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
@@ -43,7 +54,7 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + tokenValidityInSeconds); // 24시간 추가
+        Date accessTokenExpiresIn = new Date(now + accessTokenValidityInSeconds * 1000); // 24시간 추가
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -53,9 +64,14 @@ public class JwtTokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + tokenValidityInSeconds))
+                .setSubject(authentication.getName())
+                .claim("auth", authorities)
+                .setExpiration(new Date(now + refreshTokenValidityInSeconds * 1000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+        // refreshToken redis에 저장
+       jwtRedisRepository.save(authentication.getName(), refreshToken, refreshTokenValidityInSeconds);
 
         return JwtToken.builder()
                 .grantType("Bearer")
@@ -90,12 +106,12 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String token) {
+    public boolean validateToken(String accessToken) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseClaimsJws(accessToken);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
@@ -111,16 +127,35 @@ public class JwtTokenProvider {
 
 
     // accessToken claim parsing (만료된 토큰도 복호화)
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(accessToken) // JWT 토큰 검증과 파싱 모두 수행
+                    .parseClaimsJws(token) // JWT 토큰 검증과 파싱 모두 수행
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    // Request Header에서 토큰 정보 추출
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public String generateAccessToken(String memberId, String authorities){
+        Date accessTokenExpiresIn = new Date((new Date()).getTime() + accessTokenValidityInSeconds * 1000);
+        return Jwts.builder()
+                .setSubject(memberId)
+                .claim("auth", authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
 }

@@ -29,24 +29,10 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("")
-    public ResponseEntity signUp(@RequestBody @Valid MemberSigninRequestDto req){
-
+    public ResponseEntity signup(@RequestBody @Valid MemberSigninRequestDto req){
         req.setRoles(List.of("USER"));
         Member created = memberService.create(req);
         return new ResponseEntity<String>(created.getMemberId(), HttpStatus.OK);
-    }
-
-    @PostMapping("/login")
-    public JwtToken login(@RequestBody @Valid LoginReqeustDto req){
-        log.info("request memberId = {}, password = {}", req.getMemberId(), req.getPassword());
-        JwtToken jwtToken = memberService.signIn(req.getMemberId(), req.getPassword());
-        log.info("jwtToken accessToken = {}, reqeustToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-        return jwtToken;
-    }
-
-    @PostMapping("/test")
-    public String test(){
-        return MemberUtil.getMemberId();
     }
 
     @PatchMapping("")
