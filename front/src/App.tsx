@@ -13,6 +13,7 @@ import { Room } from "./pages/Room";
 import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
+import TextEditor from "./components/TextEditor";
 
 function App() {
   //임시
@@ -50,6 +51,7 @@ function App() {
             )}
             <Route path="/new-room" element={<NewRoom />}></Route>
             <Route path="/before-entrance" element={<ConditionCheck />}></Route>
+            <Route path="/temp" element={<TextEditor />}></Route>
           </Routes>
         </RoutesContainer>
       </BrowserRouter>
@@ -62,6 +64,6 @@ const NavBarContainer = tw.div`
 `;
 
 const RoutesContainer = tw.div`
-  h-[calc(100vh-3rem)]
 `;
+
 export default App;
