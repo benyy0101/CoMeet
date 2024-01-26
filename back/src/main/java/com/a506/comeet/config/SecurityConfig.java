@@ -1,10 +1,9 @@
 package com.a506.comeet.config;
 
-import com.a506.comeet.auth.JwtAccessDeniedHandler;
-import com.a506.comeet.auth.JwtAuthenticationEntryPoint;
-import com.a506.comeet.auth.JwtAuthenticationFilter;
-import com.a506.comeet.auth.JwtTokenProvider;
+import com.a506.comeet.auth.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,11 +18,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final ObjectMapper objectMapper;
 
     // Spring Security 7.0 부터 삭제될 예정으로, 체이닝 방식에서 람다식으로 변경필요
     @Bean
@@ -42,12 +43,15 @@ public class SecurityConfig {
                         .requestMatchers("/auth/test").hasRole("USER")
                         // 이 밖에 모든 요청에 대해서 인증을 필요로 한다는 설정
                         .anyRequest().authenticated())
-                // 에러 핸들링링
-               .exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                        .accessDeniedHandler(jwtAccessDeniedHandler))
+                // 에러 핸들링
+                .exceptionHandling(ex -> {
+                    ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                            .accessDeniedHandler(jwtAccessDeniedHandler);
+                })
                 // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class).build();
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                // JwtException 핸들링을 위한 Exception 필터
+                .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class).build();
     }
 
 
