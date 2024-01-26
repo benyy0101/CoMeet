@@ -11,16 +11,20 @@ import {
 import axios from "axios";
 
 type chatData = {
-  chatId: string;
-  sender: string;
-  contents: string;
+  chatId: number;
+  type: string;
+  memberId: string;
+  nickname: string;
+  message: string;
+  imageUrl: string;
+  createdAt: string;
 };
 
 export default function Chat({
   chatId,
   username,
 }: {
-  chatId: string;
+  chatId: number;
   username: string;
 }) {
   const [rows, setRows] = useState<string[]>([]);
@@ -61,6 +65,7 @@ export default function Chat({
                 function (e) {
                   //e.body에 전송된 data가 들어있다
                   showMessage(JSON.parse(e.body));
+                  console.log(e.body);
                 }
               );
             }
@@ -78,22 +83,26 @@ export default function Chat({
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: chatData) {
-    const new_chat: string = data.sender + ": " + data.contents;
+    const new_chat: string = data.nickname + ": " + data.message;
     setRows((prev: string[]) => [...prev, new_chat] as string[]);
   }
 
   //메시지 브로커로 메시지 전송
   function send(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    console.log(message);
     const data: chatData = {
-      chatId,
-      sender: username,
-      contents: message,
+      chatId: chatId,
+      type: "CHANNEL",
+      memberId: "heeyeon3050",
+      nickname: username,
+      message: message,
+      imageUrl: "",
+      createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
     if (stompClient.current) {
-      stompClient.current?.send("/app/chat/send", {}, JSON.stringify(data));
+      stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
     }
     setMessage("");
   }
