@@ -1,6 +1,8 @@
 package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.enums.BoardType;
+import com.a506.comeet.common.enums.FreeBoardCategory;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = PROTECTED)
 public class Board extends BaseEntityWithSoftDelete {
 
@@ -22,20 +25,21 @@ public class Board extends BaseEntityWithSoftDelete {
     private String title;
     private String content;
     private Integer likecount;
-    private String type;
-    private String categoty;
+    private BoardType type;
+    private FreeBoardCategory categoty;
     @Column(name = "room_id")
     private Long roomId;
     private boolean valid;
 
-    @Builder
-    public Board(String writerId, String title, String content, String type, Long roomId, String categoty, boolean valid) {
+    public Board(Long id, String writerId, String title, String content, Integer likecount, BoardType type, FreeBoardCategory categoty, Long roomId, boolean valid) {
+        this.id = id;
         this.writerId = writerId;
         this.title = title;
         this.content = content;
+        this.likecount = likecount;
         this.type = type;
-        this.roomId = roomId;
         this.categoty = categoty;
+        this.roomId = roomId;
         this.valid = valid;
     }
 }
