@@ -1,14 +1,16 @@
 package com.a506.comeet.app.board.controller;
 
 import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
+import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
+import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
 import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.controller.dto.RoomUpdateRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/board")
@@ -17,9 +19,18 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping(value = "/create")
+    @PostMapping
     public ResponseEntity<?> create(@RequestBody BoardCreateRequestDto boardRequestDto) {
-        Member member = new Member("abc", "작성자", "123", "닉네임", "abc@naver.com");
-        return ResponseEntity.ok(boardService.create(boardRequestDto, member));
+        String memberId = "요청자";
+        Board board = boardService.create(boardRequestDto, memberId);
+        return ResponseEntity.ok(board.getId());
+    }
+
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<?> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
+        System.out.println(boardId);
+        String memberId = "요청자";
+        boardService.update(req, boardId, memberId);
+        return ResponseEntity.ok().build();
     }
 }

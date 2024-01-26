@@ -17,7 +17,6 @@ public class RoomController {
 
     private final RoomService roomService;
 
-
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody RoomCreateRequestDto req) {
         // 요청자 정보 가져오기
@@ -25,7 +24,6 @@ public class RoomController {
         Room created = roomService.createRoom(req);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
-
 
     @PatchMapping("{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable long roomId){

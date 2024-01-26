@@ -7,13 +7,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class RoomUpdateRequestDto {
     @Setter
     private String mangerId;
@@ -38,7 +39,6 @@ public class RoomUpdateRequestDto {
     private List<Long> keywordIds;
 
     @Builder
-
     public RoomUpdateRequestDto(String mangerId, String title, String description, String roomImage, String notice, int capacity, Boolean isLocked, String password, RoomConstraints constraints, List<Long> keywordIds) {
         this.mangerId = mangerId;
         this.title = title;
