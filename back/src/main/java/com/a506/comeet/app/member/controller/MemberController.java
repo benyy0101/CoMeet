@@ -41,7 +41,7 @@ public class MemberController {
     }
 
     @PatchMapping("/delete")
-    public ResponseEntity<Void> delete(@PathVariable long roomId){
+    public ResponseEntity<Void> delete(){
         // 요청자 정보 가져오기
         String memberId = MemberUtil.getMemberId();
         memberService.delete(memberId);

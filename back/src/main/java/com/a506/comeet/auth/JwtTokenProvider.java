@@ -31,18 +31,21 @@ public class JwtTokenProvider {
     private Key key;
     private long accessTokenValidityInSeconds;
     private long refreshTokenValidityInSeconds;
+    private final AES128Util aes128Util;
 
     // application.yml에서 secret 값 가져와서 key에 저장
     @Autowired
     public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
                             @Value("${spring.jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
                             @Value("${spring.jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
-                            JwtRedisRepository jwtRedisRepository) {
+                            JwtRedisRepository jwtRedisRepository,
+                            AES128Util aes128Util) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey); // base64로 디코딩 -> 바이트 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes); // hmacsha256으로 다시 암호화?
         this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
         this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
         this.jwtRedisRepository = jwtRedisRepository;
+        this.aes128Util = aes128Util;
     }
 
     // Member 정보를 가지고 AccessToken, RefreshToken을 생성하는 메서드
@@ -71,13 +74,15 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
+        String encryptedRefreshToken = aes128Util.encryptAes(refreshToken);
+
         // refreshToken redis에 저장
        jwtRedisRepository.save(authentication.getName(), refreshToken, refreshTokenValidityInSeconds);
 
         return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
+                .refreshToken(encryptedRefreshToken)
                 .build();
     }
 
@@ -107,8 +112,9 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String accessToken) {
+    public boolean validateToken(String encryptedAccessToken) {
         try {
+            String accessToken = aes128Util.decryptAes(encryptedAccessToken);
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
