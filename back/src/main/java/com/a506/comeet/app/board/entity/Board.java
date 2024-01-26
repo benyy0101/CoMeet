@@ -1,7 +1,11 @@
 package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
+import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.room.entity.Channel;
+import com.a506.comeet.app.room.entity.Lounge;
+import com.a506.comeet.app.room.entity.RoomMember;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
@@ -9,6 +13,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -50,5 +56,9 @@ public class Board extends BaseEntityWithSoftDelete {
         this.content = req.getContent();
         this.category = req.getCategory();
         this.valid = req.getValid();
+    }
+
+    public void delete() {
+        deleteSoftly();
     }
 }

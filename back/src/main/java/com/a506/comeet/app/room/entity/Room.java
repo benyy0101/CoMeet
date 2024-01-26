@@ -112,5 +112,4 @@ public class Room extends BaseEntityWithSoftDelete {
         this.roomKeywords = new ArrayList<>();
         this.roomMembers = new ArrayList<>();
     }
-
 }

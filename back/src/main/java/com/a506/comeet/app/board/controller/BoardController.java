@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/board")
 @RequiredArgsConstructor
@@ -20,17 +23,23 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody BoardCreateRequestDto boardRequestDto) {
+    public ResponseEntity<Long> create(@RequestBody BoardCreateRequestDto req) {
         String memberId = "요청자";
-        Board board = boardService.create(boardRequestDto, memberId);
+        Board board = boardService.create(req, memberId);
         return ResponseEntity.ok(board.getId());
     }
 
     @PatchMapping("/{boardId}")
-    public ResponseEntity<?> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
-        System.out.println(boardId);
+    public ResponseEntity<LocalDateTime> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = "요청자";
-        boardService.update(req, boardId, memberId);
+        Board board = boardService.update(req, boardId, memberId);
+        return ResponseEntity.ok(board.getUpdatedAt());
+    }
+
+    @PatchMapping("/{boardId}/delete")
+    public ResponseEntity<Void> delete(@PathVariable(value = "boardId") Long boardId){
+        String memberId = "요청자";
+        boardService.delete(memberId, boardId);
         return ResponseEntity.ok().build();
     }
 }

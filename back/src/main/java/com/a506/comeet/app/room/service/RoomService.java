@@ -42,7 +42,7 @@ public class RoomService {
     @Transactional
     public Room createRoom(RoomCreateRequestDto req) {
         Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Room room = Room.builder().
+        Room room = Room.builder(). //.위치
                 manager(member).
                 title(req.getTitle()).
                 description(req.getDescription()).
@@ -73,7 +73,7 @@ public class RoomService {
     @Transactional
     public void deleteRoom(String reqMemberId, Long roomId) {
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        if (!room.getManager().getMemberId().equals(reqMemberId))
+        if (!room.getManager().getMemberId().equals(reqMemberId)) //중복
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         room.delete();
     }

@@ -22,7 +22,7 @@ public class BaseEntityWithSoftDelete {
     private LocalDateTime updatedAt;
 
     @Column(name = "is_deleted")
-    private boolean isDeleted = Boolean.FALSE;
+    private Boolean isDeleted = Boolean.FALSE;
 
     public void deleteSoftly() {
         this.isDeleted = Boolean.TRUE;

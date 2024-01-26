@@ -4,6 +4,7 @@ import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.repository.BoardRepository;
+import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
@@ -38,10 +39,18 @@ public class BoardService {
     }
 
     @Transactional
-    public void update(BoardUpdateRequestDto req, Long boardId, String memberId) {
+    public Board update(BoardUpdateRequestDto req, Long boardId, String memberId) {
         Board board = boardRepository.findByIdAndIsDeletedFalse(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(board, memberId);
         board.update(req);
+        return board;
+    }
+
+    @Transactional
+    public void delete(String memberId, Long boardId) {
+        Board board = boardRepository.findByIdAndIsDeletedFalse(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        authorityValidation(board, memberId);
+        board.delete();
     }
 
     private void authorityValidation(Board board, String memberId) {

@@ -41,7 +41,6 @@ public class RoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @PostMapping("{roomId}/join")
     public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable long roomId){
         // 요청자 정보
