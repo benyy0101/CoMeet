@@ -8,18 +8,19 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid";
+import axios from "axios";
 
 type chatData = {
-  channelId: string;
+  chatId: string;
   sender: string;
   contents: string;
 };
 
 export default function Chat({
-  channelId,
+  chatId,
   username,
 }: {
-  channelId: string;
+  chatId: string;
   username: string;
 }) {
   const [rows, setRows] = useState<string[]>([]);
@@ -29,33 +30,51 @@ export default function Chat({
 
   const foldHandler = () => {
     setIsFolded(!isFolded);
-    console.log(isFolded);
   };
 
   useEffect(() => {
-    setRows([]);
+    axios
+      .get(
+        process.env.REACT_APP_OPENVIDU_SERVER_URL +
+          `chat/messages?type=CHANNEL&chatId=${chatId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        setRows(response.data);
 
-    stompClient.current = Stomp.over(() => {
-      const sock = new SockJS("http://localhost:5000/chatting");
-      return sock;
-    });
-
-    // connect(header,연결 성공시 콜백,에러발생시 콜백)
-    stompClient.current.connect(
-      {},
-      function () {
-        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.current!.subscribe(`/topic/${channelId}`, function (e) {
-          //e.body에 전송된 data가 들어있다
-          showMessage(JSON.parse(e.body));
+        stompClient.current = Stomp.over(() => {
+          const sock = new SockJS("http://localhost:5000/chatting");
+          return sock;
         });
-      },
-      function (e: any) {
-        //에러 콜백
-        alert("에러발생!!!!!!");
-      }
-    );
-  }, [channelId]);
+
+        // connect(header,연결 성공시 콜백,에러발생시 콜백)
+        stompClient.current.connect(
+          {},
+          function () {
+            //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+            if (stompClient.current) {
+              stompClient.current.subscribe(
+                `/topic/channel/${chatId}`,
+                function (e) {
+                  //e.body에 전송된 data가 들어있다
+                  showMessage(JSON.parse(e.body));
+                }
+              );
+            }
+          },
+          function (e: any) {
+            //에러 콜백
+            alert("에러발생!!!!!!");
+          }
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [chatId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: chatData) {
@@ -68,7 +87,7 @@ export default function Chat({
     e.preventDefault();
 
     const data: chatData = {
-      channelId,
+      chatId,
       sender: username,
       contents: message,
     };
