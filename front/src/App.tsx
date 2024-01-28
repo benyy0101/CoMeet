@@ -82,6 +82,6 @@ const NavBarContainer = tw.div`
 `;
 
 const RoutesContainer = tw.div`
-  h-[calc(100vh-3rem)]
+
 `;
 export default App;

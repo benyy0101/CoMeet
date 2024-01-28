@@ -2,6 +2,7 @@ import React from "react";
 
 import tw from "tailwind-styled-components";
 import { BoardDetailWritingTotal } from "../components/BoardDetailWritingTotal";
+import { BoardDetailComment } from "../components/BoardDetailComment";
 
 export const RecruitBoardDetail = () => {
   return (
@@ -9,19 +10,33 @@ export const RecruitBoardDetail = () => {
       <WritingContainer>
         <BoardDetailWritingTotal />
       </WritingContainer>
+      <CommentContainer>
+        <BoardDetailComment />
+      </CommentContainer>
     </TotalContainer>
   );
 };
 
 const TotalContainer = tw.div`
 flex
+flex-col
 w-full
 h-full
-justify-center
-
+items-center
+bg-[#070311]
+pt-16
+pb-20
+min-h-svh
 `;
 
 const WritingContainer = tw.div`
-w-[750px]
-border-2
-border-gray-800`;
+w-[790px]
+
+mb-5
+border-b
+
+`;
+
+const CommentContainer = tw.div`
+w-[790px]
+`;
