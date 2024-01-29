@@ -14,7 +14,7 @@ import ConditionCheck from "./pages/ConditionCheck";
 import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
-import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
+//import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
 
@@ -51,10 +51,6 @@ function App() {
                   element={<Board isFree={true} isEdit={true} />}
                 />
                 {/* 모집게시판 글 상세보기 */}
-                <Route
-                  path="/recruit-board/:boardId"
-                  element={<RecruitBoardDetail />}
-                />
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
