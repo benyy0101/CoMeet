@@ -26,32 +26,30 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("")
-    public ResponseEntity signup(@RequestBody @Valid MemberSigninRequestDto req){
+    public ResponseEntity<String> signup(@RequestBody @Valid MemberSigninRequestDto req){
         req.setRoles(List.of("USER"));
         Member created = memberService.create(req);
-        return new ResponseEntity<String>(created.getMemberId(), HttpStatus.OK);
+        return ResponseEntity.ok(created.getMemberId());
     }
 
     @PatchMapping("")
     public ResponseEntity<Void> update(@Valid @RequestBody MemberUpdateRequestDto req){
-        // 요청자 정보 가져오기
         String memberId = MemberUtil.getMemberId();
         memberService.update(req, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/delete")
+    @DeleteMapping("")
     public ResponseEntity<Void> delete(){
-        // 요청자 정보 가져오기
         String memberId = MemberUtil.getMemberId();
         memberService.delete(memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> duplicationValidate(@RequestBody MemberDuplicationRequestDto req){
+    public ResponseEntity<Boolean> duplicationValidate(@Valid MemberDuplicationRequestDto req){
         if(req.isAllNull()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
-        return new ResponseEntity<Boolean>(memberService.duplicationValid(req),HttpStatus.OK);
+        return ResponseEntity.ok(memberService.duplicationValid(req));
     }
 
 }

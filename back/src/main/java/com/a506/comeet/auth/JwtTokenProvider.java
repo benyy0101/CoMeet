@@ -58,11 +58,10 @@ public class JwtTokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + accessTokenValidityInSeconds * 1000); // 24시간 추가
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
-                .setExpiration(accessTokenExpiresIn)
+                .setExpiration(new Date(now + accessTokenValidityInSeconds * 1000))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
@@ -114,6 +113,7 @@ public class JwtTokenProvider {
     // 토큰 정보를 검증하는 메서드
     public boolean validateToken(String encryptedAccessToken) {
         try {
+            log.info("encryptedAccessToken : {}", encryptedAccessToken);
             String accessToken = aes128Util.decryptAes(encryptedAccessToken);
             Jwts.parserBuilder()
                     .setSigningKey(key)

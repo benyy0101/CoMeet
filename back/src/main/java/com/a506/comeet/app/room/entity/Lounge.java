@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
+@SQLRestriction("is_deleted = 0")
 public class Lounge extends BaseEntityWithSoftDelete {
 
     @Id
@@ -28,9 +30,8 @@ public class Lounge extends BaseEntityWithSoftDelete {
     private String name;
 
     public void update(LoungeUpdateRequestDto req){
-        this.name = req.getName();
+        if (req.getName() != null) this.name = req.getName();
     }
-
 
     public void delete(){
         deleteSoftly();

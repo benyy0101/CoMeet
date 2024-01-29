@@ -39,7 +39,7 @@ public class MemberService {
 
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId){
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.updateMember(req);
     }
 
@@ -49,7 +49,7 @@ public class MemberService {
 
     @Transactional
     public void delete(String memberId) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
     }

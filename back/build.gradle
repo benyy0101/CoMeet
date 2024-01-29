@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
+	id "org.sonarqube" version "4.4.1.3373"
 }
 
 group = 'com.a506'
@@ -11,6 +12,7 @@ java {
 	sourceCompatibility = '17'
 }
 
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -19,6 +21,14 @@ configurations {
 
 repositories {
 	mavenCentral()
+}
+
+sonar {
+	properties {
+		property "sonar.projectKey", "comeet-code-analysis"
+		property "sonar.host.url", "http://i10a506.p.ssafy.io:3401"
+		property "sonar.login", "sqp_74d57b5c8de20ea327e2f2f9b3ef35e73d80015b"
+	}
 }
 
 dependencies {
@@ -58,6 +68,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 }
+
+
 
 // querydsl 저장 위치
 def querydslSrcDir = 'src/main/generated'
