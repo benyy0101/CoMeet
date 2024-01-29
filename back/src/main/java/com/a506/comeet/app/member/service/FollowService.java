@@ -9,6 +9,9 @@ import com.a506.comeet.app.member.entity.Follow;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +32,9 @@ public class FollowService {
     @Transactional
     public String follow(FollowRequestDto req, String fromId) {
         if (req.getMemberId().equals(fromId)) return null;
-        Member from = memberRepository.findById(fromId).orElseGet(null);
-        Member to = memberRepository.findById(req.getMemberId()).orElseGet(null);
+        Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         Follow created = followRepository.save(new Follow(from, to));
         return created.getTo().getMemberId();
     }
@@ -38,9 +42,9 @@ public class FollowService {
     @Transactional
     public boolean unfollow(UnfollowRequestDto req, String fromId){
         if (req.getMemberId().equals(fromId)) return false;
-        Member from = memberRepository.findById(fromId).orElseGet(null);
-        Member to = memberRepository.findById(req.getMemberId()).orElseGet(null);
-        Follow find = followRepository.findByFromAndTo(from, to).get();
+        Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Follow find = followRepository.findByFromAndTo(from, to).orElseThrow(() -> new RestApiException(CommonErrorCode.WRONG_REQUEST));
         followRepository.delete(find);
         return true;
     }

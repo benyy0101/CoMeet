@@ -51,12 +51,14 @@ public class RoomService {
                 type(req.getType()).link("임시 Link, 추후 구현 필요").build();
 
         Room created = roomRepository.save(room);
-        for (Long keywordId : req.getKeywordIds()) {
-            Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-            RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(created, keyword));
-            room.addKeyword(roomKeyword);
+        if (req.getKeywordIds() != null){
+            for (Long keywordId : req.getKeywordIds()) {
+                Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+                RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(created, keyword));
+                room.addKeyword(roomKeyword);
+            }
         }
-        if (req.getType().equals(RoomType.PERMANENT))
+        if (req.getType() != null && req.getType().equals(RoomType.PERMANENT))
             joinMemberInnerLogic(member, created);
         return created;
     }
@@ -69,7 +71,7 @@ public class RoomService {
                 memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))
                 : null;
         room.updateRoom(req, newManager);
-        updateRoomKeywords(req, room);
+        if (req.getKeywordIds() != null) updateRoomKeywords(req, room);
     }
 
     @Transactional
@@ -98,6 +100,10 @@ public class RoomService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         roomMember.leaveRoom();
+
+        // 방장 나가면 그냥 삭제되도록 구현함
+        if (room.getManager().equals(member))
+            room.delete();
     }
 
     public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto requestDto) {

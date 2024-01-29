@@ -3,21 +3,21 @@ package com.a506.comeet.app.etc.controller.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Getter
-public class TilRequestDto {
+@Setter
+@NoArgsConstructor
+public class TilUpdateRequestDto {
 
     @NotNull
     public String context;
 
-    @NotNull
-    public LocalDate date;
-
     @Builder
-    public TilRequestDto(String context, LocalDate date) {
+    public TilUpdateRequestDto(String context) {
         this.context = context;
-        this.date = date;
     }
 }

@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@Setter
 public class RoomCreateRequestDto {
 
     @Setter
@@ -29,7 +31,9 @@ public class RoomCreateRequestDto {
     @Min(value = 1, message = "최소값은 1입니다.")
     @Max(value = 20, message = "최대값은 20입니다.")
     private int capacity;
+    @NotNull
     private RoomConstraints constraints;
+    @NotNull
     private RoomType type;
     private List<Long> keywordIds;
 

@@ -50,7 +50,7 @@ public class RoomController {
     }
 
 
-    @PostMapping("/join{roomId}")
+    @PostMapping("/join/{roomId}")
     public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable Long roomId){
         String memberId = MemberUtil.getMemberId();
         roomService.join(req, memberId, roomId);

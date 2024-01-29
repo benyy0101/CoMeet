@@ -8,6 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface TilRepository extends JpaRepository<Til, Long>, TilCustomRepository{
-
-    public Optional<Til> findByIdAndIsDeletedFalse(Long id);
 }
