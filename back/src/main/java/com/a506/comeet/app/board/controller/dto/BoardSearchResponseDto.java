@@ -25,8 +25,9 @@ public class BoardSearchResponseDto {
     private String roomDescription; //방 소개
     private Integer roomMcount; //방 현재 인원수
     private Integer roomCapacity; //방 최대 인원수
-    private String link; //방 url
+    private String RoomLink; //방 url
     private String roomImage; //방 이미지
+    private Boolean isLocked; //방 잠금 여부
 
     private String writerNickname; //작성자 닉네임
     private String writerImage; //작성자 이미지
@@ -51,8 +52,9 @@ public class BoardSearchResponseDto {
                 .roomDescription(room != null ? room.getDescription() : null)
                 .roomMcount(room != null ? room.getMcount() : null)
                 .roomCapacity(room != null ? room.getCapacity() : null)
-                .link(room != null ? room.getLink() : null)
+                .RoomLink(room != null ? room.getLink() : null)
                 .roomImage(room != null ? room.getRoomImage() : null)
+                .isLocked(room != null ? room.getIsLocked() : null)
 
                 .writerNickname(writer.getNickname())
                 .writerImage(writer.getProfileImage())
