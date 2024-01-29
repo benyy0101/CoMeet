@@ -8,18 +8,23 @@ import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid";
+import axios from "axios";
 
 type chatData = {
-  channelId: string;
-  sender: string;
-  contents: string;
+  chatId: number;
+  type: string;
+  memberId: string;
+  nickname: string;
+  message: string;
+  imageUrl: string;
+  createdAt: string;
 };
 
 export default function Chat({
-  channelId,
+  chatId,
   username,
 }: {
-  channelId: string;
+  chatId: number;
   username: string;
 }) {
   const [rows, setRows] = useState<string[]>([]);
@@ -29,52 +34,75 @@ export default function Chat({
 
   const foldHandler = () => {
     setIsFolded(!isFolded);
-    console.log(isFolded);
   };
 
   useEffect(() => {
-    setRows([]);
+    axios
+      .get(
+        process.env.REACT_APP_OPENVIDU_SERVER_URL +
+          `chat/messages?type=CHANNEL&chatId=${chatId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        setRows(response.data);
 
-    stompClient.current = Stomp.over(() => {
-      const sock = new SockJS("http://localhost:5000/chatting");
-      return sock;
-    });
-
-    // connect(header,연결 성공시 콜백,에러발생시 콜백)
-    stompClient.current.connect(
-      {},
-      function () {
-        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.current!.subscribe(`/topic/${channelId}`, function (e) {
-          //e.body에 전송된 data가 들어있다
-          showMessage(JSON.parse(e.body));
+        stompClient.current = Stomp.over(() => {
+          const sock = new SockJS("http://localhost:5000/chatting");
+          return sock;
         });
-      },
-      function (e: any) {
-        //에러 콜백
-        alert("에러발생!!!!!!");
-      }
-    );
-  }, [channelId]);
+
+        // connect(header,연결 성공시 콜백,에러발생시 콜백)
+        stompClient.current.connect(
+          {},
+          function () {
+            //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+            if (stompClient.current) {
+              stompClient.current.subscribe(
+                `/topic/channel/${chatId}`,
+                function (e) {
+                  //e.body에 전송된 data가 들어있다
+                  showMessage(JSON.parse(e.body));
+                  console.log(e.body);
+                }
+              );
+            }
+          },
+          function (e: any) {
+            //에러 콜백
+            alert("에러발생!!!!!!");
+          }
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [chatId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: chatData) {
-    const new_chat: string = data.sender + ": " + data.contents;
+    const new_chat: string = data.nickname + ": " + data.message;
     setRows((prev: string[]) => [...prev, new_chat] as string[]);
   }
 
   //메시지 브로커로 메시지 전송
   function send(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    console.log(message);
     const data: chatData = {
-      channelId,
-      sender: username,
-      contents: message,
+      chatId: chatId,
+      type: "CHANNEL",
+      memberId: "heeyeon3050",
+      nickname: username,
+      message: message,
+      imageUrl: "",
+      createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
     if (stompClient.current) {
-      stompClient.current?.send("/app/chat/send", {}, JSON.stringify(data));
+      stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
     }
     setMessage("");
   }

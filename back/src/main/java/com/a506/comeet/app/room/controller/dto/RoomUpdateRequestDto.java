@@ -7,13 +7,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class RoomUpdateRequestDto {
     @Setter
     private String mangerId;

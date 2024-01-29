@@ -73,9 +73,15 @@ public class RoomService {
     }
 
     @Transactional
+<<<<<<< back/src/main/java/com/a506/comeet/app/room/service/RoomService.java
     public void delete(String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         if (!room.getManager().getMemberId().equals(memberId))
+=======
+    public void deleteRoom(String reqMemberId, Long roomId) {
+        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        if (!room.getManager().getMemberId().equals(reqMemberId)) //중복
+>>>>>>> back/src/main/java/com/a506/comeet/app/room/service/RoomService.java
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         room.delete();
     }

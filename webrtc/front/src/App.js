@@ -16,8 +16,10 @@ import {
   VideoCameraIcon,
   SignalIcon,
   SignalSlashIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/solid";
 import Chat from "./Chat";
+import ShareEditor from "./ShareEditor";
 
 export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
@@ -25,9 +27,7 @@ export default function App() {
   const [isJoined, setIsJoined] = useState(false);
 
   const [mySessionId, setMySessionId] = useState("");
-  const [myUserName, setMyUserName] = useState(
-    `사용자 ${Math.floor(Math.random() * 100)}`
-  );
+  const [myUserName, setMyUserName] = useState(`사용자 ${Math.floor(Math.random() * 100)}`);
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
@@ -37,6 +37,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
   const [isScreenShared, setIsScreenShared] = useState(false);
+  const [filterApplied, setFilterApplied] = useState(false);
 
   const OV = useRef(new OpenVidu());
 
@@ -97,15 +98,13 @@ export default function App() {
             resolution: "640x480",
             frameRate: 30,
             insertMode: "APPEND",
-            mirror: false,
+            mirror: true,
           });
-
+          publisher.subscribeToRemote();
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -118,11 +117,7 @@ export default function App() {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -147,9 +142,7 @@ export default function App() {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -203,9 +196,7 @@ export default function App() {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   const createSession = async (sessionId) => {
@@ -233,6 +224,7 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       publisher.publishAudio(!isMuted);
+    } else {
     }
   }, [isMuted]);
 
@@ -251,6 +243,16 @@ export default function App() {
       }
     }
   }, [isScreenShared]);
+
+  useEffect(() => {
+    if (publisher) {
+      if (filterApplied) {
+        publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
+      } else {
+        publisher.stream.removeFilter();
+      }
+    }
+  }, [filterApplied]);
 
   const startScreenShare = async () => {
     let publisherScreen = await OV.current.initPublisherAsync(undefined, {
@@ -400,7 +402,8 @@ export default function App() {
               <VideoContainer>
                 {session !== undefined && (
                   <ChatContainer>
-                    <Chat chatId={mySessionId} username={myUserName} />
+                    {/* <Chat chatId={mySessionId} username={myUserName} /> */}
+                    <ShareEditor session={session} username={myUserName} />
                   </ChatContainer>
                 )}
                 {/* 클릭시 나오는 확대 영상 */}
@@ -411,17 +414,12 @@ export default function App() {
                 ) : null} */}
                 <GridContainer>
                   {publisher !== undefined && (
-                    <StreamContainer
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
+                    <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
                       <UserVideoComponent streamManager={publisher} />
                     </StreamContainer>
                   )}
                   {subscribers.map((sub, i) => (
-                    <StreamContainer
-                      key={sub.id}
-                      onClick={() => handleMainVideoStream(sub)}
-                    >
+                    <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                       <UserVideoComponent streamManager={sub} />
                     </StreamContainer>
                   ))}
@@ -438,22 +436,25 @@ export default function App() {
                   <SpeakerWaveIcon className="w-8 h-8" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton
-                onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-              >
+              <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                 {isVideoDisabled ? (
                   <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
                 ) : (
                   <VideoCameraIcon className="w-8 h-8" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton
-                onClick={() => setIsScreenShared(!isScreenShared)}
-              >
+              <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
                 {isScreenShared ? (
                   <SignalIcon className="w-8 h-8" />
                 ) : (
                   <SignalSlashIcon className="w-8 h-8 text-red-400" />
+                )}
+              </ControlPanelButton>
+              <ControlPanelButton onClick={() => setFilterApplied(!filterApplied)}>
+                {filterApplied ? (
+                  <SparklesIcon className="w-8 h-8 text-yellow-400" />
+                ) : (
+                  <SparklesIcon className="w-8 h-8 " />
                 )}
               </ControlPanelButton>
             </ControlPanel>
