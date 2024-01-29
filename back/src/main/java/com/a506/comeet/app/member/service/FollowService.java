@@ -1,8 +1,8 @@
 package com.a506.comeet.app.member.service;
 
-import com.a506.comeet.app.member.controller.FollowRequestDto;
-import com.a506.comeet.app.member.controller.FollowerRequestDto;
-import com.a506.comeet.app.member.controller.FollowingReqeustDto;
+import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowerRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowingReqeustDto;
 import com.a506.comeet.app.member.controller.UnfollowRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
 import com.a506.comeet.app.member.entity.Follow;

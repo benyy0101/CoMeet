@@ -49,7 +49,7 @@ public class LoungeCUDTest {
 
     @BeforeEach
     public void init(){
-        manager = Member.builder().memberId("멤버1").build();
+        manager = Member.builder().memberId("멤버1").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(manager);
         em.flush();
         em.clear();
@@ -66,7 +66,7 @@ public class LoungeCUDTest {
     @Transactional
     void createTest(){
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
-        Lounge lounge = loungeService.createLounge(req);
+        Lounge lounge = loungeService.createLounge(req, "멤버1");
 
         for (Lounge c : loungeRepository.findAll()) {
             log.info("id : {}", lounge.getId());
@@ -80,13 +80,13 @@ public class LoungeCUDTest {
     @Transactional
     void updateTest(){
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
-        Lounge lounge = loungeService.createLounge(req);
+        Lounge lounge = loungeService.createLounge(req, "멤버1");
         log.info("채널 삭제됨? : {}", lounge.isDeleted());
         lounge = loungeRepository.findAll().get(0);
         log.info("채널 삭제됨?????? : {}", lounge.isDeleted());
 
         LoungeUpdateRequestDto req2 = new LoungeUpdateRequestDto("lounge2");
-        loungeService.updateLounge(req2, lounge.getId());
+        loungeService.updateLounge(req2, lounge.getId(), "멤버1");
 
         log.info("id : {}", lounge.getId());
         log.info("name : {}", lounge.getName());
@@ -99,11 +99,11 @@ public class LoungeCUDTest {
     @Transactional
     void deleteTest(){
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
-        Lounge lounge = loungeService.createLounge(req);
-        lounge = loungeRepository.findAll().get(0);
+        loungeService.createLounge(req, "멤버1");
+        Lounge lounge = loungeRepository.findAll().get(0);
 
         assertThat(room.getLounges().size()).isEqualTo(1);
-        loungeService.deleteLounge(lounge.getId());
+        loungeService.deleteLounge(lounge.getId(), "멤버1");
         assertThat(loungeRepository.findById(lounge.getId()).get().isDeleted()).isTrue();
         assertThat(room.getLounges().size()).isEqualTo(0);
     }
@@ -113,8 +113,8 @@ public class LoungeCUDTest {
     void roomDeleteTest(){
         Room room = roomRepository.findByTitle("title");
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
-        Lounge lounge = loungeService.createLounge(req);
-        lounge = loungeRepository.findAll().get(0);
+        loungeService.createLounge(req, "멤버1");
+        Lounge lounge = loungeRepository.findAll().get(0);
 
         room.delete();
         assertThat(room.getLounges().size()).isEqualTo(0);

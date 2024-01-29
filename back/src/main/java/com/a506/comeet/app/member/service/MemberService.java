@@ -10,6 +10,7 @@ import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +22,18 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Transactional
     public Member create(MemberSigninRequestDto req) {
         Member member = Member.builder().
                 memberId(req.getMemberId()).
                 name(req.getName()).
-                password(req.getPassword()).
+                password(passwordEncoder.encode(req.getPassword())). // 비밀번호 인코딩
                 email(req.getEmail()).
-                nickname(req.getNickname()).build();
+                nickname(req.getNickname()).
+                roles(req.roles).
+                build();
         return memberRepository.save(member);
     }
 

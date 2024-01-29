@@ -26,29 +26,31 @@ public class LoungeService {
 
 
     @Transactional
-    public Lounge createLounge(LoungeCreateRequestDto req) {
-        // 사용자가 방장인지 확인하는 로직 필요
-        // throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
-
+    public Lounge createLounge(LoungeCreateRequestDto req, String memberId) {
         Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        // 사용자가 방장인지 확인
+        managerAuthorization(memberId, room);
 
         // 이름 중복 확인 로직
         for(Lounge l : room.getLounges()){
             if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
 
-        Lounge lounge = Lounge.builder().name(req.getName()).room(room).build();
+        Lounge lounge = loungeRepository.save(Lounge.builder().name(req.getName()).room(room).build());
         room.addLounge(lounge);
-        return loungeRepository.save(lounge);
+        return lounge;
     }
 
 
     @Transactional
-    public void updateLounge(LoungeUpdateRequestDto req, Long loungeId) {
-        // 사용자가 방장인지 확인하는 로직 필요
+    public void updateLounge(LoungeUpdateRequestDto req, Long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = lounge.getRoom(); // 프록시
+        // 사용자가 방장인지 확인
+        managerAuthorization(memberId, room);
+
         // 이름 중복 확인 로직
-        for(Lounge l : lounge.getRoom().getLounges()){
+        for(Lounge l : room.getLounges()){
             if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         }
         lounge.update(req);
@@ -56,9 +58,17 @@ public class LoungeService {
     }
 
     @Transactional
-    public void deleteLounge(long loungeId) {
-        // 사용자가 방장인지 확인하는 로직 필요
+    public void deleteLounge(long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findByIdAndIsDeletedFalse(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
+        // 사용자가 방장인지 확인
+        managerAuthorization(memberId, lounge.getRoom());
+
         lounge.delete();
+    }
+
+    private void managerAuthorization(String memberId, Room room){
+        if (!memberId.equals(room.getManager().getMemberId()))
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
     }
 }

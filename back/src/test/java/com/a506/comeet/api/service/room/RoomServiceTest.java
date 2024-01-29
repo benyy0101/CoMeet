@@ -76,13 +76,13 @@ class RoomServiceTest {
     @Test
     @Transactional
     void createTest(){
-        Member manager = Member.builder().memberId("멤버1").build();
+        Member manager = Member.builder().memberId("매니저").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(manager);
         em.flush();
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                mangerId("매니저").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
 
@@ -96,8 +96,8 @@ class RoomServiceTest {
     @Transactional
     void updateTest(){
 
-        Member manager = Member.builder().memberId("멤버1").build();
-        Member newManager = Member.builder().memberId("멤버2").build();
+        Member manager = Member.builder().memberId("멤버1").email("ee").name("ss").nickname("ss").password("ss").build();
+        Member newManager = Member.builder().memberId("멤버2").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(manager);
         em.persist(newManager);
         em.flush();
@@ -124,8 +124,8 @@ class RoomServiceTest {
 
         //given
         // Manager 멤버 생성
-        Member manager = Member.builder().memberId("멤버1").build();
-        Member tmpMember = Member.builder().memberId("멤버2").build();
+        Member manager = Member.builder().memberId("멤버1").email("ee").name("ss").nickname("ss").password("ss").build();
+        Member tmpMember = Member.builder().memberId("멤버2").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(manager);
         em.persist(tmpMember);
         em.flush();
@@ -140,7 +140,7 @@ class RoomServiceTest {
         Long roomId = roomService.createRoom(reqR).getId();
 
         // 가입할 멤버 생성
-        Member member = Member.builder().memberId("member1").build();
+        Member member = Member.builder().memberId("member1").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(member);
         em.flush();
         em.clear();

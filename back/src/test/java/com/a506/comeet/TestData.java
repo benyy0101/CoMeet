@@ -2,7 +2,7 @@ package com.a506.comeet;
 
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
-import com.a506.comeet.app.member.controller.FollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.member.service.FollowService;
@@ -95,8 +95,8 @@ public class TestData {
         }
 
         for (int i = 1; i <= 20; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i));
-            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i));
+            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i), "멤버1000");
+            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i), "멤버1000");
         }
     }
 
