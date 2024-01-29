@@ -16,6 +16,7 @@ import {
   VideoCameraIcon,
   SignalIcon,
   SignalSlashIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/solid";
 import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
@@ -36,6 +37,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
   const [isScreenShared, setIsScreenShared] = useState(false);
+  const [filterApplied, setFilterApplied] = useState(false);
 
   const OV = useRef(new OpenVidu());
 
@@ -96,9 +98,9 @@ export default function App() {
             resolution: "640x480",
             frameRate: 30,
             insertMode: "APPEND",
-            mirror: false,
+            mirror: true,
           });
-
+          publisher.subscribeToRemote();
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
@@ -222,6 +224,7 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       publisher.publishAudio(!isMuted);
+    } else {
     }
   }, [isMuted]);
 
@@ -240,6 +243,16 @@ export default function App() {
       }
     }
   }, [isScreenShared]);
+
+  useEffect(() => {
+    if (publisher) {
+      if (filterApplied) {
+        publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
+      } else {
+        publisher.stream.removeFilter();
+      }
+    }
+  }, [filterApplied]);
 
   const startScreenShare = async () => {
     let publisherScreen = await OV.current.initPublisherAsync(undefined, {
@@ -435,6 +448,13 @@ export default function App() {
                   <SignalIcon className="w-8 h-8" />
                 ) : (
                   <SignalSlashIcon className="w-8 h-8 text-red-400" />
+                )}
+              </ControlPanelButton>
+              <ControlPanelButton onClick={() => setFilterApplied(!filterApplied)}>
+                {filterApplied ? (
+                  <SparklesIcon className="w-8 h-8 text-yellow-400" />
+                ) : (
+                  <SparklesIcon className="w-8 h-8 " />
                 )}
               </ControlPanelButton>
             </ControlPanel>
