@@ -14,6 +14,9 @@ import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
 import TextEditor from "./components/TextEditor";
+import { RecruitBoardList } from "./pages/RecruitBoardList";
+import { FreeBoardList } from "./pages/FreeBoardList";
+import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 
 function App() {
   //임시
@@ -37,8 +40,25 @@ function App() {
               <>
                 <Route path="/roomlist" element={<RoomList />}></Route>
 
+                {/* 커뮤니티인데 곧 삭제 예정... */}
                 <Route path="/community" element={<Community />}></Route>
 
+                {/* 모집 게시판 */}
+                <Route
+                  path="/recruit-board"
+                  element={<RecruitBoardList />}
+                ></Route>
+
+                {/* 모집게시판 글 상세보기 */}
+                <Route
+                  path="/recruit-board/:boardId"
+                  element={<RecruitBoardDetail />}
+                ></Route>
+
+                {/* 자유 게시판 */}
+                <Route path="/free-board" element={<FreeBoardList />}></Route>
+
+                {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />}></Route>
 
                 <Route path="/room/:roomId/*" element={<Room />}></Route>

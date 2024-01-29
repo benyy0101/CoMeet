@@ -7,9 +7,7 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +55,6 @@ public class Room extends BaseEntityWithSoftDelete {
     private RoomConstraints constraints;
     @Enumerated(EnumType.STRING)
     private RoomType type;
-
-
 
     @Builder
     public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
@@ -116,5 +112,4 @@ public class Room extends BaseEntityWithSoftDelete {
         this.roomKeywords = new ArrayList<>();
         this.roomMembers = new ArrayList<>();
     }
-
 }

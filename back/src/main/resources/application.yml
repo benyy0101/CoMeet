@@ -6,12 +6,22 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 #    show-sql: true
+
+  jwt:
+    header: Authorization
+    secret: 394763e7b962d3dbb8367630e7b9e7fa02a5ad01da0387f4f68c0df9f052de83
+    token-validity-in-seconds : 86400
+
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
 
 logging.level:
   org.hibernate.SQL: debug

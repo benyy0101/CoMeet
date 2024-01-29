@@ -1,5 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
+import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
@@ -17,45 +18,38 @@ public class RoomController {
 
     private final RoomService roomService;
 
-
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody RoomCreateRequestDto req) {
-        // 요청자 정보 가져오기
-        req.setMangerId("요청자_임시매니저"); // 요청자 정보를 manager로 설정
+        String memberId = MemberUtil.getMemberId();
+        req.setMangerId(memberId);
         Room created = roomService.createRoom(req);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
 
-
     @PatchMapping("{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable long roomId){
-        // 요청자 정보 가져오기
-        String reqMemberId = "요청자";
+        String reqMemberId = MemberUtil.getMemberId();
         roomService.updateRoom(req, reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/{roomId}/delete")
     public ResponseEntity<Void> delete(@PathVariable long roomId){
-        // 요청자 정보 가져오기
-        String reqMemberId = "요청자";
+        String reqMemberId = MemberUtil.getMemberId();
         roomService.deleteRoom(reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @PostMapping("{roomId}/join")
     public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable long roomId){
-        // 요청자 정보
-        String memberId = "방장";
-        roomService.joinMember(req, memberId, roomId);
+        String reqMemberId = MemberUtil.getMemberId();
+        roomService.joinMember(req, reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{roomId}/exit")
     public ResponseEntity<Void> leave(@PathVariable long roomId){
-        // 요청자 정보 가져오기
-        String reqMemberId = "요청자";
+        String reqMemberId = MemberUtil.getMemberId();
         roomService.leaveRoom(reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -71,8 +65,7 @@ public class RoomController {
     // 수정 필요합니다
     @GetMapping("/{roomId}")
     public ResponseEntity<?> enter(@PathVariable Long roomId){
-        // 현재 유저 정보 가져오기
-        String memberId = "멤버아이디";
+        String memberId = MemberUtil.getMemberId();
         RoomResponseDto res = roomService.enterRoom(roomId, memberId);
         return new ResponseEntity<RoomResponseDto>(res, HttpStatus.OK);
     }

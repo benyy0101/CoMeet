@@ -1,25 +1,19 @@
 package com.a506.comeet.member.service;
 
-import com.a506.comeet.app.member.entity.Follow;
 import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.service.FollowService;
-import com.a506.comeet.app.member.controller.FollowRequestDto;
-import com.a506.comeet.app.member.controller.FollowerRequestDto;
-import com.a506.comeet.app.member.controller.FollowingReqeustDto;
+import com.a506.comeet.app.member.controller.dto.FollowerRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowingReqeustDto;
 import com.a506.comeet.app.member.controller.UnfollowRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
-import com.a506.comeet.app.member.entity.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

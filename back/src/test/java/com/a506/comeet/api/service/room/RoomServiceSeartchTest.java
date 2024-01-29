@@ -52,7 +52,7 @@ public class RoomServiceSeartchTest {
     @Transactional
     void basicTest(){
 
-        Member manager = Member.builder().memberId("매니저").build();
+        Member manager = Member.builder().memberId("매니저").email("ee").name("ss").nickname("ss").password("ss").build();
         em.persist(manager);
         em.flush();
         em.clear();

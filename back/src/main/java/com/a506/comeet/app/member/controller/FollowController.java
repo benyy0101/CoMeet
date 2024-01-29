@@ -1,5 +1,9 @@
 package com.a506.comeet.app.member.controller;
 
+import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowerRequestDto;
+import com.a506.comeet.app.member.controller.dto.FollowingReqeustDto;
 import com.a506.comeet.app.member.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
@@ -16,14 +20,14 @@ public class FollowController {
 
     @PostMapping("/follow")
     public ResponseEntity<?> follow(@RequestBody FollowRequestDto req){
-        String reqMemberId = "요청자";
-        String res = followService.follow(req, reqMemberId);
+        String memberId = MemberUtil.getMemberId();
+        String res = followService.follow(req, memberId);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
     @DeleteMapping("/unfollow")
     public ResponseEntity<?> unfollow(@RequestBody UnfollowRequestDto req){
-        String reqMemberId = "요청자";
+        String reqMemberId = MemberUtil.getMemberId();
         if(!followService.unfollow(req, reqMemberId)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

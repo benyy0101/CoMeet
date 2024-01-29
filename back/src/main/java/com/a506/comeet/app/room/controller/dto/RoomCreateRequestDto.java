@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@Builder
+@NoArgsConstructor
 public class RoomCreateRequestDto {
 
     @Setter
@@ -33,7 +36,6 @@ public class RoomCreateRequestDto {
     private RoomType type;
     private List<Long> keywordIds;
 
-    @Builder
     public RoomCreateRequestDto(String mangerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, List<Long> keywordIds) {
         this.mangerId = mangerId;
         this.title = title;

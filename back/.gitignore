@@ -173,5 +173,6 @@ gradle-app.setting
 
 .idea/
 
-*.yml
+src/main/resources/application.yml
+test/main/resources/application.yml
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,gradle
