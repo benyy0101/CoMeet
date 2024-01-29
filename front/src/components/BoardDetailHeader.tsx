@@ -1,7 +1,7 @@
 // 게시글 제목, 작성자 닉네임, 제목, 좋아요 수, 모집중 여부,
 // 방 Id, 키워드들, 작성 날짜
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import tw from "tailwind-styled-components";
 
@@ -9,52 +9,50 @@ import StarFill from "../assets/img/star-fill.svg";
 import StarEmpty from "../assets/img/star-empty.svg";
 
 export const BoardDetailHeader: React.FC<{
+  nickname: string;
+  title: string;
+  likecount: number;
+  valid: boolean;
+  createdAt: string;
+  category: string;
   isLiked: boolean;
 }> = (props) => {
-  //모두 받아오는 데이터들
-  //작성자 ID
-  const writerId = "movingGun";
-  //작성자 닉네임
-  const nickname = "마스터";
-  //제목
-  const title = "알고리즘 스터디 ";
-  //본문
-  const context = "서울 5반 알고리즘 스터디 들어오세여";
-  //좋아요 수
-  const likecount = 20;
-  //게시글 타입 - 모집/자유
-  const type = "recruit";
-  //모집중 여부
-  const valid = true;
-  //방 Id
-  const roomId = "10";
-  //키워드들
-  const keywords = "java springBoot";
-  //작성 날짜
-  const createdAt = "2024-01-26";
+  let categoryTitle: string = "";
 
-  //글을 보는 유저가 해당 글을 좋아요 했는지 유무
-  // const like = false;
-
-  //방 유효한지
-  const [isValid, setIsValid] = useState<boolean>(valid);
-
-  //좋아요 했는지 - 이거 user에 추가해야 하나?
-  // const [isLiked, setIsLiked] = useState<boolean>(like);
+  switch (props.category) {
+    case "CHAT":
+      categoryTitle = "잡담";
+      break;
+    case "TIP":
+      categoryTitle = "팁/정보";
+      break;
+    case "QUESTION":
+      categoryTitle = "질문하기";
+      break;
+    case "PROMOTION":
+      categoryTitle = "구인구직";
+      break;
+  }
 
   return (
     <HeaderTotalContainer>
       <TitleTotalContainer>
-        <Title>{title}</Title>
-        {isValid ? (
-          <RecruitTrue>모집중</RecruitTrue>
+        <Title>{props.title}</Title>
+        {props.category === "" ? (
+          <>
+            {props.valid ? (
+              <RecruitTrue>모집중</RecruitTrue>
+            ) : (
+              <RecruitFalse>모집완료</RecruitFalse>
+            )}
+          </>
         ) : (
-          <RecruitFalse>모집완료</RecruitFalse>
+          <FreeCategory>{categoryTitle}</FreeCategory>
         )}
       </TitleTotalContainer>
       <EtcContainer>
-        <NicnameContainer>{nickname}</NicnameContainer>
-        <DateContainer>{createdAt}</DateContainer>
+        <NicnameContainer>{props.nickname}</NicnameContainer>
+        <DateContainer>{props.createdAt}</DateContainer>
         <LikeContatiner>
           <LikeImg src={StarFill} alt="" />
           {/* {props.isLiked ? (
@@ -62,7 +60,7 @@ export const BoardDetailHeader: React.FC<{
             <LikeImg src={StarEmpty} alt="" />
           )} */}
           {/* useState로 likecount 관리 */}
-          {likecount}
+          {props.likecount}
         </LikeContatiner>
       </EtcContainer>
     </HeaderTotalContainer>
@@ -104,6 +102,10 @@ text-blue-500
 const RecruitFalse = tw.div`
 ml-5
 text-red-500
+`;
+
+const FreeCategory = tw.div`
+ml-5
 `;
 
 //닉네임, 날짜, 좋아요수 나타내는 컨테이너

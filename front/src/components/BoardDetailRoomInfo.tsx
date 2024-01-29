@@ -4,7 +4,7 @@ import tw from "tailwind-styled-components";
 
 import PoepleNumImg from "../assets/img/people-num.svg";
 
-export const BoardDetailRoomInfo = () => {
+export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
   //방 ID로 방 조회해서 가져올 것들
   //방 제목
   const roomTitle = "서울 5반 알고리즘";
@@ -15,6 +15,8 @@ export const BoardDetailRoomInfo = () => {
 
   //방 링크
   const roomLink = "http://localhost:3000/room/3";
+
+  //이미지도 가져오고
 
   return (
     <RoomHyper href={roomLink} target="_blank" rel="noopener noreferrer">
