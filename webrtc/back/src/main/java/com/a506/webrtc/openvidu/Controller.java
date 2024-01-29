@@ -51,7 +51,10 @@ public class Controller {
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+        ConnectionProperties properties = new ConnectionProperties.Builder().kurentoOptions(
+                new KurentoOptions.Builder()
+                        .allowedFilters(new String[]{"GStreamerFilter", "FaceOverlayFilter", "ChromaFilter"})
+                        .build()).build();
         Connection connection = session.createConnection(properties);
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
