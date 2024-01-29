@@ -1,12 +1,8 @@
 package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
-import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.member.entity.Like;
-import com.a506.comeet.app.member.entity.Member;
-import com.a506.comeet.app.room.entity.Channel;
-import com.a506.comeet.app.room.entity.Lounge;
-import com.a506.comeet.app.room.entity.RoomMember;
+import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
@@ -36,12 +32,14 @@ public class Board extends BaseEntityWithSoftDelete {
     private String writerId;
     private String title;
     private String content;
-    private Integer likecount;
+    @Column(name = "like_count")
+    private Integer likeCount;
     private BoardType type;
     private FreeBoardCategory category;
-    @Column(name = "room_id")
-    private Long roomId;
-    private Boolean valid;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
+    private Boolean isValid;
 
     @OneToMany(mappedBy = "board")
     private List<Like> likes = new ArrayList<>();
@@ -53,8 +51,8 @@ public class Board extends BaseEntityWithSoftDelete {
             this.content = req.getContent();
         if(req.getCategory() != null)
             this.category = req.getCategory();
-        if(req.getValid() != null)
-            this.valid = req.getValid();
+        if(req.getIsValid() != null)
+            this.isValid = req.getIsValid();
     }
 
     public void delete() {
