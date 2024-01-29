@@ -111,10 +111,9 @@ public class JwtTokenProvider {
     }
 
     // 토큰 정보를 검증하는 메서드
-    public boolean validateToken(String encryptedAccessToken) {
+    public boolean validateToken(String accessToken) {
         try {
-            log.info("encryptedAccessToken : {}", encryptedAccessToken);
-            String accessToken = aes128Util.decryptAes(encryptedAccessToken);
+            log.debug("accessToken : {}", accessToken);
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()

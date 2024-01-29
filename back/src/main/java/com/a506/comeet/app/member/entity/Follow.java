@@ -10,7 +10,6 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@SQLRestriction("is_deleted = 0")
 public class Follow {
 
     @Id

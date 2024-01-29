@@ -52,11 +52,13 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     private String profileImage = "default_profile_image_letsgo";
     @Column(nullable = false)
     private String email;
+
     @Builder.Default
     private String description = "default_description_letsgo";
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Column(name = "feature")
     private MemberFeature feature = MemberFeature.EARTH;
 
     @Builder.Default

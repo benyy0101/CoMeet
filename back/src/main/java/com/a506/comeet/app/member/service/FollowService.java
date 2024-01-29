@@ -26,6 +26,7 @@ public class FollowService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
     public String follow(FollowRequestDto req, String fromId) {
         if (req.getMemberId().equals(fromId)) return null;
         Member from = memberRepository.findById(fromId).orElseGet(null);
@@ -34,6 +35,7 @@ public class FollowService {
         return created.getTo().getMemberId();
     }
 
+    @Transactional
     public boolean unfollow(UnfollowRequestDto req, String fromId){
         if (req.getMemberId().equals(fromId)) return false;
         Member from = memberRepository.findById(fromId).orElseGet(null);

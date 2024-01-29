@@ -32,6 +32,7 @@ public class AuthController {
 
     @PostMapping("/test")
     public String test(){
+        log.info("test 완료");
         return MemberUtil.getMemberId();
     }
 
