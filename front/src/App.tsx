@@ -16,7 +16,7 @@ import ConditionCheck from "./pages/ConditionCheck";
 import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
-import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
+import { BoardDetail } from "./pages/BoardDetail";
 
 function App() {
   //임시
@@ -52,11 +52,17 @@ function App() {
                 {/* 모집게시판 글 상세보기 */}
                 <Route
                   path="/recruit-board/:boardId"
-                  element={<RecruitBoardDetail />}
+                  element={<BoardDetail />}
                 ></Route>
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
+
+                {/* 자유게시판 글 상세보기 */}
+                <Route
+                  path="/free-board/:boardId"
+                  element={<BoardDetail />}
+                ></Route>
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />}></Route>

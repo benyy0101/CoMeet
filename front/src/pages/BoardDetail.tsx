@@ -4,7 +4,7 @@ import tw from "tailwind-styled-components";
 import { BoardDetailWritingTotal } from "../components/BoardDetailWritingTotal";
 import { BoardDetailComment } from "../components/BoardDetailComment";
 
-export const RecruitBoardDetail = () => {
+export const BoardDetail = () => {
   return (
     <TotalContainer>
       <WritingContainer>
