@@ -3,6 +3,7 @@ package com.a506.comeet.app.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import static lombok.AccessLevel.PROTECTED;
 

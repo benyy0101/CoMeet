@@ -3,6 +3,7 @@ package com.a506.comeet.auth;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 @Component
+@Slf4j
 public class AES128Util {
     private static final Charset ENCODING_TYPE = StandardCharsets.UTF_8;
     private static final String INSTANCE_TYPE = "AES/CBC/PKCS5Padding";
@@ -44,6 +46,7 @@ public class AES128Util {
             byte[] encryted = cipher.doFinal(plaintext.getBytes(ENCODING_TYPE));
             return new String(Base64.getEncoder().encode(encryted), ENCODING_TYPE);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new RestApiException(CustomErrorCode.ENCRYPTION_FAILED);
         }
     }
@@ -55,7 +58,8 @@ public class AES128Util {
             byte[] decoded = Base64.getDecoder().decode(plaintext.getBytes(ENCODING_TYPE));
             return new String(cipher.doFinal(decoded), ENCODING_TYPE);
         } catch (Exception e) {
-            throw new RestApiException(CustomErrorCode.ENCRYPTION_FAILED);
+            log.error(e.getMessage());
+            throw new RestApiException(CustomErrorCode.DECRYPTION_FAILED);
         }
     }
 }

@@ -26,7 +26,7 @@ public class ChannelService {
 
 
     @Transactional
-    public Channel createChannel(ChannelCreateRequestDto req, String memberId) {
+    public Channel create(ChannelCreateRequestDto req, String memberId) {
         Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, room);
@@ -43,7 +43,7 @@ public class ChannelService {
 
 
     @Transactional
-    public void updateChannel(ChannelUpdateRequestDto req, Long channelId, String memberId) {
+    public void update(ChannelUpdateRequestDto req, Long channelId, String memberId) {
         Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Room room = channel.getRoom();
         // 사용자가 방장인지 확인
@@ -58,7 +58,7 @@ public class ChannelService {
     }
 
     @Transactional
-    public void deleteChannel(long channelId, String memberId) {
+    public void delete(Long channelId, String memberId) {
         Channel channel = channelRepository.findByIdAndIsDeletedFalse(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, channel.getRoom());

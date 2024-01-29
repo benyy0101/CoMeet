@@ -32,7 +32,7 @@ public class TilService {
     public Til create(TilRequestDto req, String memberId) {
         if (tilRepository.tilWithMemberAndDateExists(memberId, LocalDateTime.now().toLocalDate()))
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Til til = new Til(member, req.getContext(), req.getDate());
         return tilRepository.save(til);
     }
@@ -52,7 +52,7 @@ public class TilService {
     }
 
     public TilResponseDto find(Long tilId){
-        Til til = tilRepository.findByIdAndIsDeletedFalse(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Til til = tilRepository.findById(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         return TilResponseDto.builder()
                 .id(til.getId())
                 .memberId(til.getMember().getMemberId())

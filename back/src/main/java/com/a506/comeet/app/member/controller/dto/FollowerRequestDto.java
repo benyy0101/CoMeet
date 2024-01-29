@@ -1,5 +1,6 @@
 package com.a506.comeet.app.member.controller.dto;
 
+import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import lombok.Getter;
 public class FollowerRequestDto {
     private int pageNo;
     private int pageSize;
+    @Nullable
     private String prevMemberId;
 
     @Builder

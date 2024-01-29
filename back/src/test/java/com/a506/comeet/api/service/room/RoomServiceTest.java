@@ -86,10 +86,10 @@ class RoomServiceTest {
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
 
-        Room room = roomService.createRoom(req);
+        Room room = roomService.create(req);
         assertThat(room.getTitle()).isEqualTo(req.getTitle());
         log.info("room id : {}", room.getId());
-        assertThat(roomMemberRepository.findByRoomAndMemberAndIsDeletedFalse(room, memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").orElse(null))).isNotNull();
+        assertThat(roomMemberRepository.findByRoomAndMember(room, memberRepository.findById("멤버1").orElse(null))).isNotNull();
     }
 
     @Test
@@ -108,10 +108,10 @@ class RoomServiceTest {
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
-        Room room = roomService.createRoom(req);
+        Room room = roomService.create(req);
 
         RoomUpdateRequestDto req2 = RoomUpdateRequestDto.builder().mangerId("멤버2").build();
-        roomService.updateRoom(req2, "멤버1", room.getId());
+        roomService.update(req2, "멤버1", room.getId());
 
         assertThat(room.getManager().getMemberId()).isEqualTo(req2.getMangerId());
         log.info("room manager Id : {}", room.getManager().getMemberId());
@@ -137,7 +137,7 @@ class RoomServiceTest {
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         // 생성된 방의 id
-        Long roomId = roomService.createRoom(reqR).getId();
+        Long roomId = roomService.create(reqR).getId();
 
         // 가입할 멤버 생성
         Member member = Member.builder().memberId("member1").email("ee").name("ss").nickname("ss").password("ss").build();
@@ -149,7 +149,7 @@ class RoomServiceTest {
         // 멤버를 방에 가입시킴
         log.info("멤버 방 가입");
         RoomJoinRequestDto req = new RoomJoinRequestDto("member1");
-        roomService.joinMember(req, "멤버1", roomId);
+        roomService.join(req, "멤버1", roomId);
 
         //assert
         Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
@@ -160,14 +160,14 @@ class RoomServiceTest {
         assertThat(room.getMcount()).isEqualTo(2);
 
         RoomJoinRequestDto req2 = new RoomJoinRequestDto("멤버2");
-        roomService.joinMember(req2, "멤버1", roomId);
+        roomService.join(req2, "멤버1", roomId);
         assertThat(room.getRoomMembers().size()).isEqualTo(3);
         assertThat(room.getRoomMembers().get(0).getRoom().getTitle()).isEqualTo("title");
         assertThat(room.getMcount()).isEqualTo(3);
 
         // leave
         log.info("멤버 방 나가기");
-        roomService.leaveRoom("member1", roomId);
+        roomService.leave("member1", roomId);
         room = roomRepository.findByIdAndIsDeletedFalse(roomId).get(); // 다시 가져와야?
         // assert
         assertThat(room.getRoomMembers().size()).isEqualTo(2);

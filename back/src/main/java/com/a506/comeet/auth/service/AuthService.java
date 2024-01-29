@@ -65,7 +65,6 @@ public class AuthService {
     public String reissueAccessToken(String encryptedRefreshToken) {
         // 유저가 제공한 refreshToken이 있는지 확인
         if (encryptedRefreshToken == null) throw new RestApiException(CustomErrorCode.HEADER_REFRESH_TOKEN_NOT_EXISTS);
-
         String refreshToken = aes128Util.decryptAes(encryptedRefreshToken);
 
         // userId 정보를 가져와서 redis에 있는 refreshtoken과 같은지 확인
@@ -79,7 +78,7 @@ public class AuthService {
     }
 
     private void memberIdAndPasswordValidation(String memberId, String password) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
         log.info("입력 패스워드 : {}", password);
         log.info("입력 encode {}", passwordEncoder.encode(password));
         log.info("db 패스워드 {}", member.getPassword());

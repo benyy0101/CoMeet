@@ -26,7 +26,7 @@ public class LoungeService {
 
 
     @Transactional
-    public Lounge createLounge(LoungeCreateRequestDto req, String memberId) {
+    public Lounge create(LoungeCreateRequestDto req, String memberId) {
         Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, room);
@@ -43,7 +43,7 @@ public class LoungeService {
 
 
     @Transactional
-    public void updateLounge(LoungeUpdateRequestDto req, Long loungeId, String memberId) {
+    public void update(LoungeUpdateRequestDto req, Long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Room room = lounge.getRoom(); // 프록시
         // 사용자가 방장인지 확인
@@ -58,7 +58,7 @@ public class LoungeService {
     }
 
     @Transactional
-    public void deleteLounge(long loungeId, String memberId) {
+    public void delete(Long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findByIdAndIsDeletedFalse(loungeId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         // 사용자가 방장인지 확인
