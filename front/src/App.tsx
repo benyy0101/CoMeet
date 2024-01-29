@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { TailwindComponent } from "tailwind-styled-components/dist/tailwind";
 import { NavBar } from "./components/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
@@ -10,13 +9,13 @@ import { Mypage } from "./pages/Mypage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { Room } from "./pages/Room";
-import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
 import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
 import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
+import Board from "./pages/Board";
 
 function App() {
   //임시
@@ -35,43 +34,43 @@ function App() {
         </NavBarContainer>
         <RoutesContainer>
           <Routes>
-            <Route path="/" element={<Mainpage />}></Route>
+            <Route path="/" element={<Mainpage />} />
             {isLogin ? (
               <>
-                <Route path="/roomlist" element={<RoomList />}></Route>
+                <Route path="/roomlist" element={<RoomList />} />
 
                 {/* 커뮤니티인데 곧 삭제 예정... */}
-                <Route path="/community" element={<Community />}></Route>
+                <Route path="/community" element={<Community />} />
 
                 {/* 모집 게시판 */}
-                <Route
-                  path="/recruit-board"
-                  element={<RecruitBoardList />}
-                ></Route>
+                <Route path="/recruit-board" element={<RecruitBoardList />} />
 
+                <Route
+                  path="/recruit-board/edit"
+                  element={<Board isFree={true} isEdit={true} />}
+                />
                 {/* 모집게시판 글 상세보기 */}
                 <Route
                   path="/recruit-board/:boardId"
                   element={<RecruitBoardDetail />}
-                ></Route>
+                />
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
 
                 {/* 마이페이지 */}
-                <Route path="/mypage" element={<Mypage />}></Route>
+                <Route path="/mypage" element={<Mypage />} />
 
-                <Route path="/room/:roomId/*" element={<Room />}></Route>
+                <Route path="/room/:roomId/*" element={<Room />} />
               </>
             ) : (
               <>
-                <Route path="/login" element={<LoginPage />}></Route>
-                <Route path="/signup" element={<SignupPage />}></Route>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
               </>
             )}
-            <Route path="/new-room" element={<NewRoom />}></Route>
-            <Route path="/before-entrance" element={<ConditionCheck />}></Route>
-            <Route path="/temp" element={<TextEditor />}></Route>
+            <Route path="/new-room" element={<NewRoom />} />
+            <Route path="/before-entrance" element={<ConditionCheck />} />
           </Routes>
         </RoutesContainer>
       </BrowserRouter>
