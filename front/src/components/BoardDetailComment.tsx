@@ -21,18 +21,21 @@ export const BoardDetailComment = () => {
           </ButtonContainer>
         </form>
       </WriteCommentContainer>
+      {/* 댓글 부분들 - array로 받아와서 map 돌릴 부분 */}
+      <BoardCommentComponent />
       <BoardCommentComponent />
     </CommentTotalContainer>
   );
 };
 
 const CommentTotalContainer = tw.div`
+
   text-white
   `;
 
 const WriteCommentContainer = tw.div`
   mx-7
-  border
+  mb-7
 `;
 
 //'댓글'

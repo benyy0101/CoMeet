@@ -56,11 +56,12 @@ export const BoardDetailHeader: React.FC<{
         <NicnameContainer>{nickname}</NicnameContainer>
         <DateContainer>{createdAt}</DateContainer>
         <LikeContatiner>
-          {props.isLiked ? (
-            <LikeImg src={StarFill} alt="" />
+          <LikeImg src={StarFill} alt="" />
+          {/* {props.isLiked ? (
           ) : (
             <LikeImg src={StarEmpty} alt="" />
-          )}
+          )} */}
+          {/* useState로 likecount 관리 */}
           {likecount}
         </LikeContatiner>
       </EtcContainer>

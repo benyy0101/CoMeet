@@ -30,7 +30,7 @@ min-h-svh
 `;
 
 const WritingContainer = tw.div`
-w-[790px]
+w-[800px]
 
 mb-5
 border-b
@@ -38,5 +38,5 @@ border-b
 `;
 
 const CommentContainer = tw.div`
-w-[790px]
+w-[800px]
 `;
