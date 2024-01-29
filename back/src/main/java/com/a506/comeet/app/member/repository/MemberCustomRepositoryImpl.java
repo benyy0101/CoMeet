@@ -20,6 +20,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
     public int memberDuplicationCount(MemberDuplicationRequestDto req) {
         List<String> res = jpaQueryFactory.select(member.memberId)
                 .from(member).where(makeBooleanBuilder(req)).fetch();
+
         return res.size();
     }
 
@@ -27,13 +28,13 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
         BooleanBuilder builder = new BooleanBuilder();
 
         if (req.getMemberId() != null) {
-            builder.and(member.memberId.eq(req.getMemberId()));
+            builder.or(member.memberId.eq(req.getMemberId()));
         }
         if (req.getNickname() != null) {
-            builder.and(member.nickname.eq(req.getNickname()));
+            builder.or(member.nickname.eq(req.getNickname()));
         }
         if (req.getEmail() != null) {
-            builder.and(member.email.eq(req.getEmail()));
+            builder.or(member.email.eq(req.getEmail()));
         }
 
         return builder;

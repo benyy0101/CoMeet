@@ -6,6 +6,7 @@ import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,14 @@ public class MemberService {
                 nickname(req.getNickname()).
                 roles(req.roles).
                 build();
+
+        if (memberRepository.memberDuplicationCount(
+                MemberDuplicationRequestDto.builder()
+                        .memberId(member.getMemberId())
+                        .nickname(member.getNickname())
+                        .email(member.getEmail()).build()) != 0)
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+
         return memberRepository.save(member);
     }
 
