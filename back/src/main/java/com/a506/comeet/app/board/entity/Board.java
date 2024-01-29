@@ -10,6 +10,7 @@ import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class Board extends BaseEntityWithSoftDelete {
 
@@ -39,23 +41,15 @@ public class Board extends BaseEntityWithSoftDelete {
     private Long roomId;
     private Boolean valid;
 
-    public Board(Long id, String writerId, String title, String content, Integer likecount, BoardType type, FreeBoardCategory category, Long roomId, Boolean valid) {
-        this.id = id;
-        this.writerId = writerId;
-        this.title = title;
-        this.content = content;
-        this.likecount = likecount;
-        this.type = type;
-        this.category = category;
-        this.roomId = roomId;
-        this.valid = valid;
-    }
-
     public void update(BoardUpdateRequestDto req) {
-        this.title = req.getTitle();
-        this.content = req.getContent();
-        this.category = req.getCategory();
-        this.valid = req.getValid();
+        if(req.getTitle() != null)
+            this.title = req.getTitle();
+        if(req.getContent() != null)
+            this.content = req.getContent();
+        if(req.getCategory() != null)
+            this.category = req.getCategory();
+        if(req.getValid() != null)
+            this.valid = req.getValid();
     }
 
     public void delete() {

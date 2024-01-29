@@ -8,11 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class BoardCreateRequestDto {
-
     private String writerId;
     private String title;
     private String content;
-    private Integer likecount;
+    private Integer likeCount;
     private BoardType type;
     private FreeBoardCategory category;
     private Long roomId;

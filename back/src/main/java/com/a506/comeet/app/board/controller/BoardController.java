@@ -1,18 +1,14 @@
 package com.a506.comeet.app.board.controller;
 
 import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
+import com.a506.comeet.app.board.controller.dto.BoardSearchResponseDto;
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
-import com.a506.comeet.app.member.entity.Member;
-import com.a506.comeet.app.room.controller.dto.RoomUpdateRequestDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -36,10 +32,16 @@ public class BoardController {
         return ResponseEntity.ok(board.getUpdatedAt());
     }
 
-    @PatchMapping("/{boardId}/delete")
+    @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> delete(@PathVariable(value = "boardId") Long boardId){
         String memberId = "요청자";
-        boardService.delete(memberId, boardId);
+        boardService.delete(boardId, memberId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardSearchResponseDto> search(@PathVariable(value = "boardId") Long boardId){
+        String memberId = "요청자";
+        return ResponseEntity.ok(boardService.search(boardId, memberId));
     }
 }
