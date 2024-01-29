@@ -15,7 +15,6 @@ import java.util.List;
 
 @Getter
 public class RoomSearchRequestDto {
-    @NotBlank
     @Size(min = 2, max = 10, message = "검색키워드는 2자 이상, 10자 이하여야 합니다.")
     private String searchKeyword;
     private Boolean isLocked;
@@ -33,7 +32,6 @@ public class RoomSearchRequestDto {
     private Integer pageNo;
     @NotNull
     private Integer pageSize;
-
     private Long prevRoomId;
 
     @Builder

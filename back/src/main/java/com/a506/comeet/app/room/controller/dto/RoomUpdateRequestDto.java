@@ -18,20 +18,16 @@ import java.util.List;
 public class RoomUpdateRequestDto {
     @Setter
     private String mangerId;
-    @NotNull
     @Size(min = 2, max = 30, message = "이름은 2자 이상, 30자 이하여야 합니다.")
     private String title;
     @Size(max = 140, message = "설명은 140자 이하여야 합니다.")
     private String description;
-    @NotNull
     private String roomImage;
-
     @Size(max = 1000, message = "공지는 1000자 이하여야 합니다.")
     private String notice;
     @Min(value = 1, message = "최소값은 1입니다.")
     @Max(value = 20, message = "최대값은 20입니다.")
-    private int capacity;
-    @NotNull
+    private Integer capacity;
     private Boolean isLocked;
     @Size(min = 4, max = 8, message = "비밀번호는 4자 이상, 8자 이하여야 합니다.")
     private String password;

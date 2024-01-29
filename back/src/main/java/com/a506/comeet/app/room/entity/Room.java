@@ -7,7 +7,12 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import jakarta.persistence.*;
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@SQLRestriction("is_deleted = 0")
 public class Room extends BaseEntityWithSoftDelete {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,16 +73,16 @@ public class Room extends BaseEntityWithSoftDelete {
         this.link = link;
     }
 
-    public void updateRoom(RoomUpdateRequestDto dto, Member newManager) {
-        this.manager = newManager;
-        this.title = dto.getTitle();
-        this.description = dto.getDescription();
-        this.roomImage = dto.getRoomImage();
-        this.notice = dto.getNotice();
-        this.capacity = dto.getCapacity();
-        this.isLocked = dto.getIsLocked();
-        this.password = dto.getPassword();
-        this.constraints = dto.getConstraints();
+    public void updateRoom(RoomUpdateRequestDto req, Member newManager) {
+        if (newManager != null) this.manager = newManager;
+        if (req.getTitle() != null) this.title = req.getTitle();
+        if (req.getDescription() != null) this.description = req.getDescription();
+        if (req.getRoomImage() != null) this.roomImage = req.getRoomImage();
+        if (req.getNotice() != null) this.notice = req.getNotice();
+        if (req.getCapacity() != null) this.capacity = req.getCapacity();
+        if (req.getIsLocked() != null) this.isLocked = req.getIsLocked();
+        if (req.getPassword() != null) this.password = req.getPassword();
+        if (req.getConstraints() != null) this.constraints = req.getConstraints();
     }
 
     public void addRoomMember(RoomMember roomMember){
@@ -107,9 +113,5 @@ public class Room extends BaseEntityWithSoftDelete {
         this.getChannels().forEach(Channel::deleteSoftly);
         this.getRoomKeywords().forEach(RoomKeyword::deleteSoftly);
         this.getRoomMembers().forEach(RoomMember::deleteSoftly);
-        this.lounges = new ArrayList<>();
-        this.channels = new ArrayList<>();
-        this.roomKeywords = new ArrayList<>();
-        this.roomMembers = new ArrayList<>();
     }
 }

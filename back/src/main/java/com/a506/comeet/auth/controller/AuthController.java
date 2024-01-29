@@ -27,25 +27,26 @@ public class AuthController {
         log.info("request memberId = {}, password = {}", req.getMemberId(), req.getPassword());
         JwtToken jwtToken = authService.login(req.getMemberId(), req.getPassword());
         log.info("jwtToken accessToken = {}, reqeustToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-        return new ResponseEntity<JwtToken>(jwtToken, HttpStatus.OK);
+        return ResponseEntity.ok(jwtToken);
     }
 
     @PostMapping("/test")
     public String test(){
+        log.info("test 완료");
         return MemberUtil.getMemberId();
     }
 
     @PatchMapping("/reissue")
     public ResponseEntity<String> reissue(HttpServletRequest req){
         String newAccessToken = authService.reissueAccessToken(jwtTokenProvider.resolveToken(req));
-        return new ResponseEntity<String>(newAccessToken, HttpStatus.OK);
+        return ResponseEntity.ok(newAccessToken);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(){
         String memberId = MemberUtil.getMemberId();
         authService.logout(memberId);
-        return new ResponseEntity<String>("logout", HttpStatus.OK);
+        return ResponseEntity.ok("logout");
     }
 
 }

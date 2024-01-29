@@ -21,20 +21,20 @@ public class AdminController {
     private final KeywordService keywordService;
 
     @PostMapping("/keyword")
-    public ResponseEntity createKeyword(@RequestBody KeywordRequestDto req){
-        return new ResponseEntity<Long>(keywordService.create(req).getId(), HttpStatus.OK);
+    public ResponseEntity<?> create(@RequestBody KeywordRequestDto req){
+        return ResponseEntity.ok(keywordService.create(req).getId());
     }
 
     @PatchMapping("/keyword/{keywordId}")
-    public ResponseEntity updateKeyword(@RequestBody KeywordRequestDto req, @PathVariable Long keywordId){
+    public ResponseEntity<?> update(@RequestBody KeywordRequestDto req, @PathVariable Long keywordId){
         keywordService.update(req, keywordId);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/keyword/{keywordId}/delete")
-    public ResponseEntity deleteKeyword(@PathVariable Long keywordId){
+    @DeleteMapping("/keyword/{keywordId}")
+    public ResponseEntity<?> delete(@PathVariable Long keywordId){
         keywordService.delete(keywordId);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
 }

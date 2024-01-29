@@ -7,6 +7,4 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, String>, MemberCustomRepository{
 
-    Optional<Member> findByMemberIdAndIsDeletedFalse(String memberId);
-
 }

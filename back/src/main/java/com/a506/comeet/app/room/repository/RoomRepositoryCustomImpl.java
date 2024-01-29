@@ -99,8 +99,11 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         res.setMembers(getMembers(roomId));
         res.setLounges(getLounges(roomId));
         res.setChannels(getChannels(roomId));
+        res.setKeywords(getKeywords(roomId));
         return res;
     }
+
+
 
 
     @Override
@@ -196,6 +199,18 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         )).
                 from(room).
                 leftJoin(room.channels, channel).
+                where(room.id.eq(roomId)).fetch();
+    }
+
+    private List<RoomKeywordResponseDto> getKeywords(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomKeywordResponseDto.class,
+                                keyword.id,
+                                keyword.name
+                        )).
+                from(room).
+                leftJoin(room.roomKeywords, roomKeyword).
+                leftJoin(roomKeyword.keyword, keyword).
                 where(room.id.eq(roomId)).fetch();
     }
 

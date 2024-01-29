@@ -5,12 +5,14 @@ import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@SQLRestriction("is_deleted = 0")
 public class RoomMember extends BaseEntityWithSoftDelete {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

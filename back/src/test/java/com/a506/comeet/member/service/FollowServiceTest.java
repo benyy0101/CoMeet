@@ -4,7 +4,7 @@ import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.service.FollowService;
 import com.a506.comeet.app.member.controller.dto.FollowerRequestDto;
 import com.a506.comeet.app.member.controller.dto.FollowingReqeustDto;
-import com.a506.comeet.app.member.controller.UnfollowRequestDto;
+import com.a506.comeet.app.member.controller.dto.UnfollowRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -67,7 +67,7 @@ class FollowServiceTest {
     @Transactional
     void followTest(){
         List<MemberSimpleResponseDto> followings =
-                followService.getFollowing(FollowingReqeustDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
+                followService.getFollowings(FollowingReqeustDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
                         .getContent();
 
         for (MemberSimpleResponseDto following : followings) {
@@ -76,7 +76,7 @@ class FollowServiceTest {
         assertThat(followings.size()).isEqualTo(999);
 
         List<MemberSimpleResponseDto> followers =
-                followService.getFollower(FollowerRequestDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
+                followService.getFollowers(FollowerRequestDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
                         .getContent();
 
         for (MemberSimpleResponseDto follower : followers) {
@@ -94,7 +94,7 @@ class FollowServiceTest {
         followService.unfollow(new UnfollowRequestDto("멤버2"), "멤버1");
 
         List<MemberSimpleResponseDto> followings =
-                followService.getFollowing(FollowingReqeustDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
+                followService.getFollowings(FollowingReqeustDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
                         .getContent();
 
 
@@ -104,7 +104,7 @@ class FollowServiceTest {
         assertThat(followings.size()).isEqualTo(998);
 
         List<MemberSimpleResponseDto> followers =
-                followService.getFollower(FollowerRequestDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
+                followService.getFollowers(FollowerRequestDto.builder().pageNo(0).pageSize(1000).build(), "멤버1")
                         .getContent();
 
         for (MemberSimpleResponseDto follower : followers) {
@@ -128,7 +128,7 @@ class FollowServiceTest {
 
         Long srt2 = System.currentTimeMillis();
         Slice<MemberSimpleResponseDto> noOffset =
-                followService.getFollower(
+                followService.getFollowers(
                         FollowerRequestDto.builder().pageNo(0).pageSize(10).prevMemberId("멤버990").build(), "멤버1000");
         log.info("noOffset : {}",System.currentTimeMillis() - srt2);
         log.info("{}", noOffset.getContent().get(0).getMemberId());

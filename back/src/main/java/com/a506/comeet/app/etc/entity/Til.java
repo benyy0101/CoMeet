@@ -6,6 +6,7 @@ import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
@@ -14,6 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@SQLRestriction("is_deleted = 0")
 public class Til extends BaseEntityWithSoftDelete {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +36,7 @@ public class Til extends BaseEntityWithSoftDelete {
     }
 
     public void update(TilRequestDto req){
-        this.context = req.getContext();
+        if (req.getContext() != null) this.context = req.getContext();
     }
     public void delete(){
         deleteSoftly();

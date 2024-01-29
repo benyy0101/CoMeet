@@ -41,7 +41,7 @@ class TilServiceTest {
         em.clear();
 
         Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").get();
+        Member member = memberRepository.findById("멤버1").get();
         assertThat(member.getTils().size()).isEqualTo(1);
         assertThat(created.getMember().getMemberId()).isEqualTo("멤버1");
     }
@@ -54,7 +54,7 @@ class TilServiceTest {
         em.clear();
 
         Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").get();
+        Member member = memberRepository.findById("멤버1").get();
 
         tilService.update(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕22").build(), created.getId(), "멤버1");
 
@@ -69,7 +69,7 @@ class TilServiceTest {
         em.clear();
 
         Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse("멤버1").get();
+        Member member = memberRepository.findById("멤버1").get();
 
         tilService.delete(created.getId(), "멤버1");
 

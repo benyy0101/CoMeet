@@ -16,6 +16,7 @@ import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
 import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
+import { BoardDetail } from "./pages/BoardDetail";
 
 function App() {
   //임시
@@ -57,6 +58,12 @@ function App() {
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
+
+                {/* 자유게시판 글 상세보기 */}
+                <Route
+                  path="/free-board/:boardId"
+                  element={<BoardDetail />}
+                ></Route>
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />} />
