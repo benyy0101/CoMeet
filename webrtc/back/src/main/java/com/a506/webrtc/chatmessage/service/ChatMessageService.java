@@ -20,7 +20,7 @@ public class ChatMessageService {
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .type(Type.valueOf((String) data.get("type")))
-                .chatId(Long.parseLong((String) data.get("chatId")))
+                .chatId(Long.parseLong(data.get("chatId").toString()))
                 .memberId((String) data.get("memberId"))
                 .nickname((String) data.get("nickname"))
                 .message((String) data.get("message"))

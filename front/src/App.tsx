@@ -13,6 +13,7 @@ import { Room } from "./pages/Room";
 import RoomChannel from "./components/RoomChannel";
 import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
+import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
 import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
@@ -70,6 +71,7 @@ function App() {
             )}
             <Route path="/new-room" element={<NewRoom />}></Route>
             <Route path="/before-entrance" element={<ConditionCheck />}></Route>
+            <Route path="/temp" element={<TextEditor />}></Route>
           </Routes>
         </RoutesContainer>
       </BrowserRouter>
@@ -82,6 +84,6 @@ const NavBarContainer = tw.div`
 `;
 
 const RoutesContainer = tw.div`
-
 `;
+
 export default App;
