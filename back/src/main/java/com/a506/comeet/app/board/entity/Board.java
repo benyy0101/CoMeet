@@ -2,6 +2,7 @@ package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
+import com.a506.comeet.app.member.entity.Like;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Channel;
 import com.a506.comeet.app.room.entity.Lounge;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -40,6 +42,9 @@ public class Board extends BaseEntityWithSoftDelete {
     @Column(name = "room_id")
     private Long roomId;
     private Boolean valid;
+
+    @OneToMany(mappedBy = "board")
+    private List<Like> likes = new ArrayList<>();
 
     public void update(BoardUpdateRequestDto req) {
         if(req.getTitle() != null)

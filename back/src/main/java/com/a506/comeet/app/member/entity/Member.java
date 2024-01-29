@@ -72,6 +72,9 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
     public void updateMember(MemberUpdateRequestDto dto){
         this.name = dto.getName();
         this.password = dto.getPassword();

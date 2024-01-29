@@ -5,6 +5,9 @@ import com.a506.comeet.app.board.controller.dto.BoardSearchResponseDto;
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.repository.BoardRepository;
+import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.repository.LikeRepository;
+import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
@@ -22,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final LikeRepository likeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
@@ -67,6 +72,8 @@ public class BoardService {
     }
 
     private boolean checkUserLikeStatus(Long boardId, String memberId) {
-        return true;
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        return likeRepository.existsByBoardAndMember(board, member);
     }
 }
