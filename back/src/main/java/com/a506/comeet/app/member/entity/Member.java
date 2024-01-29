@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +33,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
+@SQLRestriction("is_deleted = 0")
 public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     @Id
@@ -73,14 +76,14 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     public void updateMember(MemberUpdateRequestDto dto){
-        this.name = dto.getName();
-        this.password = dto.getPassword();
-        this.nickname = dto.getNickname();
-        this.link = dto.getLink();
-        this.profileImage = dto.getProfileImage();
-        this.email = dto.getEmail();
-        this.description = dto.getDescription();
-        this.feature = dto.getFeature();
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getPassword() != null) this.password = dto.getPassword();
+        if (dto.getNickname() != null) this.nickname = dto.getNickname();
+        if (dto.getLink() != null) this.link = dto.getLink();
+        if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
+        if (dto.getEmail() != null) this.email = dto.getEmail();
+        if (dto.getDescription() != null) this.description = dto.getDescription();
+        if (dto.getFeature() != null) this.feature = dto.getFeature();
     }
 
     public void addRoomMember(RoomMember roomMember){

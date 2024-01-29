@@ -56,7 +56,7 @@ class MemberServiceTest {
                         .name("이름").link("링크").description("설명").feature(MemberFeature.EARTH).email("newEmail@naber.com")
                 .password("newASDF12@").nickname("새닉네임").profileImage("profileImageLink").build();
         memberService.update(req, "멤버아이디1");
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse("멤버아이디1").get();
+        Member member = memberRepository.findById("멤버아이디1").get();
         assertThat(member.getEmail()).isEqualTo("newEmail@naber.com");
         assertThat(member.getFeature()).isEqualTo(MemberFeature.EARTH);
     }
@@ -65,7 +65,7 @@ class MemberServiceTest {
     @Transactional
     void deleteTest(){
         memberService.delete("멤버아이디1");
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse("멤버아이디1").orElse(null);
+        Member member = memberRepository.findById("멤버아이디1").orElse(null);
         assertThat(member).isEqualTo(null);
         Member deletedMember = memberRepository.findById("멤버아이디1").get();
         assertThat(deletedMember.isDeleted()).isTrue();

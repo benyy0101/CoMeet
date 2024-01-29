@@ -79,7 +79,7 @@ public class AuthService {
     }
 
     private void memberIdAndPasswordValidation(String memberId, String password) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
         log.info("입력 패스워드 : {}", password);
         log.info("입력 encode {}", passwordEncoder.encode(password));
         log.info("db 패스워드 {}", member.getPassword());

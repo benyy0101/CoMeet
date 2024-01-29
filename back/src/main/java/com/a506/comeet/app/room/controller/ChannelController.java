@@ -19,24 +19,24 @@ public class ChannelController {
     private final ChannelService channelService;
 
     @PostMapping("")
-    public ResponseEntity create(@Valid @RequestBody ChannelCreateRequestDto requestDto){
+    public ResponseEntity<Long> create(@Valid @RequestBody ChannelCreateRequestDto req){
         String memberId = MemberUtil.getMemberId();
-        Channel created = channelService.createChannel(requestDto, memberId);
-        return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
+        Channel created = channelService.create(req, memberId);
+        return ResponseEntity.ok(created.getId());
     }
 
     @PatchMapping("{channelId}")
-    public ResponseEntity update(@Valid @RequestBody ChannelUpdateRequestDto requestDto, @PathVariable Long channelId){
+    public ResponseEntity<Void> update(@Valid @RequestBody ChannelUpdateRequestDto req, @PathVariable Long channelId){
         String memberId = MemberUtil.getMemberId();
-        channelService.updateChannel(requestDto, channelId, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        channelService.update(req, channelId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{channelId}/delete")
-    public ResponseEntity<Void> delete(@PathVariable long channelId){
+    public ResponseEntity<Void> delete(@PathVariable Long channelId){
         String memberId = MemberUtil.getMemberId();
-        channelService.deleteChannel(channelId, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        channelService.delete(channelId, memberId);
+        return ResponseEntity.ok().build();
     }
 
 }

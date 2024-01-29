@@ -5,10 +5,12 @@ import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Entity
 @RequiredArgsConstructor
+@SQLRestriction("is_deleted = 0")
 public class MemberKeyword extends BaseEntityWithSoftDelete {
 
     @Id

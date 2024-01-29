@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Builder
 @AllArgsConstructor
+@SQLRestriction("is_deleted = 0")
 public class Channel extends BaseEntityWithSoftDelete {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class Channel extends BaseEntityWithSoftDelete {
     private String name;
 
     public void update(ChannelUpdateRequestDto req){
-        this.name = req.getName();
+        if (req.getName() != null) this.name = req.getName();
     }
 
     public void delete(){

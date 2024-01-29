@@ -20,25 +20,25 @@ public class LoungeController {
 
 
     @PostMapping("")
-    public ResponseEntity<?> create(@Valid @RequestBody LoungeCreateRequestDto req){
+    public ResponseEntity<Long> create(@Valid @RequestBody LoungeCreateRequestDto req){
         String memberId = MemberUtil.getMemberId();
-        Lounge created = loungeService.createLounge(req, memberId);
-        return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
+        Lounge created = loungeService.create(req, memberId);
+        return ResponseEntity.ok(created.getId());
     }
 
 
     @PatchMapping("{loungeId}")
-    public ResponseEntity<?> update(@Valid @RequestBody LoungeUpdateRequestDto req, @PathVariable Long loungeId){
+    public ResponseEntity<Void> update(@Valid @RequestBody LoungeUpdateRequestDto req, @PathVariable Long loungeId){
         String memberId = MemberUtil.getMemberId();
-        loungeService.updateLounge(req, loungeId, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        loungeService.update(req, loungeId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{loungeId}/delete")
-    public ResponseEntity<Void> delete(@PathVariable long loungeId){
+    public ResponseEntity<Void> delete(@PathVariable Long loungeId){
         String memberId = MemberUtil.getMemberId();
-        loungeService.deleteLounge(loungeId, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        loungeService.delete(loungeId, memberId);
+        return ResponseEntity.ok().build();
     }
 
 }
