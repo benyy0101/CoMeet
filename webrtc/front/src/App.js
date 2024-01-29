@@ -38,6 +38,7 @@ export default function App() {
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
   const [isScreenShared, setIsScreenShared] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
+  const [filterName, setFilterName] = useState("");
 
   const OV = useRef(new OpenVidu());
 
@@ -247,12 +248,49 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       if (filterApplied) {
-        publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
+        /**
+         * Color Effect
+         */
+        // publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
+        /**
+         * Time Overlay
+         */
+        // publisher.stream.applyFilter("GStreamerFilter", {
+        //   command: `timeoverlay valignment=bottom halignment=right font-desc="Sans, 30"`,
+        // });
+        publisher.stream.applyFilter("GStreamerFilter", {
+          command: filterName,
+        });
+        /**
+         * Text Overlay
+         */
+        // publisher.stream.applyFilter("GStreamerFilter", {
+        //   command: `textoverlay text="Embedded text" valignment=top halignment=right font-desc="Cantarell 25"`,
+        // });
+        /**
+         * Face Overlay
+         */
+        // publisher.stream.applyFilter("FaceOverlayFilter").then((filter) => {
+        //   filter.execMethod("setOverlayedImage", {
+        //     uri: "https://cdn.pixabay.com/photo/2013/07/12/14/14/derby-148046_960_720.png",
+        //     offsetXPercent: "-0.2F",
+        //     offsetYPercent: "-0.8F",
+        //     widthPercent: "1.3F",
+        //     heightPercent: "1.0F",
+        //   });
+        // });
       } else {
         publisher.stream.removeFilter();
+        setFilterName("");
       }
     }
   }, [filterApplied]);
+
+  useEffect(() => {
+    if (filterName !== "") {
+      setFilterApplied(true);
+    }
+  }, [filterName]);
 
   const startScreenShare = async () => {
     let publisherScreen = await OV.current.initPublisherAsync(undefined, {
@@ -450,11 +488,47 @@ export default function App() {
                   <SignalSlashIcon className="w-8 h-8 text-red-400" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton onClick={() => setFilterApplied(!filterApplied)}>
+              <ControlPanelButton onClick={() => setFilterApplied(false)}>
                 {filterApplied ? (
                   <SparklesIcon className="w-8 h-8 text-yellow-400" />
                 ) : (
                   <SparklesIcon className="w-8 h-8 " />
+                )}
+                {!filterApplied && (
+                  <FilterMenu>
+                    <FilterMenuList
+                      disabled={filterName === "dicetv"}
+                      onClick={() => {
+                        setFilterName("dicetv");
+                      }}
+                    >
+                      dicetv
+                    </FilterMenuList>
+                    <FilterMenuList
+                      disabled={filterName === "edgetv"}
+                      onClick={() => {
+                        setFilterName("edgetv");
+                      }}
+                    >
+                      edgetv
+                    </FilterMenuList>
+                    <FilterMenuList
+                      disabled={filterName === "revtv"}
+                      onClick={() => {
+                        setFilterName("revtv");
+                      }}
+                    >
+                      revtv
+                    </FilterMenuList>
+                    <FilterMenuList
+                      disabled={filterName === "square"}
+                      onClick={() => {
+                        setFilterName("square");
+                      }}
+                    >
+                      square
+                    </FilterMenuList>
+                  </FilterMenu>
                 )}
               </ControlPanelButton>
             </ControlPanel>
@@ -708,4 +782,30 @@ cursor-pointer
 flex
 justify-center
 items-center
+relative
+`;
+
+const FilterMenu = tw.div`
+bg-[#3f3f3f]
+absolute
+bottom-1/2
+-translate-1/2
+left-1/2
+w-32
+h-40
+rounded-lg
+shadow-lg
+flex
+flex-col
+justify-between
+overflow-hidden
+space-y-1
+`;
+
+const FilterMenuList = tw.button`
+w-full
+h-9
+bg-[#2f2f2f]
+hover:bg-slate-400
+disabled:bg-slate-400
 `;
