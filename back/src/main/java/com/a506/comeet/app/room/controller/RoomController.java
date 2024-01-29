@@ -18,7 +18,6 @@ public class RoomController {
 
     private final RoomService roomService;
 
-
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
@@ -26,7 +25,6 @@ public class RoomController {
         Room created = roomService.createRoom(req);
         return new ResponseEntity<Long>(created.getId(), HttpStatus.OK);
     }
-
 
     @PatchMapping("{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable long roomId){
@@ -41,7 +39,6 @@ public class RoomController {
         roomService.deleteRoom(reqMemberId, roomId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
     @PostMapping("{roomId}/join")
     public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable long roomId){
