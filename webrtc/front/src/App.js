@@ -17,8 +17,9 @@ import {
   SignalIcon,
   SignalSlashIcon,
 } from "@heroicons/react/24/solid";
+import Chat from "./Chat";
 
-const APPLICATION_SERVER_URL = "http://localhost:5000/";
+export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);
@@ -354,7 +355,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel1");
+                    moveChannel("1");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -364,7 +365,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel2");
+                    moveChannel("2");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -374,7 +375,7 @@ export default function App() {
               <ChannelButtonContainer>
                 <ChannelButton
                   onClick={() => {
-                    moveChannel("channel3");
+                    moveChannel("3");
                   }}
                 >
                   <UserGroupIcon className="text-white w-8 h-8" />
@@ -397,7 +398,11 @@ export default function App() {
                 </ChannelHeader>
               )}
               <VideoContainer>
-                {session !== undefined && <ChatContainer>채팅</ChatContainer>}
+                {session !== undefined && (
+                  <ChatContainer>
+                    <Chat chatId={mySessionId} username={myUserName} />
+                  </ChatContainer>
+                )}
                 {/* 클릭시 나오는 확대 영상 */}
                 {/* {mainStreamManager !== undefined ? (
                   <div id="main-video" className="col-md-6">

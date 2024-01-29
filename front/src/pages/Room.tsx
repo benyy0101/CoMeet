@@ -66,7 +66,6 @@ const StyleRoomOutline: styledType = tw.div`
 //     justify-center
 //     `;
 
-
 //StyleRoomLayout: 룸의 레이아웃
 const StyleRoomLayout: styledType = tw.div`
     w-[98%]
@@ -188,7 +187,6 @@ export const Room = () => {
       : tw.div`h-full bg-black w-full overflow-auto rounded-md`;
 
   return (
-
     <StyleRoomOutline>
       <Channel />
     </StyleRoomOutline>
@@ -249,6 +247,5 @@ export const Room = () => {
     //     </StyleRoomLayout>
     //   </StyleRoomOutline>
     // </div>
-
   );
 };
