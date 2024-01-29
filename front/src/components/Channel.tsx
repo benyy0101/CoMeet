@@ -24,12 +24,12 @@ import {
   ChevronDoubleRightIcon,
 } from "@heroicons/react/24/solid";
 
-const APPLICATION_SERVER_URL = process.env.REACT_APP_APPLICATION_SERVER_URL;
+const APPLICATION_SERVER_URL = process.env.REACT_APP_OPENVIDU_SERVER_URL;
 
 export default function Channel() {
   //const [isJoined, setIsJoined] = useState(false);
 
-  const [mySessionId, setMySessionId] = useState<string>("");
+  const [mySessionId, setMySessionId] = useState<number>(-1);
   const [myUserName, setMyUserName] = useState(
     `사용자 ${Math.floor(Math.random() * 100)}`
   );
@@ -49,7 +49,7 @@ export default function Channel() {
 
   const OV = useRef(new OpenVidu());
 
-  const moveChannel = (sessionId: string) => {
+  const moveChannel = (sessionId: number) => {
     leaveSession();
     setMySessionId(sessionId);
     joinSession();
@@ -153,7 +153,7 @@ export default function Channel() {
     OV.current = new OpenVidu();
     setSession(null);
     setSubscribers([]);
-    setMySessionId("");
+    setMySessionId(0);
     // setMyUserName("사용자 " + Math.floor(Math.random() * 100));
     setMainStreamManager(null);
     setPublisher(null);
@@ -218,7 +218,8 @@ export default function Channel() {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
+    const mySessionIdString = mySessionId.toString();
+    return createSession(mySessionIdString).then((sessionId) =>
       createToken(sessionId)
     );
   }, [mySessionId]);
@@ -336,7 +337,7 @@ export default function Channel() {
           <ChannelButtonContainer>
             <ChannelButton
               onClick={() => {
-                moveChannel("channel1");
+                moveChannel(111);
               }}
             >
               <UserGroup className="w-6 h-6" />
@@ -346,7 +347,7 @@ export default function Channel() {
           <ChannelButtonContainer>
             <ChannelButton
               onClick={() => {
-                moveChannel("channel2");
+                moveChannel(222);
               }}
             >
               <UserGroup />
@@ -356,7 +357,7 @@ export default function Channel() {
           <ChannelButtonContainer>
             <ChannelButton
               onClick={() => {
-                moveChannel("channel3");
+                moveChannel(333);
               }}
             >
               <UserGroup />
@@ -381,7 +382,7 @@ export default function Channel() {
           )}
           <VideoContainer>
             {session !== undefined && (
-              <Chat channelId={mySessionId} username={myUserName} />
+              <Chat chatId={mySessionId} username={myUserName} />
             )}
 
             {/* {mainStreamManager !== undefined ? (
