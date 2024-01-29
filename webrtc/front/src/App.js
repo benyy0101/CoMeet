@@ -18,6 +18,7 @@ import {
   SignalSlashIcon,
 } from "@heroicons/react/24/solid";
 import Chat from "./Chat";
+import ShareEditor from "./ShareEditor";
 
 export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
@@ -25,9 +26,7 @@ export default function App() {
   const [isJoined, setIsJoined] = useState(false);
 
   const [mySessionId, setMySessionId] = useState("");
-  const [myUserName, setMyUserName] = useState(
-    `사용자 ${Math.floor(Math.random() * 100)}`
-  );
+  const [myUserName, setMyUserName] = useState(`사용자 ${Math.floor(Math.random() * 100)}`);
   const [session, setSession] = useState(undefined);
   const [mainStreamManager, setMainStreamManager] = useState(undefined);
   const [publisher, setPublisher] = useState(undefined);
@@ -103,9 +102,7 @@ export default function App() {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -118,11 +115,7 @@ export default function App() {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -147,9 +140,7 @@ export default function App() {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -203,9 +194,7 @@ export default function App() {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   const createSession = async (sessionId) => {
@@ -400,7 +389,8 @@ export default function App() {
               <VideoContainer>
                 {session !== undefined && (
                   <ChatContainer>
-                    <Chat chatId={mySessionId} username={myUserName} />
+                    {/* <Chat chatId={mySessionId} username={myUserName} /> */}
+                    <ShareEditor session={session} username={myUserName} />
                   </ChatContainer>
                 )}
                 {/* 클릭시 나오는 확대 영상 */}
@@ -411,17 +401,12 @@ export default function App() {
                 ) : null} */}
                 <GridContainer>
                   {publisher !== undefined && (
-                    <StreamContainer
-                      onClick={() => handleMainVideoStream(publisher)}
-                    >
+                    <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
                       <UserVideoComponent streamManager={publisher} />
                     </StreamContainer>
                   )}
                   {subscribers.map((sub, i) => (
-                    <StreamContainer
-                      key={sub.id}
-                      onClick={() => handleMainVideoStream(sub)}
-                    >
+                    <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                       <UserVideoComponent streamManager={sub} />
                     </StreamContainer>
                   ))}
@@ -438,18 +423,14 @@ export default function App() {
                   <SpeakerWaveIcon className="w-8 h-8" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton
-                onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-              >
+              <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                 {isVideoDisabled ? (
                   <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
                 ) : (
                   <VideoCameraIcon className="w-8 h-8" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton
-                onClick={() => setIsScreenShared(!isScreenShared)}
-              >
+              <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
                 {isScreenShared ? (
                   <SignalIcon className="w-8 h-8" />
                 ) : (
