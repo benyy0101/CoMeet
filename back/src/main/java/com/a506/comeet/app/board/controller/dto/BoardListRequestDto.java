@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardListRequestDto {
     private FreeBoardCategory category;
-    private String keywords;
+    private String keyword;
 }

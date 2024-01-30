@@ -19,7 +19,10 @@ import com.a506.comeet.error.exception.RestApiException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +45,15 @@ public class BoardService {
 
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
+
         Room room = null;
         if(req.getRoomId() != null)
             room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+
         Board board = Board.builder()
-                .writerId(memberId)
+                .writer(member)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .type(req.getType())
@@ -75,10 +81,8 @@ public class BoardService {
         board.delete();
     }
 
-    public Slice<BoardListResponseDto> search(BoardListRequestDto req) {
-        // 수정해야 함
-        return boardRepository.searchBoardCustom(req);
-        //return roomRepository.searchRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+    public Page<BoardListResponseDto> search(BoardListRequestDto req, Pageable pageable) {
+        return boardRepository.searchBoardCustom(req, pageable);
     }
 
     public BoardDetailResponseDto getById(Long boardId, String memberId) {
@@ -129,7 +133,7 @@ public class BoardService {
     }
 
     public void authorityValidation(Board board, String memberId) {
-        if (!board.getWriterId().equals(memberId))
+        if (!board.getWriter().getMemberId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
     }
 
