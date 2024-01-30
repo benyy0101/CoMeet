@@ -77,7 +77,6 @@ public class SimpleTests {
         Room foundRoom = roomRepository.findByIdAndIsDeletedFalse(room.getId()).get();
 
         log.info("room : {}", foundRoom.getTitle());
-        log.info("deleted? : {}", foundRoom.isDeleted());
 
     }
 }

@@ -1,5 +1,6 @@
 package com.a506.comeet.auth.service;
 
+import com.a506.comeet.app.KeyUtil;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.auth.AES128Util;
@@ -58,7 +59,7 @@ public class AuthService {
 
     @Transactional
     public void logout(String memberId){
-        jwtRedisRepository.delete(memberId);
+        jwtRedisRepository.delete(KeyUtil.getRefreshTokenKey(memberId));
         // 추가적으로 redis에 유저가 입장해있는 방 정보도 삭제해주면 된다
     }
 
@@ -71,7 +72,7 @@ public class AuthService {
         Claims claims = jwtTokenProvider.parseClaims(refreshToken);
         String memberId = claims.getSubject();
         log.info("{}", memberId);
-        String redisRefreshToken = jwtRedisRepository.getRefreshToken(memberId);
+        String redisRefreshToken = jwtRedisRepository.find(KeyUtil.getRefreshTokenKey(memberId));
         if (redisRefreshToken == null || !redisRefreshToken.equals(refreshToken)) throw new RestApiException(CustomErrorCode.INVALID_REFRESH_TOKEN);
         // 같다면 refreshToken을 활용하여 새로운 accessToken을 발급
         return jwtTokenProvider.generateAccessToken(memberId, claims.get("auth").toString());

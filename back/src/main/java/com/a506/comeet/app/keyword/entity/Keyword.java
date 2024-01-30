@@ -24,7 +24,7 @@ public class Keyword extends BaseEntityWithSoftDelete {
     @Setter
     private String name;
 
-    @OneToMany(mappedBy = "keyword", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "keyword")
     private List<MemberKeyword> memberKeywords = new ArrayList<>();
 
     @OneToMany(mappedBy = "keyword", fetch = FetchType.LAZY)

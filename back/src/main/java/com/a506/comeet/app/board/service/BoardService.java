@@ -9,6 +9,7 @@ import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.LikeRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.BoardType;
@@ -17,14 +18,10 @@ import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.stream.Collectors;
-
-import static com.a506.comeet.error.errorcode.CommonErrorCode.INVALID_PARAMETER;
 import static com.a506.comeet.error.errorcode.CommonErrorCode.WRONG_REQUEST;
 
 @Slf4j
@@ -35,19 +32,23 @@ import static com.a506.comeet.error.errorcode.CommonErrorCode.WRONG_REQUEST;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
+    private final LikeRepository likeRepository;
+    private final LikeService likeService;
 
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
-        Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = null;
+        if(req.getRoomId() != null)
+            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         Board board = Board.builder()
                 .writerId(memberId)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .type(req.getType())
+                .likeCount(req.getLikeCount())
                 .category(req.getCategory())
                 .room(room)
                 .isValid(req.getIsValid())
@@ -96,16 +97,34 @@ public class BoardService {
                 keywordsString.append(roomKeyword.getKeyword());
             }
         }
-        boolean isLike = checkUserLikeStatus(boardId, memberId);
+        boolean isLike = checkLikeStatus(boardId, memberId);
         return BoardSearchResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
     }
 
-    private void authorityValidation(Board board, String memberId) {
+    @Transactional
+    public void addLike(Long boardId, String memberId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        if(!checkLikeStatus(boardId, memberId)){
+            likeService.addLike(boardId, memberId);
+            board.incrementLikeCount();
+        }
+    }
+
+    @Transactional
+    public void removeLike(Long boardId, String memberId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        if(checkLikeStatus(boardId, memberId)){
+            likeService.removeLike(boardId, memberId);
+            board.decrementLikeCount();
+        }
+    }
+
+    public void authorityValidation(Board board, String memberId) {
         if (!board.getWriterId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
     }
 
-    private boolean checkUserLikeStatus(Long boardId, String memberId) {
+    public boolean checkLikeStatus(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         return likeRepository.existsByBoardAndMember(board, member);

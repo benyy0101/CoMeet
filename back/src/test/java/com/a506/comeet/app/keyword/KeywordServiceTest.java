@@ -1,4 +1,4 @@
-package com.a506.comeet.app.keyword.service;
+package com.a506.comeet.app.keyword;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;

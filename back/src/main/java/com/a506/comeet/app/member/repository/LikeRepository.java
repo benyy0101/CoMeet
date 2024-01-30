@@ -6,7 +6,10 @@ import com.a506.comeet.app.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    boolean existsByBoardAndMember(Board board, Member member);
+    Optional<Like> findByBoardAndMember(Board board, Member member);
+    Boolean existsByBoardAndMember(Board board, Member member);
 }
