@@ -13,7 +13,10 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
       session.on("signal:share-editor", (event) => {
         const sender = JSON.parse(event.from.data).clientData;
         if (sender !== username) {
-          editorRef.current.getModel().setValue(event.data);
+          const model = editorRef.current.getModel();
+          if (model) {
+            model.setValue(event.data);
+          }
           blockEditing(sender);
         }
       });

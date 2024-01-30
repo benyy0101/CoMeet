@@ -22,6 +22,33 @@ import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
 
 export const APPLICATION_SERVER_URL = "http://localhost:5000/";
+const filterType = [
+  { name: "Edgetv", command: "edgetv" },
+  { name: "Revtv", command: "revtv" },
+  { name: "Agingtv", command: "agingtv" },
+  { name: "Optv", command: "optv" },
+  { name: "Quarktv", command: "quarktv" },
+  { name: "Radioactv", command: "radioactv" },
+  { name: "Rippletv", command: "rippletv" },
+  { name: "Shagadelictv", command: "shagadelictv" },
+  { name: "Streaktv", command: "streaktv" },
+  { name: "Vertigotv", command: "vertigotv" },
+  { name: "Warptv", command: "warptv" },
+  { name: "Bulge", command: "bulge" },
+  { name: "Kaleidoscope", command: "kaleidoscope" },
+  { name: "Mirror", command: "mirror" },
+  { name: "Pinch", command: "pinch" },
+  { name: "Stretch", command: "stretch" },
+  { name: "Twirl", command: "twirl" },
+  { name: "Square", command: "square" },
+  { name: "Heat", command: "coloreffects preset=heat" },
+  { name: "GrayScale", command: "videobalance saturation=0.0" },
+  { name: "Dicetv", command: "dicetv" },
+  {
+    name: "Time overlay",
+    command: `timeoverlay valignment=bottom halignment=right font-desc="Sans, 30"`,
+  },
+];
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);
@@ -40,7 +67,8 @@ export default function App() {
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
   const [isScreenShared, setIsScreenShared] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
-  const [filterName, setFilterName] = useState("");
+  const [filter, setFilter] = useState(null);
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
 
   const editorRef = useRef(null);
 
@@ -157,8 +185,12 @@ export default function App() {
         if (newVideoDevice.length > 0) {
           const newPublisher = OV.current.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
+            audioSource: undefined,
+            publishAudio: !isMuted,
+            publishVideo: !isVideoDisabled,
+            resolution: "640x480",
+            frameRate: 30,
+            insertMode: "APPEND",
             mirror: true,
           });
 
@@ -252,49 +284,26 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       if (filterApplied) {
-        /**
-         * Color Effect
-         */
-        // publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
-        /**
-         * Time Overlay
-         */
         // publisher.stream.applyFilter("GStreamerFilter", {
-        //   command: `timeoverlay valignment=bottom halignment=right font-desc="Sans, 30"`,
+        //   command: filter.command,
         // });
         publisher.stream.applyFilter("GStreamerFilter", {
-          command: filterName,
+          command:
+            "gdkpixbufoverlay location=/images/my-image.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200",
         });
-        /**
-         * Text Overlay
-         */
-        // publisher.stream.applyFilter("GStreamerFilter", {
-        //   command: `textoverlay text="Embedded text" valignment=top halignment=right font-desc="Cantarell 25"`,
-        // });
-        /**
-         * Face Overlay
-         */
-        // publisher.stream.applyFilter("FaceOverlayFilter").then((filter) => {
-        //   filter.execMethod("setOverlayedImage", {
-        //     uri: "https://cdn.pixabay.com/photo/2013/07/12/14/14/derby-148046_960_720.png",
-        //     offsetXPercent: "-0.2F",
-        //     offsetYPercent: "-0.8F",
-        //     widthPercent: "1.3F",
-        //     heightPercent: "1.0F",
-        //   });
-        // });
       } else {
         publisher.stream.removeFilter();
-        setFilterName("");
+        setFilter(null);
       }
     }
   }, [filterApplied]);
 
   useEffect(() => {
-    if (filterName !== "") {
+    if (filter) {
+      setFilterMenuOpen(false);
       setFilterApplied(true);
     }
-  }, [filterName]);
+  }, [filter]);
 
   const startScreenShare = async () => {
     let publisherScreen = await OV.current.initPublisherAsync(undefined, {
@@ -336,7 +345,7 @@ export default function App() {
       resolution: "640x480",
       frameRate: 30,
       insertMode: "APPEND",
-      mirror: false,
+      mirror: true,
     });
 
     if (session) {
@@ -514,46 +523,27 @@ export default function App() {
                   <SignalSlashIcon className="w-8 h-8 text-red-400" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton onClick={() => setFilterApplied(false)}>
+              <ControlPanelButton>
                 {filterApplied ? (
-                  <SparklesIcon className="w-8 h-8 text-yellow-400" />
+                  <SparklesIcon
+                    className="w-8 h-8 text-yellow-400"
+                    onClick={() => setFilterApplied(false)}
+                  />
                 ) : (
-                  <SparklesIcon className="w-8 h-8 " />
+                  <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
                 )}
-                {!filterApplied && (
-                  <FilterMenu>
-                    <FilterMenuList
-                      disabled={filterName === "dicetv"}
-                      onClick={() => {
-                        setFilterName("dicetv");
-                      }}
-                    >
-                      dicetv
-                    </FilterMenuList>
-                    <FilterMenuList
-                      disabled={filterName === "edgetv"}
-                      onClick={() => {
-                        setFilterName("edgetv");
-                      }}
-                    >
-                      edgetv
-                    </FilterMenuList>
-                    <FilterMenuList
-                      disabled={filterName === "revtv"}
-                      onClick={() => {
-                        setFilterName("revtv");
-                      }}
-                    >
-                      revtv
-                    </FilterMenuList>
-                    <FilterMenuList
-                      disabled={filterName === "square"}
-                      onClick={() => {
-                        setFilterName("square");
-                      }}
-                    >
-                      square
-                    </FilterMenuList>
+                {filterMenuOpen && (
+                  <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
+                    {filterType.map((f) => (
+                      <FilterMenuList
+                        disabled={filter === f}
+                        onClick={() => {
+                          setFilter(f);
+                        }}
+                      >
+                        {f.name}
+                      </FilterMenuList>
+                    ))}
                   </FilterMenu>
                 )}
               </ControlPanelButton>
@@ -805,7 +795,7 @@ disabled:text-slate-200
 `;
 
 const ControlPanel = tw.div`
-w-80
+min-w-80
 h-16
 bottom-6
 left-1/2
@@ -836,7 +826,6 @@ bottom-1/2
 -translate-1/2
 left-1/2
 w-32
-h-40
 rounded-lg
 shadow-lg
 flex
