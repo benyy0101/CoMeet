@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardSearchResponseDto {
+public class BoardDetailResponseDto {
     private Long id;
     private String title;
     private String content;
@@ -35,9 +35,9 @@ public class BoardSearchResponseDto {
 
     private String createdAt; //작성 날짜
 
-    public static BoardSearchResponseDto toBoardSearchResponseDto(Board board, Room room, Member writer, String keywordsString, Boolean isLike) {
+    public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, Member writer, String keywordsString, Boolean isLike) {
 
-        return BoardSearchResponseDto.builder()
+        return BoardDetailResponseDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
                 .content(board.getContent())

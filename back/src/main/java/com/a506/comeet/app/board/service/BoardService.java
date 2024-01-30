@@ -1,8 +1,6 @@
 package com.a506.comeet.app.board.service;
 
-import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
-import com.a506.comeet.app.board.controller.dto.BoardSearchResponseDto;
-import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
+import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.repository.BoardRepository;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
@@ -10,14 +8,19 @@ import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.LikeRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.member.service.LikeService;
+import com.a506.comeet.app.room.controller.dto.RoomSearchRequestDto;
+import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -72,7 +75,13 @@ public class BoardService {
         board.delete();
     }
 
-    public BoardSearchResponseDto search(Long boardId, String memberId) {
+    public Slice<BoardListResponseDto> search(BoardListRequestDto req) {
+        // 수정해야 함
+        return boardRepository.searchBoardCustom(req);
+        //return roomRepository.searchRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+    }
+
+    public BoardDetailResponseDto getById(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         //모집 게시판은 방이 있어야 하고, 자유 게시판은 방이 없어야 한다.
@@ -98,7 +107,7 @@ public class BoardService {
             }
         }
         boolean isLike = checkLikeStatus(boardId, memberId);
-        return BoardSearchResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
+        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
     }
 
     @Transactional

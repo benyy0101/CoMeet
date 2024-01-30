@@ -1,12 +1,12 @@
 package com.a506.comeet.app.board.controller;
 
-import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
-import com.a506.comeet.app.board.controller.dto.BoardSearchResponseDto;
-import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
+import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
 import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,24 +26,30 @@ public class BoardController {
         return ResponseEntity.ok(board.getId());
     }
 
-    @PatchMapping("/{boardId}")
+    @PatchMapping("{boardId}")
     public ResponseEntity<LocalDateTime> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = MemberUtil.getMemberId();
         Board board = boardService.update(req, boardId, memberId);
         return ResponseEntity.ok(board.getUpdatedAt());
     }
 
-    @DeleteMapping("/{boardId}")
+    @DeleteMapping("{boardId}")
     public ResponseEntity<Void> delete(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.delete(boardId, memberId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{boardId}")
-    public ResponseEntity<BoardSearchResponseDto> search(@PathVariable(value = "boardId") Long boardId){
+    @GetMapping
+    public ResponseEntity<Slice<BoardListResponseDto>> search(@ModelAttribute BoardListRequestDto req){
+        Slice<BoardListResponseDto> res = boardService.search(req);
+        return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("{boardId}")
+    public ResponseEntity<BoardDetailResponseDto> getById(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
-        return ResponseEntity.ok(boardService.search(boardId, memberId));
+        return ResponseEntity.ok(boardService.getById(boardId, memberId));
     }
 
     @PostMapping("{boardId}/like")
