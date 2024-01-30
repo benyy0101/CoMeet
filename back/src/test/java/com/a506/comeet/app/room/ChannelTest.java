@@ -1,4 +1,4 @@
-package com.a506.comeet.api.service.channel;
+package com.a506.comeet.app.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Slf4j
 @Transactional
-public class ChannelCUDTest {
+public class ChannelTest {
 
     @Autowired
     private ChannelService channelService;

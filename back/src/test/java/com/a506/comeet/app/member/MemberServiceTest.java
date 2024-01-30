@@ -1,4 +1,4 @@
-package com.a506.comeet.member.service;
+package com.a506.comeet.app.member;
 
 import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.common.enums.MemberFeature;
