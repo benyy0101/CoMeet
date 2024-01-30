@@ -32,7 +32,9 @@ public class RoomCreateRequestDto {
     @Min(value = 1, message = "최소값은 1입니다.")
     @Max(value = 20, message = "최대값은 20입니다.")
     private int capacity;
+    @NotNull
     private RoomConstraints constraints;
+    @NotNull
     private RoomType type;
     private List<Long> keywordIds;
 

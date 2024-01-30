@@ -1,12 +1,16 @@
 package com.a506.comeet.app.etc.controller.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 public class TilListResponseDto {
 
     private List<TilContentResponseDto> content = new ArrayList<>();
@@ -15,7 +19,9 @@ public class TilListResponseDto {
         this.content.add(new TilContentResponseDto(id, date));
     }
 
-    static class TilContentResponseDto implements Comparable<TilContentResponseDto> {
+    @JsonSerialize
+    @Getter
+    public static class TilContentResponseDto implements Comparable<TilContentResponseDto> {
         private Long id;
         private LocalDate date;
 
