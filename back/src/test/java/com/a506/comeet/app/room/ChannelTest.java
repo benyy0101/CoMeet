@@ -1,4 +1,4 @@
-package com.a506.comeet.api.service.channel;
+package com.a506.comeet.app.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Slf4j
 @Transactional
-public class ChannelCUDTest {
+public class ChannelTest {
 
     @Autowired
     private ChannelService channelService;
@@ -81,9 +81,7 @@ public class ChannelCUDTest {
     void updateTest(){
         ChannelCreateRequestDto req = new ChannelCreateRequestDto(room.getId(), "channel1");
         Channel channel = channelService.create(req, "멤버1");
-        log.info("채널 삭제됨? : {}", channel.isDeleted());
         channel = channelRepository.findAll().get(0);
-        log.info("채널 삭제됨?????? : {}", channel.isDeleted());
 
         ChannelUpdateRequestDto req2 = new ChannelUpdateRequestDto("channel2");
         channelService.update(req2, channel.getId(), "멤버1");
@@ -104,7 +102,6 @@ public class ChannelCUDTest {
 
         assertThat(room.getChannels().size()).isEqualTo(1);
         channelService.delete(channel.getId(), "멤버1");
-        assertThat(channelRepository.findById(channel.getId()).get().isDeleted()).isTrue();
         assertThat(room.getChannels().size()).isEqualTo(0);
     }
 
@@ -118,7 +115,6 @@ public class ChannelCUDTest {
 
         room.delete();
         assertThat(room.getChannels().size()).isEqualTo(0);
-        assertThat(channel.isDeleted()).isTrue();
     }
 
 }

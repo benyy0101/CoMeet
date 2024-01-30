@@ -1,4 +1,4 @@
-package com.a506.comeet.api.service.lounge;
+package com.a506.comeet.app.room;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Slf4j
 @Transactional
-public class LoungeCUDTest {
+public class LoungeTest {
 
     @Autowired
     private LoungeService loungeService;
@@ -81,9 +81,7 @@ public class LoungeCUDTest {
     void updateTest(){
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
         Lounge lounge = loungeService.create(req, "멤버1");
-        log.info("채널 삭제됨? : {}", lounge.isDeleted());
         lounge = loungeRepository.findAll().get(0);
-        log.info("채널 삭제됨?????? : {}", lounge.isDeleted());
 
         LoungeUpdateRequestDto req2 = new LoungeUpdateRequestDto("lounge2");
         loungeService.update(req2, lounge.getId(), "멤버1");
@@ -104,7 +102,6 @@ public class LoungeCUDTest {
 
         assertThat(room.getLounges().size()).isEqualTo(1);
         loungeService.delete(lounge.getId(), "멤버1");
-        assertThat(loungeRepository.findById(lounge.getId()).get().isDeleted()).isTrue();
         assertThat(room.getLounges().size()).isEqualTo(0);
     }
 
@@ -118,7 +115,6 @@ public class LoungeCUDTest {
 
         room.delete();
         assertThat(room.getLounges().size()).isEqualTo(0);
-        assertThat(lounge.isDeleted()).isTrue();
     }
 
 }

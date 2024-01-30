@@ -1,4 +1,4 @@
-package com.a506.comeet.api.service.room;
+package com.a506.comeet.app.room;
 
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.repository.RoomRepository;

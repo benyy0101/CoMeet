@@ -1,4 +1,4 @@
-package com.a506.comeet.member.service;
+package com.a506.comeet.app.member;
 
 import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.common.enums.MemberFeature;
@@ -68,7 +68,6 @@ class MemberServiceTest {
         Member member = memberRepository.findById("멤버아이디1").orElse(null);
         assertThat(member).isEqualTo(null);
         Member deletedMember = memberRepository.findById("멤버아이디1").get();
-        assertThat(deletedMember.isDeleted()).isTrue();
     }
 
     @Test

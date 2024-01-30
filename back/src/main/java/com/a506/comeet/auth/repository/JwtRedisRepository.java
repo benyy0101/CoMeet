@@ -12,20 +12,20 @@ public class JwtRedisRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String memberId, String refreshToken, long refreshTokenValidityInSeconds){
+    public void save(String refreshTokenKey, String refreshToken, long refreshTokenValidityInSeconds){
         redisTemplate.opsForValue().set(
-                memberId,
+                refreshTokenKey,
                 refreshToken,
                 refreshTokenValidityInSeconds,
                 TimeUnit.SECONDS
         );
     }
 
-    public void delete(String memberId){
-        redisTemplate.delete(memberId);
+    public void delete(String refreshTokenKey){
+        redisTemplate.delete(refreshTokenKey);
     }
 
-    public String getRefreshToken(String memberId){
-        return redisTemplate.opsForValue().get(memberId);
+    public String find(String refreshTokenKey){
+        return redisTemplate.opsForValue().get(refreshTokenKey);
     }
 }

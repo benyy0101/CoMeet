@@ -1,8 +1,9 @@
-package com.a506.comeet.app.etc.service;
+package com.a506.comeet.app.etc;
 
 import com.a506.comeet.app.etc.controller.dto.*;
 import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.app.etc.repository.TilRepository;
+import com.a506.comeet.app.etc.service.TilService;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
@@ -36,10 +37,7 @@ class TilServiceTest {
     @Test
     @Transactional
     void createTest(){
-        em.persist(Member.builder().memberId("멤버1").build());
-        em.flush();
-        em.clear();
-
+        memberRepository.save(Member.builder().memberId("멤버1").name("이름").nickname("닉네임").email("wss@email.com").password("password").build());
         Til created = tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
         Member member = memberRepository.findById("멤버1").get();
         assertThat(member.getTils().size()).isEqualTo(1);
@@ -49,9 +47,7 @@ class TilServiceTest {
     @Test
     @Transactional
     void updateTest(){
-        em.persist(Member.builder().memberId("멤버1").build());
-        em.flush();
-        em.clear();
+        memberRepository.save(Member.builder().memberId("멤버1").build());
 
         Til created = tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
         Member member = memberRepository.findById("멤버1").get();

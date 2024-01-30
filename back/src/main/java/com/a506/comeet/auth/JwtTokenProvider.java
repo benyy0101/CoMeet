@@ -1,5 +1,6 @@
 package com.a506.comeet.auth;
 
+import com.a506.comeet.app.KeyUtil;
 import com.a506.comeet.auth.repository.JwtRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -76,7 +77,9 @@ public class JwtTokenProvider {
         String encryptedRefreshToken = aes128Util.encryptAes(refreshToken);
 
         // refreshToken redis에 저장
-       jwtRedisRepository.save(authentication.getName(), refreshToken, refreshTokenValidityInSeconds);
+       jwtRedisRepository.save(
+               KeyUtil.getRefreshTokenKey(authentication.getName()),
+               refreshToken, refreshTokenValidityInSeconds);
 
         return JwtToken.builder()
                 .grantType("Bearer")

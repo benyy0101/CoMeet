@@ -1,4 +1,4 @@
-package com.a506.comeet.member.service;
+package com.a506.comeet.app.member;
 
 import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.service.FollowService;
