@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
 public class RoomCreateRequestDto {
 
     @Setter
@@ -37,7 +38,6 @@ public class RoomCreateRequestDto {
     private RoomType type;
     private List<Long> keywordIds;
 
-    @Builder
     public RoomCreateRequestDto(String mangerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, List<Long> keywordIds) {
         this.mangerId = mangerId;
         this.title = title;

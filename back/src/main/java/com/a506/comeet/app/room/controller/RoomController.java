@@ -34,7 +34,6 @@ public class RoomController {
         return ResponseEntity.ok(created.getId());
     }
 
-
     @PatchMapping("{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId){
         String memberId = MemberUtil.getMemberId();
