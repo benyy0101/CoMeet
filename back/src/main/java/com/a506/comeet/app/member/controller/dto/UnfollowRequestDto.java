@@ -8,12 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FollowRequestDto {
+public class UnfollowRequestDto {
 
     @NotNull
     private String memberId;
 
-    public FollowRequestDto(String memberId) {
+    public UnfollowRequestDto(String memberId) {
         this.memberId = memberId;
     }
 }

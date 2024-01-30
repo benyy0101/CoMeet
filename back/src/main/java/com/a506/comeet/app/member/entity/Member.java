@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,6 +33,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder
+@SQLRestriction("is_deleted = 0")
 public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     @Id
@@ -49,11 +52,13 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     private String profileImage = "default_profile_image_letsgo";
     @Column(nullable = false)
     private String email;
+
     @Builder.Default
     private String description = "default_description_letsgo";
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Column(name = "feature")
     private MemberFeature feature = MemberFeature.EARTH;
 
     @Builder.Default
@@ -72,15 +77,18 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Like> likes = new ArrayList<>();
+
     public void updateMember(MemberUpdateRequestDto dto){
-        this.name = dto.getName();
-        this.password = dto.getPassword();
-        this.nickname = dto.getNickname();
-        this.link = dto.getLink();
-        this.profileImage = dto.getProfileImage();
-        this.email = dto.getEmail();
-        this.description = dto.getDescription();
-        this.feature = dto.getFeature();
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getPassword() != null) this.password = dto.getPassword();
+        if (dto.getNickname() != null) this.nickname = dto.getNickname();
+        if (dto.getLink() != null) this.link = dto.getLink();
+        if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
+        if (dto.getEmail() != null) this.email = dto.getEmail();
+        if (dto.getDescription() != null) this.description = dto.getDescription();
+        if (dto.getFeature() != null) this.feature = dto.getFeature();
     }
 
     public void addRoomMember(RoomMember roomMember){

@@ -26,13 +26,13 @@ public class KeywordService {
 
     @Transactional
     public void update(KeywordRequestDto req, Long keywordId){
-        Keyword keyword = keywordRepository.findByIdAndIsDeletedFalse(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         keyword.setName(req.getName());
     }
 
     @Transactional
     public void delete(Long keywordId){
-        Keyword keyword = keywordRepository.findByIdAndIsDeletedFalse(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         keyword.delete();
     }
 }

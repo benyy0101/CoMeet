@@ -40,9 +40,9 @@ public class RoomService {
     private final KeywordRepository keywordRepository;
 
     @Transactional
-    public Room createRoom(RoomCreateRequestDto req) {
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Room room = Room.builder(). //.위치
+    public Room create(RoomCreateRequestDto req) {
+        Member member = memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = Room.builder().
                 manager(member).
                 title(req.getTitle()).
                 description(req.getDescription()).
@@ -52,7 +52,7 @@ public class RoomService {
 
         Room created = roomRepository.save(room);
         for (Long keywordId : req.getKeywordIds()) {
-            Keyword keyword = keywordRepository.findByIdAndIsDeletedFalse(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+            Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
             RoomKeyword roomKeyword = roomKeywordRepository.save(new RoomKeyword(created, keyword));
             room.addKeyword(roomKeyword);
         }
@@ -62,53 +62,55 @@ public class RoomService {
     }
 
     @Transactional
-    public void updateRoom(RoomUpdateRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        authorityValidation(room, reqMemberId);
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        room.updateRoom(req, member);
+    public void update(RoomUpdateRequestDto req, String memberId, long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        authorityValidation(room, memberId);
+        Member newManager = req.getMangerId() != null?
+                memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))
+                : null;
+        room.updateRoom(req, newManager);
         updateRoomKeywords(req, room);
     }
 
     @Transactional
-    public void deleteRoom(String reqMemberId, Long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        if (!room.getManager().getMemberId().equals(reqMemberId)) //중복
+    public void delete(String memberId, Long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        if (!room.getManager().getMemberId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         room.delete();
     }
 
     @Transactional
-    public void joinMember(RoomJoinRequestDto req, String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    public void join(RoomJoinRequestDto req, String memberId, long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         permanentRoomRequestValidation(room);
-        authorityValidation(room, reqMemberId);
+        authorityValidation(room, memberId);
         roomSizeValidation(room);
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(req.getMemberId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member newMember = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         // 실제 멤버 조인 로직
-        joinMemberInnerLogic(member, room);
+        joinMemberInnerLogic(newMember, room);
     }
 
     @Transactional
-    public void leaveRoom(String reqMemberId, long roomId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    public void leave(String memberId, long roomId) {
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         permanentRoomRequestValidation(room);
-        Member member = memberRepository.findByMemberIdAndIsDeletedFalse(reqMemberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        RoomMember roomMember = roomMemberRepository.findByRoomAndMemberAndIsDeletedFalse(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        RoomMember roomMember = roomMemberRepository.findByRoomAndMember(room, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         roomMember.leaveRoom();
     }
 
-    public Slice<RoomSearchResponseDto> searchRoom(RoomSearchRequestDto requestDto) {
+    public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto requestDto) {
         return roomRepository.searchRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
     }
 
-    public RoomResponseDto enterRoom(Long roomId, String memberId) {
+    public RoomResponseDto enter(Long roomId, String memberId) {
         roomRepository.findMemberByRoomIdAndMemberId(roomId, memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_AUTHORIZATION));
         return roomRepository.enterRoomCustom(roomId);
     }
 
-    private void authorityValidation(Room room, String reqMemberId) {
-        if (!room.getManager().getMemberId().equals(reqMemberId))
+    private void authorityValidation(Room room, String memberId) {
+        if (!room.getManager().getMemberId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
     }
 

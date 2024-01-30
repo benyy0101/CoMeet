@@ -48,7 +48,7 @@ public class SimpleTests {
                 mangerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
-        Room newRoom = roomService.createRoom(reqR);
+        Room newRoom = roomService.create(reqR);
 
         log.info("방 생성");
 
@@ -72,7 +72,7 @@ public class SimpleTests {
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
-        Room room = roomService.createRoom(req);
+        Room room = roomService.create(req);
 
         Room foundRoom = roomRepository.findByIdAndIsDeletedFalse(room.getId()).get();
 

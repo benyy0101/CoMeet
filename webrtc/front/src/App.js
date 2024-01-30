@@ -25,6 +25,8 @@ export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);
+  const [inChat, setInChat] = useState(true);
+  const [message, setMessage] = useState("");
 
   const [mySessionId, setMySessionId] = useState("");
   const [myUserName, setMyUserName] = useState(`사용자 ${Math.floor(Math.random() * 100)}`);
@@ -440,8 +442,29 @@ export default function App() {
               <VideoContainer>
                 {session !== undefined && (
                   <ChatContainer>
-                    {/* <Chat chatId={mySessionId} username={myUserName} /> */}
-                    <ShareEditor session={session} username={myUserName} />
+                    <ChatNavbar>
+                      <ChatNavButton disabled={inChat === true} onClick={() => setInChat(true)}>
+                        채팅
+                      </ChatNavButton>
+                      <ChatNavButton disabled={inChat === false} onClick={() => setInChat(false)}>
+                        공유코드
+                      </ChatNavButton>
+                    </ChatNavbar>
+                    {inChat ? (
+                      <Chat
+                        chatId={mySessionId}
+                        username={myUserName}
+                        setMessage={setMessage}
+                        message={message}
+                      />
+                    ) : (
+                      <ShareEditor
+                        session={session}
+                        username={myUserName}
+                        setMessage={setMessage}
+                        setInChat={setInChat}
+                      />
+                    )}
                   </ChatContainer>
                 )}
                 {/* 클릭시 나오는 확대 영상 */}
@@ -752,12 +775,30 @@ const ChatContainer = tw.div`
 w-0
 xl:min-w-96
 h-full
-rounded-md
+rounded-lg
 text-white
 flex
-justify-center
+flex-col
+justify-between
 items-center
 bg-[#333333]
+overflow-hidden
+`;
+
+const ChatNavbar = tw.div`
+w-full
+h-10
+min-h-10
+bg-gray-900
+`;
+
+const ChatNavButton = tw.button`
+w-1/2
+h-full
+bg-slate-50/5
+text-slate-500
+disabled:bg-transparent
+disabled:text-slate-200
 `;
 
 const ControlPanel = tw.div`

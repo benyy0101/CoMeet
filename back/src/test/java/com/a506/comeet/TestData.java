@@ -87,16 +87,16 @@ public class TestData {
                 mangerId("멤버1000").
                 title("title").description("설명").capacity(1000).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
-        Long roomId = roomService.createRoom(reqR).getId();
+        Long roomId = roomService.create(reqR).getId();
 
         for (int i = 1; i <= 999; i++) {
             RoomJoinRequestDto req = new RoomJoinRequestDto("멤버"+i);
-            roomService.joinMember(req, "멤버1000", roomId);
+            roomService.join(req, "멤버1000", roomId);
         }
 
         for (int i = 1; i <= 20; i++) {
-            channelService.createChannel(new ChannelCreateRequestDto(roomId, "채널명"+i), "멤버1000");
-            loungeService.createLounge(new LoungeCreateRequestDto(roomId, "라운지명"+i), "멤버1000");
+            channelService.create(new ChannelCreateRequestDto(roomId, "채널명"+i), "멤버1000");
+            loungeService.create(new LoungeCreateRequestDto(roomId, "라운지명"+i), "멤버1000");
         }
     }
 
@@ -115,7 +115,7 @@ public class TestData {
                     mangerId("멤버1000").
                     title("title"+i).description("설명"+i).capacity(9).constraints(RoomConstraints.FREE).keywordIds(List.of(keywordId1, keywordId2, keywordId3)).type(RoomType.PERMANENT).
                     build();
-            roomService.createRoom(reqR);
+            roomService.create(reqR);
         }
 
     }
