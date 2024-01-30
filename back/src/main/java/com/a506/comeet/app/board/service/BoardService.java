@@ -104,7 +104,6 @@ public class BoardService {
     @Transactional
     public void addLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        authorityValidation(board, memberId);
         if(!checkLikeStatus(boardId, memberId)){
             likeService.addLike(boardId, memberId);
             board.incrementLikeCount();
@@ -114,7 +113,6 @@ public class BoardService {
     @Transactional
     public void removeLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        authorityValidation(board, memberId);
         if(checkLikeStatus(boardId, memberId)){
             likeService.removeLike(boardId, memberId);
             board.decrementLikeCount();
