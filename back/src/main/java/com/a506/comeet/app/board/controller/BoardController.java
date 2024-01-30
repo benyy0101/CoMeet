@@ -21,7 +21,7 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody BoardCreateRequestDto req) {
-        String memberId = "damongsanga";
+        String memberId = MemberUtil.getMemberId();
         Board board = boardService.create(req, memberId);
         return ResponseEntity.ok(board.getId());
     }
