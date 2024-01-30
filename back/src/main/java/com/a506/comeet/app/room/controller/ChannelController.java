@@ -32,7 +32,7 @@ public class ChannelController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{channelId}/delete")
+    @DeleteMapping("/{channelId}")
     public ResponseEntity<Void> delete(@PathVariable Long channelId){
         String memberId = MemberUtil.getMemberId();
         channelService.delete(channelId, memberId);
