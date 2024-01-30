@@ -9,6 +9,7 @@ import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.LikeRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.BoardType;
@@ -35,9 +36,9 @@ import static com.a506.comeet.error.errorcode.CommonErrorCode.WRONG_REQUEST;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final LikeRepository likeRepository;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
+    private final LikeService likeService;
 
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
@@ -96,18 +97,26 @@ public class BoardService {
                 keywordsString.append(roomKeyword.getKeyword());
             }
         }
-        boolean isLike = checkUserLikeStatus(boardId, memberId);
+        boolean isLike = likeService.checkLikeStatus(boardId, memberId);
         return BoardSearchResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
     }
 
-    private void authorityValidation(Board board, String memberId) {
-        if (!board.getWriterId().equals(memberId))
-            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+    @Transactional
+    public void addLike(Long boardId, String memberId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        authorityValidation(board, memberId);
+        likeService.addLike(boardId, memberId);
     }
 
-    private boolean checkUserLikeStatus(Long boardId, String memberId) {
+    @Transactional
+    public void removeLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        return likeRepository.existsByBoardAndMember(board, member);
+        authorityValidation(board, memberId);
+        likeService.removeLike(boardId, memberId);
+    }
+
+    public void authorityValidation(Board board, String memberId) {
+        if (!board.getWriterId().equals(memberId))
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
     }
 }
