@@ -167,7 +167,7 @@ class RoomServiceTest {
 
         // leave
         log.info("멤버 방 나가기");
-        roomService.leave("member1", roomId);
+        roomService.withdraw("member1", roomId);
         room = roomRepository.findByIdAndIsDeletedFalse(roomId).get(); // 다시 가져와야?
         // assert
         assertThat(room.getRoomMembers().size()).isEqualTo(2);

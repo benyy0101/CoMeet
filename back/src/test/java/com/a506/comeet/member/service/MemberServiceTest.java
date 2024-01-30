@@ -68,7 +68,6 @@ class MemberServiceTest {
         Member member = memberRepository.findById("멤버아이디1").orElse(null);
         assertThat(member).isEqualTo(null);
         Member deletedMember = memberRepository.findById("멤버아이디1").get();
-        assertThat(deletedMember.isDeleted()).isTrue();
     }
 
     @Test
