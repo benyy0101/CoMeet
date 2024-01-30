@@ -26,9 +26,8 @@ public class Like {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public Like(Long id, Member member, Board board) {
-        this.id = id;
-        this.member = member;
+    public Like(Board board, Member member) {
         this.board = board;
+        this.member = member;
     }
 }

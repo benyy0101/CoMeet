@@ -45,4 +45,18 @@ public class BoardController {
         String memberId = MemberUtil.getMemberId();
         return ResponseEntity.ok(boardService.search(boardId, memberId));
     }
+
+    @PostMapping("{boardId}/like")
+    public ResponseEntity<Void> addLike(@PathVariable(value = "boardId") Long boardId){
+        String memberId = MemberUtil.getMemberId();
+        boardService.addLike(boardId, memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("{boardId}/like")
+    public ResponseEntity<Void> removeLike(@PathVariable(value = "boardId") Long boardId){
+        String memberId = MemberUtil.getMemberId();
+        boardService.removeLike(boardId, memberId);
+        return ResponseEntity.ok().build();
+    }
 }
