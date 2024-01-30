@@ -17,7 +17,7 @@ import { FreeBoardList } from "./pages/FreeBoardList";
 //import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
-
+import Login from "./components/Login";
 
 function App() {
   //임시
@@ -30,6 +30,7 @@ function App() {
 
   return (
     <div className="App h-dvh">
+      <Login></Login>
       <BrowserRouter>
         <NavBarContainer>
           <NavBar />

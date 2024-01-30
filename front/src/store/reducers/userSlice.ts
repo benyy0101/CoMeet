@@ -1,18 +1,7 @@
 // userSlice.ts
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
-
-interface UserState {
-  user: {
-    memberId: string;
-    name: string;
-    password: string;
-    email: string;
-    nickname: string;
-  };
-  isLoggedIn: boolean;
-  token: string | null;
-}
+import { UserState } from "../../types";
 
 // Function to retrieve user state from sessionStorage
 const loadUserState = (): UserState => {

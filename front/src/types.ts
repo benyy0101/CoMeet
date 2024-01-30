@@ -10,3 +10,15 @@ export type RoomItemProps = {
   password: string;
   constraint: string;
 };
+
+export type UserState = {
+  user: {
+    memberId: string;
+    name: string;
+    password: string;
+    email: string;
+    nickname: string;
+  };
+  isLoggedIn: boolean;
+  token: string | null;
+};
