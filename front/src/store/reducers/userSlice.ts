@@ -62,12 +62,10 @@ const userSlice = createSlice({
   },
 });
 
-// Function to save user state to sessionStorage
 const saveUserState = (state: UserState) => {
   sessionStorage.setItem("userState", JSON.stringify(state));
 };
 
-// Subscribe to the store to automatically save the state to sessionStorage
 export const setupUserStatePersistence = (store: Store) => {
   store.subscribe(() => {
     const state = store.getState().user;

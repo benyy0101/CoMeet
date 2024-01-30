@@ -18,6 +18,7 @@ import { FreeBoardList } from "./pages/FreeBoardList";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
 
+
 function App() {
   //임시
   const isLogin = true;
