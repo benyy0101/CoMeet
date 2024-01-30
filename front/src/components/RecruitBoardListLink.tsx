@@ -75,7 +75,7 @@ mt-3
 
 // 글 제목
 const BoardTitle = tw.div`
-text-lg
+text-[16px]
 font-bold
 `;
 
@@ -133,7 +133,9 @@ h-7
 `;
 
 // 작성자 닉네임
-const WriterNicname = tw.div``;
+const WriterNicname = tw.div`
+text-[14px]
+`;
 
 // 작성 날짜
 const WriteDate = tw.div``;

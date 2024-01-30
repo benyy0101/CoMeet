@@ -58,62 +58,86 @@ export const RecruitBoardList = () => {
 
   return (
     <TotalContainer>
-      <LeftContainer>
-        <div>사이드바임</div>
-        <div>전체</div>
-        <div>모집중</div>
-        <div>모집완료</div>
-      </LeftContainer>
-      <CenterTotalContainer>
-        <CoreTotalContainer>
-          <BoardListTitle>모집게시판</BoardListTitle>
-          <BoardListHeader>
-            <SortCountContainer>
-              <SortCountButton>정렬 버튼</SortCountButton>
-            </SortCountContainer>
-            <SortCountContainer>
-              <SortCountButton>인원수 조절 버튼</SortCountButton>
-            </SortCountContainer>
-            <SearchContainer>게시글검색바</SearchContainer>
-            <WriteButton>글쓰기버튼</WriteButton>
-          </BoardListHeader>
-          <ListContainer>
-            <hr />
-            {/* ReadButton은 임시! */}
-            {boardList.map((tmp) => (
-              <ReadButton>
-                <RecruitBoardListLink key={tmp.id} {...tmp} />
-              </ReadButton>
-            ))}
-          </ListContainer>
-          <div className="flex justify-center mt-16">페이지네이션</div>
-        </CoreTotalContainer>
-      </CenterTotalContainer>
+      <Wrapper>
+        <LeftContainer>
+          <SideButton>전체</SideButton>
+          <SideButton>모집중</SideButton>
+          <SideButton>모집완료</SideButton>
+        </LeftContainer>
+        <CenterTotalContainer>
+          <CoreTotalContainer>
+            <BoardListTitle>모집게시판</BoardListTitle>
+            <BoardListHeader>
+              <SortCountContainer>
+                <SortCountButton>정렬 버튼</SortCountButton>
+              </SortCountContainer>
+              <SortCountContainer>
+                <SortCountButton>인원수 조절 버튼</SortCountButton>
+              </SortCountContainer>
+              <SearchContainer>게시글검색바</SearchContainer>
+              <WriteButton>글쓰기버튼</WriteButton>
+            </BoardListHeader>
+            <ListContainer>
+              <hr />
+              {/* ReadButton은 임시! */}
+              {boardList.map((tmp) => (
+                <ReadButton>
+                  <RecruitBoardListLink key={tmp.id} {...tmp} />
+                </ReadButton>
+              ))}
+            </ListContainer>
+            <div className="flex justify-center mt-16">페이지네이션</div>
+          </CoreTotalContainer>
+        </CenterTotalContainer>
 
-      <RightContainer>
-        <div>키워드 검색</div>
-      </RightContainer>
+        <RightContainer>
+          <div>키워드 검색</div>
+        </RightContainer>
+      </Wrapper>
     </TotalContainer>
   );
 };
 
 const TotalContainer = tw.div`
 flex
+
 w-full
 h-full
 bg-[#070311]
-pt-14
+pt-10
 pb-20
 min-h-svh
+min-w-[1200px]
 text-white
+border
+`;
+
+const Wrapper = tw.div`
+mx-auto
+w-[1200px]
+flex
 border
 `;
 
 //모집중/모집완료 사이드바
 const LeftContainer = tw.div`
 w-[200px]
-ml-20
+flex
+flex-col
+pt-[120px]
+items-center
 border
+`;
+
+const SideButton = tw.button`
+w-3/4
+mx-auto
+py-2
+rounded-md
+hover:bg-gray-500
+focus:bg-gray-200
+focus:text-black
+transition
 `;
 
 //가운데 컨테이너 - 사이드바로 빠지는 정렬 외 모든 애들
@@ -126,16 +150,15 @@ border
 
 //진짜 모집게시판 리스트
 const CoreTotalContainer = tw.div`
-flex-grow
-max-w-[800px]
+w-[800px]
 h-full
 mb-5
+p-5
 `;
 
 //키워드 검색 가능한 오른쪽 사이드 바
 const RightContainer = tw.div`
 w-[200px]
-mr-20
 border
 `;
 

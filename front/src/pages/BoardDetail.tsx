@@ -31,11 +31,11 @@ min-h-svh
 `;
 
 const WritingContainer = tw.div`
-max-w-[800px]
+w-[750px]
 mb-5
 border-b
 `;
 
 const CommentContainer = tw.div`
-max-w-[800px]
+max-w-[750px]
 `;
