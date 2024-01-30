@@ -41,7 +41,7 @@ export const BoardDetailWritingTotal = () => {
 
   //방 번호 있으면
   if (roomId.length != 0) {
-    //키워드는 키워드 인덱스로 받아옴
+    //키워드는 키워드 인덱스로 받아오나
     roomKeyword = [123, 123123];
   }
 
