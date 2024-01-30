@@ -62,22 +62,22 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     private MemberFeature feature = MemberFeature.EARTH;
 
     @Builder.Default
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<RoomMember> roomMembers = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<MemberKeyword> keywords = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<Til> tils = new ArrayList<>();
 
     @Builder.Default
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<Like> likes = new ArrayList<>();
 
     public void updateMember(MemberUpdateRequestDto dto){

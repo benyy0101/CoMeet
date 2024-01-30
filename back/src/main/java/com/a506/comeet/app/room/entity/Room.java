@@ -40,7 +40,7 @@ public class Room extends BaseEntityWithSoftDelete {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomMember> roomMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomKeyword> roomKeywords = new ArrayList<>();
 
     private String title;
