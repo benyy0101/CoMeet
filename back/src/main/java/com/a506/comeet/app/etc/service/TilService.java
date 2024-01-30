@@ -1,9 +1,6 @@
 package com.a506.comeet.app.etc.service;
 
-import com.a506.comeet.app.etc.controller.dto.TilListResponseDto;
-import com.a506.comeet.app.etc.controller.dto.TilRequestDto;
-import com.a506.comeet.app.etc.controller.dto.TilResponseDto;
-import com.a506.comeet.app.etc.controller.dto.TilSearchRequestDto;
+import com.a506.comeet.app.etc.controller.dto.*;
 import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.app.etc.repository.TilRepository;
 import com.a506.comeet.app.member.entity.Member;
@@ -29,7 +26,7 @@ public class TilService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Til create(TilRequestDto req, String memberId) {
+    public Til create(TilCreateRequestDto req, String memberId) {
         if (tilRepository.tilWithMemberAndDateExists(memberId, LocalDateTime.now().toLocalDate()))
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
@@ -38,15 +35,15 @@ public class TilService {
     }
 
     @Transactional
-    public void update(TilRequestDto req, Long tilId, String memberId) {
-        Til til = tilRepository.findByIdAndIsDeletedFalse(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    public void update(TilUpdateRequestDto req, Long tilId, String memberId) {
+        Til til = tilRepository.findById(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         if (!til.getMember().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         til.update(req);
     }
 
     @Transactional
     public void delete(Long tilId, String memberId) {
-        Til til = tilRepository.findByIdAndIsDeletedFalse(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Til til = tilRepository.findById(tilId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         if (!til.getMember().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
         til.delete();
     }

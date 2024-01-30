@@ -1,34 +1,32 @@
 package com.a506.comeet.app.etc.controller;
 
+import com.a506.comeet.app.etc.controller.dto.*;
 import com.a506.comeet.app.member.MemberUtil;
-import com.a506.comeet.app.etc.controller.dto.TilListResponseDto;
-import com.a506.comeet.app.etc.controller.dto.TilRequestDto;
-import com.a506.comeet.app.etc.controller.dto.TilResponseDto;
-import com.a506.comeet.app.etc.controller.dto.TilSearchRequestDto;
 import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.app.etc.service.TilService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/til")
 @RequiredArgsConstructor
+@Slf4j
 public class TilController {
 
     private final TilService tilService;
 
     @PostMapping("")
-    public ResponseEntity<Long> create(@RequestBody @Valid TilRequestDto req){
+    public ResponseEntity<Long> create(@RequestBody @Valid TilCreateRequestDto req){
         String memberId = MemberUtil.getMemberId();
         Til created = tilService.create(req, memberId);
         return ResponseEntity.ok(created.getId());
     }
 
     @PatchMapping("/{tilId}")
-    public ResponseEntity<Void> update(@Valid @RequestBody TilRequestDto req, Long tilId){
+    public ResponseEntity<Void> update(@Valid @RequestBody TilUpdateRequestDto req, @PathVariable Long tilId){
         String memberId = MemberUtil.getMemberId();
         tilService.update(req, tilId, memberId);
         return ResponseEntity.ok().build();

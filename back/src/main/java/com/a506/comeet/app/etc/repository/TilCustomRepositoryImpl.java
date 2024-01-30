@@ -5,6 +5,7 @@ import com.a506.comeet.app.etc.controller.dto.TilSearchRequestDto;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import static com.a506.comeet.app.etc.entity.QTil.til;
 
 @RequiredArgsConstructor
 @Repository
+@Slf4j
 public class TilCustomRepositoryImpl implements TilCustomRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -42,12 +44,14 @@ public class TilCustomRepositoryImpl implements TilCustomRepository{
                 .where(til.date.between(date, date.plusMonths(1).minusDays(1)))
                 .fetch();
 
+        log.info("tuple size {}", tuples.size());
         TilListResponseDto res = new TilListResponseDto();
         for (Tuple tuple : tuples) {
+            log.info("{}", tuple.get(til.id));
+            log.info("{}", tuple.get(til.date));
             res.of(tuple.get(til.id), tuple.get(til.date));
         }
         Collections.sort(res.getContent());
-
         return res;
     }
 }

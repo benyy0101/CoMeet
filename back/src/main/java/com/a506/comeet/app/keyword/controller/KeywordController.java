@@ -17,11 +17,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KeywordController {
 
-    private final KeywordRepository keywordRepository;
+    private final KeywordService keywordService;
 
     @GetMapping("")
-    public ResponseEntity<List<Keyword>> getList(){
-        return ResponseEntity.ok(keywordRepository.findAll());
+    public ResponseEntity<List<KeywordResponseDto>> getList(){
+        return ResponseEntity.ok(keywordService.getAll());
     }
 
 }

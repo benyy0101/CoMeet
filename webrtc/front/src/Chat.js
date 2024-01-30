@@ -5,19 +5,16 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 import { APPLICATION_SERVER_URL } from "./App";
 
-export default function Chat({ chatId, username }) {
+export default function Chat({ chatId, username, setMessage, message }) {
   const [rows, setRows] = useState([]);
-  const [message, setMessage] = useState("");
+
   const stompClient = useRef(null);
 
   useEffect(() => {
     axios
-      .get(
-        APPLICATION_SERVER_URL + `chat/messages?type=CHANNEL&chatId=${chatId}`,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      )
+      .get(APPLICATION_SERVER_URL + `chat/messages?type=CHANNEL&chatId=${chatId}`, {
+        headers: { "Content-Type": "application/json" },
+      })
       .then((response) => {
         console.log(response);
         setRows(response.data);
@@ -32,13 +29,10 @@ export default function Chat({ chatId, username }) {
           {},
           function () {
             //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-            stompClient.current.subscribe(
-              `/topic/channel/${chatId}`,
-              function (e) {
-                //e.body에 전송된 data가 들어있다
-                showMessage(JSON.parse(e.body));
-              }
-            );
+            stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e) {
+              //e.body에 전송된 data가 들어있다
+              showMessage(JSON.parse(e.body));
+            });
           },
           function (e) {
             //에러 콜백
@@ -114,7 +108,7 @@ relative
 p-2
 `;
 
-const ChatInput = tw.input`
+const ChatInput = tw.textarea`
 w-full
 h-full
 rounded-full

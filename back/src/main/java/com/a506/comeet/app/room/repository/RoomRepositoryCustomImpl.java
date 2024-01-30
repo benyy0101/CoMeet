@@ -92,8 +92,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         )
                 ).
                 from(room).
-                leftJoin(room.roomMembers, roomMember).
-                leftJoin(roomMember.member, member).
+                leftJoin(room.manager, member).
                 where(room.id.eq(roomId).and(room.manager.eq(member))).fetchOne();
 
         res.setMembers(getMembers(roomId));
@@ -102,9 +101,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         res.setKeywords(getKeywords(roomId));
         return res;
     }
-
-
-
 
     @Override
     public List<RoomResponseDto> enterRoomCustomOneQuery(Long roomId) {

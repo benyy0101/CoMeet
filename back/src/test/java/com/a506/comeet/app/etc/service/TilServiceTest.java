@@ -40,7 +40,7 @@ class TilServiceTest {
         em.flush();
         em.clear();
 
-        Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
+        Til created = tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
         Member member = memberRepository.findById("멤버1").get();
         assertThat(member.getTils().size()).isEqualTo(1);
         assertThat(created.getMember().getMemberId()).isEqualTo("멤버1");
@@ -53,10 +53,10 @@ class TilServiceTest {
         em.flush();
         em.clear();
 
-        Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
+        Til created = tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
         Member member = memberRepository.findById("멤버1").get();
 
-        tilService.update(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕22").build(), created.getId(), "멤버1");
+        tilService.update(TilUpdateRequestDto.builder().context("안녕22").build(), created.getId(), "멤버1");
 
         assertThat(created.getContext()).isEqualTo("안녕22");
     }
@@ -68,12 +68,12 @@ class TilServiceTest {
         em.flush();
         em.clear();
 
-        Til created = tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
+        Til created = tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("안녕").build(), "멤버1");
         Member member = memberRepository.findById("멤버1").get();
 
         tilService.delete(created.getId(), "멤버1");
 
-        Til deleted = tilRepository.findByIdAndIsDeletedFalse(created.getId()).orElse(null);
+        Til deleted = tilRepository.findById(created.getId()).orElse(null);
 
         assertThat(deleted).isNull();
     }
@@ -85,13 +85,13 @@ class TilServiceTest {
         em.flush();
         em.clear();
 
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("O1").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("O2").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 2,3)).context("X1").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 3,3)).context("X2").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2023, 1,3)).context("X3").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 1,31)).context("O3").build(), "멤버1");
-        tilService.create(TilRequestDto.builder().date(LocalDate.of(2024, 2,1)).context("X4").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("O1").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,3)).context("O2").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 2,3)).context("X1").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 3,3)).context("X2").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2023, 1,3)).context("X3").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 1,31)).context("O3").build(), "멤버1");
+        tilService.create(TilCreateRequestDto.builder().date(LocalDate.of(2024, 2,1)).context("X4").build(), "멤버1");
 
         TilResponseDto res = tilService.find(1L);
         TilListResponseDto resList = tilService.findList(TilSearchRequestDto.builder().year(2024).month(1).build(), "멤버1");

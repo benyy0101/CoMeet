@@ -34,7 +34,7 @@ public class LoungeController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/{loungeId}/delete")
+    @DeleteMapping("/{loungeId}")
     public ResponseEntity<Void> delete(@PathVariable Long loungeId){
         String memberId = MemberUtil.getMemberId();
         loungeService.delete(loungeId, memberId);

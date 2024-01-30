@@ -15,7 +15,6 @@ import java.util.List;
 
 @Getter
 public class RoomSearchRequestDto {
-    @Size(min = 2, max = 10, message = "검색키워드는 2자 이상, 10자 이하여야 합니다.")
     private String searchKeyword;
     private Boolean isLocked;
     private Integer minMcount;

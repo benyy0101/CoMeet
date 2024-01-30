@@ -3,6 +3,8 @@ package com.a506.comeet.app.member.controller.dto;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 public class FollowerRequestDto {

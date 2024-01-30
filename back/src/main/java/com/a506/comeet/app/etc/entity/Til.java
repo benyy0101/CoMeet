@@ -1,8 +1,10 @@
 package com.a506.comeet.app.etc.entity;
 
-import com.a506.comeet.app.etc.controller.dto.TilRequestDto;
+import com.a506.comeet.app.etc.controller.dto.TilCreateRequestDto;
+import com.a506.comeet.app.etc.controller.dto.TilUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,7 @@ public class Til extends BaseEntityWithSoftDelete {
 
     private String context;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     public Til(Member member, String context, LocalDate date) {
@@ -35,7 +38,7 @@ public class Til extends BaseEntityWithSoftDelete {
         this.date = date;
     }
 
-    public void update(TilRequestDto req){
+    public void update(TilUpdateRequestDto req){
         if (req.getContext() != null) this.context = req.getContext();
     }
     public void delete(){
