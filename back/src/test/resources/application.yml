@@ -1,21 +1,34 @@
 spring:
+  profiles:
+    include: secret
+
   datasource:
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
+    url:
+    username:
     password:
-    driver-class-name: org.h2.Driver
+    driver-class-name:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto:
     properties:
       hibernate:
-        format_sql: true
+        format_sql:
+        dialect:
+  #    show-sql: true
 
   jwt:
-    header: Authorization
-    secret: 394763e7b962d3dbb8367630e7b9e7fa02a5ad01da0387f4f68c0df9f052de83
-    token-validity-in-seconds : 86400
+    header:
+    secret:
+    access-token-validity-in-seconds :
+    refresh-token-validity-in-seconds :
 
+  data:
+    redis:
+      host:
+      port:
 
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL:
+
+aes:
+  secret-key:

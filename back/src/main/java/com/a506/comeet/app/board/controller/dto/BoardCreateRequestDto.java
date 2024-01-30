@@ -15,5 +15,5 @@ public class BoardCreateRequestDto {
     private BoardType type;
     private FreeBoardCategory category;
     private Long roomId;
-    private Boolean valid;
+    private Boolean isValid;
 }
