@@ -42,6 +42,8 @@ export default function App() {
   const [filterApplied, setFilterApplied] = useState(false);
   const [filterName, setFilterName] = useState("");
 
+  const editorRef = useRef(null);
+
   const OV = useRef(new OpenVidu());
 
   const moveChannel = (sessionId) => {
@@ -463,6 +465,7 @@ export default function App() {
                         username={myUserName}
                         setMessage={setMessage}
                         setInChat={setInChat}
+                        editorRef={editorRef}
                       />
                     )}
                   </ChatContainer>

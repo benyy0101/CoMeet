@@ -2,8 +2,7 @@ import Editor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 
-export default function ShareEditor({ session, username, setMessage, setInChat }) {
-  const editorRef = useRef(null);
+export default function ShareEditor({ session, username, setMessage, setInChat, editorRef }) {
   const timeout = useRef(null);
   const [language, setLanguage] = useState("java");
   const [readOnly, setReadOnly] = useState(false);
