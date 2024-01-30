@@ -18,14 +18,10 @@ import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.stream.Collectors;
-
-import static com.a506.comeet.error.errorcode.CommonErrorCode.INVALID_PARAMETER;
 import static com.a506.comeet.error.errorcode.CommonErrorCode.WRONG_REQUEST;
 
 @Slf4j
@@ -38,17 +34,21 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
+    private final LikeRepository likeRepository;
     private final LikeService likeService;
 
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
-        Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = null;
+        if(req.getRoomId() != null)
+            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         Board board = Board.builder()
                 .writerId(memberId)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .type(req.getType())
+                .likeCount(req.getLikeCount())
                 .category(req.getCategory())
                 .room(room)
                 .isValid(req.getIsValid())
@@ -97,7 +97,7 @@ public class BoardService {
                 keywordsString.append(roomKeyword.getKeyword());
             }
         }
-        boolean isLike = likeService.checkLikeStatus(boardId, memberId);
+        boolean isLike = checkLikeStatus(boardId, memberId);
         return BoardSearchResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
     }
 
@@ -105,18 +105,30 @@ public class BoardService {
     public void addLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(board, memberId);
-        likeService.addLike(boardId, memberId);
+        if(!checkLikeStatus(boardId, memberId)){
+            likeService.addLike(boardId, memberId);
+            board.incrementLikeCount();
+        }
     }
 
     @Transactional
     public void removeLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(board, memberId);
-        likeService.removeLike(boardId, memberId);
+        if(checkLikeStatus(boardId, memberId)){
+            likeService.removeLike(boardId, memberId);
+            board.decrementLikeCount();
+        }
     }
 
     public void authorityValidation(Board board, String memberId) {
         if (!board.getWriterId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+    }
+
+    public boolean checkLikeStatus(Long boardId, String memberId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        return likeRepository.existsByBoardAndMember(board, member);
     }
 }

@@ -26,24 +26,14 @@ public class LikeService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Like like = new Like(board, member);
-        if(!checkLikeStatus(boardId, memberId)){
-            likeRepository.save(like);
-        }
+        likeRepository.save(like);
     }
 
     @Transactional
     public void removeLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        if(checkLikeStatus(boardId, memberId)){
-            Like like = likeRepository.findByBoardAndMember(board, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));;
-            likeRepository.delete(like);
-        }
-    }
-
-    public boolean checkLikeStatus(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        return likeRepository.existsByBoardAndMember(board, member);
+        Like like = likeRepository.findByBoardAndMember(board, member).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));;
+        likeRepository.delete(like);
     }
 }

@@ -55,6 +55,14 @@ public class Board extends BaseEntityWithSoftDelete {
             this.isValid = req.getIsValid();
     }
 
+    public void incrementLikeCount() {
+        this.likeCount += 1;
+    }
+
+    public void decrementLikeCount() {
+        this.likeCount -= 1;
+    }
+
     public void delete() {
         deleteSoftly();
     }
