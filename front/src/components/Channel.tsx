@@ -2,9 +2,9 @@ import { OpenVidu, Session, Subscriber, Publisher, Device } from "openvidu-brows
 
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import UserVideoComponent from "./UserVideoComponent";
+import UserVideoComponent from "./room/UserVideoComponent";
 import tw from "tailwind-styled-components";
-import Chat from "./Chat";
+import Chat from "./room/Chat";
 
 import {
   UserGroupIcon,
