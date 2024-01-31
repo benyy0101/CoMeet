@@ -104,8 +104,6 @@ public class MetadataService {
                 .map(entry -> new MemberKeywordResponseDto(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
 
-        log.info("keywords size : {}", keywords.size());
-
         res.setDayStudyHour(day);
         res.setWeekStudyHour(week);
         res.setMonthStudyHour(month);

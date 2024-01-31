@@ -69,8 +69,6 @@ public class MemberService {
     public MemberDetailResponseDto getMemberDetail(String memberId) {
         MemberDetailResponseDto res = memberRepository.getMemberDetail(memberId);
         metadataService.calculate(res, memberId);
-        log.info("feature : {}", res.getFeature());
-        log.info("첫 keyword : {}, {}", res.getKeywords().get(0).getName(), res.getKeywords().get(0).getWeight());
         return res;
     }
 }
