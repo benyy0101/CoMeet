@@ -10,6 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -22,9 +26,6 @@ public class Metadata extends BaseEntityWithSoftDelete {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 멤버아이디 방아이디 입장시간 퇴장시간 키워드
-    private String context;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="member_id")
     private Member member;
@@ -33,10 +34,16 @@ public class Metadata extends BaseEntityWithSoftDelete {
     @JoinColumn(name="room_id")
     private Room room;
 
+    private LocalDateTime enterTime;
+    private LocalDateTime leaveTime;
+    private String keywords;
+
     @Builder
-    public Metadata(String context, Member member, Room room) {
-        this.context = context;
+    public Metadata(Member member, Room room, LocalDateTime enterTime, LocalDateTime leaveTime, String keywords) {
         this.member = member;
         this.room = room;
+        this.enterTime = enterTime;
+        this.leaveTime = leaveTime;
+        this.keywords = keywords;
     }
 }

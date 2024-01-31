@@ -1,5 +1,6 @@
 package com.a506.comeet.app.member.service;
 
+import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
@@ -36,7 +37,7 @@ public class MemberService {
                 roles(req.roles).
                 build();
 
-        if (memberRepository.memberDuplicationCount(
+        if (memberRepository.getMemberDuplicationCount(
                 MemberDuplicationRequestDto.builder()
                         .memberId(member.getMemberId())
                         .nickname(member.getNickname())
@@ -53,7 +54,7 @@ public class MemberService {
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req){
-        return memberRepository.memberDuplicationCount(req) == 0;
+        return memberRepository.getMemberDuplicationCount(req) == 0;
     }
 
     @Transactional
@@ -61,5 +62,9 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
+    }
+
+    public MemberDetailResponseDto getMemberDetail(String memberId) {
+        return null;
     }
 }
