@@ -10,10 +10,24 @@ import RoomDefault from "../assets/img/room-default.svg";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "../hooks/useOutsideClick";
+import ModalPortal from "../utils/Portal";
+import Login from "./auth/Login";
+import Modal from "./Modal";
 
 export const NavBar = () => {
+  const [loginModal, setLoginModal] = React.useState<boolean>(false);
+  const [signupModal, setSignupModal] = React.useState<boolean>(false);
+
+  const loginModalHandler = () => {
+    //console.log(loginModal);
+    setLoginModal(!loginModal);
+  };
+  const signupModalHandler = () => {
+    console.log(signupModal);
+    setSignupModal(!signupModal);
+  };
   //임시
-  const isLogin = true;
+  const isLogin = false;
 
   //임시
   const isChannelIn = true;
@@ -108,11 +122,29 @@ export const NavBar = () => {
         ) : (
           <>
             <LoginSignup>
-              <Link to="/signup">회원가입</Link>
+              <button onClick={signupModalHandler}>회원가입</button>
+              <ModalPortal>
+                {signupModal === true ? (
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
+                ) : null}
+              </ModalPortal>
             </LoginSignup>
             |
             <LoginSignup>
-              <Link to="/login">로그인</Link>
+              <button onClick={loginModalHandler}>로그인</button>
+              <ModalPortal>
+                {loginModal === true ? (
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
+                ) : null}
+              </ModalPortal>
             </LoginSignup>
           </>
         )}

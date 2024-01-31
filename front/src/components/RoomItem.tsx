@@ -125,7 +125,7 @@ function RoomItem(props: RoomItemProps) {
         <Modal
           toggleModal={modalHandler}
           option="confirm"
-          otherProps={props}
+          setting = {props}
         ></Modal>
       )}
     </Wrapper>
