@@ -30,14 +30,14 @@ public class BoardController {
         return ResponseEntity.ok(board.getId());
     }
 
-    @PatchMapping("{boardId}")
+    @PatchMapping("/{boardId}")
     public ResponseEntity<LocalDateTime> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = MemberUtil.getMemberId();
         Board board = boardService.update(req, boardId, memberId);
         return ResponseEntity.ok(board.getUpdatedAt());
     }
 
-    @DeleteMapping("{boardId}")
+    @DeleteMapping("/{boardId}")
     public ResponseEntity<Void> delete(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.delete(boardId, memberId);
@@ -50,20 +50,20 @@ public class BoardController {
         return ResponseEntity.ok(boardService.search(req, pageable));
     }
 
-    @GetMapping("{boardId}")
+    @GetMapping("/{boardId}")
     public ResponseEntity<BoardDetailResponseDto> getById(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         return ResponseEntity.ok(boardService.getById(boardId, memberId));
     }
 
-    @PostMapping("{boardId}/like")
+    @PostMapping("/{boardId}/like")
     public ResponseEntity<Void> addLike(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.addLike(boardId, memberId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{boardId}/like")
+    @DeleteMapping("/{boardId}/like")
     public ResponseEntity<Void> removeLike(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.removeLike(boardId, memberId);
