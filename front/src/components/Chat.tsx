@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
+import usePressEnterFetch from "../hooks/usePressEnterFetch";
 
 interface IProps {
   chatId: string;
@@ -13,7 +14,7 @@ interface IProps {
 
 export default function Chat({ chatId, username, setMessage, message }: IProps) {
   const [rows, setRows] = useState<any[]>([]);
-
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const stompClient = useRef<any>(null);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
   }
 
   //메시지 브로커로 메시지 전송
-  const send: React.FormEventHandler<HTMLFormElement> = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
 
     const data = {
@@ -76,6 +77,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
     stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
     setMessage("");
   };
+  const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
 
   useEffect(() => {
     const chatcontent = document.getElementById("chatcontent");
@@ -91,8 +93,8 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
 
   return (
     <ChatContainer>
-      <ChatInputContainer onSubmit={send}>
-        <ChatInput onChange={onChangeMessage} value={message} />
+      <ChatInputContainer onSubmit={handleSubmit}>
+        <ChatInput onChange={onChangeMessage} value={message} onKeyDown={handlePressEnterFetch} />
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
@@ -137,7 +139,7 @@ const ChatContent = tw.div`
 px-4
 `;
 
-const ChatRow = tw.div`
+const ChatRow = tw.pre`
 w-full
-h-10
+min-h-10
 `;
