@@ -103,8 +103,13 @@ export const RecruitBoardList = () => {
                 </SortCountButton>
               </SortCountContainer>
               <SearchContainer>
-                <div>검색조건 넣는 곳</div>
                 <SearchWrapper>
+                  <SearchDropDowns>
+                    <option selected value="제목+설명">
+                      제목+본문
+                    </option>
+                    <option value="작성자">작성자</option>
+                  </SearchDropDowns>
                   <SearchImgContainer>
                     <SearchImg src={SearchImgIcon} alt="search-Icon" />
                   </SearchImgContainer>
@@ -115,7 +120,7 @@ export const RecruitBoardList = () => {
                     border-gray-300
                     text-gray-900
                     text-sm
-                    rounded-lg
+                    rounded-r-lg
                     focus:ring-blue-500
                     focus:border-blue-500
                     block
@@ -138,10 +143,9 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <WriteButton>글쓰기버튼</WriteButton>
+              <WriteButton>글쓰기</WriteButton>
             </BoardListHeader>
             <ListContainer>
-              <hr />
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => (
                 <ReadButton>
@@ -219,12 +223,13 @@ const BoardListHeader = tw.div`
 flex
 items-center
 w-full
-my-2
+my-3
+pb-5
 `;
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`
-
+ml-2
 `;
 
 //정렬, 최대인원 설정 버튼
@@ -232,7 +237,6 @@ const SortCountButton = tw.button`
 flex
 items-center
 mr-5
-ml-1
 `;
 
 //정렬, 최대인원 설정 이미지
@@ -251,8 +255,19 @@ h-3
 const SearchContainer = tw.div`
 relative
 flex
+flex-grow
 justify-center
-w-full
+items-center
+mr-5
+`;
+
+//검색 셀렉트 박스 => 제목+설명
+const SearchDropDowns = tw.select`
+px-2
+text-white
+bg-gray-900
+w-[120px]
+rounded-l-lg
 `;
 
 //검색바 안쪽 컨테이너
@@ -260,7 +275,7 @@ const SearchWrapper = tw.div`
 flex
 justify-center
 relative
-w-[300px]
+w-[500px]
 `;
 
 //검색 이미지 컨테이너
@@ -268,7 +283,7 @@ const SearchImgContainer = tw.div`
 flex
 absolute
 inset-y-0
-left-0
+left-[120px]
 items-center
 pl-3
 pointer-events-none
@@ -289,8 +304,24 @@ h-5
 
 //글쓰기버튼 컨테이너
 const WriteButton = tw.button`
-flex
-border
+  mr-2
+  inline-flex
+  items-center
+  py-2
+  px-4
+  text-sm
+  font-medium
+  text-center
+  text-white
+  rounded-lg
+  bg-gradient-to-r
+from-purple-500
+to-pink-500
+hover:bg-gradient-to-l
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
 `;
 
 //가운데 컨테이너 - 사이드바로 빠지는 정렬 외 모든 애들

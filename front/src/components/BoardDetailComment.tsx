@@ -88,7 +88,6 @@ const SubmitButton = tw.button`
   font-medium
   text-center
   text-white
-  bg-blue-700
   rounded-lg
   bg-gradient-to-r
 from-purple-500

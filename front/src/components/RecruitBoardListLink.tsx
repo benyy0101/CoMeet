@@ -70,6 +70,7 @@ const RoomImg = tw.img`
 w-[120px]
 h-[90px]
 object-cover
+rounded-lg
 `;
 
 //제목, 모집중, 키워드 적혀 있는 가운데 컨테이너
