@@ -11,9 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableJpaRepositories(basePackages = "com.a506.comeet.app")
 @EnableMongoRepositories(basePackages = "com.a506.comeet.metadata")
 public class ComeetApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ComeetApplication.class, args);
 	}
-
 }

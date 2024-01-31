@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 
 import java.time.LocalDateTime;
 
+// MongoDb의 Qdata는 직접 만들어줘야 한다
 public class QMetadata extends EntityPathBase<Metadata> {
     private static final long serialVersionUID = 1L;
 
