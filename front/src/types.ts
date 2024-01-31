@@ -20,5 +20,4 @@ export type UserState = {
     nickname: string;
   };
   isLoggedIn: boolean;
-  token: string | null;
 };

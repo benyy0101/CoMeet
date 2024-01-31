@@ -18,7 +18,6 @@ const initialState: UserState = {
     nickname: "",
   },
   isLoggedIn: false,
-  token: null,
 };
 
 const userSlice = createSlice({
@@ -29,15 +28,14 @@ const userSlice = createSlice({
       state,
       action: PayloadAction<{ user: UserState["user"]; token: string }>
     ) => {
-      const { user, token } = action.payload;
+      const { user } = action.payload;
       state.user = user;
-      state.token = token;
       state.isLoggedIn = true;
+      console.log("login", state.isLoggedIn);
     },
     logout: (state) => {
       state.user = initialState.user;
       state.isLoggedIn = false;
-      state.token = null;
     },
     signup: (
       state,
@@ -45,7 +43,6 @@ const userSlice = createSlice({
     ) => {
       const { user, token } = action.payload;
       state.user = user;
-      state.token = token;
       state.isLoggedIn = true;
     },
   },
@@ -66,6 +63,5 @@ export const { login, logout, signup } = userSlice.actions;
 export const selectUser = (state: { user: UserState }) => state.user.user;
 export const selectIsLoggedIn = (state: { user: UserState }) =>
   state.user.isLoggedIn;
-export const selectToken = (state: { user: UserState }) => state.user.token;
 
 export default userSlice.reducer;

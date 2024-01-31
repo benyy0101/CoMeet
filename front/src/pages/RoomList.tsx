@@ -4,101 +4,7 @@ import RoomItem from "../components/RoomItem";
 import Search from "../assets/img/search.svg";
 import FilterImg from "../assets/img/filter.png";
 import FilterMenu from "../components/FilterMenu";
-
-const Items = tw(RoomItem)`
-flex
-flex-col
-justify-start
-gap-5
-`;
-
-const Wrapper = tw.div`
-flex
-flex-col
-items-center
-gap-5
-`;
-
-const RightContainer = tw.div`
-w-1/6
-`;
-const LeftContainer = tw.div`
-m-3
-flex
-flex-col
-w-1/6
-gap-3
-items-center
-`;
-const ListContainer = tw.div`
-flex
-flex-col
-gap-5
-w-4/6
-`;
-
-const Button = tw.button`
-w-3/4
-border-2
-p-2
-rounded-md
-focus:bg-gray-600
-hover:bg-gray-500
-focus:text-white
-transition
-`;
-const MainContainer = tw.div`
-flex
-w-full
-`;
-const SearchBarContainer = tw.div`
-w-full
-flex
-justify-center
-`;
-const DropDowns = tw.select`
-`;
-const Shoot = tw.button`
-`;
-const SearchBar = tw.input`
-  focus:outline-none
-`;
-const Img = tw.img`
-w-4
-`;
-const Form = tw.form`
-  flex
-  w-5/6
-  items-center
-  justify-end
-`;
-
-const FilterIcon = tw.button`
-  rounded-full
-  w-4
-`;
-
-const Filter = tw.div`
-  w-1/6
-  flex
-  justify-start
-  ml-5
-  items-start
-  relative
-  `;
-
-type RoomItemProps = {
-  title: string;
-  roomId: string;
-  managerId: string;
-  description: string;
-  url: string;
-  roomImage: string;
-  maxcount: number;
-  isLocked: boolean;
-  password: string;
-  constraint: string;
-};
+import { RoomItemProps } from "../types";
 
 export const RoomList = () => {
   const [roomList, setRoomList] = React.useState<RoomItemProps[]>([]);
@@ -182,3 +88,85 @@ export const RoomList = () => {
     </Wrapper>
   );
 };
+
+const Items = tw(RoomItem)`
+flex
+flex-col
+justify-start
+gap-5
+`;
+
+const Wrapper = tw.div`
+flex
+flex-col
+items-center
+gap-5
+`;
+
+const RightContainer = tw.div`
+w-1/6
+`;
+const LeftContainer = tw.div`
+m-3
+flex
+flex-col
+w-1/6
+gap-3
+items-center
+`;
+const ListContainer = tw.div`
+flex
+flex-col
+gap-5
+w-4/6
+`;
+
+const Button = tw.button`
+w-3/4
+border-2
+p-2
+rounded-md
+focus:bg-gray-600
+hover:bg-gray-500
+focus:text-white
+transition
+`;
+const MainContainer = tw.div`
+flex
+w-full
+`;
+const SearchBarContainer = tw.div`
+w-full
+flex
+justify-center
+`;
+const DropDowns = tw.select`
+`;
+const Shoot = tw.button`
+`;
+const SearchBar = tw.input`
+  focus:outline-none
+`;
+const Img = tw.img`
+w-4
+`;
+const Form = tw.form`
+  flex
+  w-5/6
+  items-center
+  justify-end
+`;
+
+const FilterIcon = tw.button`
+  rounded-full
+  w-4
+`;
+
+const Filter = tw.div`
+  w-1/6
+  flex
+  justify-start
+  ml-5
+  items-start
+  relative
+  `;

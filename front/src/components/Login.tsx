@@ -16,16 +16,17 @@ function Login() {
         memberId,
         password,
       });
-
-      // Save the token in sessionStorage
-      sessionStorage.setItem("accessToken", response.data.accessToken);
-      sessionStorage.setItem("refreshToken", response.data.refreshToken);
-
-      // Dispatch the login action
-      dispatch(login(response.data));
-      console.log(response.data);
+      console.log(response);
     } catch (error: any) {
       console.error("Login failed:", error.message);
+    }
+  };
+
+  const refresh = () => {
+    try {
+      const response = api.post("/auth/test");
+    } catch (error: any) {
+      console.error("refresh failed:", error.message);
     }
   };
   return (
@@ -43,6 +44,7 @@ function Login() {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleLogin}>Login</button>
+      <button onClick={refresh}>REFRESH</button>
     </div>
     // <Modal option="login"></Modal>
   );
