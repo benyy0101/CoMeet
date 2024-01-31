@@ -1,6 +1,7 @@
 package com.a506.comeet.app.board.service;
 
 import com.a506.comeet.app.board.controller.dto.CommentCreateRequestDto;
+import com.a506.comeet.app.board.controller.dto.CommentSearchResponseDto;
 import com.a506.comeet.app.board.controller.dto.CommentUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.entity.Comment;
@@ -12,6 +13,8 @@ import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,11 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(comment, memberId);
         comment.delete();
+    }
+
+    public Page<CommentSearchResponseDto> search(Long boardId, Pageable pageable) {
+        Page<Comment> comments = commentRepository.findByBoardId(boardId, pageable);
+        return comments.map(CommentSearchResponseDto::toCommentSearchResponseDto);
     }
 
     public void authorityValidation(Comment comment, String memberId) {

@@ -1,11 +1,15 @@
 package com.a506.comeet.app.board.controller;
 
 import com.a506.comeet.app.board.controller.dto.CommentCreateRequestDto;
+import com.a506.comeet.app.board.controller.dto.CommentSearchResponseDto;
 import com.a506.comeet.app.board.controller.dto.CommentUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Comment;
 import com.a506.comeet.app.board.service.CommentService;
 import com.a506.comeet.app.member.MemberUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +41,10 @@ public class CommentController {
         String memberId = MemberUtil.getMemberId();
         commentService.delete(commentId, memberId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<Page<CommentSearchResponseDto>> search(@PathVariable(value = "boardId") Long boardId, @PageableDefault(size = 10) Pageable pageable){
+        return ResponseEntity.ok(commentService.search(boardId, pageable));
     }
 }

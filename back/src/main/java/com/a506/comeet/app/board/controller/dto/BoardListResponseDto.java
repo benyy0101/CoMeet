@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class BoardListResponseDto {
 	private String writerNickname; //작성자 닉네임
 	private String writerImage; //작성자 이미지
 
-	private String createdAt; //작성 날짜
+	private LocalDateTime createdAt; //작성 날짜
 
 	public static BoardListResponseDto toBoardListResponseDto(Board board, Room room, Member writer, String keywordsString) {
 
@@ -46,7 +48,7 @@ public class BoardListResponseDto {
 			.roomImage(room != null ? room.getRoomImage() : null)
 			.writerNickname(writer.getNickname())
 			.writerImage(writer.getProfileImage())
-			.createdAt(board.getCreatedAt().toString())
+			.createdAt(board.getCreatedAt())
 			.build();
 	}
 }
