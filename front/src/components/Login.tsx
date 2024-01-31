@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../store/reducers/userSlice";
 import { UserState } from "../types";
 import api from "../api/auth";
+import Modal from "./Modal";
 
 function Login() {
   const dispatch = useDispatch();
@@ -11,16 +12,14 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await api.post<{
-        user: UserState["user"];
-        token: string;
-      }>("/auth/login", {
+      const response = await api.post("/auth/login", {
         memberId,
         password,
       });
 
       // Save the token in sessionStorage
-      //sessionStorage.setItem("authToken", response.data.token);
+      sessionStorage.setItem("accessToken", response.data.accessToken);
+      sessionStorage.setItem("refreshToken", response.data.refreshToken);
 
       // Dispatch the login action
       dispatch(login(response.data));
@@ -45,6 +44,7 @@ function Login() {
       />
       <button onClick={handleLogin}>Login</button>
     </div>
+    // <Modal option="login"></Modal>
   );
 }
 
