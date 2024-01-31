@@ -283,12 +283,8 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       if (filterApplied) {
-        // publisher.stream.applyFilter("GStreamerFilter", {
-        //   command: filter.command,
-        // });
         publisher.stream.applyFilter("GStreamerFilter", {
-          command:
-            "gdkpixbufoverlay location=/images/my-image.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200",
+          command: filter.command,
         });
       } else {
         publisher.stream.removeFilter();
@@ -535,6 +531,7 @@ export default function App() {
                   <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
                     {filterType.map((f) => (
                       <FilterMenuList
+                        key={f.name}
                         disabled={filter === f}
                         onClick={() => {
                           setFilter(f);
@@ -808,7 +805,7 @@ items-center
 justify-around
 `;
 
-const ControlPanelButton = tw.button`
+const ControlPanelButton = tw.div`
 w-10
 text-slate-100
 cursor-pointer
