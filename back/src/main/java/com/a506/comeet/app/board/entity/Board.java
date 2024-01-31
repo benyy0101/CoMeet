@@ -2,6 +2,7 @@ package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Like;
+import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.common.enums.BoardType;
@@ -28,8 +29,9 @@ public class Board extends BaseEntityWithSoftDelete {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "writer_id")
-    private String writerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private Member writer;
     private String title;
     private String content;
     @Column(name = "like_count")
