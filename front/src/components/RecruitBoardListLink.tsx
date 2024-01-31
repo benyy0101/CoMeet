@@ -109,7 +109,7 @@ const ValidTrue = tw.div`
 bg-gradient-to-l
 from-[#539AB1]
 to-[#7C5EBD]
-p-1
+p-2
 rounded-md
 `;
 
@@ -117,7 +117,7 @@ rounded-md
 const ValidFalse = tw.div`
 bg-[#262626]
 
-p-1
+p-2
 rounded-md
 text-gray-200
 `;
