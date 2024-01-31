@@ -35,4 +35,8 @@ public class Comment extends BaseEntityWithSoftDelete {
         if(req.getContent() != null)
             this.content = req.getContent();
     }
+
+    public void delete() {
+        deleteSoftly();
+    }
 }

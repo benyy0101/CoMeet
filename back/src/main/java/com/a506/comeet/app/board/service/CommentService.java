@@ -47,6 +47,13 @@ public class CommentService {
         return comment;
     }
 
+    @Transactional
+    public void delete(Long commentId, String memberId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        authorityValidation(comment, memberId);
+        comment.delete();
+    }
+
     public void authorityValidation(Comment comment, String memberId) {
         if (!comment.getWriter().getMemberId().equals(memberId))
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
