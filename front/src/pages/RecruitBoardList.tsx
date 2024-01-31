@@ -69,7 +69,7 @@ export const RecruitBoardList = () => {
         likeCount: 1,
         category: "",
         type: "recruit",
-        roomKeywords: "Spring-Back",
+        roomKeywords: "Spring-Back-Java-BackEnd",
         roomImage: "https://picsum.photos/id/20/300",
         isValid: false,
         roomCapacity: 25,
@@ -172,14 +172,14 @@ pb-20
 min-h-svh
 min-w-[1200px]
 text-white
-border
+
 `;
 
 const Wrapper = tw.div`
 mx-auto
 w-[1200px]
 flex
-border
+
 `;
 
 //모집중/모집완료 사이드바
@@ -189,7 +189,7 @@ flex
 flex-col
 pt-[120px]
 items-center
-border
+
 `;
 
 //전체, 모집중/모집완료 사이드바 버튼
@@ -298,7 +298,7 @@ const CenterTotalContainer = tw.div`
 flex-grow
 flex
 justify-center
-border
+
 `;
 
 //진짜 모집게시판 리스트
@@ -313,7 +313,7 @@ p-5
 const RightContainer = tw.div`
 w-[200px]
 pt-[120px]
-border
+
 `;
 
 //글 리스트 컨테이너
