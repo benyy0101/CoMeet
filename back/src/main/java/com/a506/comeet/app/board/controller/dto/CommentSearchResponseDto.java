@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentSearchResponseDto {
 
+    private Long id;
     private Long boardId;
     private String content;
     private LocalDateTime createdAt;
@@ -22,6 +23,7 @@ public class CommentSearchResponseDto {
 
     public static CommentSearchResponseDto toCommentSearchResponseDto(Comment comment) {
         return CommentSearchResponseDto.builder()
+                .id(comment.getId())
                 .boardId(comment.getBoard().getId())
                 .content(comment.getContent())
                 .WriterNickname(comment.getWriter().getNickname())

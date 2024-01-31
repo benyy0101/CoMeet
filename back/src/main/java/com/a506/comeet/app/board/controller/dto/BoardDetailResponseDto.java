@@ -1,6 +1,7 @@
 package com.a506.comeet.app.board.controller.dto;
 
 import com.a506.comeet.app.board.entity.Board;
+import com.a506.comeet.app.board.entity.Comment;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
@@ -8,6 +9,10 @@ import com.a506.comeet.common.enums.FreeBoardCategory;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -36,6 +41,7 @@ public class BoardDetailResponseDto {
     private Boolean isLike; // 좋아요 여부
 
     private LocalDateTime createdAt; //작성 날짜
+    private LocalDateTime updatedAt; //수정 날짜
 
     public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, Member writer, String keywordsString, Boolean isLike) {
 
@@ -61,7 +67,8 @@ public class BoardDetailResponseDto {
                 .writerNickname(writer.getNickname())
                 .writerImage(writer.getProfileImage())
                 .isLike(isLike)
-                .createdAt(board.getCreatedAt()) // 형식 변환 필요할 수 있음
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
                 .build();
     }
 }
