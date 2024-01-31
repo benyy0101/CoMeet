@@ -1,5 +1,6 @@
 package com.a506.comeet.app.board.entity;
 
+import com.a506.comeet.app.board.controller.dto.CommentUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
@@ -29,4 +30,9 @@ public class Comment extends BaseEntityWithSoftDelete {
     @JoinColumn(name = "writer_id")
     private Member writer;
     private String content;
+
+    public void update(CommentUpdateRequestDto req) {
+        if(req.getContent() != null)
+            this.content = req.getContent();
+    }
 }
