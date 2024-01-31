@@ -1,9 +1,11 @@
 import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
+import TextareaAutosize from "react-textarea-autosize";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
-import usePressEnterFetch from "../hooks/usePressEnterFetch";
+import usePressEnterFetch from "../../hooks/usePressEnterFetch";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 
 interface IProps {
   chatId: string;
@@ -94,7 +96,16 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
   return (
     <ChatContainer>
       <ChatInputContainer onSubmit={handleSubmit}>
-        <ChatInput onChange={onChangeMessage} value={message} onKeyDown={handlePressEnterFetch} />
+        <ChatInput
+          minRows={2}
+          maxRows={6}
+          onChange={onChangeMessage}
+          value={message}
+          onKeyDown={handlePressEnterFetch}
+        />
+        <ChatSubmitButton type="submit">
+          <PaperAirplaneIcon className="w-3 h-3" />
+        </ChatSubmitButton>
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
@@ -115,18 +126,19 @@ flex-col-reverse
 `;
 
 const ChatInputContainer = tw.form`
-h-14
 rounded-full
 relative
 p-2
 `;
 
-const ChatInput = tw.textarea`
+const ChatInput = tw(TextareaAutosize)`
 w-full
 h-full
-rounded-full
 text-slate-800
+rounded-lg
 p-3
+resize-none
+outline-none
 `;
 
 const ChatContentContainer = tw.div`
@@ -142,4 +154,18 @@ px-4
 const ChatRow = tw.pre`
 w-full
 min-h-10
+text-wrap
+`;
+
+const ChatSubmitButton = tw.button`
+absolute
+right-3
+bottom-4
+flex
+justify-center
+items-center
+bg-red-800
+h-6
+w-10
+rounded-lg
 `;

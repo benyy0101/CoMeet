@@ -2,7 +2,12 @@ import Editor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 
-const languages = [
+interface ILanguage {
+  name: string;
+  code: string;
+}
+
+const languages: ILanguage[] = [
   { name: "Text", code: "plaintext" },
   { name: "Python", code: "python" },
   { name: "C", code: "c" },
@@ -35,9 +40,9 @@ export default function ShareEditor({
   editorRef,
 }: IProps) {
   const timeout = useRef<any>(null);
-  const [language, setLanguage] = useState("plaintext");
-  const [readOnly, setReadOnly] = useState(false);
-  const [editorName, setEditorName] = useState("");
+  const [language, setLanguage] = useState<string>("plaintext");
+  const [readOnly, setReadOnly] = useState<boolean>(false);
+  const [editorName, setEditorName] = useState<string>("");
 
   useEffect(() => {
     if (session) {
