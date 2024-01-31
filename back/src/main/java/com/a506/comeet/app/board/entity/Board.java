@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Builder
 @AllArgsConstructor
+@SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = PROTECTED)
 public class Board extends BaseEntityWithSoftDelete {
 
@@ -45,6 +47,9 @@ public class Board extends BaseEntityWithSoftDelete {
 
     @OneToMany(mappedBy = "board")
     private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "board")
+    private List<Comment> comments = new ArrayList<>();
 
     public void update(BoardUpdateRequestDto req) {
         if(req.getTitle() != null)

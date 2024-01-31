@@ -7,6 +7,8 @@ import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -33,7 +35,7 @@ public class BoardDetailResponseDto {
     private String writerImage; //작성자 이미지
     private Boolean isLike; // 좋아요 여부
 
-    private String createdAt; //작성 날짜
+    private LocalDateTime createdAt; //작성 날짜
 
     public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, Member writer, String keywordsString, Boolean isLike) {
 
@@ -59,7 +61,7 @@ public class BoardDetailResponseDto {
                 .writerNickname(writer.getNickname())
                 .writerImage(writer.getProfileImage())
                 .isLike(isLike)
-                .createdAt(board.getCreatedAt().toString()) // 형식 변환 필요할 수 있음
+                .createdAt(board.getCreatedAt()) // 형식 변환 필요할 수 있음
                 .build();
     }
 }
