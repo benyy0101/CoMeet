@@ -5,10 +5,10 @@ import com.a506.comeet.app.KeyUtil;
 import com.a506.comeet.app.keyword.repository.RoomKeywordRepository;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
-import com.a506.comeet.app.metadata.repository.CurrentMemberRedisRepository;
-import com.a506.comeet.app.metadata.repository.RoomMemberRedisRepository;
-import com.a506.comeet.app.metadata.service.MetadataCreateDto;
-import com.a506.comeet.app.metadata.service.MetadataService;
+import com.a506.comeet.metadata.repository.CurrentMemberRedisRepository;
+import com.a506.comeet.metadata.repository.RoomMemberRedisRepository;
+import com.a506.comeet.metadata.service.MetadataCreateDto;
+import com.a506.comeet.metadata.service.MetadataService;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.RoomType;
@@ -149,7 +149,7 @@ public class RoomService {
     }
 
     @Transactional
-    public Long leave(RoomLeaveRequestDto req, Long roomId, String memberId){
+    public String leave(RoomLeaveRequestDto req, Long roomId, String memberId){
         // 현재 유저의 위치를 삭제하고
         currentMemberRedisRepository.delete(KeyUtil.getCurrentMemberKey(memberId));
         // 해당 방에 유저가 입장한 시간 정보를 추출하고 삭제

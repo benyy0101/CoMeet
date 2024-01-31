@@ -22,6 +22,7 @@ public class BoardListResponseDto {
 	private Integer likeCount;
 	private BoardType type;
 	private FreeBoardCategory category;
+	@Builder.Default
 	private Boolean isValid = true; // true - 모집 중, false - 모집 완료
 
 	private String roomKeywords; //방 키워드

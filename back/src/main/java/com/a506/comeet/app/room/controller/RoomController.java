@@ -74,8 +74,8 @@ public class RoomController {
     @DeleteMapping("/{roomId}/enter")
     public ResponseEntity<Void> leave(@RequestBody RoomLeaveRequestDto req, @PathVariable Long roomId){
         String memberId = MemberUtil.getMemberId();
-        Long metadataId = roomService.leave(req, roomId, memberId);
-        log.info("{}",metadataId);
+        String metadataId = roomService.leave(req, roomId, memberId);
+        log.info("메타데이터 생성 : {}",metadataId);
         return ResponseEntity.ok().build();
     }
 

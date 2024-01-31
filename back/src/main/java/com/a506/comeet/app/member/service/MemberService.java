@@ -6,6 +6,7 @@ import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.metadata.service.MetadataService;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
@@ -25,6 +26,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MetadataService metadataService;
 
     @Transactional
     public Member create(MemberSigninRequestDto req) {
@@ -65,6 +67,10 @@ public class MemberService {
     }
 
     public MemberDetailResponseDto getMemberDetail(String memberId) {
-        return null;
+        MemberDetailResponseDto res = memberRepository.getMemberDetail(memberId);
+        metadataService.calculate(res, memberId);
+        log.info("feature : {}", res.getFeature());
+        log.info("첫 keyword : {}, {}", res.getKeywords().get(0).getName(), res.getKeywords().get(0).getWeight());
+        return res;
     }
 }

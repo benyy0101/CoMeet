@@ -1,6 +1,4 @@
-package com.a506.comeet.app.metadata.repository;
-
-import com.a506.comeet.app.metadata.entity.Metadata;
+package com.a506.comeet.metadata.repository;
 
 import java.util.List;
 

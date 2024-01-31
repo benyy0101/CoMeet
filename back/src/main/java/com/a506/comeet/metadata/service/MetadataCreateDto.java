@@ -1,4 +1,4 @@
-package com.a506.comeet.app.metadata.service;
+package com.a506.comeet.metadata.service;
 
 import lombok.Builder;
 import lombok.Getter;
