@@ -65,10 +65,10 @@ export const NavBar = () => {
                 <button onClick={showCommunityList}>커뮤니티</button>
                 {isCommunityOpen && (
                   <DropDownCommunity>
-                    <ComDropDownBUtton>
+                    <ComDropDownBUtton onClick={showCommunityList}>
                       <Link to="/recruit-board">모집 게시판</Link>
                     </ComDropDownBUtton>
-                    <ComDropDownBUtton>
+                    <ComDropDownBUtton onClick={showCommunityList}>
                       <Link to="/free-board">자유 게시판</Link>
                     </ComDropDownBUtton>
                   </DropDownCommunity>

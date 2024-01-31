@@ -27,16 +27,15 @@ bg-[#070311]
 pt-16
 pb-20
 min-h-svh
+
 `;
 
 const WritingContainer = tw.div`
-w-[800px]
-
+w-[750px]
 mb-5
 border-b
-
 `;
 
 const CommentContainer = tw.div`
-w-[800px]
+max-w-[750px]
 `;
