@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
 
-export default function OpenViduVideoComponent({ streamManager }) {
-  const videoRef = useRef(React.createRef());
+interface IProps {
+  streamManager: any;
+}
+
+export default function OpenViduVideoComponent({ streamManager }: IProps) {
+  const videoRef = useRef(null);
 
   useEffect(() => {
     if (streamManager && !!videoRef) {

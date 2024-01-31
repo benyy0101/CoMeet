@@ -19,15 +19,29 @@ const languages = [
   { name: "Markdown", code: "markdown" },
 ];
 
-export default function ShareEditor({ session, username, setMessage, setInChat, editorRef }) {
-  const timeout = useRef(null);
+interface IProps {
+  session: any;
+  username: string;
+  setMessage: React.Dispatch<React.SetStateAction<string>>;
+  setInChat: React.Dispatch<React.SetStateAction<boolean>>;
+  editorRef: React.MutableRefObject<any>;
+}
+
+export default function ShareEditor({
+  session,
+  username,
+  setMessage,
+  setInChat,
+  editorRef,
+}: IProps) {
+  const timeout = useRef<any>(null);
   const [language, setLanguage] = useState("plaintext");
   const [readOnly, setReadOnly] = useState(false);
   const [editorName, setEditorName] = useState("");
 
   useEffect(() => {
     if (session) {
-      session.on("signal:share-editor", (event) => {
+      session.on("signal:share-editor", (event: any) => {
         const sender = JSON.parse(event.from.data).clientData;
         if (sender !== username) {
           const model = editorRef.current.getModel();
@@ -37,7 +51,7 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
           blockEditing(sender);
         }
       });
-      session.on("signal:editor-language", (event) => {
+      session.on("signal:editor-language", (event: any) => {
         const sender = JSON.parse(event.from.data).clientData;
         if (sender !== username) {
           setLanguage(event.data);
@@ -47,7 +61,7 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
     }
   }, []);
 
-  const blockEditing = (sender) => {
+  const blockEditing = (sender: string) => {
     setReadOnly(true);
     setEditorName(sender);
     if (timeout.current) {
@@ -60,7 +74,7 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
     }, 2000);
   };
 
-  const onChangeLanguage = (e) => {
+  const onChangeLanguage: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     const newLanguage = e.target.value;
 
     if (session) {
@@ -70,14 +84,14 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
           to: [],
           type: "editor-language",
         })
-        .catch((error) => console.error(error));
+        .catch((error: Error) => console.error(error));
     }
     setLanguage(newLanguage);
   };
 
-  const handleEditorDidMount = (editor, monaco) => {
+  const handleEditorDidMount = (editor: any, monaco: any) => {
     editorRef.current = editor;
-    editor.onDidChangeModelContent((e) => {
+    editor.onDidChangeModelContent((e: any) => {
       if (!e.isFlush) {
         if (session) {
           session
@@ -86,7 +100,7 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
               to: [],
               type: "share-editor",
             })
-            .catch((error) => console.error(error));
+            .catch((error: Error) => console.error(error));
         }
       }
     });

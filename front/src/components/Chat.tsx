@@ -4,10 +4,17 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 
-export default function Chat({ chatId, username, setMessage, message }) {
-  const [rows, setRows] = useState([]);
+interface IProps {
+  chatId: string;
+  username: string;
+  setMessage: React.Dispatch<React.SetStateAction<string>>;
+  message: string;
+}
 
-  const stompClient = useRef(null);
+export default function Chat({ chatId, username, setMessage, message }: IProps) {
+  const [rows, setRows] = useState<any[]>([]);
+
+  const stompClient = useRef<any>(null);
 
   useEffect(() => {
     axios
@@ -31,12 +38,12 @@ export default function Chat({ chatId, username, setMessage, message }) {
           {},
           function () {
             //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-            stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e) {
+            stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e: any) {
               //e.body에 전송된 data가 들어있다
               showMessage(JSON.parse(e.body));
             });
           },
-          function (e) {
+          function (e: any) {
             //에러 콜백
             alert("에러발생!!!!!!");
           }
@@ -48,12 +55,12 @@ export default function Chat({ chatId, username, setMessage, message }) {
   }, [chatId]);
 
   //화면에 메시지를 표시하는 함수
-  function showMessage(data) {
+  function showMessage(data: any) {
     setRows((prev) => [...prev, data]);
   }
 
   //메시지 브로커로 메시지 전송
-  function send(e) {
+  const send: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
 
     const data = {
@@ -68,15 +75,17 @@ export default function Chat({ chatId, username, setMessage, message }) {
     // send(destination,헤더,페이로드)
     stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
     setMessage("");
-  }
+  };
 
   useEffect(() => {
     const chatcontent = document.getElementById("chatcontent");
-    const position = chatcontent.scrollHeight;
-    chatcontent.scrollTop = position;
+    if (chatcontent) {
+      const position = chatcontent.scrollHeight;
+      chatcontent.scrollTop = position;
+    }
   }, [rows]);
 
-  const onChangeMessage = (e) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setMessage(e.target.value);
   };
 
