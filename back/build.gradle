@@ -70,7 +70,11 @@ dependencies {
 	//jackson
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-
+	//mongodb
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+	implementation("com.querydsl:querydsl-mongodb:5.0.0") {
+		exclude group: "org.mongodb", module: "mongo-java-driver"
+	}
 }
 
 
@@ -84,6 +88,7 @@ tasks.withType(JavaCompile) {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
 
 clean {
 	// clean 실행 시 생성된 QClass 삭제

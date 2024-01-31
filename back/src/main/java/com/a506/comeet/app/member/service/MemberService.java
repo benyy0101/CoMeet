@@ -1,10 +1,12 @@
 package com.a506.comeet.app.member.service;
 
+import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
+import com.a506.comeet.metadata.service.MetadataService;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
@@ -24,6 +26,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MetadataService metadataService;
 
     @Transactional
     public Member create(MemberSigninRequestDto req) {
@@ -36,7 +39,7 @@ public class MemberService {
                 roles(req.roles).
                 build();
 
-        if (memberRepository.memberDuplicationCount(
+        if (memberRepository.getMemberDuplicationCount(
                 MemberDuplicationRequestDto.builder()
                         .memberId(member.getMemberId())
                         .nickname(member.getNickname())
@@ -53,7 +56,7 @@ public class MemberService {
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req){
-        return memberRepository.memberDuplicationCount(req) == 0;
+        return memberRepository.getMemberDuplicationCount(req) == 0;
     }
 
     @Transactional
@@ -61,5 +64,11 @@ public class MemberService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
+    }
+
+    public MemberDetailResponseDto getMemberDetail(String memberId) {
+        MemberDetailResponseDto res = memberRepository.getMemberDetail(memberId);
+        metadataService.calculate(res, memberId);
+        return res;
     }
 }

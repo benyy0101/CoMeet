@@ -1,4 +1,4 @@
-package com.a506.comeet.app.metadata.repository;
+package com.a506.comeet.metadata.repository;
 
 import com.a506.comeet.app.DateParser;
 import lombok.RequiredArgsConstructor;
