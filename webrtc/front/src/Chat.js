@@ -3,7 +3,6 @@ import tw from "tailwind-styled-components";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
-import { APPLICATION_SERVER_URL } from "./App";
 
 export default function Chat({ chatId, username, setMessage, message }) {
   const [rows, setRows] = useState([]);
@@ -12,15 +11,18 @@ export default function Chat({ chatId, username, setMessage, message }) {
 
   useEffect(() => {
     axios
-      .get(APPLICATION_SERVER_URL + `chat/messages?type=CHANNEL&chatId=${chatId}`, {
-        headers: { "Content-Type": "application/json" },
-      })
+      .get(
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/messages?type=CHANNEL&chatId=${chatId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
       .then((response) => {
         console.log(response);
         setRows(response.data);
 
         stompClient.current = Stomp.over(() => {
-          const sock = new SockJS("http://localhost:5000/chatting");
+          const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
           return sock;
         });
 
