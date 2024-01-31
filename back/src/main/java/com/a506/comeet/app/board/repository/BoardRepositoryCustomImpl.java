@@ -30,6 +30,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<BoardListResponseDto> searchBoardCustom(BoardListRequestDto req, Pageable pageable) {
+		System.out.println(req.getKeyword());
+		System.out.println(req.getCategory());
 		// 쿼리 설정
         JPAQuery<Board> query = jpaQueryFactory
             .selectFrom(board) // board와 writer 조인

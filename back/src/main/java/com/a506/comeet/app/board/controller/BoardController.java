@@ -45,7 +45,7 @@ public class BoardController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<BoardListResponseDto>> search(@ModelAttribute BoardListRequestDto req,
+    public ResponseEntity<Page<BoardListResponseDto>> search(BoardListRequestDto req,
         @PageableDefault(size = 10) Pageable pageable){
         return ResponseEntity.ok(boardService.search(req, pageable));
     }
