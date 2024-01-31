@@ -14,7 +14,7 @@ function Login() {
       const response = await api.post<{
         user: UserState["user"];
         token: string;
-      }>("/login", {
+      }>("/auth/login", {
         memberId,
         password,
       });
