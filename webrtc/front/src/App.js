@@ -21,7 +21,6 @@ import {
 import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
 
-export const APPLICATION_SERVER_URL = "http://localhost:5000/";
 const filterType = [
   { name: "Edgetv", command: "edgetv" },
   { name: "Revtv", command: "revtv" },
@@ -238,7 +237,7 @@ export default function App() {
 
   const createSession = async (sessionId) => {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
+      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions",
       { customSessionId: sessionId },
       {
         headers: { "Content-Type": "application/json" },
@@ -249,7 +248,7 @@ export default function App() {
 
   const createToken = async (sessionId) => {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
       {},
       {
         headers: { "Content-Type": "application/json" },

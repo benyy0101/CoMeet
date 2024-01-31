@@ -102,7 +102,9 @@ export default function ShareEditor({ session, username, setMessage, setInChat, 
       <MenuBar>
         <LanguageSelect onChange={onChangeLanguage} value={language}>
           {languages.map((l) => (
-            <LanguageOption value={l.code}>{l.name}</LanguageOption>
+            <LanguageOption value={l.code} key={l.code}>
+              {l.name}
+            </LanguageOption>
           ))}
         </LanguageSelect>
         <ExportButton onClick={exportToChat}>채팅으로 내보내기</ExportButton>
