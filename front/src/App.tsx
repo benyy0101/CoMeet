@@ -17,10 +17,14 @@ import { FreeBoardList } from "./pages/FreeBoardList";
 //import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
+import Login from "./components/Login";
+import { useSelector } from "react-redux";
+import { UserState } from "./types";
 
 function App() {
   //임시
-  const isLogin = true;
+  //const user = useSelector((state: UserState) => state.isLoggedIn);
+  const [isLogin, setIsLogin] = React.useState<boolean>(false);
   const [isModal, setIsModal] = React.useState<boolean>(false);
 
   const modalHandler = () => {
@@ -29,6 +33,7 @@ function App() {
 
   return (
     <div className="App h-dvh">
+      <Login></Login>
       <BrowserRouter>
         <NavBarContainer>
           <NavBar />
