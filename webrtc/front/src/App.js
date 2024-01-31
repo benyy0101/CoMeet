@@ -21,7 +21,33 @@ import {
 import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
 
-export const APPLICATION_SERVER_URL = "http://localhost:5000/";
+const filterType = [
+  { name: "Edgetv", command: "edgetv" },
+  { name: "Revtv", command: "revtv" },
+  { name: "Agingtv", command: "agingtv" },
+  { name: "Optv", command: "optv" },
+  { name: "Quarktv", command: "quarktv" },
+  { name: "Radioactv", command: "radioactv" },
+  { name: "Rippletv", command: "rippletv" },
+  { name: "Shagadelictv", command: "shagadelictv" },
+  { name: "Streaktv", command: "streaktv" },
+  { name: "Vertigotv", command: "vertigotv" },
+  { name: "Warptv", command: "warptv" },
+  { name: "Bulge", command: "bulge" },
+  { name: "Kaleidoscope", command: "kaleidoscope" },
+  { name: "Mirror", command: "mirror" },
+  { name: "Pinch", command: "pinch" },
+  { name: "Stretch", command: "stretch" },
+  { name: "Twirl", command: "twirl" },
+  { name: "Square", command: "square" },
+  { name: "Heat", command: "coloreffects preset=heat" },
+  { name: "GrayScale", command: "videobalance saturation=0.0" },
+  { name: "Dicetv", command: "dicetv" },
+  {
+    name: "Time overlay",
+    command: `timeoverlay valignment=bottom halignment=right font-desc="Sans, 30"`,
+  },
+];
 
 export default function App() {
   const [isJoined, setIsJoined] = useState(false);
@@ -40,6 +66,10 @@ export default function App() {
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
   const [isScreenShared, setIsScreenShared] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
+  const [filter, setFilter] = useState(null);
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+
+  const editorRef = useRef(null);
 
   const OV = useRef(new OpenVidu());
 
@@ -154,8 +184,12 @@ export default function App() {
         if (newVideoDevice.length > 0) {
           const newPublisher = OV.current.initPublisher(undefined, {
             videoSource: newVideoDevice[0].deviceId,
-            publishAudio: true,
-            publishVideo: true,
+            audioSource: undefined,
+            publishAudio: !isMuted,
+            publishVideo: !isVideoDisabled,
+            resolution: "640x480",
+            frameRate: 30,
+            insertMode: "APPEND",
             mirror: true,
           });
 
@@ -203,7 +237,7 @@ export default function App() {
 
   const createSession = async (sessionId) => {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions",
+      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions",
       { customSessionId: sessionId },
       {
         headers: { "Content-Type": "application/json" },
@@ -214,7 +248,7 @@ export default function App() {
 
   const createToken = async (sessionId) => {
     const response = await axios.post(
-      APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
       {},
       {
         headers: { "Content-Type": "application/json" },
@@ -249,12 +283,22 @@ export default function App() {
   useEffect(() => {
     if (publisher) {
       if (filterApplied) {
-        publisher.stream.applyFilter("GStreamerFilter", { command: "coloreffects preset=heat" });
+        publisher.stream.applyFilter("GStreamerFilter", {
+          command: filter.command,
+        });
       } else {
         publisher.stream.removeFilter();
+        setFilter(null);
       }
     }
   }, [filterApplied]);
+
+  useEffect(() => {
+    if (filter) {
+      setFilterMenuOpen(false);
+      setFilterApplied(true);
+    }
+  }, [filter]);
 
   const startScreenShare = async () => {
     let publisherScreen = await OV.current.initPublisherAsync(undefined, {
@@ -296,7 +340,7 @@ export default function App() {
       resolution: "640x480",
       frameRate: 30,
       insertMode: "APPEND",
-      mirror: false,
+      mirror: true,
     });
 
     if (session) {
@@ -425,6 +469,7 @@ export default function App() {
                         username={myUserName}
                         setMessage={setMessage}
                         setInChat={setInChat}
+                        editorRef={editorRef}
                       />
                     )}
                   </ChatContainer>
@@ -473,11 +518,29 @@ export default function App() {
                   <SignalSlashIcon className="w-8 h-8 text-red-400" />
                 )}
               </ControlPanelButton>
-              <ControlPanelButton onClick={() => setFilterApplied(!filterApplied)}>
+              <ControlPanelButton>
                 {filterApplied ? (
-                  <SparklesIcon className="w-8 h-8 text-yellow-400" />
+                  <SparklesIcon
+                    className="w-8 h-8 text-yellow-400"
+                    onClick={() => setFilterApplied(false)}
+                  />
                 ) : (
-                  <SparklesIcon className="w-8 h-8 " />
+                  <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
+                )}
+                {filterMenuOpen && (
+                  <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
+                    {filterType.map((f) => (
+                      <FilterMenuList
+                        key={f.name}
+                        disabled={filter === f}
+                        onClick={() => {
+                          setFilter(f);
+                        }}
+                      >
+                        {f.name}
+                      </FilterMenuList>
+                    ))}
+                  </FilterMenu>
                 )}
               </ControlPanelButton>
             </ControlPanel>
@@ -728,7 +791,7 @@ disabled:text-slate-200
 `;
 
 const ControlPanel = tw.div`
-w-80
+min-w-80
 h-16
 bottom-6
 left-1/2
@@ -742,11 +805,36 @@ items-center
 justify-around
 `;
 
-const ControlPanelButton = tw.button`
+const ControlPanelButton = tw.div`
 w-10
 text-slate-100
 cursor-pointer
 flex
 justify-center
 items-center
+relative
+`;
+
+const FilterMenu = tw.div`
+bg-[#3f3f3f]
+absolute
+bottom-1/2
+-translate-1/2
+left-1/2
+w-32
+rounded-lg
+shadow-lg
+flex
+flex-col
+justify-between
+overflow-hidden
+space-y-1
+`;
+
+const FilterMenuList = tw.button`
+w-full
+h-9
+bg-[#2f2f2f]
+hover:bg-slate-400
+disabled:bg-slate-400
 `;

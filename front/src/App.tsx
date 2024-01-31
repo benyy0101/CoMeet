@@ -51,20 +51,14 @@ function App() {
                 {/* 모집 게시판 */}
                 <Route path="/recruit-board" element={<RecruitBoardList />} />
 
-                <Route
-                  path="/recruit-board/edit"
-                  element={<Board isFree={true} isEdit={true} />}
-                />
+                <Route path="/recruit-board/edit" element={<Board isFree={true} isEdit={true} />} />
                 {/* 모집게시판 글 상세보기 */}
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
 
                 {/* 자유게시판 글 상세보기 */}
-                <Route
-                  path="/free-board/:boardId"
-                  element={<BoardDetail />}
-                ></Route>
+                <Route path="/free-board/:boardId" element={<BoardDetail />}></Route>
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />} />
@@ -87,10 +81,15 @@ function App() {
 }
 
 const NavBarContainer = tw.div`
-  h-12
+fixed
+w-full
+h-12
+z-10
 `;
 
 const RoutesContainer = tw.div`
+h-screen
+pt-12
 `;
 
 export default App;

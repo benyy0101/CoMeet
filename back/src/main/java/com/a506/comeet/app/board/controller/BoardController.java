@@ -1,12 +1,16 @@
 package com.a506.comeet.app.board.controller;
 
-import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
-import com.a506.comeet.app.board.controller.dto.BoardSearchResponseDto;
-import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
+import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
 import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,20 +44,26 @@ public class BoardController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{boardId}")
-    public ResponseEntity<BoardSearchResponseDto> search(@PathVariable(value = "boardId") Long boardId){
-        String memberId = MemberUtil.getMemberId();
-        return ResponseEntity.ok(boardService.search(boardId, memberId));
+    @GetMapping
+    public ResponseEntity<Page<BoardListResponseDto>> search(BoardListRequestDto req,
+        @PageableDefault(size = 10) Pageable pageable){
+        return ResponseEntity.ok(boardService.search(req, pageable));
     }
 
-    @PostMapping("{boardId}/like")
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDetailResponseDto> getById(@PathVariable(value = "boardId") Long boardId){
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(boardService.getById(boardId, memberId));
+    }
+
+    @PostMapping("/{boardId}/like")
     public ResponseEntity<Void> addLike(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.addLike(boardId, memberId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("{boardId}/like")
+    @DeleteMapping("/{boardId}/like")
     public ResponseEntity<Void> removeLike(@PathVariable(value = "boardId") Long boardId){
         String memberId = MemberUtil.getMemberId();
         boardService.removeLike(boardId, memberId);

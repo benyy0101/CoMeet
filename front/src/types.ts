@@ -21,3 +21,18 @@ export type UserState = {
   };
   isLoggedIn: boolean;
 };
+
+export type BoardListProps = {
+  id: number;
+  title: string;
+  writerNicname: string;
+  writerImage: string;
+  createdAt: string;
+  likeCount: number;
+  category: string;
+  type: string;
+  roomKeywords: string;
+  roomImage: string;
+  isValid: boolean;
+  roomCapacity: number;
+};

@@ -2,10 +2,26 @@ import Editor from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 
-export default function ShareEditor({ session, username, setMessage, setInChat }) {
-  const editorRef = useRef(null);
+const languages = [
+  { name: "Text", code: "plaintext" },
+  { name: "Python", code: "python" },
+  { name: "C", code: "c" },
+  { name: "Java", code: "java" },
+  { name: "C++", code: "cpp" },
+  { name: "C#", code: "csharp" },
+  { name: "Javascript", code: "javascript" },
+  { name: "SQL", code: "sql" },
+  { name: "PHP", code: "php" },
+  { name: "HTML", code: "html" },
+  { name: "CSS", code: "css" },
+  { name: "Scss", code: "scss" },
+  { name: "JSON", code: "json" },
+  { name: "Markdown", code: "markdown" },
+];
+
+export default function ShareEditor({ session, username, setMessage, setInChat, editorRef }) {
   const timeout = useRef(null);
-  const [language, setLanguage] = useState("java");
+  const [language, setLanguage] = useState("plaintext");
   const [readOnly, setReadOnly] = useState(false);
   const [editorName, setEditorName] = useState("");
 
@@ -14,7 +30,10 @@ export default function ShareEditor({ session, username, setMessage, setInChat }
       session.on("signal:share-editor", (event) => {
         const sender = JSON.parse(event.from.data).clientData;
         if (sender !== username) {
-          editorRef.current.getModel().setValue(event.data);
+          const model = editorRef.current.getModel();
+          if (model) {
+            model.setValue(event.data);
+          }
           blockEditing(sender);
         }
       });
@@ -82,10 +101,11 @@ export default function ShareEditor({ session, username, setMessage, setInChat }
     <EditorContainer>
       <MenuBar>
         <LanguageSelect onChange={onChangeLanguage} value={language}>
-          <LanguageOption value={"java"}>Java</LanguageOption>
-          <LanguageOption value={"javascript"}>Javascript</LanguageOption>
-          <LanguageOption value={"python"}>Python</LanguageOption>
-          <LanguageOption value={"c"}>C</LanguageOption>
+          {languages.map((l) => (
+            <LanguageOption value={l.code} key={l.code}>
+              {l.name}
+            </LanguageOption>
+          ))}
         </LanguageSelect>
         <ExportButton onClick={exportToChat}>채팅으로 내보내기</ExportButton>
       </MenuBar>

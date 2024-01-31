@@ -1,10 +1,4 @@
-import {
-  OpenVidu,
-  Session,
-  Subscriber,
-  Publisher,
-  Device,
-} from "openvidu-browser";
+import { OpenVidu, Session, Subscriber, Publisher, Device } from "openvidu-browser";
 
 import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -30,18 +24,12 @@ export default function Channel() {
   //const [isJoined, setIsJoined] = useState(false);
 
   const [mySessionId, setMySessionId] = useState<number>(-1);
-  const [myUserName, setMyUserName] = useState(
-    `사용자 ${Math.floor(Math.random() * 100)}`
-  );
+  const [myUserName, setMyUserName] = useState(`사용자 ${Math.floor(Math.random() * 100)}`);
   const [session, setSession] = useState<Session | null>(null);
-  const [mainStreamManager, setMainStreamManager] = useState<
-    Publisher | Subscriber | null
-  >(null);
+  const [mainStreamManager, setMainStreamManager] = useState<Publisher | Subscriber | null>(null);
   const [publisher, setPublisher] = useState<Publisher | null>(null);
   const [subscribers, setSubscribers] = useState<Subscriber[] | never[]>([]);
-  const [currentVideoDevice, setCurrentVideoDevice] = useState<Device | null>(
-    null
-  );
+  const [currentVideoDevice, setCurrentVideoDevice] = useState<Device | null>(null);
 
   const [isMuted, setIsMuted] = useState(true);
   const [isVideoDisabled, setIsVideoDisabled] = useState(true);
@@ -80,10 +68,7 @@ export default function Channel() {
 
     mySession.on("streamCreated", (event) => {
       const subscriber = mySession.subscribe(event.stream, undefined);
-      setSubscribers((subscribers: Subscriber[]) => [
-        ...subscribers,
-        subscriber,
-      ]);
+      setSubscribers((subscribers: Subscriber[]) => [...subscribers, subscriber]);
     });
 
     mySession.on("streamDestroyed", (event) => {
@@ -118,9 +103,7 @@ export default function Channel() {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -133,11 +116,7 @@ export default function Channel() {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -162,9 +141,7 @@ export default function Channel() {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -219,9 +196,7 @@ export default function Channel() {
 
   const getToken = useCallback(async () => {
     const mySessionIdString = mySessionId.toString();
-    return createSession(mySessionIdString).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionIdString).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   const createSession = async (sessionId: string) => {
@@ -381,9 +356,9 @@ export default function Channel() {
             </ChannelHeader>
           )}
           <VideoContainer>
-            {session !== undefined && (
+            {/* {session !== undefined && (
               <Chat chatId={mySessionId} username={myUserName} />
-            )}
+            )} */}
 
             {/* {mainStreamManager !== undefined ? (
                   <div id="main-video" className="col-md-6">
@@ -392,17 +367,12 @@ export default function Channel() {
                 ) : null} */}
             <GridContainer>
               {publisher !== null && (
-                <StreamContainer
-                  onClick={() => handleMainVideoStream(publisher)}
-                >
+                <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
                   <UserVideoComponent streamManager={publisher} />
                 </StreamContainer>
               )}
               {subscribers.map((sub, i) => (
-                <StreamContainer
-                  key={sub.id}
-                  onClick={() => handleMainVideoStream(sub)}
-                >
+                <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                   <UserVideoComponent streamManager={sub} />
                 </StreamContainer>
               ))}
@@ -421,18 +391,14 @@ export default function Channel() {
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-          >
+          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsScreenShared(!isScreenShared)}
-          >
+          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
