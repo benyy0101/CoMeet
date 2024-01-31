@@ -168,9 +168,7 @@ export const RoomList = () => {
           <Button onClick={() => activeHandler("전체")}>전체</Button>
           <Button onClick={() => activeHandler("최신순")}>최신순</Button>
           <Button onClick={() => activeHandler("오래된순")}>오래된순</Button>
-          <Button onClick={() => activeHandler("참여인원순")}>
-            참여인원순
-          </Button>
+          <Button onClick={() => activeHandler("참여인원순")}>참여인원순</Button>
         </LeftContainer>
         <ListContainer>
           {roomList.map((temp) => (

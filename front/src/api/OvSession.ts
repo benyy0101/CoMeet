@@ -1,9 +1,8 @@
 import axios from "axios";
-const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export const createToken = async (sessionId: string) => {
   const response = await axios.post(
-    APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
+    process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
     {},
     {
       headers: { "Content-Type": "application/json" },
@@ -14,7 +13,7 @@ export const createToken = async (sessionId: string) => {
 
 export const createSession = async (sessionId: string) => {
   const response = await axios.post(
-    APPLICATION_SERVER_URL + "api/sessions",
+    process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions",
     { customSessionId: sessionId },
     {
       headers: { "Content-Type": "application/json" },

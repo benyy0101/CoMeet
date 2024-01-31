@@ -1,16 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
-import { StreamManager } from "openvidu-browser";
 
-export default function OpenViduVideoComponent({
-  streamManager,
-}: {
-  streamManager: StreamManager;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
+export default function OpenViduVideoComponent({ streamManager }) {
+  const videoRef = useRef(React.createRef());
 
   useEffect(() => {
-    if (streamManager && !!videoRef.current) {
+    if (streamManager && !!videoRef) {
       streamManager.addVideoElement(videoRef.current);
     }
   }, [streamManager]);
