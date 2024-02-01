@@ -46,6 +46,7 @@ export const KeywordSearchBox = () => {
     const filtered = keywordArr.filter((keyword) =>
       keyword.keywordName.toLowerCase().includes(e.target.value.toLowerCase())
     );
+
     //
     setFilteredKeywords(filtered);
   };
@@ -108,16 +109,33 @@ export const KeywordSearchBox = () => {
           />
           <KeywordSearchDropBox>
             {/* 이 아래 li는 styled-component로 하면 충돌나서 css가 깨짐 */}
-            {filteredKeywords.map((keyword) => (
-              <li key={keyword.id}>
-                <KeywordClickButton
-                  className=""
-                  onClick={() => handleClickKeyword(keyword.id)}
-                >
-                  {keyword.keywordName}
-                </KeywordClickButton>
+            {filteredKeywords.length > 0 ? (
+              filteredKeywords.map((keyword) => (
+                <li key={keyword.id}>
+                  <KeywordClickButton
+                    className=""
+                    onClick={() => handleClickKeyword(keyword.id)}
+                  >
+                    {keyword.keywordName}
+                  </KeywordClickButton>
+                </li>
+              ))
+            ) : (
+              <li
+                style={{ cursor: "default" }}
+                className="py-2
+  flex
+  flex-col w-full
+  bg-gray-200
+  text-black
+  px-2
+  text-sm
+  rounded-b-lg
+  "
+              >
+                찾으시는 키워드가 없습니다
               </li>
-            ))}
+            )}
           </KeywordSearchDropBox>
         </KeywordSearchContainer>
       )}
@@ -209,7 +227,7 @@ rounded-t-lg
 
 //키워드 드롭박스
 const KeywordSearchDropBox = tw.ul`
-h-[200px]
+max-h-[200px]
 overflow-auto
 rounded-b-lg
 `;

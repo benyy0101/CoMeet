@@ -39,7 +39,7 @@ export const RecruitBoardList = () => {
 
   const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
 
-  const [currentCount, setCurrentCount] = useState<number>(50);
+  const [currentCount, setCurrentCount] = useState<number>(25);
 
   //왼쪽 사이드바 선택 메뉴
   const [currentMenu, setCurrentMenu] = useState<string>("전체");
@@ -116,6 +116,20 @@ export const RecruitBoardList = () => {
         roomImage: "https://picsum.photos/id/20/300",
         isValid: false,
         roomCapacity: 25,
+      },
+      {
+        id: 3,
+        title: "전세계 개발자들을 위한 모각코 모임",
+        writerNicname: "외국인임",
+        writerImage: "https://picsum.photos/100",
+        createdAt: "2023-12-31",
+        likeCount: 22,
+        category: "",
+        type: "recruit",
+        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+        roomImage: "https://picsum.photos//300",
+        isValid: true,
+        roomCapacity: 50,
       },
     ];
     setBoardList(tmpdatas);
@@ -241,21 +255,32 @@ export const RecruitBoardList = () => {
                   <SortCountImg src={SettingIcon} alt="" />
                   <SortDownImg src={SortingDownIcon} alt="" />
                   {isCountOpen && (
-                    <ul ref={countOpenRef}>
-                      <SortDropDown>
-                        <input
-                          onChange={handleMaxCount}
-                          min="0"
-                          max="50"
-                          type="range"
-                        />
-                      </SortDropDown>
-                    </ul>
+                    <div>
+                      <ul ref={countOpenRef}>
+                        <SortDropDown>
+                          <div className="text-black text-sm font-semibold">
+                            최대 인원 수
+                          </div>
+                          <div className="flex justify-center">
+                            <div className="px-2 text-sm">0</div>
+                            <input
+                              onChange={handleMaxCount}
+                              min="0"
+                              max="50"
+                              type="range"
+                              className="w-2/3"
+                            />
+                            <div className="px-2 text-sm">50</div>
+                          </div>
+                        </SortDropDown>
+                      </ul>
+                    </div>
                   )}
-                  <SortCountText>{currentCount} 명</SortCountText>
+                  <SortCountText>{currentCount}명</SortCountText>
                 </SortCountButton>
               </SortCountContainer>
             </SortCountBothContainer>
+
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => (
@@ -344,19 +369,21 @@ flex
 items-center
 w-full
 my-3
-pb-1
+pb-2
+border-b
 `;
 
 const SortCountBothContainer = tw.div`
 flex
 ml-2
+my-4
+w-full
 `;
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`
 flex
 ml-2
-w-[100px]
 
 `;
 
@@ -378,8 +405,9 @@ const SortDropDown = tw.div`
     flex
     flex-col
     absolute
-    text-white
+    text-black
     mt-2
+    p-1
     z-50
     rounded-lg
     shadow-lg

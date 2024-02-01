@@ -56,6 +56,7 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
 const TotalContainer = tw.div`
 flex
 border-b
+border-gray-600
 `;
 
 //이미지 들어있는 왼쪽 컨테이너
