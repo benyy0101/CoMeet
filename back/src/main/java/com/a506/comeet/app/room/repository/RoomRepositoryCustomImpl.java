@@ -214,7 +214,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         OrderSpecifier<?> path = switch (req.getSortBy()) {
             case LATEST -> room.mcount.desc();
             case OLDEST -> room.capacity.asc();
-            case PEOPLE -> null;
+            case CURRENT_PEOPLE -> null;
         };
         return path;
     }
