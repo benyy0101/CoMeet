@@ -69,6 +69,7 @@ export const Room = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -92,6 +93,7 @@ export const Room = () => {
   const OV = useRef(new OpenVidu());
 
   const moveChannel = (sessionId: string) => {
+    setIsLoading(true);
     leaveSession();
     setMySessionId(sessionId);
     joinSession();
@@ -230,6 +232,12 @@ export const Room = () => {
       console.error(e);
     }
   }, [currentVideoDevice, session, mainStreamManager]);
+
+  useEffect(() => {
+    if (publisher) {
+      setIsLoading(false);
+    }
+  }, [publisher]);
 
   const deleteSubscriber = useCallback((streamManager: any) => {
     setSubscribers((prevSubscribers) => {
@@ -405,6 +413,7 @@ export const Room = () => {
               {channels.map((c) => (
                 <ChannelButton
                   key={c.id}
+                  disabled={isLoading || mySessionId === c.id.toString()}
                   id={c.id.toString()}
                   name={c.name}
                   moveChannel={moveChannel}
