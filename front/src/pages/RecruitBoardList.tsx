@@ -25,9 +25,13 @@ type BoardListProps = {
 };
 
 export const RecruitBoardList = () => {
+  //목록 리스트
   const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
 
+  //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+
+  const [currentMenu, setCurrentMenu] = useState<string>("전체");
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -55,7 +59,7 @@ export const RecruitBoardList = () => {
         likeCount: 22,
         category: "",
         type: "recruit",
-        roomKeywords: "Python-Java",
+        roomKeywords: "PYTHON-JAVA",
         roomImage: "https://picsum.photos/id/1/300",
         isValid: true,
         roomCapacity: 30,
@@ -69,7 +73,7 @@ export const RecruitBoardList = () => {
         likeCount: 1,
         category: "",
         type: "recruit",
-        roomKeywords: "Spring-Back-Java-BackEnd",
+        roomKeywords: "SPRING-BACK-JAVA-BACKEND",
         roomImage: "https://picsum.photos/id/20/300",
         isValid: false,
         roomCapacity: 25,
@@ -82,9 +86,31 @@ export const RecruitBoardList = () => {
     <TotalContainer>
       <Wrapper>
         <LeftContainer>
-          <SideButton>전체</SideButton>
-          <SideButton>모집중</SideButton>
-          <SideButton>모집완료</SideButton>
+          {currentMenu === "전체" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>
+              전체
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
+          )}
+          {currentMenu === "모집중" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>
+              모집중
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("모집중")}>
+              모집중
+            </SideButton>
+          )}
+          {currentMenu === "모집완료" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("모집완료")}>
+              모집완료
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("모집완료")}>
+              모집완료
+            </SideButton>
+          )}
         </LeftContainer>
         <CenterTotalContainer>
           <CoreTotalContainer>
@@ -176,19 +202,18 @@ pb-20
 min-h-svh
 min-w-[1200px]
 text-white
-
 `;
 
 const Wrapper = tw.div`
 mx-auto
-w-[1200px]
+w-[1400px]
 flex
 
 `;
 
 //모집중/모집완료 사이드바
 const LeftContainer = tw.div`
-w-[200px]
+w-[300px]
 flex
 flex-col
 pt-[120px]
@@ -198,8 +223,8 @@ items-center
 
 //전체, 모집중/모집완료 사이드바 버튼
 const SideButton = tw.button`
-w-3/4
-mx-auto
+w-2/4
+ml-10
 py-2
 rounded-md
 hover:bg-gray-500
@@ -207,6 +232,16 @@ focus:bg-gray-200
 focus:text-black
 focus:font-bold
 transition
+`;
+
+const SideButtonSelected = tw.button`
+w-2/4
+ml-10
+py-2
+rounded-md
+bg-gray-200
+text-black
+font-bold
 `;
 
 //모집게시판 타이틀 - '모집게시판' 글씨
@@ -314,10 +349,10 @@ const WriteButton = tw.button`
   text-center
   text-white
   rounded-lg
-  bg-gradient-to-r
-from-purple-500
-to-pink-500
-hover:bg-gradient-to-l
+  bg-gradient-to-l
+from-[#539AB1]
+to-[#7C5EBD]
+hover:bg-gradient-to-r
 focus:ring-4
 focus:outline-none
 focus:ring-purple-200
@@ -342,7 +377,7 @@ p-5
 
 //키워드 검색 가능한 오른쪽 사이드 바
 const RightContainer = tw.div`
-w-[200px]
+w-[300px]
 pt-[120px]
 
 `;
