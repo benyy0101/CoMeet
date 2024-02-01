@@ -218,7 +218,7 @@ export const RecruitBoardList = () => {
                   <SortCountImg src={SortingIcon} alt="" />
                   <SortDownImg src={SortingDownIcon} alt="" />
                   {isSortOpen && (
-                    <ul ref={sortOpenRef}>
+                    <ul ref={sortOpenRef} className="flex justify-center">
                       <SortDropDown>
                         <Sortbutton
                           onClick={() => {
@@ -256,22 +256,20 @@ export const RecruitBoardList = () => {
                   <SortDownImg src={SortingDownIcon} alt="" />
                   {isCountOpen && (
                     <div>
-                      <ul ref={countOpenRef}>
+                      <ul ref={countOpenRef} className="flex justify-center">
                         <SortDropDown>
-                          <div className="text-black text-sm font-semibold">
-                            최대 인원 수
-                          </div>
-                          <div className="flex justify-center">
-                            <div className="px-2 text-sm">0</div>
+                          <CountText>최대 인원 수</CountText>
+                          <CountInputContainer>
+                            <MaxMinNum>0</MaxMinNum>
                             <input
                               onChange={handleMaxCount}
                               min="0"
                               max="50"
                               type="range"
-                              className="w-2/3"
+                              className="w-2/3 mx-1"
                             />
-                            <div className="px-2 text-sm">50</div>
-                          </div>
+                            <MaxMinNum>50</MaxMinNum>
+                          </CountInputContainer>
                         </SortDropDown>
                       </ul>
                     </div>
@@ -407,7 +405,8 @@ const SortDropDown = tw.div`
     absolute
     text-black
     mt-2
-    p-1
+    py-2
+    px-1
     z-50
     rounded-lg
     shadow-lg
@@ -437,6 +436,23 @@ h-5
 const SortDownImg = tw.img`
 w-3
 h-3
+`;
+
+//글씨
+const CountText = tw.div`
+text-xs
+font-medium
+`;
+
+//드롭다운 input 컨테이너
+const CountInputContainer = tw.div`
+flex
+justify-center
+`;
+
+//최소, 최대숫자
+const MaxMinNum = tw.div`
+text-xs
 `;
 
 //검색바 컨테이너
