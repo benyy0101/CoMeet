@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import session from "redux-persist/lib/storage/session";
 import { Session } from "openvidu-browser";
 
+const baseURL = process.env.REACT_APP_API_SERVER_URL ?? "";
+
 const refreshAccessToken = async () => {
   try {
     if (sessionStorage.getItem("refreshToken")) {

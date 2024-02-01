@@ -11,7 +11,28 @@ import RoomDefault from "../assets/img/room-default.svg";
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "../hooks/useOutsideClick";
 
+import { getBoardList, BoardListParams } from "../api/Board";
+
 export const NavBar = () => {
+  const test0: BoardListParams = {
+    category: "string",
+    keyword: "string",
+    offset: 1,
+  };
+  const test1: BoardListParams = {
+    category: "",
+    keyword: "",
+    offset: 0,
+  };
+
+  // 순수 api 테스트용 코드
+  const testAPI = () => {
+    console.log("test API");
+
+    console.log(test1);
+    getBoardList(test1);
+  };
+
   //임시
   const isLogin = true;
 
@@ -63,6 +84,10 @@ export const NavBar = () => {
             <EachMenu>
               <ul ref={communityRef}>
                 <button onClick={showCommunityList}>커뮤니티</button>
+                {/* 순수 테스트용 코드 */}
+                <br></br>
+                <button onClick={testAPI}>api test</button>
+                {/* 순수 테스트용 코드 */}
                 {isCommunityOpen && (
                   <DropDownCommunity>
                     <ComDropDownBUtton onClick={showCommunityList}>
