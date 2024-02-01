@@ -2,11 +2,11 @@ import { UserState } from "../types";
 import { localAxios } from "./http-commons";
 
 export const handleLogin = async (
-  email: string,
+  memberId: string,
   password: string
 ): Promise<UserState> => {
   const response = await localAxios.post("/auth/login", {
-    email,
+    memberId,
     password,
   });
   return response.data;
