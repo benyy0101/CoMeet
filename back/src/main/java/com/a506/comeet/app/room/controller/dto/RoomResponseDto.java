@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +20,8 @@ public class RoomResponseDto {
     private String link;
     private String room_image;
     private String notice;
-    private int mcount;
-    private int capacity;
+    private Integer mcount;
+    private Integer capacity;
     private Boolean isLocked;
     private String password;
     private RoomConstraints constraints;

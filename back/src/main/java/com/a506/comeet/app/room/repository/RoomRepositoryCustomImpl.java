@@ -6,7 +6,6 @@ import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +14,16 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import static com.a506.comeet.app.room.entity.QRoom.room;
-import static com.a506.comeet.app.member.entity.QMember.member;
-import static com.a506.comeet.app.room.entity.QRoomMember.roomMember;
-import static com.a506.comeet.app.room.entity.QChannel.channel;
-import static com.a506.comeet.app.room.entity.QLounge.lounge;
 import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
+import static com.a506.comeet.app.member.entity.QMember.member;
+import static com.a506.comeet.app.room.entity.QChannel.channel;
+import static com.a506.comeet.app.room.entity.QLounge.lounge;
+import static com.a506.comeet.app.room.entity.QRoom.room;
+import static com.a506.comeet.app.room.entity.QRoomMember.roomMember;
 
 @RequiredArgsConstructor
 @Repository
@@ -41,7 +41,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         room.description,
                         room.link,
                         room.roomImage,
-                        room.mcount,
                         room.capacity,
                         room.isLocked,
                         room.password,
@@ -52,15 +51,13 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 .leftJoin(roomKeyword).on(roomKeyword.room.eq(room))
                 .leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
                 .where(
+                        eqType(RoomType.DISPOSABLE),
                         eqKeyword(req.getSearchKeyword()),
                         isLocked(req.getIsLocked()),
                         eqConstraints(req.getConstraints()),
                         eqKeywordIds(req.getKeywordIds()),
-                        eqType(req.getType()),
-                        btwMcount(req.getMinMcount(), req.getMaxMcount()),
-                        btwCapacity(req.getMinCapacity(), req.getMaxCapacity())
+                        eqManagerNickname(req.getManagerNickname())
                         )
-//                .groupBy(room.id)  // group by를 사용하여 중복된 room.id를 제거
                 .orderBy(makeOrder(req))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1). // 1개를 더 가져온다
@@ -70,6 +67,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
 
 
     @Override
@@ -213,14 +211,12 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
         // default는 최신순으로 가져오기로 함
         if (req.getSortBy() == null) return room.createdAt.desc();
-
-        ComparableExpressionBase<?> path = switch (req.getSortBy()) {
-            case mcount -> room.mcount;
-            case capacity -> room.capacity;
-            case createdAt -> room.createdAt;
-            default -> throw new IllegalArgumentException("invalud sort field");
+        OrderSpecifier<?> path = switch (req.getSortBy()) {
+            case LATEST -> room.mcount.desc();
+            case OLDEST -> room.capacity.asc();
+            case PEOPLE -> null;
         };
-        return req.getIsDesc() ? path.desc() : path.asc();
+        return path;
     }
 
 //    private BooleanBuilder makeBooleanBuilder(RoomSearchRequestDto req) {
@@ -262,27 +258,12 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return room.isLocked.eq(isLocked);
     }
 
-    private BooleanExpression btwMcount(Integer min, Integer max){
-        if(min == null && max == null) return null;
-        if (min == null) return room.mcount.lt(max);
-        if (max == null) return room.mcount.gt(min);
-        return room.mcount.between(min, max);
-    }
-
-    private BooleanExpression btwCapacity(Integer minCapacity, Integer maxCapacity){
-        if(minCapacity == null && maxCapacity == null) return null;
-        if (minCapacity == null) return room.capacity.lt(maxCapacity);
-        if (maxCapacity == null) return room.capacity.gt(minCapacity);
-        return room.capacity.between(minCapacity, maxCapacity);
-    }
-
     private BooleanExpression eqConstraints(List<RoomConstraints> constraints){
         if(constraints == null || constraints.isEmpty()) return null;
         return room.constraints.in(constraints);
     }
 
     private BooleanExpression eqType(RoomType type){
-        if(type == null) return null;
         return room.type.eq(type);
     }
 
@@ -290,5 +271,11 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if(keywordIds == null || keywordIds.isEmpty()) return null;
         return roomKeyword.keyword.id.in(keywordIds);
     }
+
+    private BooleanExpression eqManagerNickname(String managerNickname) {
+        if (managerNickname == null) return null;
+        return room.manager.nickname.eq(managerNickname);
+    }
+
 
 }
