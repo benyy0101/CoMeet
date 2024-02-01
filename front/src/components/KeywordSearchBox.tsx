@@ -1,6 +1,8 @@
 import React, { useState, ChangeEvent, useRef } from "react";
 import useOutsideClick from "../hooks/useOutsideClick";
 
+import XIcon from "../assets/img/x-icon.svg";
+
 import tw from "tailwind-styled-components";
 
 // 키워드 타입도 예시
@@ -88,7 +90,8 @@ export const KeywordSearchBox = () => {
       <KeywordUpBox>
         {selectKeywords.map((item) => (
           <KeywordButton onClick={() => handleDeleteKeyword(item.id)}>
-            {item.keywordName} x
+            {item.keywordName}
+            <XIconImg src={XIcon} alt="" />
           </KeywordButton>
         ))}
       </KeywordUpBox>
@@ -178,11 +181,20 @@ mb-2
 
 // 키워드 버튼
 const KeywordButton = tw.button`
+flex
+justify-center
+items-center
 m-1
 p-1
 rounded-lg
 bg-gray-700
 text-[15px]
+`;
+
+// 엑스 아이콘
+const XIconImg = tw.img`
+w-4
+h-4
 `;
 
 //키워드 검색 누르는 버튼 컨테이너
