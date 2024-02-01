@@ -117,12 +117,22 @@ export const Room = () => {
       const subscriber = mySession.subscribe(event.stream, undefined);
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-
-    mySession.on("streamDestroyed", (event) => {
-      deleteSubscriber(event.stream.streamManager);
+    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
+    mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
+    mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
+    mySession.on("sessionDisconnected", (event) => {
+      if (event.reason === "networkDisconnect") {
+        console.warn("네트워크 연결이 끊어졌습니다.");
+      } else {
+        console.warn("세션 연결이 끊어졌습니다", event);
+      }
     });
-
     mySession.on("exception", (exception) => {
+      if (exception.name === "ICE_CONNECTION_FAILED") {
+        console.warn("ICE 연결이 실패했습니다.");
+      } else if (exception.name === "ICE_CONNECTION_DISCONNECTED") {
+        console.warn("ICE 연결이 끊겼습니다.");
+      }
       console.warn(exception);
     });
 
@@ -393,7 +403,12 @@ export const Room = () => {
           <RoomContent>
             <RoomSidebar>
               {channels.map((c) => (
-                <ChannelButton id={c.id.toString()} name={c.name} moveChannel={moveChannel} />
+                <ChannelButton
+                  key={c.id}
+                  id={c.id.toString()}
+                  name={c.name}
+                  moveChannel={moveChannel}
+                />
               ))}
             </RoomSidebar>
             <ChannelContent>
