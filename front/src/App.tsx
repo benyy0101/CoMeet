@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "./components/common/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
 import { Community } from "./pages/Community";

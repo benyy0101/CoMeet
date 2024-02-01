@@ -2,16 +2,15 @@ import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
-import BasicProfile from "../assets/img/basic-profile.svg";
-import IMac from "../assets/img/iMac.svg";
-import MicMute from "../assets/img/mic-mute.svg";
-import VideoWhite from "../assets/img/video-white.svg";
-import RoomDefault from "../assets/img/room-default.svg";
+import BasicProfile from "../../assets/img/basic-profile.svg";
+import IMac from "../../assets/img/iMac.svg";
+import MicMute from "../../assets/img/mic-mute.svg";
+import VideoWhite from "../../assets/img/video-white.svg";
+import RoomDefault from "../../assets/img/room-default.svg";
 
-import { ServerDropDownList } from "./ServerDropDownList";
-import useOutsideClick from "../hooks/useOutsideClick";
-import ModalPortal from "../utils/Portal";
-import Login from "./auth/Login";
+import { ServerDropDownList } from "../ServerDropDownList";
+import useOutsideClick from "../../hooks/useOutsideClick";
+import ModalPortal from "../../utils/Portal";
 import Modal from "./Modal";
 
 export const NavBar = () => {
