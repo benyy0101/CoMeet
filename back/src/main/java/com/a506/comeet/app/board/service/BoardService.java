@@ -68,7 +68,7 @@ public class BoardService {
 
     @Transactional
     public Board update(BoardUpdateRequestDto req, Long boardId, String memberId) {
-        Board board = boardRepository.findByIdAndIsDeletedFalse(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(board, memberId);
         board.update(req);
         return board;
@@ -76,7 +76,7 @@ public class BoardService {
 
     @Transactional
     public void delete(Long boardId, String memberId) {
-        Board board = boardRepository.findByIdAndIsDeletedFalse(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(board, memberId);
         board.delete();
     }
