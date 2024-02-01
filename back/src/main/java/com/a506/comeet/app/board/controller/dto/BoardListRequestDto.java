@@ -15,7 +15,7 @@ public class BoardListRequestDto {
     private BoardType boardType;    //게시판 타입
 
     private String searchKeyword;   //제목 + 본문
-    private String writer;          //작성자
+    private String writerNickname;          //작성자
     private BoardSortBy sortBy;     //정렬 타입 (최신순, 좋아요순, 모집률순)
 
     private RecruitBoardCategory recruitBoardCategory;  //모집 게시판 카테고리 (모집중, 모집완료)

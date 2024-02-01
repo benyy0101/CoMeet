@@ -3,10 +3,16 @@ package com.a506.comeet.app.board.repository;
 import com.a506.comeet.app.board.controller.dto.BoardListRequestDto;
 import com.a506.comeet.app.board.controller.dto.BoardListResponseDto;
 import com.a506.comeet.app.board.entity.Board;
+import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
+import com.a506.comeet.app.keyword.repository.KeywordRepository;
 import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
+import com.a506.comeet.common.enums.RecruitBoardCategory;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -17,10 +23,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.a506.comeet.app.board.entity.QBoard.*;
+import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
+import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
 
 @RequiredArgsConstructor
 @Repository
@@ -34,53 +43,106 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		// 쿼리 설정
         JPAQuery<Board> query = jpaQueryFactory
             .selectFrom(board) // board와 writer 조인
-            .leftJoin(board.writer).fetchJoin();
-            //.where(eqCategory(req.getCategory()), eqKeyword(req.getKeyword())); // 조건
+            .leftJoin(board.writer)
+				.leftJoin(board.room)
+				.leftJoin(roomKeyword).on(roomKeyword.room.eq(board.room))
+				.leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
+				.fetchJoin()
+            .where(eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
+					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()),
+					eqCapacity(req.getCapacity()), eqKeywordIds(req.getKeywordIds()));
 
         long total = query.fetchCount(); // 전체 게시물 수
+
+		switch (req.getSortBy()) {
+			case LATEST:
+				query.orderBy(board.createdAt.desc());
+				break;
+			case LIKES:
+				query.orderBy(board.likeCount.desc());
+				break;
+			case RECRUIT:
+				query.orderBy(
+						Expressions.numberTemplate(Double.class, "{{0}/{1})", board.room.mcount, board.room.capacity).desc()
+				);
+				break;
+			default:
+				query.orderBy(board.createdAt.desc()); // 기본 정렬 기준
+		}
 
 		// 페이징된 게시물 조회
 		List<Board> boards = query
 			.offset(pageable.getOffset()) //반환되는 행의 시작점
 			.limit(pageable.getPageSize())	//반환되는 행의 수
-			.orderBy(board.createdAt.desc())
 			.fetch();
 
 		//Dto 변환
 		List<BoardListResponseDto> res = boards.stream().map(board ->
-			BoardListResponseDto.toBoardListResponseDto(board, board.getRoom(), board.getWriter(), getKeywordsString(board.getRoom()))
+			BoardListResponseDto.toBoardListResponseDto(board, board.getRoom(), board.getWriter(), getKeywords(board.getRoom()))
 		).collect(Collectors.toList());
 
 		//페이지 객체 반환
         return new PageImpl<>(res, pageable, total);
     }
 
-	private BooleanExpression eqCategory(FreeBoardCategory category) {
-		if (category == null) {
+	private BooleanExpression eqRecruitBoardCategory(RecruitBoardCategory recruitBoardCategory) {
+		if(recruitBoardCategory == null)
 			return null;
-		}
-		return board.category.eq(category);
+		if(recruitBoardCategory.equals(RecruitBoardCategory.ON))
+			return board.isValid.eq(true);
+		else
+			return board.isValid.eq(false);
 	}
 
-	private BooleanExpression eqKeyword(String keyword){
+	private Predicate eqFreeBoardCategory(FreeBoardCategory freeBoardCategory) {
+		if(freeBoardCategory == null)
+			return null;
+		return board.category.eq(freeBoardCategory);
+	}
+
+	private BooleanExpression eqCapacity(Integer capacity) {
+		if(capacity == null)
+			return null;
+		return board.room.capacity.eq(capacity);
+	}
+
+	private BooleanExpression eqBoardType(BoardType boardType) {
+		if(boardType == null)
+			return null;
+		return board.type.eq(boardType);
+	}
+
+	private BooleanExpression eqSearchKeyword(String keyword){
 		if(keyword == null || keyword.isEmpty() || keyword.isBlank())
 			return null;
 		return board.title.containsIgnoreCase(keyword); //대소문자 구분하지 않는 부분 문자열 검색
 	}
 
-	private String getKeywordsString(Room room){
-		StringBuilder keywordsString = new StringBuilder();
+	private BooleanExpression eqWriterNickName(String writerNickname) {
+		if(writerNickname == null)
+			return null;
+		return board.writer.nickname.eq(writerNickname);
+	}
+
+	private BooleanExpression eqKeywordIds(List<Long> keywordIds){
+		if(keywordIds == null || keywordIds.isEmpty()) return null;
+
+		List<BooleanExpression> expressions = new ArrayList<>();
+		for(Long id : keywordIds){
+			expressions.add(roomKeyword.keyword.id.eq(id));
+		}
+		return Expressions.allOf(expressions.toArray(new BooleanExpression[0]));
+	}
+
+	private List<KeywordResponseDto> getKeywords(Room room){
+		List<KeywordResponseDto> keywords = new ArrayList<>();
 		if(room != null) {
 			if (room.getRoomKeywords() == null)
 				return null;
 			for (RoomKeyword roomKeyword : room.getRoomKeywords()) {
-				if (!keywordsString.isEmpty()) {
-					keywordsString.append(", ");
-				}
-				keywordsString.append(roomKeyword.getKeyword());
+				keywords.add(new KeywordResponseDto(roomKeyword.getKeyword().getId(), roomKeyword.getKeyword().getName()));
 			}
 		}
-
-		return keywordsString.toString();
+		return keywords;
 	}
 }
