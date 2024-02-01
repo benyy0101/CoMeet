@@ -30,6 +30,7 @@ const UserVideoContainer = tw.div<{ $speaking: boolean }>`
 rounded-lg
 overflow-hidden
 shadow-2xl
+box-content
 ${(p) => (p.$speaking ? "border-2 border-green-400" : "")}
 `;
 
