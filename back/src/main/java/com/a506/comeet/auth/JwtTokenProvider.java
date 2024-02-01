@@ -1,6 +1,6 @@
 package com.a506.comeet.auth;
 
-import com.a506.comeet.app.KeyUtil;
+import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.auth.repository.JwtRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
