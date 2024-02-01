@@ -177,7 +177,9 @@ my-1
 
 //키워드 검색 누르는 버튼
 const KeywordSearchButton = tw.button`
-p-3 rounded-lg bg-gradient-to-l
+p-3
+rounded-lg
+bg-gradient-to-l
 from-[#539AB1]
 to-[#7C5EBD]
 hover:bg-gradient-to-r

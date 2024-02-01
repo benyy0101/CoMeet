@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import SortingIcon from "../assets/img/sorting.svg";
 import SortingDownIcon from "../assets/img/sort-down.svg";
 import SettingIcon from "../assets/img/settings.svg";
 import SearchImgIcon from "../assets/img/search.svg";
 
+import useOutsideClick from "../hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "../components/RecruitBoardListLink";
 import { KeywordSearchBox } from "../components/KeywordSearchBox";
@@ -31,6 +32,16 @@ export const RecruitBoardList = () => {
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
 
+  //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
+  const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
+
+  const [currentSort, setCurrentSort] = useState<string>("최신순");
+
+  const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
+
+  const [currentCount, setCurrentCount] = useState<number>(50);
+
+  //왼쪽 사이드바 선택 메뉴
   const [currentMenu, setCurrentMenu] = useState<string>("전체");
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,9 +54,37 @@ export const RecruitBoardList = () => {
     }
   };
 
+  const handleSortOpen = () => {
+    setIsSortOpen(!isSortOpen);
+  };
+
+  const handleCountOpen = () => {
+    setIsCountOpen(!isCountOpen);
+  };
+
+  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentCount(Number(e.target.value));
+  };
+
   const TmphandleWordCheck = function () {
     console.log("검색 단어: " + searchWord);
   };
+
+  //정렬 드롭다운 외부 클릭시 닫기
+  const sortOpenRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(sortOpenRef, () => {
+    if (isSortOpen) {
+      setIsSortOpen(false);
+    }
+  });
+
+  //방 최대 인원 드롭다운 외부 클릭시 닫기
+  const countOpenRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(countOpenRef, () => {
+    if (isCountOpen) {
+      setIsCountOpen(false);
+    }
+  });
 
   //임시
   React.useEffect(() => {
@@ -116,18 +155,6 @@ export const RecruitBoardList = () => {
           <CoreTotalContainer>
             <BoardListTitle>모집게시판</BoardListTitle>
             <BoardListHeader>
-              <SortCountContainer>
-                <SortCountButton>
-                  <SortCountImg src={SortingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                </SortCountButton>
-              </SortCountContainer>
-              <SortCountContainer>
-                <SortCountButton>
-                  <SortCountImg src={SettingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                </SortCountButton>
-              </SortCountContainer>
               <SearchContainer>
                 <SearchWrapper>
                   <SearchDropDowns>
@@ -171,6 +198,64 @@ export const RecruitBoardList = () => {
               </SearchContainer>
               <WriteButton>글쓰기</WriteButton>
             </BoardListHeader>
+            <SortCountBothContainer>
+              <SortCountContainer>
+                <SortCountButton onClick={handleSortOpen}>
+                  <SortCountImg src={SortingIcon} alt="" />
+                  <SortDownImg src={SortingDownIcon} alt="" />
+                  {isSortOpen && (
+                    <ul ref={sortOpenRef}>
+                      <SortDropDown>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("최신순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          최신순
+                        </Sortbutton>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("좋아요순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          좋아요순
+                        </Sortbutton>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("모집률순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          모집률순
+                        </Sortbutton>
+                      </SortDropDown>
+                    </ul>
+                  )}
+                  <SortCountText>{currentSort}</SortCountText>
+                </SortCountButton>
+              </SortCountContainer>
+              <SortCountContainer>
+                <SortCountButton onClick={handleCountOpen}>
+                  <SortCountImg src={SettingIcon} alt="" />
+                  <SortDownImg src={SortingDownIcon} alt="" />
+                  {isCountOpen && (
+                    <ul ref={countOpenRef}>
+                      <SortDropDown>
+                        <input
+                          onChange={handleMaxCount}
+                          min="0"
+                          max="50"
+                          type="range"
+                        />
+                      </SortDropDown>
+                    </ul>
+                  )}
+                  <SortCountText>{currentCount} 명</SortCountText>
+                </SortCountButton>
+              </SortCountContainer>
+            </SortCountBothContainer>
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => (
@@ -259,19 +344,59 @@ flex
 items-center
 w-full
 my-3
-pb-5
+pb-1
+`;
+
+const SortCountBothContainer = tw.div`
+flex
+ml-2
 `;
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`
+flex
 ml-2
+w-[100px]
+
 `;
 
 //정렬, 최대인원 설정 버튼
 const SortCountButton = tw.button`
 flex
 items-center
-mr-5
+`;
+
+//정렬, 최대인원 숫자
+const SortCountText = tw.div`
+text-[12px]
+ml-1
+border-b
+`;
+
+//정렬 드롭다운
+const SortDropDown = tw.div`
+    flex
+    flex-col
+    absolute
+    text-white
+    mt-2
+    z-50
+    rounded-lg
+    shadow-lg
+    rounded-md
+    bg-gray-300
+`;
+
+const Sortbutton = tw.button`
+rounded-lg
+w-full
+px-4
+py-2
+text-xs
+cursor-pointer
+text-black
+hover:bg-gray-100
+focus:bg-gray-100
 `;
 
 //정렬, 최대인원 설정 이미지
@@ -293,7 +418,7 @@ flex
 flex-grow
 justify-center
 items-center
-mr-5
+
 `;
 
 //검색 셀렉트 박스 => 제목+설명
@@ -310,7 +435,7 @@ const SearchWrapper = tw.div`
 flex
 justify-center
 relative
-w-[500px]
+w-[650px]
 `;
 
 //검색 이미지 컨테이너
