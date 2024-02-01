@@ -30,13 +30,12 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<BoardListResponseDto> searchBoardCustom(BoardListRequestDto req, Pageable pageable) {
-		System.out.println(req.getKeyword());
-		System.out.println(req.getCategory());
+		System.out.println(req.getSearchKeyword());
 		// 쿼리 설정
         JPAQuery<Board> query = jpaQueryFactory
             .selectFrom(board) // board와 writer 조인
-            .leftJoin(board.writer).fetchJoin()
-            .where(eqCategory(req.getCategory()), eqKeyword(req.getKeyword())); // 조건
+            .leftJoin(board.writer).fetchJoin();
+            //.where(eqCategory(req.getCategory()), eqKeyword(req.getKeyword())); // 조건
 
         long total = query.fetchCount(); // 전체 게시물 수
 

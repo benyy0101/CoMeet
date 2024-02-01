@@ -7,6 +7,7 @@ import com.a506.comeet.common.enums.RoomType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class RoomSearchRequestDto {
     private String searchKeyword;
     private Boolean isLocked;
@@ -32,22 +35,4 @@ public class RoomSearchRequestDto {
     @NotNull
     private Integer pageSize;
     private Long prevRoomId;
-
-    @Builder
-    public RoomSearchRequestDto(String searchKeyword, Boolean isLocked, Integer minMcount, Integer maxMcount, Integer minCapacity, Integer maxCapacity, List<Long> keywordIds, List<RoomConstraints> constraints, RoomType type, RoomSortBy sortBy, Boolean isDesc, Integer pageNo, Integer pageSize, Long prevRoomId) {
-        this.searchKeyword = searchKeyword;
-        this.isLocked = isLocked;
-        this.minMcount = minMcount;
-        this.maxMcount = maxMcount;
-        this.minCapacity = minCapacity;
-        this.maxCapacity = maxCapacity;
-        this.keywordIds = keywordIds;
-        this.constraints = constraints;
-        this.type = type;
-        this.sortBy = sortBy;
-        this.isDesc = isDesc;
-        this.pageNo = pageNo;
-        this.pageSize = pageSize;
-        this.prevRoomId = prevRoomId;
-    }
 }
