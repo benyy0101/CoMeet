@@ -39,25 +39,27 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<BoardListResponseDto> searchBoardCustom(BoardListRequestDto req, Pageable pageable) {
-		System.out.println(req.getSearchKeyword());
+		//프로그래밍언어 키워드 조회를 위한 서브 쿼리
+		JPAQuery<Long> subQuery = jpaQueryFactory
+			.select(roomKeyword.room.id)
+			.from(roomKeyword)
+			.leftJoin(roomKeyword.keyword)
+			.where(roomKeyword.keyword.id.in(req.getKeywordIds()))
+			.groupBy(roomKeyword.room.id)
+			.having(roomKeyword.keyword.id.count().eq((long) req.getKeywordIds().size()));
+
 		// 쿼리 설정
         JPAQuery<Board> query = jpaQueryFactory
             .selectFrom(board) // board와 writer 조인
             .leftJoin(board.writer)
-				.leftJoin(board.room)
-				.leftJoin(roomKeyword).on(roomKeyword.room.eq(board.room))
-				.leftJoin(keyword).on(roomKeyword.keyword.eq(keyword))
-				.fetchJoin()
-            .where(eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
-					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()),
-					eqCapacity(req.getCapacity()), eqKeywordIds(req.getKeywordIds()));
+			.leftJoin(board.room)
+			.fetchJoin()
+            .where(board.room.id.in(subQuery), eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
+					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()), eqCapacity(req.getCapacity()));
 
         long total = query.fetchCount(); // 전체 게시물 수
 
 		switch (req.getSortBy()) {
-			case LATEST:
-				query.orderBy(board.createdAt.desc());
-				break;
 			case LIKES:
 				query.orderBy(board.likeCount.desc());
 				break;
@@ -67,7 +69,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 				);
 				break;
 			default:
-				query.orderBy(board.createdAt.desc()); // 기본 정렬 기준
+				query.orderBy(board.createdAt.desc()); // 기본 정렬 (최신순)
 		}
 
 		// 페이징된 게시물 조회
@@ -122,16 +124,6 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		if(writerNickname == null)
 			return null;
 		return board.writer.nickname.eq(writerNickname);
-	}
-
-	private BooleanExpression eqKeywordIds(List<Long> keywordIds){
-		if(keywordIds == null || keywordIds.isEmpty()) return null;
-
-		List<BooleanExpression> expressions = new ArrayList<>();
-		for(Long id : keywordIds){
-			expressions.add(roomKeyword.keyword.id.eq(id));
-		}
-		return Expressions.allOf(expressions.toArray(new BooleanExpression[0]));
 	}
 
 	private List<KeywordResponseDto> getKeywords(Room room){

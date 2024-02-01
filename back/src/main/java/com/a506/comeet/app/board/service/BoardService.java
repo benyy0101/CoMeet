@@ -12,6 +12,7 @@ import com.a506.comeet.app.room.controller.dto.RoomSearchRequestDto;
 import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.app.room.service.RoomService;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
@@ -41,6 +42,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
     private final LikeRepository likeRepository;
+    private final RoomService roomService;
     private final LikeService likeService;
 
     @Transactional
