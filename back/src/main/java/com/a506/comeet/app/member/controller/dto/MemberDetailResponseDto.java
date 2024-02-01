@@ -17,8 +17,11 @@ public class MemberDetailResponseDto {
     private String email;
     private String description;
     private MemberFeature feature;
+
     // 팔로우 관련
+    @Setter
     private Integer followingCount;
+    @Setter
     private Integer followerCount;
 
     // Til 관련
