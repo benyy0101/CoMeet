@@ -25,8 +25,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 커스텀된 에러 리턴을 위한 메서드
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<Object> handleCustomArgument(RestApiException e) {
+        log.warn("RestApiException : {}", e.getStackTrace());
         ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
+        return handleExceptionInternal(errorCode, e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -51,14 +52,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.warn("handleAllException", ex);
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode, ex.getMessage());
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(ErrorResponse.builder()
-                        .code(errorCode.name())
-                        .message(errorCode.getMessage())
-                        .build());
     }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {

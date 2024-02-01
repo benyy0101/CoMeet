@@ -1,5 +1,9 @@
-package com.a506.comeet.app;
+package com.a506.comeet.common.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KeyUtil {
     public static String getRoomMemberKey(Long roomId, String memberId) {
         return "ROOM_MEMBER:" + roomId + ":" + memberId;
