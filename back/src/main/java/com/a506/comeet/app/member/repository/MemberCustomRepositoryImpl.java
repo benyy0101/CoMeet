@@ -61,11 +61,9 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                         )
                 )).stream().findFirst().orElse(null);
         if (res == null) return null;
-
+        // 팔로잉, 팔로워 수 계산
         res.setFollowerCount(countFollower(memberId));
         res.setFollowingCount(countFollowing(memberId));
-
-
         return res;
     }
 
