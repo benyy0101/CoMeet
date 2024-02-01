@@ -1,6 +1,7 @@
 package com.a506.comeet.app.member.controller;
 
 import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
@@ -50,6 +51,11 @@ public class MemberController {
     public ResponseEntity<Boolean> duplicationValidate(@Valid MemberDuplicationRequestDto req){
         if(req.isAllNull()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
         return ResponseEntity.ok(memberService.duplicationValid(req));
+    }
+
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberDetailResponseDto> get(@PathVariable String memberId){
+        return ResponseEntity.ok(memberService.getMemberDetail(memberId));
     }
 
 }

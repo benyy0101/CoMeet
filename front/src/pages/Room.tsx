@@ -1,10 +1,7 @@
 import { OpenVidu } from "openvidu-browser";
-
-import axios from "axios";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import UserVideoComponent from "../components/UserVideoComponent";
+import UserVideoComponent from "../components/room/UserVideoComponent";
 import tw from "tailwind-styled-components";
-
 import {
   UserGroupIcon,
   ArrowRightStartOnRectangleIcon,
@@ -18,10 +15,23 @@ import {
   SignalSlashIcon,
   SparklesIcon,
 } from "@heroicons/react/24/solid";
-import Chat from "../components/Chat";
-import ShareEditor from "../components/ShareEditor";
+import Chat from "../components/room/Chat";
+import ShareEditor from "../components/room/ShareEditor";
+import { createSession, createToken } from "../api/OvSession";
+import ChannelButton from "../components/room/ChannelButton";
 
-const filterType = [
+interface IFilter {
+  name: string;
+  command: string;
+}
+
+interface IChannel {
+  id: number;
+  roomId: number;
+  name: string;
+}
+
+const filterType: IFilter[] = [
   { name: "Edgetv", command: "edgetv" },
   { name: "Revtv", command: "revtv" },
   { name: "Agingtv", command: "agingtv" },
@@ -49,11 +59,18 @@ const filterType = [
   },
 ];
 
+const channels: IChannel[] = [
+  { id: 1, roomId: 1, name: "채널 1" },
+  { id: 2, roomId: 1, name: "채널 2" },
+  { id: 3, roomId: 1, name: "채널 3" },
+];
+
 export const Room = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
 
+  // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
   const [myUserName, setMyUserName] = useState<string>(`사용자 ${Math.floor(Math.random() * 100)}`);
   const [session, setSession] = useState<any>(undefined);
@@ -62,11 +79,12 @@ export const Room = () => {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState<any>(null);
 
+  // Control Panel
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isVideoDisabled, setIsVideoDisabled] = useState<boolean>(true);
   const [isScreenShared, setIsScreenShared] = useState<boolean>(false);
   const [filterApplied, setFilterApplied] = useState<boolean>(false);
-  const [filter, setFilter] = useState<any>(null);
+  const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
   const editorRef = useRef(null);
@@ -78,10 +96,6 @@ export const Room = () => {
     setMySessionId(sessionId);
     joinSession();
   };
-
-  // const handleChangeSessionId = useCallback((e) => {
-  //   setMySessionId(e.target.value);
-  // }, []);
 
   const handleChangeUserName: React.ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
     setMyUserName(e.target.value);
@@ -235,28 +249,6 @@ export const Room = () => {
     return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
-  const createSession = async (sessionId: string) => {
-    const response = await axios.post(
-      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions",
-      { customSessionId: sessionId },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data; // The sessionId
-  };
-
-  const createToken = async (sessionId: string) => {
-    const response = await axios.post(
-      process.env.REACT_APP_APPLICATION_SERVER_URL + "api/sessions/" + sessionId + "/connections",
-      {},
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    return response.data; // The token
-  };
-
   useEffect(() => {
     if (publisher) {
       publisher.publishAudio(!isMuted);
@@ -282,7 +274,7 @@ export const Room = () => {
 
   useEffect(() => {
     if (publisher) {
-      if (filterApplied) {
+      if (filterApplied && filter) {
         publisher.stream.applyFilter("GStreamerFilter", {
           command: filter.command,
         });
@@ -400,36 +392,9 @@ export const Room = () => {
           </RoomHeader>
           <RoomContent>
             <RoomSidebar>
-              <ChannelButtonContainer>
-                <ChannelButton
-                  onClick={() => {
-                    moveChannel("1");
-                  }}
-                >
-                  <UserGroupIcon className="text-white w-8 h-8" />
-                </ChannelButton>
-                <ChannelButtonTitle>채널 1</ChannelButtonTitle>
-              </ChannelButtonContainer>
-              <ChannelButtonContainer>
-                <ChannelButton
-                  onClick={() => {
-                    moveChannel("2");
-                  }}
-                >
-                  <UserGroupIcon className="text-white w-8 h-8" />
-                </ChannelButton>
-                <ChannelButtonTitle>채널 2</ChannelButtonTitle>
-              </ChannelButtonContainer>
-              <ChannelButtonContainer>
-                <ChannelButton
-                  onClick={() => {
-                    moveChannel("3");
-                  }}
-                >
-                  <UserGroupIcon className="text-white w-8 h-8" />
-                </ChannelButton>
-                <ChannelButtonTitle>채널 3</ChannelButtonTitle>
-              </ChannelButtonContainer>
+              {channels.map((c) => (
+                <ChannelButton id={c.id.toString()} name={c.name} moveChannel={moveChannel} />
+              ))}
             </RoomSidebar>
             <ChannelContent>
               {session !== undefined && (
@@ -672,29 +637,6 @@ flex
 flex-col
 items-center
 p-10
-`;
-
-const ChannelButton = tw.a`
-w-14
-h-14
-flex
-justify-center
-items-center
-bg-slate-800
-rounded-full
-text-3xl
-cursor-pointer
-`;
-
-const ChannelButtonContainer = tw.div`
-flex
-flex-col
-items-center
-`;
-
-const ChannelButtonTitle = tw.h1`
-text-slate-200
-text-sm
 `;
 
 const ChannelContent = tw.div`
