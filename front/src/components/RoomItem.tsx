@@ -1,6 +1,6 @@
 import React from "react";
 import tw from "tailwind-styled-components";
-import Modal from "./Modal";
+import Modal from "./common/Modal";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
@@ -125,7 +125,7 @@ function RoomItem(props: RoomItemProps) {
         <Modal
           toggleModal={modalHandler}
           option="confirm"
-          otherProps={props}
+          setting={props}
         ></Modal>
       )}
     </Wrapper>
