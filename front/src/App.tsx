@@ -39,7 +39,7 @@ function App() {
         <RoutesContainer>
           <Routes>
             <Route path="/" element={<Mainpage />} />
-            {isLogin ? (
+            {!isLogin ? (
               <>
                 <Route path="/roomlist" element={<RoomList />} />
 
