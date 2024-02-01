@@ -7,7 +7,9 @@ import com.a506.comeet.app.room.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,8 +60,8 @@ public class RoomController {
 
 
     @GetMapping("")
-    public ResponseEntity<Slice<RoomSearchResponseDto>> search(@Valid RoomSearchRequestDto req) {
-        Slice<RoomSearchResponseDto> res = roomService.search(req);
+    public ResponseEntity<Slice<RoomSearchResponseDto>> search(@Valid RoomSearchRequestDto req, @PageableDefault(size = 20) Pageable pageable) {
+        Slice<RoomSearchResponseDto> res = roomService.search(req, pageable);
         return ResponseEntity.ok(res);
     }
 
