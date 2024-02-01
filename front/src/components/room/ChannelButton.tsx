@@ -4,13 +4,15 @@ import tw from "tailwind-styled-components";
 interface IProps {
   id: string;
   name: string;
+  disabled: boolean;
   moveChannel: (channelId: string) => void;
 }
 
-export default function ChannelButton({ id, name, moveChannel }: IProps) {
+export default function ChannelButton({ id, name, disabled, moveChannel }: IProps) {
   return (
     <ChannelButtonContainer>
       <IconButton
+        disabled={disabled}
         onClick={() => {
           moveChannel(id);
         }}
@@ -22,16 +24,19 @@ export default function ChannelButton({ id, name, moveChannel }: IProps) {
   );
 }
 
-const IconButton = tw.a`
+const IconButton = tw.button`
 w-14
 h-14
 flex
 justify-center
 items-center
 bg-slate-800
+disabled:bg-slate-500
 rounded-full
 text-3xl
 cursor-pointer
+disabled:cursor-default
+
 `;
 
 const ChannelButtonContainer = tw.div`
@@ -41,6 +46,6 @@ items-center
 `;
 
 const ChannelButtonTitle = tw.h1`
-text-slate-200
 text-sm
+text-slate-200
 `;
