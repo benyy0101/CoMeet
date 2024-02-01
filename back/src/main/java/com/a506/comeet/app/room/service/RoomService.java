@@ -5,9 +5,10 @@ import com.a506.comeet.app.KeyUtil;
 import com.a506.comeet.app.keyword.repository.RoomKeywordRepository;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
-import com.a506.comeet.app.metadata.repository.CurrentMemberRedisRepository;
-import com.a506.comeet.app.metadata.repository.RoomMemberRedisRepository;
-import com.a506.comeet.app.metadata.service.MetadataService;
+import com.a506.comeet.metadata.repository.CurrentMemberRedisRepository;
+import com.a506.comeet.metadata.repository.RoomMemberRedisRepository;
+import com.a506.comeet.metadata.service.MetadataCreateDto;
+import com.a506.comeet.metadata.service.MetadataService;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.RoomType;
@@ -28,7 +29,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -149,7 +149,7 @@ public class RoomService {
     }
 
     @Transactional
-    public Long leave(Long roomId, String memberId){
+    public String leave(RoomLeaveRequestDto req, Long roomId, String memberId){
         // 현재 유저의 위치를 삭제하고
         currentMemberRedisRepository.delete(KeyUtil.getCurrentMemberKey(memberId));
         // 해당 방에 유저가 입장한 시간 정보를 추출하고 삭제
@@ -158,34 +158,22 @@ public class RoomService {
         if (enterTimeString == null) throw new RestApiException(CommonErrorCode.WRONG_REQUEST);
         // 시간이 5분 이내라면 meatadata 만들지 않고 리턴
         if( !durationValidation(enterTimeString) ) return null;
-        return metadataService.create(roomId, memberId, makeContext(memberId, roomId, enterTimeString));
+
+        MetadataCreateDto dto = MetadataCreateDto.builder()
+                .memberId(memberId)
+                .roomId(roomId)
+                .enterTime(DateParser.parse(enterTimeString))
+                .leaveTime(LocalDateTime.now())
+                .keywords(req.getKeywords())
+                .build();
+
+        return metadataService.create(dto);
     }
 
     private boolean durationValidation(String enterTimeString){
         return Duration.between(DateParser.parse(enterTimeString), LocalDateTime.now()).toSeconds() >= 5;
     }
 
-    private String makeContext(String memberId, Long roomId, String enterTimeString){
-        Map<String, Object> jsonMap = new HashMap<>();
-        jsonMap.put("memberId", memberId);
-        jsonMap.put("roomId", roomId);
-        jsonMap.put("enterTime", enterTimeString);
-        jsonMap.put("leaveTime", DateParser.stringParse(LocalDateTime.now()));
-        List<Long> keywordIds = roomRepository.findById(roomId).orElseThrow().getRoomKeywords()
-                .stream()
-                .map(roomKeyword -> roomKeyword.getKeyword().getId())
-                .collect(Collectors.toList());
-        jsonMap.put("keywordIds", keywordIds);
-
-        String json = null;
-        try{
-            json = mapper.writeValueAsString(jsonMap);
-        } catch (IOException e){
-            throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR);
-        }
-
-        return json;
-    }
 
     private void authorityValidation(Room room, String memberId) {
         if (!room.getManager().getMemberId().equals(memberId))

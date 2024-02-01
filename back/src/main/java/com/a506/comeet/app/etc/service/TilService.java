@@ -27,7 +27,7 @@ public class TilService {
 
     @Transactional
     public Til create(TilCreateRequestDto req, String memberId) {
-        if (tilRepository.tilWithMemberAndDateExists(memberId, LocalDateTime.now().toLocalDate()))
+        if (tilRepository.tilWithMemberAndDateExists(memberId, req.getDate()))
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Til til = new Til(member, req.getContext(), req.getDate());
