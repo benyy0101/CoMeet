@@ -19,6 +19,9 @@ import Chat from "../components/room/Chat";
 import ShareEditor from "../components/room/ShareEditor";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/room/ChannelButton";
+import { useParams } from "react-router-dom";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 interface IFilter {
   name: string;
@@ -66,6 +69,8 @@ const channels: IChannel[] = [
 ];
 
 export const Room = () => {
+  const { roomId } = useParams();
+
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
@@ -89,13 +94,72 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
-  console.log(publisher);
-  console.log(speakerIds);
-  console.log(subscribers);
-
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
+  const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
+
+  useEffect(() => {
+    if (stompClient.current === null) {
+      stompClient.current = Stomp.over(() => {
+        const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+        return sock;
+      });
+
+      stompClient.current.connect(
+        {},
+        () => {
+          stompClient.current.subscribe(`/room/${roomId}`, (e: any) =>
+            handleUpdateInfo(JSON.parse(e.body))
+          );
+        },
+        (e: any) => alert("에러발생!!!!!!")
+      );
+    }
+    return () => {
+      if (stompClient.current) {
+        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        stompClient.current = null;
+      }
+    };
+  }, []);
+
+  const handleUpdateInfo = (data: any) => {
+    console.log(data);
+    if (data.type === "ROOM") {
+      handleRoomUpdate(data);
+    } else if (data.type === "LOUNGE") {
+      handleLoungeUpdate(data);
+    } else if (data.type === "CHANNEL") {
+      handleChannelUpdate(data);
+    }
+  };
+
+  const handleRoomUpdate = (data: any) => {
+    if (data.action === "MODIFY") {
+      // 방 수정
+    } else if (data.action === "DELETE") {
+      // 방 삭제
+    }
+  };
+  const handleLoungeUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 라운지 추가
+    } else if (data.action === "MODIFY") {
+      // 라운지 수정
+    } else if (data.action === "DELETE") {
+      // 라운지 삭제
+    }
+  };
+  const handleChannelUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 채널 생성
+    } else if (data.action === "MODIFY") {
+      // 채널 수정
+    } else if (data.action === "DELETE") {
+      // 채널 삭제
+    }
+  };
 
   const moveChannel = (sessionId: string) => {
     setIsLoading(true);
@@ -480,7 +544,7 @@ export const Room = () => {
                     </ChatNavbar>
                     {inChat ? (
                       <Chat
-                        chatId={mySessionId}
+                        channelId={mySessionId}
                         username={myUserName}
                         setMessage={setMessage}
                         message={message}

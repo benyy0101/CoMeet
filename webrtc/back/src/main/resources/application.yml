@@ -6,7 +6,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://heeyeon807:1234@cluster0.zyob3qk.mongodb.net/chatdb?retryWrites=true&w=majority
+      uri: mongodb+srv://heeyeon807:1234@cluster0.zyob3qk.mongodb.net/comeet?retryWrites=true&w=majority
 #      host: localhost
 #      port: 27017
 #      database: chatdb
