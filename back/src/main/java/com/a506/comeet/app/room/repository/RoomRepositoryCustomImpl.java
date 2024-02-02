@@ -7,7 +7,8 @@ import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -173,7 +174,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if (keywordIds == null || keywordIds.isEmpty()) return null;
 
         // 주어진 keyword id를 모두 가지고 있는 room의 id를 선택
-        JPAQuery<Long> subQuery = jpaQueryFactory
+        JPQLQuery<Long> subQuery = JPAExpressions
                 .select(roomKeyword.room.id)
                 .from(roomKeyword)
                 .leftJoin(roomKeyword.keyword)
