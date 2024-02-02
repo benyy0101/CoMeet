@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
@@ -12,6 +12,7 @@ import { ServerDropDownList } from "../ServerDropDownList";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import ModalPortal from "../../utils/Portal";
 import Modal from "./Modal";
+import { useSelector } from "react-redux";
 
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
@@ -26,7 +27,11 @@ export const NavBar = () => {
     setSignupModal(!signupModal);
   };
   //임시
-  const isLogin = false;
+  const isLogin = useSelector((state: any) => state.user.isLoggedIn);
+
+  useEffect(() => {
+    console.log(isLogin);
+  }, [isLogin]);
 
   //임시
   const isChannelIn = true;

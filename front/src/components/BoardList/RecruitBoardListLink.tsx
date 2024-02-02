@@ -1,9 +1,9 @@
 import React from "react";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
-import { BoardListProps } from "../types";
+import { BoardListProps } from "types";
 
-import StarFill from "../assets/img/star-fill.svg";
+import StarFill from "assets/img/star-fill.svg";
 
 export const RecruitBoardListLink = (props: BoardListProps) => {
   const keywordArr: string[] = props.roomKeywords.split("-");
@@ -40,9 +40,9 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
           <LikeContatiner>
             <LikeImg src={StarFill} alt="" />
             {/* {props.isLiked ? (
-          ) : (
-            <LikeImg src={StarEmpty} alt="" />
-          )} */}
+        ) : (
+          <LikeImg src={StarEmpty} alt="" />
+        )} */}
             {/* useState로 likecount 관리 */}
             {props.likeCount}
           </LikeContatiner>

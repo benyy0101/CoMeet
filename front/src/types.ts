@@ -14,9 +14,8 @@ export type RoomItemProps = {
 export type UserState = {
   user: {
     memberId: string;
-    name: string;
     password: string;
-    email: string;
+    profileImage: string;
     nickname: string;
   };
   isLoggedIn: boolean;

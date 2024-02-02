@@ -1,5 +1,11 @@
-interface example {
-  ex1: string;
-  ex2: number;
+export interface LoginQuery {
+  nickname: string;
+  profileImage: string;
+  jwtToken: JwtToken;
 }
-export {};
+
+export interface JwtToken {
+  accessToken: string;
+  refreshToken: string;
+  grantType: string;
+}

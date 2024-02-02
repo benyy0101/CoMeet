@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, useRef } from "react";
-import useOutsideClick from "../hooks/useOutsideClick";
+import useOutsideClick from "hooks/useOutsideClick";
 
-import XIcon from "../assets/img/x-icon.svg";
+import XIcon from "assets/img/x-icon.svg";
 
 import tw from "tailwind-styled-components";
 
