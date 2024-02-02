@@ -69,6 +69,7 @@ export const Room = () => {
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -78,6 +79,7 @@ export const Room = () => {
   const [publisher, setPublisher] = useState<any>(undefined);
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState<any>(null);
+  const [speakerIds, setSpeakerIds] = useState<string[]>([]);
 
   // Control Panel
   const [isMuted, setIsMuted] = useState<boolean>(true);
@@ -87,11 +89,16 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
+  console.log(publisher);
+  console.log(speakerIds);
+  console.log(subscribers);
+
   const editorRef = useRef(null);
 
   const OV = useRef(new OpenVidu());
 
   const moveChannel = (sessionId: string) => {
+    setIsLoading(true);
     leaveSession();
     setMySessionId(sessionId);
     joinSession();
@@ -112,18 +119,48 @@ export const Room = () => {
 
   const joinSession = useCallback(() => {
     const mySession = OV.current.initSession();
+    OV.current.setAdvancedConfiguration({
+      publisherSpeakingEventsOptions: {
+        interval: 100, // Frequency of the polling of audio streams in ms (default 100)
+        threshold: -50, // Threshold volume in dB (default -50)
+      },
+    });
 
     mySession.on("streamCreated", (event) => {
-      const subscriber = mySession.subscribe(event.stream, undefined);
+      const subscriber: any = mySession.subscribe(event.stream, undefined);
+      subscriber.updatePublisherSpeakingEventsOptions({
+        interval: 100, // Frequency of the polling of audio streams in ms
+        threshold: -50, // Threshold volume in dB
+      });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-
-    mySession.on("streamDestroyed", (event) => {
-      deleteSubscriber(event.stream.streamManager);
+    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
+    mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
+    mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
+    mySession.on("sessionDisconnected", (event) => {
+      if (event.reason === "networkDisconnect") {
+        console.warn("네트워크 연결이 끊어졌습니다.");
+      } else {
+        console.warn("세션 연결이 끊어졌습니다", event);
+      }
+    });
+    mySession.on("exception", (exception) => {
+      if (exception.name === "ICE_CONNECTION_FAILED") {
+        console.warn("ICE 연결이 실패했습니다.");
+      } else if (exception.name === "ICE_CONNECTION_DISCONNECTED") {
+        console.warn("ICE 연결이 끊겼습니다.");
+      }
+      console.warn(exception);
     });
 
-    mySession.on("exception", (exception) => {
-      console.warn(exception);
+    mySession.on("publisherStartSpeaking", (event: any) => {
+      console.log("User " + event.connection.connectionId + " start speaking");
+      setSpeakerIds((prev) => [...prev, event.connection.connectionId]);
+    });
+
+    mySession.on("publisherStopSpeaking", (event: any) => {
+      console.log("User " + event.connection.connectionId + " stop speaking");
+      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
     });
 
     setSession(mySession);
@@ -220,6 +257,12 @@ export const Room = () => {
       console.error(e);
     }
   }, [currentVideoDevice, session, mainStreamManager]);
+
+  useEffect(() => {
+    if (publisher) {
+      setIsLoading(false);
+    }
+  }, [publisher]);
 
   const deleteSubscriber = useCallback((streamManager: any) => {
     setSubscribers((prevSubscribers) => {
@@ -393,7 +436,13 @@ export const Room = () => {
           <RoomContent>
             <RoomSidebar>
               {channels.map((c) => (
-                <ChannelButton id={c.id.toString()} name={c.name} moveChannel={moveChannel} />
+                <ChannelButton
+                  key={c.id}
+                  disabled={isLoading || mySessionId === c.id.toString()}
+                  id={c.id.toString()}
+                  name={c.name}
+                  moveChannel={moveChannel}
+                />
               ))}
             </RoomSidebar>
             <ChannelContent>
@@ -414,10 +463,18 @@ export const Room = () => {
                 {session !== undefined && (
                   <ChatContainer>
                     <ChatNavbar>
-                      <ChatNavButton disabled={inChat === true} onClick={() => setInChat(true)}>
+                      <ChatNavButton
+                        key={"chat"}
+                        disabled={inChat === true}
+                        onClick={() => setInChat(true)}
+                      >
                         채팅
                       </ChatNavButton>
-                      <ChatNavButton disabled={inChat === false} onClick={() => setInChat(false)}>
+                      <ChatNavButton
+                        key={"share-editor"}
+                        disabled={inChat === false}
+                        onClick={() => setInChat(false)}
+                      >
                         공유코드
                       </ChatNavButton>
                     </ChatNavbar>
@@ -447,13 +504,22 @@ export const Room = () => {
                 ) : null} */}
                 <GridContainer>
                   {publisher !== undefined && (
-                    <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
-                      <UserVideoComponent streamManager={publisher} />
+                    <StreamContainer
+                      key={publisher.id}
+                      onClick={() => handleMainVideoStream(publisher)}
+                    >
+                      <UserVideoComponent
+                        streamManager={publisher}
+                        speaking={speakerIds.includes(publisher.stream.connection.connectionId)}
+                      />
                     </StreamContainer>
                   )}
                   {subscribers.map((sub, i) => (
                     <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
-                      <UserVideoComponent streamManager={sub} />
+                      <UserVideoComponent
+                        streamManager={sub}
+                        speaking={speakerIds.includes(sub.stream.connection.connectionId)}
+                      />
                     </StreamContainer>
                   ))}
                 </GridContainer>

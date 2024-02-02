@@ -1,29 +1,38 @@
 import React from "react";
 import tw from "tailwind-styled-components";
-import Login from "./Login";
-import RoomConfirm from "./RoomConfirm";
-import { RoomItemProps } from "../types";
+import Login from "../auth/Login";
+import RoomConfirm from "../RoomConfirm";
+import { RoomItemProps } from "../../types";
 
 type ModalProps = {
   toggleModal: () => void;
-  option?: string;
-  otherProps: RoomItemProps;
+  option: string;
+  setting?: RoomItemProps | null;
 };
 
 function Modal(props: ModalProps) {
-  const { toggleModal, option, otherProps } = props;
+  const { toggleModal, option, setting } = props;
   const [isLogin, setIsLogin] = React.useState<boolean>(false);
+  const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
   const [isRoomCreate, setIsRoomCreate] = React.useState<boolean>(false);
   React.useEffect(() => {
     if (option === "login") {
       // 로그인 모달
+      console.log("login");
       setIsLogin(true);
       setIsRoomConfirm(false);
       setIsRoomCreate(false);
+      setIsSignup(false);
     } else if (option === "confirm") {
       // 로그인 모달
       setIsRoomConfirm(true);
+      setIsLogin(false);
+      setIsRoomCreate(false);
+      setIsSignup(false);
+    } else if (option === "signup") {
+      setIsSignup(true);
+      setIsRoomConfirm(false);
       setIsLogin(false);
       setIsRoomCreate(false);
     }
@@ -37,7 +46,7 @@ function Modal(props: ModalProps) {
     <Wrapper onClick={modalToggleHandler}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         {isLogin ? <Login></Login> : null}
-        {isRoomConfirm ? <RoomConfirm {...otherProps}></RoomConfirm> : null}
+        {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
       </ModalContainer>
     </Wrapper>
   );

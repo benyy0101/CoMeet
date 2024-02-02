@@ -1,8 +1,12 @@
-package com.a506.comeet.app;
+package com.a506.comeet.common.util;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateParser {
 
     public static LocalDateTime parse(String string){

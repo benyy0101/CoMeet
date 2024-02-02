@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { NavBar } from "./components/NavBar";
+import { NavBar } from "./components/common/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
 import { Community } from "./pages/Community";
@@ -17,8 +17,7 @@ import { FreeBoardList } from "./pages/FreeBoardList";
 //import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
-import Login from "./components/Login";
-import { useSelector } from "react-redux";
+import Login from "./components/auth/Login";
 import { UserState } from "./types";
 
 function App() {
@@ -33,7 +32,6 @@ function App() {
 
   return (
     <div className="App h-dvh">
-      <Login></Login>
       <BrowserRouter>
         <NavBarContainer>
           <NavBar />
@@ -41,7 +39,7 @@ function App() {
         <RoutesContainer>
           <Routes>
             <Route path="/" element={<Mainpage />} />
-            {isLogin ? (
+            {!isLogin ? (
               <>
                 <Route path="/roomlist" element={<RoomList />} />
 
@@ -51,14 +49,20 @@ function App() {
                 {/* 모집 게시판 */}
                 <Route path="/recruit-board" element={<RecruitBoardList />} />
 
-                <Route path="/recruit-board/edit" element={<Board isFree={true} isEdit={true} />} />
+                <Route
+                  path="/recruit-board/edit"
+                  element={<Board isFree={true} isEdit={true} />}
+                />
                 {/* 모집게시판 글 상세보기 */}
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
 
                 {/* 자유게시판 글 상세보기 */}
-                <Route path="/free-board/:boardId" element={<BoardDetail />}></Route>
+                <Route
+                  path="/free-board/:boardId"
+                  element={<BoardDetail />}
+                ></Route>
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />} />

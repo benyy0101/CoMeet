@@ -1,9 +1,9 @@
 package com.a506.comeet.app.etc.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ public class TilListResponseDto {
     @Getter
     public static class TilContentResponseDto implements Comparable<TilContentResponseDto> {
         private Long id;
+        @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate date;
 
         public TilContentResponseDto(Long id, LocalDate date) {

@@ -3,16 +3,17 @@ import tw from "tailwind-styled-components";
 
 interface IProps {
   streamManager: any;
+  speaking: boolean;
 }
 
-export default function UserVideoComponent({ streamManager }: IProps) {
+export default function UserVideoComponent({ streamManager, speaking }: IProps) {
   const getNicknameTag = () => {
     // Gets the nickName of the user
     return JSON.parse(streamManager.stream.connection.data).clientData;
   };
 
   return (
-    <UserVideoContainer>
+    <UserVideoContainer $speaking={speaking}>
       {streamManager !== undefined ? (
         <StreamContainer>
           <OpenViduVideoComponent streamManager={streamManager} />
@@ -25,10 +26,12 @@ export default function UserVideoComponent({ streamManager }: IProps) {
   );
 }
 
-const UserVideoContainer = tw.div`
+const UserVideoContainer = tw.div<{ $speaking: boolean }>`
 rounded-lg
 overflow-hidden
 shadow-2xl
+box-content
+${(p) => (p.$speaking ? "border-2 border-green-400" : "")}
 `;
 
 const StreamContainer = tw.div`
