@@ -70,7 +70,6 @@ const channels: IChannel[] = [
 
 export const Room = () => {
   const { roomId } = useParams();
-  console.log(roomId);
 
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
@@ -95,33 +94,35 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
   const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
 
-  // useEffect(() => {
-  //   stompClient.current = Stomp.over(() => {
-  //     const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
-  //     return sock;
-  //   });
+  useEffect(() => {
+    if (stompClient.current === null) {
+      stompClient.current = Stomp.over(() => {
+        const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+        return sock;
+      });
 
-  //   // connect(header,연결 성공시 콜백,에러발생시 콜백)
-  //   stompClient.current.connect(
-  //     {},
-  //     function () {
-  //       //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-  //       stompClient.current.subscribe(`/room/${roomId}`, function (e: any) {
-  //         //e.body에 전송된 data가 들어있다
-  //         handleUpdateInfo(JSON.parse(e.body));
-  //       });
-  //     },
-  //     function (e: any) {
-  //       //에러 콜백
-  //       alert("에러발생!!!!!!");
-  //     }
-  //   );
-  // }, []);
+      stompClient.current.connect(
+        {},
+        () => {
+          stompClient.current.subscribe(`/room/${roomId}`, (e: any) =>
+            handleUpdateInfo(JSON.parse(e.body))
+          );
+        },
+        (e: any) => alert("에러발생!!!!!!")
+      );
+    }
+    return () => {
+      if (stompClient.current) {
+        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        stompClient.current = null;
+      }
+    };
+  }, []);
 
   const handleUpdateInfo = (data: any) => {
     console.log(data);
