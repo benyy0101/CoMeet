@@ -8,13 +8,13 @@ import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 
 interface IProps {
-  chatId: string;
+  channelId: string;
   username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({ chatId, username, setMessage, message }: IProps) {
+export default function Chat({ channelId, username, setMessage, message }: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const stompClient = useRef<any>(null);
@@ -22,7 +22,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/messages?type=CHANNEL&chatId=${chatId}`,
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -32,7 +32,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
         setRows(response.data);
 
         stompClient.current = Stomp.over(() => {
-          const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
+          const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
           return sock;
         });
 
@@ -41,7 +41,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
           {},
           function () {
             //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-            stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e: any) {
+            stompClient.current.subscribe(`/channel/${channelId}`, function (e: any) {
               //e.body에 전송된 data가 들어있다
               showMessage(JSON.parse(e.body));
             });
@@ -55,7 +55,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
       .catch((error) => {
         console.error(error);
       });
-  }, [chatId]);
+  }, [channelId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: any) {
@@ -67,8 +67,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
     e.preventDefault();
 
     const data = {
-      chatId,
-      type: "CHANNEL",
+      channelId,
       memberId: "heeyeon3050",
       nickname: username,
       message,

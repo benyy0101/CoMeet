@@ -124,11 +124,7 @@ export const NavBar = () => {
               <button onClick={signupModalHandler}>회원가입</button>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -137,11 +133,7 @@ export const NavBar = () => {
               <button onClick={loginModalHandler}>로그인</button>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
