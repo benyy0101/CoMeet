@@ -87,11 +87,11 @@ public class RoomService {
 
     @Transactional
     public void update(RoomUpdateRequestDto req, String memberId, long roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND, "해당 방이 존재하지 않습니다"));
         // 해당 요청을 방장이 요청했는지 확인
         authorityValidation(room, memberId);
         Member newManager = req.getMangerId() != null?
-                memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))
+                memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND, "변경 요청한 새로운 매니저 아이디가 서비스 내에 존재하지 않습니다"))
                 : null;
         room.updateRoom(req, newManager);
         if (req.getKeywordIds() != null) updateRoomKeywords(req, room);

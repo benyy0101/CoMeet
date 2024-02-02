@@ -52,11 +52,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 이외 에러들은 internal error로 처리한다 (NPE등)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllException(Exception ex) {
-        log.warn("handleAllException : {}", ex.getMessage());
-        log.warn("handleAllException : {}", (Object) ex.getStackTrace());
+    public ResponseEntity<Object> handleAllException(Exception e) {
+        log.warn("handleAllException : {}", e.getMessage());
+        log.warn("handleAllException : {}", (Object) e.getStackTrace());
+        e.printStackTrace(); // 개발 끝나고 삭제 필요
+
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode, ex.getMessage());
+        return handleExceptionInternal(errorCode, e.getMessage());
     }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {

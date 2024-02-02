@@ -4,6 +4,7 @@ import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.response.ErrorResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +26,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
         try {
             chain.doFilter(req, res); // go to 'JwtAuthenticationFilter'
-        } catch (JwtException ex) {
+        } catch (ExpiredJwtException e){
+            res.sendRedirect("auth/reissue");
+        }
+        catch (JwtException e) {
             makeErrorResponse(res);
         }
     }

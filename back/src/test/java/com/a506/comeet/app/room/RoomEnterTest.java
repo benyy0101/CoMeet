@@ -1,6 +1,9 @@
 package com.a506.comeet.app.room;
 
-import com.a506.comeet.app.room.controller.dto.*;
+import com.a506.comeet.app.room.controller.dto.RoomChannelResponseDto;
+import com.a506.comeet.app.room.controller.dto.RoomLoungeResponseDto;
+import com.a506.comeet.app.room.controller.dto.RoomMemberResponseDto;
+import com.a506.comeet.app.room.controller.dto.RoomResponseDto;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.app.room.service.ChannelService;
 import com.a506.comeet.app.room.service.LoungeService;
@@ -13,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @SpringBootTest
 @Slf4j
@@ -83,39 +84,39 @@ public class RoomEnterTest {
 
     }
 
-    @Test
-    @Transactional
-    void roomEnterTestOneQuery(){
-        Long roomId = 3L;
-        List<RoomResponseDto> response = roomRepository.enterRoomCustomOneQuery(roomId);
-        for (RoomResponseDto res : response) {
-            log.info("멤버 수 : {}", res.getMembers().size());
-            for (RoomMemberResponseDto member : res.getMembers()) {
-                log.info("멤버 닉네임 : {}", member.getNickname());
-            }
-
-            log.info("채널 수 : {}", res.getChannels().size());
-            for (RoomChannelResponseDto channel : res.getChannels()) {
-                log.info("채널 명 : {}", channel.getName());
-            }
-
-            log.info("라운지 수 : {}", res.getLounges().size());
-            for (RoomLoungeResponseDto lounge : res.getLounges()) {
-                log.info("라운지 명 : {}", lounge.getName());
-            }
-        }
-    }
-
-    @Test
-    @Transactional
-    void roomEnterVsTest(){
-        Long srt = System.currentTimeMillis();
-        List<RoomResponseDto> res = roomRepository.enterRoomCustomOneQuery(1L);
-        log.info("one Query : {}",System.currentTimeMillis() - srt);
-        log.info("{}", res.size());
-        Long srt2 = System.currentTimeMillis();
-        roomRepository.enterRoomCustom(1L);
-        log.info("multiple Query : {}",System.currentTimeMillis() - srt2);
-    }
+//    @Test
+//    @Transactional
+//    void roomEnterTestOneQuery(){
+//        Long roomId = 3L;
+//        List<RoomResponseDto> response = roomRepository.enterRoomCustomOneQuery(roomId);
+//        for (RoomResponseDto res : response) {
+//            log.info("멤버 수 : {}", res.getMembers().size());
+//            for (RoomMemberResponseDto member : res.getMembers()) {
+//                log.info("멤버 닉네임 : {}", member.getNickname());
+//            }
+//
+//            log.info("채널 수 : {}", res.getChannels().size());
+//            for (RoomChannelResponseDto channel : res.getChannels()) {
+//                log.info("채널 명 : {}", channel.getName());
+//            }
+//
+//            log.info("라운지 수 : {}", res.getLounges().size());
+//            for (RoomLoungeResponseDto lounge : res.getLounges()) {
+//                log.info("라운지 명 : {}", lounge.getName());
+//            }
+//        }
+//    }
+//
+//    @Test
+//    @Transactional
+//    void roomEnterVsTest(){
+//        Long srt = System.currentTimeMillis();
+//        List<RoomResponseDto> res = roomRepository.enterRoomCustomOneQuery(1L);
+//        log.info("one Query : {}",System.currentTimeMillis() - srt);
+//        log.info("{}", res.size());
+//        Long srt2 = System.currentTimeMillis();
+//        roomRepository.enterRoomCustom(1L);
+//        log.info("multiple Query : {}",System.currentTimeMillis() - srt2);
+//    }
 
 }
