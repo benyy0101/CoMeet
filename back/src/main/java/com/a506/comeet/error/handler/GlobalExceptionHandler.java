@@ -25,13 +25,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 커스텀된 에러 리턴을 위한 메서드
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<Object> handleCustomArgument(RestApiException e) {
+        log.warn("RestApiException : {}", e.getMessage());
+        log.warn("RestApiException : {}", (Object) e.getStackTrace());
         ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
+        return handleExceptionInternal(errorCode, e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e) {
-        log.warn("handleIllegalArgument", e);
+        log.warn("handleIllegalArgument : {}", e.getMessage());
+        log.warn("handleIllegalArgument : {}", (Object) e.getStackTrace());
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(errorCode, e.getMessage());
     }
@@ -40,7 +43,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        log.warn("handleIllegalArgument", e);
+        log.warn("handleIllegalArgument :{}", e.getMessage());
+        log.warn("handleIllegalArgument :{}", (Object) e.getStackTrace());
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(e, errorCode);
     }
@@ -48,17 +52,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // 이외 에러들은 internal error로 처리한다 (NPE등)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception ex) {
-        log.warn("handleAllException", ex);
+        log.warn("handleAllException : {}", ex.getMessage());
+        log.warn("handleAllException : {}", (Object) ex.getStackTrace());
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode, ex.getMessage());
-    }
-
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(ErrorResponse.builder()
-                        .code(errorCode.name())
-                        .message(errorCode.getMessage())
-                        .build());
     }
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
@@ -69,6 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         .build());
     }
 
+    // @Valid에 의한 validation 발생 시 에러가 발생한 필드 정보를 담은 Response 반환
     private ResponseEntity<Object> handleExceptionInternal(BindException e, ErrorCode errorCode) {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(e, errorCode));

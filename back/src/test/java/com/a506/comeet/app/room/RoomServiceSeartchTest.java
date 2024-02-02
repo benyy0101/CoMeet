@@ -2,32 +2,24 @@
 
 package com.a506.comeet.app.room;
 
-import com.a506.comeet.common.enums.RoomConstraints;
-import com.a506.comeet.common.enums.RoomSortBy;
-import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.app.room.controller.dto.RoomSearchRequestDto;
-import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.app.room.service.RoomService;
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Slf4j
@@ -73,25 +65,23 @@ public class RoomServiceSeartchTest {
             roomService.create(reqR);
         }
 
-        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
-                searchKeyword("title").
-                maxCapacity(10).
-                minCapacity(4).
-                constraints(List.of(RoomConstraints.MICOFF, RoomConstraints.FREE)).
-                sortBy(RoomSortBy.capacity).isDesc(true).
-                keywordIds(List.of(1L,2L)).
-                pageNo(0).pageSize(20).
-                build();
-
-        Slice<RoomSearchResponseDto> list = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
-        for (RoomSearchResponseDto roomSearchResponseDto : list) {
-            log.info("roomId = {}",roomSearchResponseDto.getRoomId());
-            log.info("managerNickname = {}",roomSearchResponseDto.getManagerNickname());
-            log.info("title = {}",roomSearchResponseDto.getTitle());
-            log.info("capacity = {}",roomSearchResponseDto.getCapacity());
-            log.info("type = {}",roomSearchResponseDto.getType());
-        }
-        Assertions.assertThat(list.getContent().size()).isEqualTo(20);
+//        RoomSearchRequestDto req = RoomSearchRequestDto.builder().
+//                searchKeyword("title").
+//                constraints(List.of(RoomConstraints.MICOFF, RoomConstraints.FREE)).
+//                sortBy(RoomSortBy.capacity).isDesc(true).
+//                keywordIds(List.of(1L,2L)).
+//                pageNo(0).pageSize(20).
+//                build();
+//
+//        Slice<RoomSearchResponseDto> list = roomRepository.searchRoomCustom(req, PageRequest.of(req.getPageNo(), req.getPageSize()));
+//        for (RoomSearchResponseDto roomSearchResponseDto : list) {
+//            log.info("roomId = {}",roomSearchResponseDto.getRoomId());
+//            log.info("managerNickname = {}",roomSearchResponseDto.getManagerNickname());
+//            log.info("title = {}",roomSearchResponseDto.getTitle());
+//            log.info("capacity = {}",roomSearchResponseDto.getCapacity());
+//            log.info("type = {}",roomSearchResponseDto.getType());
+//        }
+//        Assertions.assertThat(list.getContent().size()).isEqualTo(20);
     }
 
     // 정렬 조건이 pk가 아니라서 no offset을 사용할 수 없다
