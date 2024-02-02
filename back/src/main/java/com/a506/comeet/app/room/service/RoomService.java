@@ -1,37 +1,38 @@
 package com.a506.comeet.app.room.service;
 
-import com.a506.comeet.app.DateParser;
-import com.a506.comeet.app.KeyUtil;
+import com.a506.comeet.common.util.DateParser;
+import com.a506.comeet.common.util.KeyUtil;
+import com.a506.comeet.app.keyword.entity.Keyword;
+import com.a506.comeet.app.keyword.entity.RoomKeyword;
+import com.a506.comeet.app.keyword.repository.KeywordRepository;
 import com.a506.comeet.app.keyword.repository.RoomKeywordRepository;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
-import com.a506.comeet.metadata.repository.CurrentMemberRedisRepository;
-import com.a506.comeet.metadata.repository.RoomMemberRedisRepository;
-import com.a506.comeet.metadata.service.MetadataCreateDto;
-import com.a506.comeet.metadata.service.MetadataService;
 import com.a506.comeet.app.room.controller.dto.*;
+import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.app.room.entity.RoomMember;
+import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
-import com.a506.comeet.app.keyword.entity.Keyword;
-import com.a506.comeet.app.keyword.entity.RoomKeyword;
-import com.a506.comeet.app.keyword.repository.KeywordRepository;
-import com.a506.comeet.app.room.entity.Room;
-import com.a506.comeet.app.room.entity.RoomMember;
-import com.a506.comeet.app.room.repository.RoomMemberRepository;
+import com.a506.comeet.metadata.repository.CurrentMemberRedisRepository;
+import com.a506.comeet.metadata.repository.RoomMemberRedisRepository;
+import com.a506.comeet.metadata.service.MetadataCreateDto;
+import com.a506.comeet.metadata.service.MetadataService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,8 +122,8 @@ public class RoomService {
             room.delete();
     }
 
-    public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto requestDto) {
-        return roomRepository.searchRoomCustom(requestDto, PageRequest.of(requestDto.getPageNo(), requestDto.getPageSize()));
+    public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto req, Pageable pageable) {
+        return roomRepository.searchRoomCustom(req, pageable);
     }
 
     // 방 들어가는 로직 때문에 Transactional
@@ -145,6 +146,7 @@ public class RoomService {
         currentMemberRedisRepository.save(KeyUtil.getCurrentMemberKey(memberId), roomId);
         // 현재 어떤방에 어떤 멤버가 어떤 시간에 들어왔는지 저장
         roomMemberRedisRepository.save(KeyUtil.getRoomMemberKey(roomId, memberId), LocalDateTime.now());
+
         return roomRepository.enterRoomCustom(roomId);
     }
 
@@ -211,4 +213,22 @@ public class RoomService {
             roomKeywordRepository.deleteByRoomAndKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND)));
         }
     }
+
+    // // 이 메소드는 주어진 roomId가 모든 keywordIds를 포함하는지 확인합니다.
+    // public boolean roomContainsAllKeywords(Long roomId, List<Long> keywordIds) {
+    //     // roomId에 대한 모든 RoomKeyword를 조회
+    //     List<RoomKeyword> roomKeywords = roomKeywordRepository.findByRoomId(roomId);
+    //
+    //     System.out.println("=====================");
+    //     System.out.println(roomKeywords);
+    //     System.out.println("=====================");
+    //
+    //     // 조회된 RoomKeyword에서 Keyword ID만 추출
+    //     Set<Long> roomKeywordIds = roomKeywords.stream()
+    //         .map(roomKeyword -> roomKeyword.getKeyword().getId())
+    //         .collect(Collectors.toSet());
+    //
+    //     // 주어진 keywordIds가 roomKeywordIds에 모두 포함되어 있는지 확인
+    //     return roomKeywordIds.containsAll(keywordIds);
+    // }
 }

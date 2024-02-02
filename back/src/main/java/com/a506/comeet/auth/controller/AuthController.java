@@ -1,15 +1,14 @@
 package com.a506.comeet.auth.controller;
 
 import com.a506.comeet.app.member.MemberUtil;
-import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
-import com.a506.comeet.auth.service.AuthService;
-import com.a506.comeet.auth.JwtToken;
 import com.a506.comeet.auth.JwtTokenProvider;
+import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
+import com.a506.comeet.auth.controller.dto.LoginResponseDto;
+import com.a506.comeet.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,11 +22,12 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtToken> login(@RequestBody @Valid LoginReqeustDto req){
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginReqeustDto req){
         log.info("request memberId = {}, password = {}", req.getMemberId(), req.getPassword());
-        JwtToken jwtToken = authService.login(req.getMemberId(), req.getPassword());
-        log.info("jwtToken accessToken = {}, reqeustToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
-        return ResponseEntity.ok(jwtToken);
+        LoginResponseDto res = authService.login(req.getMemberId(), req.getPassword());
+        log.info("jwtToken accessToken = {}, reqeustToken = {}", res.getJwtToken().getAccessToken(), res.getJwtToken().getRefreshToken());
+
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/test")
