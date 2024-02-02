@@ -26,7 +26,7 @@ export const NavBar = () => {
     setSignupModal(!signupModal);
   };
   //임시
-  const isLogin = false;
+  const isLogin = true;
 
   //임시
   const isChannelIn = true;

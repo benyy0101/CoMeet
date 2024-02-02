@@ -96,7 +96,7 @@ z-10
 `;
 
 const RoutesContainer = tw.div`
-h-screen
+
 pt-12
 `;
 

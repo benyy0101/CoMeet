@@ -1,10 +1,10 @@
 import React from "react";
-import { MyProfile } from "../components/MyProfile";
-import { MyKeyword } from "../components/MyKeyword";
-import { MyStudyType } from "../components/MyStudyType";
-import { MyStudyTime } from "../components/MyStudyTime";
-import { MyTILCalendar } from "../components/MyTILCalendar";
-import { MySumTime } from "../components/MySumTime";
+import { MyProfile } from "components/Mypage/MyProfile";
+import { MyKeyword } from "components/Mypage/MyKeyword";
+import { MyStudyType } from "components/Mypage/MyStudyType";
+import { MyStudyTime } from "components/Mypage/MyStudyTime";
+import { MyTILCalendar } from "components/Mypage/MyTILCalendar";
+import { MySumTime } from "components/Mypage/MySumTime";
 
 import tw from "tailwind-styled-components";
 

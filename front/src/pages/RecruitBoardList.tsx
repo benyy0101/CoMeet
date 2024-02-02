@@ -7,8 +7,8 @@ import SearchImgIcon from "../assets/img/search.svg";
 
 import useOutsideClick from "../hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
-import { RecruitBoardListLink } from "../components/RecruitBoardListLink";
-import { KeywordSearchBox } from "../components/KeywordSearchBox";
+import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
+import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 
 type BoardListProps = {
   id: number;
@@ -110,11 +110,11 @@ export const RecruitBoardList = () => {
         writerImage: "https://picsum.photos/id/65/100",
         createdAt: "2024-01-12",
         likeCount: 1,
-        category: "",
-        type: "recruit",
-        roomKeywords: "SPRING-BACK-JAVA-BACKEND",
+        category: "TIP",
+        type: "free",
+        roomKeywords: "",
         roomImage: "https://picsum.photos/id/20/300",
-        isValid: false,
+        isValid: true,
         roomCapacity: 25,
       },
       {
@@ -128,7 +128,7 @@ export const RecruitBoardList = () => {
         type: "recruit",
         roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
         roomImage: "https://picsum.photos//300",
-        isValid: true,
+        isValid: false,
         roomCapacity: 50,
       },
     ];
@@ -281,11 +281,14 @@ export const RecruitBoardList = () => {
 
             <ListContainer>
               {/* ReadButton은 임시! */}
-              {boardList.map((tmp) => (
-                <ReadButton>
-                  <RecruitBoardListLink key={tmp.id} {...tmp} />
-                </ReadButton>
-              ))}
+              {boardList.map((tmp) => {
+                if (tmp.type === "recruit")
+                  return (
+                    <ReadButton>
+                      <RecruitBoardListLink key={tmp.id} {...tmp} />
+                    </ReadButton>
+                  );
+              })}
             </ListContainer>
             <div className="flex justify-center mt-16">페이지네이션</div>
           </CoreTotalContainer>

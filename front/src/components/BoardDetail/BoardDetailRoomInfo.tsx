@@ -2,8 +2,8 @@ import React from "react";
 
 import tw from "tailwind-styled-components";
 
-import PoepleNumImg from "../assets/img/people-num.svg";
-import RoomImg from "../assets/img/room-default.png";
+import PoepleNumImg from "assets/img/people-num.svg";
+import RoomImg from "assets/img/room-default.png";
 
 export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
   //방 ID로 방 조회해서 가져올 것들
