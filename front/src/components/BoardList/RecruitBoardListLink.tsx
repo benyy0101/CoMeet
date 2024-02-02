@@ -1,60 +1,54 @@
 import React from "react";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
-import { BoardListProps } from "../types";
+import { BoardListProps } from "types";
 
-import StarFill from "../assets/img/star-fill.svg";
+import StarFill from "assets/img/star-fill.svg";
 
 export const RecruitBoardListLink = (props: BoardListProps) => {
   const keywordArr: string[] = props.roomKeywords.split("-");
 
-  const type: string = props.type;
-
   return (
-    <>
-      {type == "recruit" ? (
-        <Link to="/recruit-board/1">
-          <TotalContainer>
-            <LeftContainer>
-              <RoomImg src={props.roomImage} alt="roomImg" />
-            </LeftContainer>
-            <CenterContainer>
-              <TitleAndValidContainer>
-                <RecruitValid>
-                  {props.isValid ? (
-                    <ValidTrue>모집중</ValidTrue>
-                  ) : (
-                    <ValidFalse>모집완료</ValidFalse>
-                  )}
-                </RecruitValid>
-                <BoardTitle>{props.title}</BoardTitle>
-              </TitleAndValidContainer>
-              <RoomKeywordContainer>
-                {keywordArr.map((keyword) => (
-                  <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
-                ))}
-              </RoomKeywordContainer>
-            </CenterContainer>
-            <RightContainer>
-              <WriterContainer>
-                <WriterImg src={props.writerImage} alt="wrtierImg" />
-                <WriterNicname>{props.writerNicname}</WriterNicname>
-              </WriterContainer>
-              <WriteDate>{props.createdAt}</WriteDate>
-              <LikeContatiner>
-                <LikeImg src={StarFill} alt="" />
-                {/* {props.isLiked ? (
+    <Link to="/recruit-board/1">
+      <TotalContainer>
+        <LeftContainer>
+          <RoomImg src={props.roomImage} alt="roomImg" />
+        </LeftContainer>
+        <CenterContainer>
+          <TitleAndValidContainer>
+            <RecruitValid>
+              {props.isValid ? (
+                <ValidTrue>모집중</ValidTrue>
+              ) : (
+                <ValidFalse>모집완료</ValidFalse>
+              )}
+            </RecruitValid>
+            <BoardTitle>{props.title}</BoardTitle>
+          </TitleAndValidContainer>
+          <RoomKeywordContainer>
+            {keywordArr.map((keyword) => (
+              <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
+            ))}
+          </RoomKeywordContainer>
+        </CenterContainer>
+        <RightContainer>
+          <WriterContainer>
+            <WriterImg src={props.writerImage} alt="wrtierImg" />
+            <WriterNicname>{props.writerNicname}</WriterNicname>
+          </WriterContainer>
+          <WriteDate>{props.createdAt}</WriteDate>
+          <LikeContatiner>
+            <LikeImg src={StarFill} alt="" />
+            {/* {props.isLiked ? (
         ) : (
           <LikeImg src={StarEmpty} alt="" />
         )} */}
-                {/* useState로 likecount 관리 */}
-                {props.likeCount}
-              </LikeContatiner>
-            </RightContainer>
-          </TotalContainer>
-        </Link>
-      ) : null}
-    </>
+            {/* useState로 likecount 관리 */}
+            {props.likeCount}
+          </LikeContatiner>
+        </RightContainer>
+      </TotalContainer>
+    </Link>
   );
 };
 

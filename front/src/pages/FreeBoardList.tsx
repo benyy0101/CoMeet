@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import SortingIcon from "../assets/img/sorting.svg";
-import SortingDownIcon from "../assets/img/sort-down.svg";
-import SettingIcon from "../assets/img/settings.svg";
-import SearchImgIcon from "../assets/img/search.svg";
+import SortingIcon from "assets/img/sorting.svg";
+import SortingDownIcon from "assets/img/sort-down.svg";
+import SearchImgIcon from "assets/img/search.svg";
 
-import useOutsideClick from "../hooks/useOutsideClick";
+import HotBoardIcon from "assets/img/hot-board.svg";
+import TipBoardIcon from "assets/img/tip-board.svg";
+import PromBoardIcon from "assets/img/promotion-board.svg";
+import AskBoardIcon from "assets/img/ask-board.svg";
+
+import HotBlackBoardIcon from "assets/img/hot-black-board.svg";
+import TipBlackBoardIcon from "assets/img/tip-black-board.svg";
+import PromBlackBoardIcon from "assets/img/promotion-black-board.svg";
+import AskBlackBoardIcon from "assets/img/ask-black-board.svg";
+
+import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
-import { RecruitBoardListLink } from "../components/RecruitBoardListLink";
-import { KeywordSearchBox } from "../components/KeywordSearchBox";
+import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 
 type BoardListProps = {
   id: number;
@@ -110,11 +118,11 @@ export const FreeBoardList = () => {
         writerImage: "https://picsum.photos/id/65/100",
         createdAt: "2024-01-12",
         likeCount: 1,
-        category: "",
-        type: "recruit",
-        roomKeywords: "SPRING-BACK-JAVA-BACKEND",
+        category: "질문하기",
+        type: "free",
+        roomKeywords: "",
         roomImage: "https://picsum.photos/id/20/300",
-        isValid: false,
+        isValid: true,
         roomCapacity: 25,
       },
       {
@@ -126,6 +134,20 @@ export const FreeBoardList = () => {
         likeCount: 22,
         category: "",
         type: "recruit",
+        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+        roomImage: "https://picsum.photos//300",
+        isValid: true,
+        roomCapacity: 50,
+      },
+      {
+        id: 3,
+        title: "전세계 개발자들을 위한 모각코 모임",
+        writerNicname: "외국인임",
+        writerImage: "https://picsum.photos/100",
+        createdAt: "2023-12-31",
+        likeCount: 31,
+        category: "구인구직",
+        type: "free",
         roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
         roomImage: "https://picsum.photos//300",
         isValid: true,
@@ -148,44 +170,52 @@ export const FreeBoardList = () => {
           )}
           {currentMenu === "인기글" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("인기글")}>
-              인기글
+              <SideIconImg src={HotBlackBoardIcon} alt="" />
+              <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("인기글")}>
-              인기글
+              <SideIconImg src={HotBoardIcon} alt="" />
+              <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButton>
           )}
           {currentMenu === "팁/정보" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("팁/정보")}>
-              팁/정보
+              <SideIconImg src={TipBlackBoardIcon} alt="" />
+              <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("팁/정보")}>
-              팁/정보
+              <SideIconImg src={TipBoardIcon} alt="" />
+              <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButton>
           )}
           {currentMenu === "구인구직" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("구인구직")}>
-              구인구직
+              <SideIconImg src={PromBlackBoardIcon} alt="" />
+              <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("구인구직")}>
-              구인구직
+              <SideIconImg src={PromBoardIcon} alt="" />
+              <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButton>
           )}
           {currentMenu === "질문하기" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("질문하기")}>
-              질문하기
+              <SideIconImg src={AskBlackBoardIcon} alt="" />
+              <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("질문하기")}>
-              질문하기
+              <SideIconImg src={AskBoardIcon} alt="" />
+              <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButton>
           )}
         </LeftContainer>
         <CenterTotalContainer>
           <CoreTotalContainer>
-            <BoardListTitle>모집게시판</BoardListTitle>
+            <BoardListTitle>자유게시판</BoardListTitle>
             <BoardListHeader>
               <SearchContainer>
                 <SearchWrapper>
@@ -264,11 +294,14 @@ export const FreeBoardList = () => {
 
             <ListContainer>
               {/* ReadButton은 임시! */}
-              {boardList.map((tmp) => (
-                <ReadButton>
-                  <RecruitBoardListLink key={tmp.id} {...tmp} />
-                </ReadButton>
-              ))}
+              {boardList.map((tmp) => {
+                if (tmp.type === "free")
+                  return (
+                    <ReadButton>
+                      <FreeBoardListLink key={tmp.id} {...tmp} />
+                    </ReadButton>
+                  );
+              })}
             </ListContainer>
             <div className="flex justify-center mt-16">페이지네이션</div>
           </CoreTotalContainer>
@@ -321,8 +354,12 @@ focus:bg-gray-200
 focus:text-black
 focus:font-bold
 transition
+flex
+justify-center
+
 `;
 
+//사이드 메뉴 버튼 선택됐을 때
 const SideButtonSelected = tw.button`
 w-2/4
 ml-10
@@ -331,6 +368,19 @@ rounded-md
 bg-gray-200
 text-black
 font-bold
+flex
+justify-center
+`;
+
+const SideIconImg = tw.img`
+w-6
+h-6
+mr-2
+`;
+
+//사이드 버튼 타이틀
+const SidebuttonTitle = tw.div`
+mr-2
 `;
 
 //모집게시판 타이틀 - '모집게시판' 글씨
@@ -339,7 +389,6 @@ flex
 justify-center
 text-3xl
 mb-9
-
 `;
 
 //모집게시판 헤더 - 정렬버튼, 인원 설정, 검색바, 글쓰기버튼

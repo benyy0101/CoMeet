@@ -4,8 +4,8 @@ import tw from "tailwind-styled-components";
 import { BoardDetailHeader } from "./BoardDetailHeader";
 import { BoardDetailRoomInfo } from "./BoardDetailRoomInfo";
 
-import StarFill from "../assets/img/star-fill.svg";
-import StarEmpty from "../assets/img/star-empty.svg";
+import StarFill from "assets/img/star-fill.svg";
+import StarEmpty from "assets/img/star-empty.svg";
 import { KeywordComponent } from "./KeywordComponent";
 
 export const BoardDetailWritingTotal = () => {
