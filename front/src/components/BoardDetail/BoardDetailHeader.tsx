@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 
 import tw from "tailwind-styled-components";
 
-import StarFill from "../assets/img/star-fill.svg";
-import StarEmpty from "../assets/img/star-empty.svg";
+import StarFill from "assets/img/star-fill.svg";
+import StarEmpty from "assets/img/star-empty.svg";
 
 export const BoardDetailHeader: React.FC<{
   nickname: string;

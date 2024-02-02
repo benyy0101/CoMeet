@@ -54,6 +54,10 @@ function App() {
                   element={<Board isFree={true} isEdit={true} />}
                 />
                 {/* 모집게시판 글 상세보기 */}
+                <Route
+                  path="/recruit-board/:boardId"
+                  element={<BoardDetail />}
+                ></Route>
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
@@ -92,7 +96,7 @@ z-10
 `;
 
 const RoutesContainer = tw.div`
-h-screen
+
 pt-12
 `;
 

@@ -1,6 +1,6 @@
 package com.a506.comeet.metadata.repository;
 
-import com.a506.comeet.app.DateParser;
+import com.a506.comeet.common.util.DateParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;

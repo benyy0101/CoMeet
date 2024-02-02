@@ -1,13 +1,13 @@
 import React, { useState, useRef } from "react";
 
-import useOutsideClick from "../hooks/useOutsideClick";
+import useOutsideClick from "hooks/useOutsideClick";
 
 import tw from "tailwind-styled-components";
 
-import ProifleImg from "../assets/img/test-user.jpeg";
-import ProifleModify from "../assets/img/profile-modify.svg";
-import CarmeraImg from "../assets/img/carmera.svg";
-import EditPencil from "../assets/img/edit-pencil.svg";
+import ProifleImg from "assets/img/test-user.jpeg";
+import ProifleModify from "assets/img/profile-modify.svg";
+import CarmeraImg from "assets/img/carmera.svg";
+import EditPencil from "assets/img/edit-pencil.svg";
 
 export const MyProfile = () => {
   //임시 데이터들

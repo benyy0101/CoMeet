@@ -1,14 +1,14 @@
 package com.a506.comeet.auth.service;
 
-import com.a506.comeet.app.KeyUtil;
+import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.auth.AES128Util;
-import com.a506.comeet.error.errorcode.CustomErrorCode;
-import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.auth.JwtToken;
 import com.a506.comeet.auth.JwtTokenProvider;
+import com.a506.comeet.auth.controller.dto.LoginResponseDto;
 import com.a506.comeet.auth.repository.JwtRedisRepository;
+import com.a506.comeet.error.exception.RestApiException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
+
+import static com.a506.comeet.error.errorcode.CustomErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,7 +38,7 @@ public class AuthService {
     private final AES128Util aes128Util;
 
     @Transactional
-    public JwtToken login(String memberId, String password) {
+    public LoginResponseDto login(String memberId, String password) {
 
         // DB에서 유저 아이디와 비밀번호가 맞는지 확인
         memberIdAndPasswordValidation(memberId, password);
@@ -54,7 +56,12 @@ public class AuthService {
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
 
-        return jwtToken;
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> {throw new RestApiException(NO_MEMBER);} );
+
+        return LoginResponseDto.builder()
+                .nickname(member.getNickname())
+                .profileImage(member.getProfileImage())
+                .jwtToken(jwtToken).build();
     }
 
     @Transactional
@@ -65,7 +72,7 @@ public class AuthService {
 
     public String reissueAccessToken(String encryptedRefreshToken) {
         // 유저가 제공한 refreshToken이 있는지 확인
-        if (encryptedRefreshToken == null) throw new RestApiException(CustomErrorCode.HEADER_REFRESH_TOKEN_NOT_EXISTS);
+        if (encryptedRefreshToken == null) throw new RestApiException(HEADER_REFRESH_TOKEN_NOT_EXISTS);
         String refreshToken = aes128Util.decryptAes(encryptedRefreshToken);
         log.info("{}", refreshToken);
         // userId 정보를 가져와서 redis에 있는 refreshtoken과 같은지 확인
@@ -73,19 +80,19 @@ public class AuthService {
         String memberId = claims.getSubject();
         log.info("{}", memberId);
         String redisRefreshToken = jwtRedisRepository.find(KeyUtil.getRefreshTokenKey(memberId));
-        if (redisRefreshToken == null || !redisRefreshToken.equals(refreshToken)) throw new RestApiException(CustomErrorCode.INVALID_REFRESH_TOKEN);
+        if (redisRefreshToken == null || !redisRefreshToken.equals(refreshToken)) throw new RestApiException(INVALID_REFRESH_TOKEN);
         // 같다면 refreshToken을 활용하여 새로운 accessToken을 발급
         return jwtTokenProvider.generateAccessToken(memberId, claims.get("auth").toString());
     }
 
     private void memberIdAndPasswordValidation(String memberId, String password) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.LOGIN_FAIL));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(LOGIN_FAIL));
         log.info("입력 패스워드 : {}", password);
         log.info("입력 encode {}", passwordEncoder.encode(password));
         log.info("db 패스워드 {}", member.getPassword());
 
         if (!passwordEncoder.matches(password, member.getPassword()))
-            throw new RestApiException(CustomErrorCode.LOGIN_FAIL);
+            throw new RestApiException(LOGIN_FAIL);
     }
 
 }

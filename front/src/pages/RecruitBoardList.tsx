@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import SortingIcon from "../assets/img/sorting.svg";
 import SortingDownIcon from "../assets/img/sort-down.svg";
 import SettingIcon from "../assets/img/settings.svg";
 import SearchImgIcon from "../assets/img/search.svg";
 
+import useOutsideClick from "../hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
-import { RecruitBoardListLink } from "../components/RecruitBoardListLink";
-import { KeywordSearchBox } from "../components/KeywordSearchBox";
+import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
+import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 
 type BoardListProps = {
   id: number;
@@ -25,9 +26,23 @@ type BoardListProps = {
 };
 
 export const RecruitBoardList = () => {
+  //목록 리스트
   const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
 
+  //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+
+  //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
+  const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
+
+  const [currentSort, setCurrentSort] = useState<string>("최신순");
+
+  const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
+
+  const [currentCount, setCurrentCount] = useState<number>(25);
+
+  //왼쪽 사이드바 선택 메뉴
+  const [currentMenu, setCurrentMenu] = useState<string>("전체");
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -39,9 +54,37 @@ export const RecruitBoardList = () => {
     }
   };
 
+  const handleSortOpen = () => {
+    setIsSortOpen(!isSortOpen);
+  };
+
+  const handleCountOpen = () => {
+    setIsCountOpen(!isCountOpen);
+  };
+
+  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentCount(Number(e.target.value));
+  };
+
   const TmphandleWordCheck = function () {
     console.log("검색 단어: " + searchWord);
   };
+
+  //정렬 드롭다운 외부 클릭시 닫기
+  const sortOpenRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(sortOpenRef, () => {
+    if (isSortOpen) {
+      setIsSortOpen(false);
+    }
+  });
+
+  //방 최대 인원 드롭다운 외부 클릭시 닫기
+  const countOpenRef = useRef(null);
+  useOutsideClick<HTMLDivElement>(countOpenRef, () => {
+    if (isCountOpen) {
+      setIsCountOpen(false);
+    }
+  });
 
   //임시
   React.useEffect(() => {
@@ -55,7 +98,7 @@ export const RecruitBoardList = () => {
         likeCount: 22,
         category: "",
         type: "recruit",
-        roomKeywords: "Python-Java",
+        roomKeywords: "PYTHON-JAVA",
         roomImage: "https://picsum.photos/id/1/300",
         isValid: true,
         roomCapacity: 30,
@@ -67,12 +110,26 @@ export const RecruitBoardList = () => {
         writerImage: "https://picsum.photos/id/65/100",
         createdAt: "2024-01-12",
         likeCount: 1,
+        category: "TIP",
+        type: "free",
+        roomKeywords: "",
+        roomImage: "https://picsum.photos/id/20/300",
+        isValid: true,
+        roomCapacity: 25,
+      },
+      {
+        id: 3,
+        title: "전세계 개발자들을 위한 모각코 모임",
+        writerNicname: "외국인임",
+        writerImage: "https://picsum.photos/100",
+        createdAt: "2023-12-31",
+        likeCount: 22,
         category: "",
         type: "recruit",
-        roomKeywords: "Spring-Back",
-        roomImage: "https://picsum.photos/id/20/300",
+        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+        roomImage: "https://picsum.photos//300",
         isValid: false,
-        roomCapacity: 25,
+        roomCapacity: 50,
       },
     ];
     setBoardList(tmpdatas);
@@ -82,29 +139,44 @@ export const RecruitBoardList = () => {
     <TotalContainer>
       <Wrapper>
         <LeftContainer>
-          <SideButton>전체</SideButton>
-          <SideButton>모집중</SideButton>
-          <SideButton>모집완료</SideButton>
+          {currentMenu === "전체" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>
+              전체
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
+          )}
+          {currentMenu === "모집중" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>
+              모집중
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("모집중")}>
+              모집중
+            </SideButton>
+          )}
+          {currentMenu === "모집완료" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("모집완료")}>
+              모집완료
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("모집완료")}>
+              모집완료
+            </SideButton>
+          )}
         </LeftContainer>
         <CenterTotalContainer>
           <CoreTotalContainer>
             <BoardListTitle>모집게시판</BoardListTitle>
             <BoardListHeader>
-              <SortCountContainer>
-                <SortCountButton>
-                  <SortCountImg src={SortingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                </SortCountButton>
-              </SortCountContainer>
-              <SortCountContainer>
-                <SortCountButton>
-                  <SortCountImg src={SettingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                </SortCountButton>
-              </SortCountContainer>
               <SearchContainer>
-                <div>검색조건 넣는 곳</div>
                 <SearchWrapper>
+                  <SearchDropDowns>
+                    <option selected value="제목+설명">
+                      제목+본문
+                    </option>
+                    <option value="작성자">작성자</option>
+                  </SearchDropDowns>
                   <SearchImgContainer>
                     <SearchImg src={SearchImgIcon} alt="search-Icon" />
                   </SearchImgContainer>
@@ -115,7 +187,7 @@ export const RecruitBoardList = () => {
                     border-gray-300
                     text-gray-900
                     text-sm
-                    rounded-lg
+                    rounded-r-lg
                     focus:ring-blue-500
                     focus:border-blue-500
                     block
@@ -138,16 +210,85 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <WriteButton>글쓰기버튼</WriteButton>
+              <WriteButton>글쓰기</WriteButton>
             </BoardListHeader>
+            <SortCountBothContainer>
+              <SortCountContainer>
+                <SortCountButton onClick={handleSortOpen}>
+                  <SortCountImg src={SortingIcon} alt="" />
+                  <SortDownImg src={SortingDownIcon} alt="" />
+                  {isSortOpen && (
+                    <ul ref={sortOpenRef} className="flex justify-center">
+                      <SortDropDown>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("최신순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          최신순
+                        </Sortbutton>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("좋아요순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          좋아요순
+                        </Sortbutton>
+                        <Sortbutton
+                          onClick={() => {
+                            setCurrentSort("모집률순");
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          모집률순
+                        </Sortbutton>
+                      </SortDropDown>
+                    </ul>
+                  )}
+                  <SortCountText>{currentSort}</SortCountText>
+                </SortCountButton>
+              </SortCountContainer>
+              <SortCountContainer>
+                <SortCountButton onClick={handleCountOpen}>
+                  <SortCountImg src={SettingIcon} alt="" />
+                  <SortDownImg src={SortingDownIcon} alt="" />
+                  {isCountOpen && (
+                    <div>
+                      <ul ref={countOpenRef} className="flex justify-center">
+                        <SortDropDown>
+                          <CountText>최대 인원 수</CountText>
+                          <CountInputContainer>
+                            <MaxMinNum>0</MaxMinNum>
+                            <input
+                              onChange={handleMaxCount}
+                              min="0"
+                              max="50"
+                              type="range"
+                              className="w-2/3 mx-1"
+                            />
+                            <MaxMinNum>50</MaxMinNum>
+                          </CountInputContainer>
+                        </SortDropDown>
+                      </ul>
+                    </div>
+                  )}
+                  <SortCountText>{currentCount}명</SortCountText>
+                </SortCountButton>
+              </SortCountContainer>
+            </SortCountBothContainer>
+
             <ListContainer>
-              <hr />
               {/* ReadButton은 임시! */}
-              {boardList.map((tmp) => (
-                <ReadButton>
-                  <RecruitBoardListLink key={tmp.id} {...tmp} />
-                </ReadButton>
-              ))}
+              {boardList.map((tmp) => {
+                if (tmp.type === "recruit")
+                  return (
+                    <ReadButton>
+                      <RecruitBoardListLink key={tmp.id} {...tmp} />
+                    </ReadButton>
+                  );
+              })}
             </ListContainer>
             <div className="flex justify-center mt-16">페이지네이션</div>
           </CoreTotalContainer>
@@ -172,30 +313,29 @@ pb-20
 min-h-svh
 min-w-[1200px]
 text-white
-border
 `;
 
 const Wrapper = tw.div`
 mx-auto
-w-[1200px]
+w-[1400px]
 flex
-border
+
 `;
 
 //모집중/모집완료 사이드바
 const LeftContainer = tw.div`
-w-[200px]
+w-[300px]
 flex
 flex-col
 pt-[120px]
 items-center
-border
+
 `;
 
 //전체, 모집중/모집완료 사이드바 버튼
 const SideButton = tw.button`
-w-3/4
-mx-auto
+w-2/4
+ml-10
 py-2
 rounded-md
 hover:bg-gray-500
@@ -203,6 +343,16 @@ focus:bg-gray-200
 focus:text-black
 focus:font-bold
 transition
+`;
+
+const SideButtonSelected = tw.button`
+w-2/4
+ml-10
+py-2
+rounded-md
+bg-gray-200
+text-black
+font-bold
 `;
 
 //모집게시판 타이틀 - '모집게시판' 글씨
@@ -219,11 +369,22 @@ const BoardListHeader = tw.div`
 flex
 items-center
 w-full
-my-2
+my-3
+pb-2
+border-b
+`;
+
+const SortCountBothContainer = tw.div`
+flex
+ml-2
+my-4
+w-full
 `;
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`
+flex
+ml-2
 
 `;
 
@@ -231,8 +392,41 @@ const SortCountContainer = tw.div`
 const SortCountButton = tw.button`
 flex
 items-center
-mr-5
+`;
+
+//정렬, 최대인원 숫자
+const SortCountText = tw.div`
+text-[12px]
 ml-1
+border-b
+`;
+
+//정렬 드롭다운
+const SortDropDown = tw.div`
+    flex
+    flex-col
+    absolute
+    text-black
+    mt-2
+    py-2
+    px-1
+    z-50
+    rounded-lg
+    shadow-lg
+    rounded-md
+    bg-gray-300
+`;
+
+const Sortbutton = tw.button`
+rounded-lg
+w-full
+px-4
+py-2
+text-xs
+cursor-pointer
+text-black
+hover:bg-gray-100
+focus:bg-gray-100
 `;
 
 //정렬, 최대인원 설정 이미지
@@ -247,12 +441,40 @@ w-3
 h-3
 `;
 
+//글씨
+const CountText = tw.div`
+text-xs
+font-medium
+`;
+
+//드롭다운 input 컨테이너
+const CountInputContainer = tw.div`
+flex
+justify-center
+`;
+
+//최소, 최대숫자
+const MaxMinNum = tw.div`
+text-xs
+`;
+
 //검색바 컨테이너
 const SearchContainer = tw.div`
 relative
 flex
+flex-grow
 justify-center
-w-full
+items-center
+
+`;
+
+//검색 셀렉트 박스 => 제목+설명
+const SearchDropDowns = tw.select`
+px-2
+text-white
+bg-gray-900
+w-[120px]
+rounded-l-lg
 `;
 
 //검색바 안쪽 컨테이너
@@ -260,7 +482,7 @@ const SearchWrapper = tw.div`
 flex
 justify-center
 relative
-w-[300px]
+w-[650px]
 `;
 
 //검색 이미지 컨테이너
@@ -268,7 +490,7 @@ const SearchImgContainer = tw.div`
 flex
 absolute
 inset-y-0
-left-0
+left-[120px]
 items-center
 pl-3
 pointer-events-none
@@ -289,8 +511,24 @@ h-5
 
 //글쓰기버튼 컨테이너
 const WriteButton = tw.button`
-flex
-border
+  mr-2
+  inline-flex
+  items-center
+  py-2
+  px-4
+  text-sm
+  font-medium
+  text-center
+  text-white
+  rounded-lg
+  bg-gradient-to-l
+from-[#539AB1]
+to-[#7C5EBD]
+hover:bg-gradient-to-r
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
 `;
 
 //가운데 컨테이너 - 사이드바로 빠지는 정렬 외 모든 애들
@@ -298,7 +536,7 @@ const CenterTotalContainer = tw.div`
 flex-grow
 flex
 justify-center
-border
+
 `;
 
 //진짜 모집게시판 리스트
@@ -311,9 +549,9 @@ p-5
 
 //키워드 검색 가능한 오른쪽 사이드 바
 const RightContainer = tw.div`
-w-[200px]
+w-[300px]
 pt-[120px]
-border
+
 `;
 
 //글 리스트 컨테이너
