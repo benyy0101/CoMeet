@@ -12,10 +12,8 @@ const loadUserState = (): UserState => {
 const initialState: UserState = {
   user: {
     memberId: "",
-    name: "",
     password: "",
-    email: "",
-    nickname: "",
+    profileImage: "",
   },
   isLoggedIn: false,
 };
@@ -31,7 +29,7 @@ const userSlice = createSlice({
       const { user } = action.payload;
       state.user = user;
       state.isLoggedIn = true;
-      console.log("login", state.isLoggedIn);
+      console.log("login success", state.isLoggedIn);
     },
     logout: (state) => {
       state.user = initialState.user;

@@ -21,7 +21,6 @@ export const imgageAxios: AxiosInstance = axios.create({
 
 localAxios.interceptors.request.use(
   (config) => {
-    console.log(config);
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
