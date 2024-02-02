@@ -3,7 +3,11 @@ import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
 import { BoardListProps } from "../types";
 
+import StarFill from "../assets/img/star-fill.svg";
+
 export const RecruitBoardListLink = (props: BoardListProps) => {
+  const keywordArr: string[] = props.roomKeywords.split("-");
+
   return (
     <Link to="/recruit-board/1">
       <TotalContainer>
@@ -21,7 +25,11 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
             </RecruitValid>
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
-          <RoomKeywordContainer>{props.roomKeywords}</RoomKeywordContainer>
+          <RoomKeywordContainer>
+            {keywordArr.map((keyword) => (
+              <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
+            ))}
+          </RoomKeywordContainer>
         </CenterContainer>
         <RightContainer>
           <WriterContainer>
@@ -29,7 +37,15 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
             <WriterNicname>{props.writerNicname}</WriterNicname>
           </WriterContainer>
           <WriteDate>{props.createdAt}</WriteDate>
-          <LikeContainer>{props.likeCount}</LikeContainer>
+          <LikeContatiner>
+            <LikeImg src={StarFill} alt="" />
+            {/* {props.isLiked ? (
+          ) : (
+            <LikeImg src={StarEmpty} alt="" />
+          )} */}
+            {/* useState로 likecount 관리 */}
+            {props.likeCount}
+          </LikeContatiner>
         </RightContainer>
       </TotalContainer>
     </Link>
@@ -40,6 +56,7 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
 const TotalContainer = tw.div`
 flex
 border-b
+border-gray-600
 `;
 
 //이미지 들어있는 왼쪽 컨테이너
@@ -54,6 +71,7 @@ const RoomImg = tw.img`
 w-[120px]
 h-[90px]
 object-cover
+rounded-lg
 `;
 
 //제목, 모집중, 키워드 적혀 있는 가운데 컨테이너
@@ -63,7 +81,7 @@ flex-col
 mr-5
 flex-grow
 items-start
-
+justify-around
 `;
 
 //글 제목 & 모집 유효 컨테이너
@@ -92,7 +110,7 @@ const ValidTrue = tw.div`
 bg-gradient-to-l
 from-[#539AB1]
 to-[#7C5EBD]
-p-1
+p-2
 rounded-md
 `;
 
@@ -100,21 +118,37 @@ rounded-md
 const ValidFalse = tw.div`
 bg-[#262626]
 
-p-1
+p-2
 rounded-md
 text-gray-200
 `;
 
 // 방 키워드 컨테이너
-const RoomKeywordContainer = tw.div``;
+const RoomKeywordContainer = tw.div`
+flex
+w-full
+gap-3
+flex-wrap
+mb-3
+`;
+
+//방 키워드
+const RoomKeyword = tw.div`
+text-[16px]
+font-medium
+px-2
+
+rounded-lg
+bg-gray-600
+`;
 
 //작성자 닉네임, 작성자 이미지, 작성 날짜, 좋아요수 있는 오른쪽 컨테이너
 const RightContainer = tw.div`
 flex
 flex-col
 items-end
+mr-5
 justify-center
-border
 w-[150px]
 
 
@@ -123,13 +157,15 @@ w-[150px]
 // 작성자 프로필 컨테이너
 const WriterContainer = tw.div`
 flex
-justify-
+items-center
 `;
 
 // 작성자 프로필 이미지
 const WriterImg = tw.img`
-w-7
-h-7
+w-6
+h-6
+rounded-full
+mr-1
 `;
 
 // 작성자 닉네임
@@ -138,7 +174,19 @@ text-[14px]
 `;
 
 // 작성 날짜
-const WriteDate = tw.div``;
+const WriteDate = tw.div`
+py-1
+`;
 
-// 좋아요 컨테이너
-const LikeContainer = tw.div``;
+//좋아요 컨테이너
+const LikeContatiner = tw.div`
+ml-7
+flex
+items-center
+`;
+
+const LikeImg = tw.img`
+w-[17px]
+h-[17px]
+mr-1
+`;
