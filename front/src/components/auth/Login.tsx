@@ -7,7 +7,7 @@ import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginQuery, JwtToken } from "models/Login.interface";
-
+import { login } from "store/reducers/userSlice";
 function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
@@ -43,12 +43,13 @@ function Login() {
         },
         isLoggedIn: true,
       };
-      dispatch({ type: "login", payload: res });
+      dispatch(login(res));
     }
   }, [userData]);
 
   const loginHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(false);
     refetch();
   };
 
@@ -64,12 +65,14 @@ function Login() {
               type="text"
               placeholder="example@email.com"
               value={memberId}
+              $option={error}
               onChange={(e) => setMemberId(e.target.value)}
             />
           </InputContainer>
           <InputContainer>
-            <InputLabel error={error}>비밀번호</InputLabel>
+            <InputLabel>비밀번호</InputLabel>
             <LoginInput
+              $option={error}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -135,7 +138,7 @@ const InputContainer = tw.div`
 const InputLabel = tw.label`
   font-bold
   text-lg
-  ${(props) => props.error && "text-red-500"}
+  
 `;
 const LoginForm = tw.form`
   h-1/2
@@ -148,7 +151,7 @@ const LoginForm = tw.form`
   gap-4
 `;
 
-const LoginInput = tw.input`
+const LoginInput = tw.input<{ $option: boolean }>`
   bg-[#26252A]
   focus:outline-none
   text-white
@@ -156,6 +159,7 @@ const LoginInput = tw.input`
   border
   border-[#5A2DB8]
   p-2
+  ${(p) => (p.$option ? "border-2 border-red-400" : "")}
 `;
 
 const Spinner = tw.img`
