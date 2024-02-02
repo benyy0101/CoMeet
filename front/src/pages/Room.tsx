@@ -100,28 +100,28 @@ export const Room = () => {
 
   const OV = useRef(new OpenVidu());
 
-  useEffect(() => {
-    stompClient.current = Stomp.over(() => {
-      const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
-      return sock;
-    });
+  // useEffect(() => {
+  //   stompClient.current = Stomp.over(() => {
+  //     const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
+  //     return sock;
+  //   });
 
-    // connect(header,연결 성공시 콜백,에러발생시 콜백)
-    stompClient.current.connect(
-      {},
-      function () {
-        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-        stompClient.current.subscribe(`/room/${roomId}`, function (e: any) {
-          //e.body에 전송된 data가 들어있다
-          handleUpdateInfo(JSON.parse(e.body));
-        });
-      },
-      function (e: any) {
-        //에러 콜백
-        alert("에러발생!!!!!!");
-      }
-    );
-  }, []);
+  //   // connect(header,연결 성공시 콜백,에러발생시 콜백)
+  //   stompClient.current.connect(
+  //     {},
+  //     function () {
+  //       //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+  //       stompClient.current.subscribe(`/room/${roomId}`, function (e: any) {
+  //         //e.body에 전송된 data가 들어있다
+  //         handleUpdateInfo(JSON.parse(e.body));
+  //       });
+  //     },
+  //     function (e: any) {
+  //       //에러 콜백
+  //       alert("에러발생!!!!!!");
+  //     }
+  //   );
+  // }, []);
 
   const handleUpdateInfo = (data: any) => {
     console.log(data);
@@ -543,7 +543,7 @@ export const Room = () => {
                     </ChatNavbar>
                     {inChat ? (
                       <Chat
-                        chatId={mySessionId}
+                        channelId={mySessionId}
                         username={myUserName}
                         setMessage={setMessage}
                         message={message}

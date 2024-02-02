@@ -20,6 +20,6 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/chat", "/room"); // /topic으로 시작되는 경로를 브로커의 타겟 경로로 설정
-        registry.setApplicationDestinationPrefixes("/app"); // /app으로 시작되는 STOMP 메시지는 해당 클래스의 메서드로 라우팅
+        registry.setApplicationDestinationPrefixes("/app/chat"); // /app으로 시작되는 STOMP 메시지는 해당 클래스의 메서드로 라우팅
     }
 }

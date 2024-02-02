@@ -19,7 +19,7 @@ public class StompController {
     private final ChannelMessageService chatMessageService;
     private final LoungeMessageService loungeMessageService;
 
-    @MessageMapping("/chat/channel/send")
+    @MessageMapping("/channel/send")
     @SendTo
     public void sendChannelMsg(@Payload Map<String, Object> data){
         System.out.println(data);
@@ -27,7 +27,7 @@ public class StompController {
         simpMessagingTemplate.convertAndSend("/chat/channel/" + data.get("channelId"), data);
     }
 
-    @MessageMapping("/chat/lounge/send")
+    @MessageMapping("/lounge/send")
     @SendTo
     public void sendLoungeMsg(@Payload Map<String, Object> data){
         loungeMessageService.create(data);

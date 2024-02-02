@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chat/channel")
+@RequestMapping("/chat/lounge")
 public class LoungeMessageController {
 
     private final LoungeMessageService loungeMessageService;
