@@ -1,6 +1,5 @@
 import React from "react";
 import MainpageEx from "../assets/img/mainpage-ex.svg";
-import { getBoardList, BoardListParams } from "../api/Board";
 import { datas, func } from "utils/test/Room/CreateRoom";
 
 export const Mainpage = () => {

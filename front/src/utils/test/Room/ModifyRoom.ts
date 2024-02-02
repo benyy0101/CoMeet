@@ -10,7 +10,7 @@ export function func(lst: any): any {
 }
 
 const data1: ModifyRoomParams = {
-  roomId: 4,
+  roomId: 10,
   title: "테스트 수정",
   description: "방에 대한 설명234",
   capacity: 13,
