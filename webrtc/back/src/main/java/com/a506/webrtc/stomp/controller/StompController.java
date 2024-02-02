@@ -1,7 +1,7 @@
 package com.a506.webrtc.stomp.controller;
 
-import com.a506.webrtc.chatmessage.Type;
-import com.a506.webrtc.chatmessage.service.ChatMessageService;
+import com.a506.webrtc.chatmessage.service.ChannelMessageService;
+import com.a506.webrtc.chatmessage.service.LoungeMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -16,18 +16,21 @@ import java.util.Map;
 public class StompController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
-    private final ChatMessageService chatMessageService;
+    private final ChannelMessageService chatMessageService;
+    private final LoungeMessageService loungeMessageService;
 
-    @MessageMapping("/chat/send")
+    @MessageMapping("/chat/channel/send")
     @SendTo
-    public void sendMsg(@Payload Map<String, Object> data){
+    public void sendChannelMsg(@Payload Map<String, Object> data){
         System.out.println(data);
         chatMessageService.create(data);
+        simpMessagingTemplate.convertAndSend("/chat/channel/" + data.get("channelId"), data);
+    }
 
-        if(Type.CHANNEL.equals(Type.valueOf((String)data.get("type")))){
-            simpMessagingTemplate.convertAndSend("/topic/channel/" + data.get("chatId"), data);
-        } else{
-            simpMessagingTemplate.convertAndSend("/topic/lounge/" + data.get("chatId"), data);
-        }
+    @MessageMapping("/chat/lounge/send")
+    @SendTo
+    public void sendLoungeMsg(@Payload Map<String, Object> data){
+        loungeMessageService.create(data);
+        simpMessagingTemplate.convertAndSend("/chat/lounge/" + data.get("loungeId"), data);
     }
 }
