@@ -9,7 +9,7 @@ export const localAxios: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: false,
 });
 
 export const imgageAxios: AxiosInstance = axios.create({
@@ -21,6 +21,7 @@ export const imgageAxios: AxiosInstance = axios.create({
 
 localAxios.interceptors.request.use(
   (config) => {
+    console.log(config);
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

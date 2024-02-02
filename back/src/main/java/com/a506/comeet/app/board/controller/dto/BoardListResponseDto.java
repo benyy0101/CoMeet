@@ -1,6 +1,7 @@
 package com.a506.comeet.app.board.controller.dto;
 
 import com.a506.comeet.app.board.entity.Board;
+import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -27,7 +29,7 @@ public class BoardListResponseDto {
 	@Builder.Default
 	private Boolean isValid = true; // true - 모집 중, false - 모집 완료
 
-	private String roomKeywords; //방 키워드
+	private List<KeywordResponseDto> roomKeywords; //방 키워드
 	private String roomImage; //방 이미지
 
 	private String writerNickname; //작성자 닉네임
@@ -35,7 +37,7 @@ public class BoardListResponseDto {
 
 	private LocalDateTime createdAt; //작성 날짜
 
-	public static BoardListResponseDto toBoardListResponseDto(Board board, Room room, Member writer, String keywordsString) {
+	public static BoardListResponseDto toBoardListResponseDto(Board board, Room room, Member writer, List<KeywordResponseDto> keywords) {
 
 		return BoardListResponseDto.builder()
 			.id(board.getId())
@@ -45,7 +47,7 @@ public class BoardListResponseDto {
 			.type(board.getType())
 			.category(board.getCategory())
 			.isValid(board.getIsValid())
-			.roomKeywords(room != null ? keywordsString : null)
+			.roomKeywords(room != null ? keywords : null)
 			.roomImage(room != null ? room.getRoomImage() : null)
 			.writerNickname(writer.getNickname())
 			.writerImage(writer.getProfileImage())

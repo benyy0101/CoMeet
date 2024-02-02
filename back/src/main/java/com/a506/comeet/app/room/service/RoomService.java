@@ -242,4 +242,22 @@ public class RoomService {
             roomKeywordRepository.deleteByRoomAndKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND)));
         }
     }
+
+    // // 이 메소드는 주어진 roomId가 모든 keywordIds를 포함하는지 확인합니다.
+    // public boolean roomContainsAllKeywords(Long roomId, List<Long> keywordIds) {
+    //     // roomId에 대한 모든 RoomKeyword를 조회
+    //     List<RoomKeyword> roomKeywords = roomKeywordRepository.findByRoomId(roomId);
+    //
+    //     System.out.println("=====================");
+    //     System.out.println(roomKeywords);
+    //     System.out.println("=====================");
+    //
+    //     // 조회된 RoomKeyword에서 Keyword ID만 추출
+    //     Set<Long> roomKeywordIds = roomKeywords.stream()
+    //         .map(roomKeyword -> roomKeyword.getKeyword().getId())
+    //         .collect(Collectors.toSet());
+    //
+    //     // 주어진 keywordIds가 roomKeywordIds에 모두 포함되어 있는지 확인
+    //     return roomKeywordIds.containsAll(keywordIds);
+    // }
 }
