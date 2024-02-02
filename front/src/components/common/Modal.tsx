@@ -3,6 +3,7 @@ import tw from "tailwind-styled-components";
 import Login from "../auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
+import Signup from "components/auth/Signup";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -47,6 +48,7 @@ function Modal(props: ModalProps) {
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
+        {isSignup ? <Signup></Signup> : null}
       </ModalContainer>
     </Wrapper>
   );

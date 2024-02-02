@@ -19,11 +19,9 @@ export const NavBar = () => {
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
 
   const loginModalHandler = () => {
-    //console.log(loginModal);
     setLoginModal(!loginModal);
   };
   const signupModalHandler = () => {
-    console.log(signupModal);
     setSignupModal(!signupModal);
   };
   //임시
