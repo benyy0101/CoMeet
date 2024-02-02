@@ -19,5 +19,5 @@ export interface ModifyRoomParams {
   isLocked: Boolean; //필수
   password: string; //isLocked가 True일 때 4~8
   constraints: ROOM_CONSTRAINTS; //필수
-  keywordIds: number[]; //선택
+  keywordIds?: number[]; //선택
 }

@@ -37,6 +37,48 @@ const data2: ModifyRoomParams = {
   keywordIds: [2, 3, 4],
 };
 
-console.log("asdf", data2);
+//무빙건으로 테스트 시 이건 FAIL이 떠야 정상
+const data3: any = {
+  roomId: 5,
+  title: "12",
+  description: "방에 대한 설명22",
+  capacity: 13,
+  notice: "공지데스",
+  isLocked: false, // Null 불가
+  password: "asdf1234",
+  constraints: "VIDEOON",
+  keywordIds: [],
+};
 
-export let datas: Array<any> = [data1, data2];
+const data4: any = {
+  roomId: 25,
+  title: "12",
+  description: "방에 대한 설명22",
+  capacity: 13,
+  notice: "공지데스",
+  roomImage: "ts",
+  isLocked: false, // Null 불가
+  password: "asdf1234",
+  constraints: "VIDEOON",
+  keywordIds: [], // 이 친구가 존재만 하면 에러가 뜬다. 포스트맨은 잘 됨. 안 속에 비었어도 에러
+};
+
+const data5: ModifyRoomParams = {
+  roomId: 25,
+  title: "12",
+  description: "방에 대한 설명22",
+  capacity: 13,
+  notice: "공지데스",
+  roomImage: "ts",
+  isLocked: false, // Null 불가
+  password: "asdf1234",
+  constraints: "VIDEOON",
+};
+
+export let datas: Array<any> = [
+  // data1,
+  //data2,
+  // data3,
+  // data4,
+  data5,
+];
