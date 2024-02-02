@@ -8,8 +8,9 @@ export const localAxios: AxiosInstance = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb3ZpbmdndW4iLCJhdXRoIjoiUk9MRV9VU0VSIiwiZXhwIjoxNzA2ODU4NTUwfQ.T2fTF2c3yzcaQv6p-RcZhUB_5FSud4g6PokHSefP0D0`,
   },
-  withCredentials: false,
+  withCredentials: true,
 });
 
 export const imgageAxios: AxiosInstance = axios.create({
