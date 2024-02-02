@@ -4,5 +4,6 @@ public enum FreeBoardCategory {
     CHAT, // 잡담 (DEFAULT)
     TIP,
     QUESTION,
-    PROMOTION
+    PROMOTION,
+    POPULAR
 }
