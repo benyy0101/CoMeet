@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class StompController {
     private final ChannelMessageService chatMessageService;
     private final LoungeMessageService loungeMessageService;
 
-    @MessageMapping("/channel/send")
+    @MessageMapping("/chat/channel/send")
     @SendTo
     public void sendChannelMsg(@Payload Map<String, Object> data){
         System.out.println(data);

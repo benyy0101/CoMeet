@@ -41,7 +41,7 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
           {},
           function () {
             //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-            stompClient.current.subscribe(`/channel/${channelId}`, function (e: any) {
+            stompClient.current.subscribe(`/chat/channel/${channelId}`, function (e: any) {
               //e.body에 전송된 data가 들어있다
               showMessage(JSON.parse(e.body));
             });
@@ -74,8 +74,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       imageUrl: "",
       createdAt: new Date().toString(),
     };
+    console.log(data);
     // send(destination,헤더,페이로드)
-    stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
+    stompClient.current.send("/app/chat/channel/send", {}, JSON.stringify(data));
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
