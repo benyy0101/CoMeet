@@ -8,47 +8,53 @@ import StarFill from "../assets/img/star-fill.svg";
 export const RecruitBoardListLink = (props: BoardListProps) => {
   const keywordArr: string[] = props.roomKeywords.split("-");
 
+  const type: string = props.type;
+
   return (
-    <Link to="/recruit-board/1">
-      <TotalContainer>
-        <LeftContainer>
-          <RoomImg src={props.roomImage} alt="roomImg" />
-        </LeftContainer>
-        <CenterContainer>
-          <TitleAndValidContainer>
-            <RecruitValid>
-              {props.isValid ? (
-                <ValidTrue>모집중</ValidTrue>
-              ) : (
-                <ValidFalse>모집완료</ValidFalse>
-              )}
-            </RecruitValid>
-            <BoardTitle>{props.title}</BoardTitle>
-          </TitleAndValidContainer>
-          <RoomKeywordContainer>
-            {keywordArr.map((keyword) => (
-              <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
-            ))}
-          </RoomKeywordContainer>
-        </CenterContainer>
-        <RightContainer>
-          <WriterContainer>
-            <WriterImg src={props.writerImage} alt="wrtierImg" />
-            <WriterNicname>{props.writerNicname}</WriterNicname>
-          </WriterContainer>
-          <WriteDate>{props.createdAt}</WriteDate>
-          <LikeContatiner>
-            <LikeImg src={StarFill} alt="" />
-            {/* {props.isLiked ? (
-          ) : (
-            <LikeImg src={StarEmpty} alt="" />
-          )} */}
-            {/* useState로 likecount 관리 */}
-            {props.likeCount}
-          </LikeContatiner>
-        </RightContainer>
-      </TotalContainer>
-    </Link>
+    <>
+      {type == "recruit" ? (
+        <Link to="/recruit-board/1">
+          <TotalContainer>
+            <LeftContainer>
+              <RoomImg src={props.roomImage} alt="roomImg" />
+            </LeftContainer>
+            <CenterContainer>
+              <TitleAndValidContainer>
+                <RecruitValid>
+                  {props.isValid ? (
+                    <ValidTrue>모집중</ValidTrue>
+                  ) : (
+                    <ValidFalse>모집완료</ValidFalse>
+                  )}
+                </RecruitValid>
+                <BoardTitle>{props.title}</BoardTitle>
+              </TitleAndValidContainer>
+              <RoomKeywordContainer>
+                {keywordArr.map((keyword) => (
+                  <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
+                ))}
+              </RoomKeywordContainer>
+            </CenterContainer>
+            <RightContainer>
+              <WriterContainer>
+                <WriterImg src={props.writerImage} alt="wrtierImg" />
+                <WriterNicname>{props.writerNicname}</WriterNicname>
+              </WriterContainer>
+              <WriteDate>{props.createdAt}</WriteDate>
+              <LikeContatiner>
+                <LikeImg src={StarFill} alt="" />
+                {/* {props.isLiked ? (
+        ) : (
+          <LikeImg src={StarEmpty} alt="" />
+        )} */}
+                {/* useState로 likecount 관리 */}
+                {props.likeCount}
+              </LikeContatiner>
+            </RightContainer>
+          </TotalContainer>
+        </Link>
+      ) : null}
+    </>
   );
 };
 
