@@ -1,7 +1,6 @@
 package com.a506.comeet.auth;
 
 import com.a506.comeet.error.errorcode.CustomErrorCode;
-import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.error.response.ErrorResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,8 +10,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,6 +32,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private void makeErrorResponse(HttpServletResponse res) throws IOException {
         res.setContentType("application/json;charset=UTF-8");
+        res.setStatus(CustomErrorCode.NOT_VALID_USER.getHttpStatus().value());
         res.getWriter().write(convertObjectToJson(ErrorResponse.builder()
                 .code(CustomErrorCode.NOT_VALID_USER.name())
                 .message(CustomErrorCode.NOT_VALID_USER.getMessage())
