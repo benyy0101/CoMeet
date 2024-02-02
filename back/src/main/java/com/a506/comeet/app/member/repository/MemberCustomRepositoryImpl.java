@@ -4,7 +4,9 @@ import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.TilSimpleResponseDto;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -14,10 +16,11 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import static com.a506.comeet.app.etc.entity.QTil.til;
-import static com.a506.comeet.app.member.entity.QMember.member;
 import static com.a506.comeet.app.member.entity.QFollow.follow;
+import static com.a506.comeet.app.member.entity.QMember.member;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 @RequiredArgsConstructor
 @Repository
@@ -61,9 +64,9 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                         )
                 )).get(memberId);
         if (res == null) return null;
+
         // 팔로잉, 팔로워 수 계산
-        res.setFollowerCount(countFollower(memberId));
-        res.setFollowingCount(countFollowing(memberId));
+        followCount(res, memberId);
         return res;
     }
 
@@ -74,11 +77,16 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .fetch().size();
     }
 
-    private int countFollower(String memberId) {
-        return jpaQueryFactory
-                    .selectFrom(follow)
-                    .where(follow.from.memberId.eq(memberId))
-                    .fetch().size();
+    private void followCount(MemberDetailResponseDto res, String memberId) {
+        Tuple tuple = jpaQueryFactory.select(
+                        JPAExpressions.select(count(follow.from)).from(follow).where(follow.from.memberId.eq(memberId)),
+                        JPAExpressions.select(count(follow.to)).from(follow).where(follow.to.memberId.eq(memberId))
+                        ).from(follow)
+                    .fetchOne();
+        if(tuple == null) return;
+
+        res.setFollowerCount(tuple.get(0, Long.class).intValue());
+        res.setFollowingCount(tuple.get(1, Long.class).intValue());
     }
 
 
