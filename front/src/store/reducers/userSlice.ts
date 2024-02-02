@@ -12,9 +12,8 @@ const loadUserState = (): UserState => {
 const initialState: UserState = {
   user: {
     memberId: "",
-    name: "",
     password: "",
-    email: "",
+    profileImage: "",
     nickname: "",
   },
   isLoggedIn: false,
@@ -24,14 +23,11 @@ const userSlice = createSlice({
   name: "user",
   initialState: loadUserState(),
   reducers: {
-    login: (
-      state,
-      action: PayloadAction<{ user: UserState["user"]; token: string }>
-    ) => {
+    login: (state, action: PayloadAction<{ user: UserState["user"] }>) => {
       const { user } = action.payload;
       state.user = user;
       state.isLoggedIn = true;
-      console.log("login", state.isLoggedIn);
+      console.log("login success", state.isLoggedIn);
     },
     logout: (state) => {
       state.user = initialState.user;

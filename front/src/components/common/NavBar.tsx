@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
@@ -12,6 +12,7 @@ import { ServerDropDownList } from "../ServerDropDownList";
 import useOutsideClick from "../../hooks/useOutsideClick";
 import ModalPortal from "../../utils/Portal";
 import Modal from "./Modal";
+import { useSelector } from "react-redux";
 
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
@@ -26,7 +27,11 @@ export const NavBar = () => {
     setSignupModal(!signupModal);
   };
   //임시
-  const isLogin = true;
+  const isLogin = useSelector((state: any) => state.user.isLoggedIn);
+
+  useEffect(() => {
+    console.log(isLogin);
+  }, [isLogin]);
 
   //임시
   const isChannelIn = true;
@@ -76,6 +81,7 @@ export const NavBar = () => {
             <EachMenu>
               <ul ref={communityRef}>
                 <button onClick={showCommunityList}>커뮤니티</button>
+
                 {isCommunityOpen && (
                   <DropDownCommunity>
                     <ComDropDownBUtton onClick={showCommunityList}>
@@ -124,11 +130,7 @@ export const NavBar = () => {
               <button onClick={signupModalHandler}>회원가입</button>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -137,11 +139,7 @@ export const NavBar = () => {
               <button onClick={loginModalHandler}>로그인</button>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
