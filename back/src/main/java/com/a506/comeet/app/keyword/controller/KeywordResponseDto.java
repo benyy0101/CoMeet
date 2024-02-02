@@ -9,5 +9,4 @@ import lombok.RequiredArgsConstructor;
 public class KeywordResponseDto {
     private Long id;
     private String name;
-
 }
