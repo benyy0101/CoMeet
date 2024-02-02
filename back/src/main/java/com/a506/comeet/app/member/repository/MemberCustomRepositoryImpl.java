@@ -79,8 +79,12 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
 
     private void followCount(MemberDetailResponseDto res, String memberId) {
         Tuple tuple = jpaQueryFactory.select(
-                        JPAExpressions.select(count(follow.from)).from(follow).where(follow.from.memberId.eq(memberId)),
-                        JPAExpressions.select(count(follow.to)).from(follow).where(follow.to.memberId.eq(memberId))
+                        JPAExpressions.select(
+                                count(follow.from)).from(follow)
+                                .where(follow.from.memberId.eq(memberId)),
+                        JPAExpressions.select(
+                                count(follow.to)).from(follow)
+                                .where(follow.to.memberId.eq(memberId))
                         ).from(follow)
                     .fetchOne();
         if(tuple == null) return;
