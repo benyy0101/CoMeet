@@ -81,6 +81,7 @@ export const NavBar = () => {
             <EachMenu>
               <ul ref={communityRef}>
                 <button onClick={showCommunityList}>커뮤니티</button>
+
                 {isCommunityOpen && (
                   <DropDownCommunity>
                     <ComDropDownBUtton onClick={showCommunityList}>
