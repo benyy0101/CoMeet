@@ -19,6 +19,9 @@ import Chat from "../components/room/Chat";
 import ShareEditor from "../components/room/ShareEditor";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/room/ChannelButton";
+import { useParams } from "react-router-dom";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 interface IFilter {
   name: string;
@@ -66,6 +69,9 @@ const channels: IChannel[] = [
 ];
 
 export const Room = () => {
+  const { roomId } = useParams();
+  console.log(roomId);
+
   const [isJoined, setIsJoined] = useState<boolean>(false);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
@@ -89,13 +95,70 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
-  console.log(publisher);
-  console.log(speakerIds);
-  console.log(subscribers);
-
   const editorRef = useRef(null);
+  const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
+
+  useEffect(() => {
+    stompClient.current = Stomp.over(() => {
+      const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
+      return sock;
+    });
+
+    // connect(header,연결 성공시 콜백,에러발생시 콜백)
+    stompClient.current.connect(
+      {},
+      function () {
+        //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
+        stompClient.current.subscribe(`/room/${roomId}`, function (e: any) {
+          //e.body에 전송된 data가 들어있다
+          handleUpdateInfo(JSON.parse(e.body));
+        });
+      },
+      function (e: any) {
+        //에러 콜백
+        alert("에러발생!!!!!!");
+      }
+    );
+  }, []);
+
+  const handleUpdateInfo = (data: any) => {
+    console.log(data);
+    if (data.type === "ROOM") {
+      handleRoomUpdate(data);
+    } else if (data.type === "LOUNGE") {
+      handleLoungeUpdate(data);
+    } else if (data.type === "CHANNEL") {
+      handleChannelUpdate(data);
+    }
+  };
+
+  const handleRoomUpdate = (data: any) => {
+    if (data.action === "MODIFY") {
+      // 방 수정
+    } else if (data.action === "DELETE") {
+      // 방 삭제
+    }
+  };
+  const handleLoungeUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 라운지 추가
+    } else if (data.action === "MODIFY") {
+      // 라운지 수정
+    } else if (data.action === "DELETE") {
+      // 라운지 삭제
+    }
+  };
+  const handleChannelUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 채널 생성
+    } else if (data.action === "MODIFY") {
+      // 채널 수정
+    } else if (data.action === "DELETE") {
+      // 채널 삭제
+    }
+  };
 
   const moveChannel = (sessionId: string) => {
     setIsLoading(true);
