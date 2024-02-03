@@ -1,4 +1,9 @@
-import { CreateRoomParams, ModifyRoomParams, SearchRoomParams } from "models/Room.interface";
+import {
+  CreateRoomParams,
+  DeleteRoomParams,
+  ModifyRoomParams,
+  SearchRoomParams,
+} from "models/Room.interface";
 import { localAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
 
@@ -20,5 +25,13 @@ export const modifyRoom = async (params: ModifyRoomParams) => {
 export const searchRoom = async (params: SearchRoomParams) => {
   const url = `room${makeQuerystring(params)}`;
   const response = await localAxios.get(url);
+  return response.data; // The token
+};
+
+export const deleteRoom = async (params: DeleteRoomParams) => {
+  const { roomId } = params;
+  const url = `room/${roomId}`;
+  const response = await localAxios.delete(url);
+
   return response.data; // The token
 };
