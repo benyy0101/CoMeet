@@ -1,4 +1,4 @@
-import { ROOM_CONSTRAINTS, ROOM_TYPE } from "models/Enums.type";
+import { ROOM_CONSTRAINTS, ROOM_TYPE, ROOM_SORTBY } from "models/Enums.type";
 
 export interface CreateRoomParams {
   title: string; //필수
@@ -20,4 +20,15 @@ export interface ModifyRoomParams {
   password: string; //isLocked가 True일 때 4~8
   constraints: ROOM_CONSTRAINTS; //필수
   keywordIds?: number[]; //선택
+}
+
+export interface SearchRoomParams {
+  searchKeyword?: string; //선택
+  managerNickname?: string; //선택
+  isLocked?: Boolean; //선택
+  keywordIds?: number[]; //선택
+  constraints?: ROOM_CONSTRAINTS; //선택
+  sortBy?: ROOM_SORTBY; //선택
+  page?: number; //선택 맞나..? 인덱스 0부터 시작
+  size?: number; //선택
 }
