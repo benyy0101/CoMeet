@@ -2,26 +2,15 @@ import { CreateRoomParams, ModifyRoomParams } from "models/Room.interface";
 import { localAxios } from "./http-commons";
 
 export const createRoom = async (params: CreateRoomParams) => {
-  const { title, description, capacity, constraints, type } = params;
   const url = `room`;
-  const body = { title, description, capacity, constraints, type };
-  const response = await localAxios.post(url, JSON.stringify(body));
-  console.log(response);
+  const response = await localAxios.post(url, params);
 
   return response.data; // The token
 };
 
 export const modifyRoom = async (params: ModifyRoomParams) => {
-  const {
-    roomId,
-    title,
-    description,
-    capacity,
-    notice,
-    password,
-    constraints,
-    keywordIds,
-  } = params;
+  const { roomId, title, description, capacity, notice, password, constraints, keywordIds } =
+    params;
   const url = `room/${roomId}`;
   const body = {
     title,
@@ -32,8 +21,8 @@ export const modifyRoom = async (params: ModifyRoomParams) => {
     constraints,
     keywordIds,
   };
-  const response = await localAxios.patch(url, JSON.stringify(body));
-  console.log(response);
+  //roomId가 같이 바디에 들어가도 문제가 안 생긴다
+  const response = await localAxios.patch(url, params);
 
   return response.data; // The token
 };
