@@ -5,12 +5,10 @@ import com.a506.comeet.app.board.controller.dto.BoardListResponseDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
-import com.a506.comeet.app.keyword.repository.KeywordRepository;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import com.a506.comeet.common.enums.RecruitBoardCategory;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.a506.comeet.app.board.entity.QBoard.*;
-import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
 
 @RequiredArgsConstructor
@@ -39,22 +36,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
     @Override
     public Page<BoardListResponseDto> searchBoardCustom(BoardListRequestDto req, Pageable pageable) {
-		//프로그래밍언어 키워드 조회를 위한 서브 쿼리
-		JPAQuery<Long> subQuery = jpaQueryFactory
-			.select(roomKeyword.room.id)
-			.from(roomKeyword)
-			.leftJoin(roomKeyword.keyword)
-			.where(roomKeyword.keyword.id.in(req.getKeywordIds()))
-			.groupBy(roomKeyword.room.id)
-			.having(roomKeyword.keyword.id.count().eq((long) req.getKeywordIds().size()));
-
 		// 쿼리 설정
         JPAQuery<Board> query = jpaQueryFactory
             .selectFrom(board) // board와 writer 조인
             .leftJoin(board.writer)
 			.leftJoin(board.room)
 			.fetchJoin()
-            .where(board.room.id.in(subQuery), eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
+            .where(eqKeywordIds(req.getKeywordIds()), eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
 					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()), eqCapacity(req.getCapacity()));
 
         long total = query.fetchCount(); // 전체 게시물 수
@@ -96,9 +84,14 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			return board.isValid.eq(false);
 	}
 
-	private Predicate eqFreeBoardCategory(FreeBoardCategory freeBoardCategory) {
+	private BooleanExpression eqFreeBoardCategory(FreeBoardCategory freeBoardCategory) {
 		if(freeBoardCategory == null)
 			return null;
+		if(freeBoardCategory.equals(FreeBoardCategory.POPULAR)){
+			return board.likeCount.goe(10);
+		}
+
+
 		return board.category.eq(freeBoardCategory);
 	}
 
@@ -124,6 +117,22 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		if(writerNickname == null)
 			return null;
 		return board.writer.nickname.eq(writerNickname);
+	}
+
+	private BooleanExpression eqKeywordIds(List<Long> keywordIds){
+		if(keywordIds == null || keywordIds.isEmpty())
+			return null;
+
+		//프로그래밍언어 키워드 조회를 위한 서브 쿼리
+		JPAQuery<Long> subQuery = jpaQueryFactory
+				.select(roomKeyword.room.id)
+				.from(roomKeyword)
+				.leftJoin(roomKeyword.keyword)
+				.where(roomKeyword.keyword.id.in(keywordIds))
+				.groupBy(roomKeyword.room.id)
+				.having(roomKeyword.keyword.id.count().eq((long) keywordIds.size()));
+
+		return board.room.id.in(subQuery);
 	}
 
 	private List<KeywordResponseDto> getKeywords(Room room){
