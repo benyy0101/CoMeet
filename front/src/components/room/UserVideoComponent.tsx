@@ -6,7 +6,10 @@ interface IProps {
   speaking: boolean;
 }
 
-export default function UserVideoComponent({ streamManager, speaking }: IProps) {
+export default function UserVideoComponent({
+  streamManager,
+  speaking,
+}: IProps) {
   const getNicknameTag = () => {
     // Gets the nickName of the user
     return JSON.parse(streamManager.stream.connection.data).clientData;
