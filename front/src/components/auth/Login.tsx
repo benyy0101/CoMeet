@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { UserState } from "../../types";
-import { handleLogin } from "api/auth";
+import { handleLogin } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
 import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
@@ -30,6 +30,12 @@ function Login() {
       setError(true);
     }
   }, [isError]);
+
+  useEffect(() => {
+    if(memberId === ""){
+      setError(false);
+    }
+  }, [memberId]);
 
   useEffect(() => {
     if (userData) {
@@ -63,7 +69,7 @@ function Login() {
             <InputLabel>아이디</InputLabel>
             <LoginInput
               type="text"
-              placeholder="example@email.com"
+              placeholder="example"
               value={memberId}
               $option={error}
               onChange={(e) => setMemberId(e.target.value)}
