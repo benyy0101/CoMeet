@@ -1,9 +1,9 @@
 import React from "react";
 import tw from "tailwind-styled-components";
-import Login from "../auth/Login";
+import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
-import Signup from "components/auth/Signup";
+import Signup from "components/Auth/Signup";
 
 type ModalProps = {
   toggleModal: () => void;

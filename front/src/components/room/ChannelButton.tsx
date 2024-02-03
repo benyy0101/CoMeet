@@ -5,16 +5,21 @@ interface IProps {
   id: string;
   name: string;
   disabled: boolean;
-  moveChannel: (channelId: string) => void;
+  moveChannel: (channelId: string, channelName: string) => void;
 }
 
-export default function ChannelButton({ id, name, disabled, moveChannel }: IProps) {
+export default function ChannelButton({
+  id,
+  name,
+  disabled,
+  moveChannel,
+}: IProps) {
   return (
     <ChannelButtonContainer>
       <IconButton
         disabled={disabled}
         onClick={() => {
-          moveChannel(id);
+          moveChannel(id, name);
         }}
       >
         <UserGroupIcon className="text-white w-8 h-8" />
@@ -25,8 +30,8 @@ export default function ChannelButton({ id, name, disabled, moveChannel }: IProp
 }
 
 const IconButton = tw.button`
-w-14
-h-14
+w-10
+h-10
 flex
 justify-center
 items-center
