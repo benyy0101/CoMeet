@@ -57,6 +57,7 @@ fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center item
 `;
 
 const ModalContainer = tw.div`
-bg-white p-20 rounded-md shadow-md
+  rounded-md 
+  shadow-md
 `;
 export default Modal;

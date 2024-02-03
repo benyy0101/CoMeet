@@ -8,57 +8,62 @@ import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 
 interface IProps {
-  chatId: string;
+  channelId: string;
   username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({ chatId, username, setMessage, message }: IProps) {
+export default function Chat({ channelId, username, setMessage, message }: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const stompClient = useRef<any>(null);
+  const chatStompClient = useRef<any>(null);
 
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/messages?type=CHANNEL&chatId=${chatId}`,
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
         {
           headers: { "Content-Type": "application/json" },
         }
       )
       .then((response) => {
-        console.log(response);
         setRows(response.data);
 
-        stompClient.current = Stomp.over(() => {
-          const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}chatting`);
-          return sock;
-        });
+        if (chatStompClient.current === null) {
+          chatStompClient.current = Stomp.over(() => {
+            const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+            return sock;
+          });
 
-        // connect(header,연결 성공시 콜백,에러발생시 콜백)
-        stompClient.current.connect(
-          {},
-          function () {
-            //subscribe(subscribe url,해당 url로 메시지를 받을때마다 실행할 함수)
-            stompClient.current.subscribe(`/topic/channel/${chatId}`, function (e: any) {
-              //e.body에 전송된 data가 들어있다
-              showMessage(JSON.parse(e.body));
-            });
-          },
-          function (e: any) {
-            //에러 콜백
-            alert("에러발생!!!!!!");
-          }
-        );
+          chatStompClient.current.connect(
+            {},
+            () => {
+              chatStompClient.current.subscribe(
+                `/chat/channel/${channelId}`,
+                (e: any) => showMessage(JSON.parse(e.body)),
+                { id: "chat" }
+              );
+            },
+            (e: any) => alert("에러발생!!!!!!")
+          );
+        }
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [chatId]);
+
+    return () => {
+      if (chatStompClient.current) {
+        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        chatStompClient.current = null;
+      }
+    };
+  }, [channelId]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: any) {
+    console.log(data);
     setRows((prev) => [...prev, data]);
   }
 
@@ -67,8 +72,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
     e.preventDefault();
 
     const data = {
-      chatId,
-      type: "CHANNEL",
+      channelId,
       memberId: "heeyeon3050",
       nickname: username,
       message,
@@ -76,7 +80,7 @@ export default function Chat({ chatId, username, setMessage, message }: IProps) 
       createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
-    stompClient.current.send("/app/chat/send", {}, JSON.stringify(data));
+    chatStompClient.current.send("/app/chat/channel/send", {}, JSON.stringify(data));
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
