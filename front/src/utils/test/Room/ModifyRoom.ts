@@ -1,11 +1,15 @@
 import { modifyRoom } from "api/Room";
 import { ModifyRoomParams } from "models/Room.interface";
+import { json } from "stream/consumers";
 
 export function func(lst: any): any {
   console.log("test API");
   for (const elem of lst) {
     console.log(elem);
-    modifyRoom(elem);
+    const results = modifyRoom(elem);
+    results.then((d) => {
+      console.log(d);
+    });
   }
 }
 
@@ -79,6 +83,6 @@ export let datas: Array<any> = [
   // data1,
   //data2,
   // data3,
-  // data4,
-  data5,
+  data4,
+  // data5,
 ];
