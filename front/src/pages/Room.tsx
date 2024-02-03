@@ -17,6 +17,7 @@ import {
   BellAlertIcon,
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
+  PlusIcon,
 } from "@heroicons/react/24/solid";
 import Chat from "../components/Room/Chat";
 import ShareEditor from "../components/Room/ShareEditor";
@@ -531,28 +532,33 @@ export const Room = () => {
             )}
           </SideBarToggler>
           {sideToggle ? (
-            <SideContent>
-              <SideTitle>라운지</SideTitle>
-              {channels.map((c) => (
-                <ChannelButton
-                  key={c.id}
-                  disabled={isLoading || mySessionId === c.id.toString()}
-                  id={c.id.toString()}
-                  name={c.name}
-                  moveChannel={moveChannel}
-                />
-              ))}
-              <SideTitle>채널</SideTitle>
-              {channels.map((c) => (
-                <ChannelButton
-                  key={c.id}
-                  disabled={isLoading || mySessionId === c.id.toString()}
-                  id={c.id.toString()}
-                  name={c.name}
-                  moveChannel={moveChannel}
-                />
-              ))}
-            </SideContent>
+            <SideWrapper>
+              <SideContent>
+                <SideTitle>라운지</SideTitle>
+                {channels.map((c) => (
+                  <ChannelButton
+                    key={c.id}
+                    disabled={isLoading || mySessionId === c.id.toString()}
+                    id={c.id.toString()}
+                    name={c.name}
+                    moveChannel={moveChannel}
+                  />
+                ))}
+                <SideTitle>채널</SideTitle>
+                {channels.map((c) => (
+                  <ChannelButton
+                    key={c.id}
+                    disabled={isLoading || mySessionId === c.id.toString()}
+                    id={c.id.toString()}
+                    name={c.name}
+                    moveChannel={moveChannel}
+                  />
+                ))}
+              </SideContent>
+              <RoomAddButton>
+                <PlusIcon className="w-6 h-6 "></PlusIcon>
+              </RoomAddButton>
+            </SideWrapper>
           ) : null}
         </RoomSidebar>
 
@@ -833,6 +839,25 @@ const SideTitle = tw.div`
   text-white
   font-bold
   text-xl
+`;
+
+const SideWrapper = tw.div`
+h-full
+flex
+flex-col
+justify-between
+items-center
+`;
+
+const RoomAddButton = tw.button`
+flex
+justify-center
+mb-1
+w-full
+h-6
+rounded-md
+text-white
+hover:bg-slate-800
 `;
 
 const ChannelBorder = tw.div`
