@@ -20,6 +20,7 @@ import { BoardDetail } from "./pages/BoardDetail";
 import Login from "./components/Auth/Login";
 import { UserState } from "./types";
 import { UseSelector, useSelector } from "react-redux";
+import ProfileEdit from "pages/ProfileEdit";
 
 function App() {
   //임시
@@ -70,7 +71,7 @@ function App() {
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />} />
-
+                <Route path="/profile-edit" element={<ProfileEdit />}></Route>
                 <Route path="/room/:roomId/*" element={<Room />} />
               </>
             ) : (
