@@ -32,3 +32,12 @@ export interface SearchRoomParams {
   page?: number; //선택 맞나..? 인덱스 0부터 시작
   size?: number; //선택
 }
+
+export interface DeleteRoomParams {
+  roomId: number; //필수
+}
+
+export interface PermitJoinRoomParams {
+  roomId: number; //필수
+  memberId: string; //필수
+}
