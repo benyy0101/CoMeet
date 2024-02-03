@@ -1,6 +1,6 @@
 import React from "react";
 import tw from "tailwind-styled-components";
-import Modal from "./common/Modal";
+import Modal from "./Common/Modal";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";

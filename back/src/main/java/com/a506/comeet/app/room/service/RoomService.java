@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -201,16 +202,25 @@ public class RoomService {
 
     private void updateRoomKeywords(RoomUpdateRequestDto req, Room room){
         Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
-        Set<Long> oldSet = room.getRoomKeywords().stream().map(RoomKeyword::getId).collect(Collectors.toSet());
+        Set<Long> oldSet = room.getRoomKeywords().stream().map(r -> r.getKeyword().getId()).collect(Collectors.toSet());
         Set<Long> pureNewSet = new HashSet<>(newSet);
         pureNewSet.removeAll(oldSet);
+        log.info("newSet : {}", newSet.stream().map(Objects::toString).collect(Collectors.joining(",")));
+        log.info("oldSet : {}", oldSet.stream().map(Objects::toString).collect(Collectors.joining(",")));
+        log.info("pureNewSet : {}", pureNewSet.stream().map(Objects::toString).collect(Collectors.joining(",")));
+
+        // 새로 추가된 키워드 저장
         for (Long id : pureNewSet) {
-            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))));
+            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findById(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND))));
         }
+
         Set<Long> pureOldSet = new HashSet<>(oldSet);
         pureOldSet.removeAll(newSet);
+        log.info("pureOldSet : {}", pureOldSet.stream().map(Objects::toString).collect(Collectors.joining(",")));
+
+        // 이외 키워드 삭제
         for (Long id : pureOldSet) {
-            roomKeywordRepository.deleteByRoomAndKeyword(room, keywordRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND)));
+            roomKeywordRepository.deleteByRoomIdAndKeywordId(room.getId(), id);
         }
     }
 
