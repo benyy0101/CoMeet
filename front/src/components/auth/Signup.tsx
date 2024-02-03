@@ -1,24 +1,28 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { UserState } from "../../types";
-import { handleLogin } from "api/auth";
+import { handleLogin, handleSignup } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
-import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
-import { LoginQuery, JwtToken } from "models/Login.interface";
+import { LoginQuery, SignupQuery} from "models/Login.interface";
 import { login } from "store/reducers/userSlice";
 import { Domain } from "domain";
 
 function Signup() {
   const dispatch = useDispatch();
-  const [memberId, setMemberId] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
-  const [email, setEmail] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [domain, setDomain] = useState("");
+  const [memberId, setMemberId] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [passwordCheck, setPasswordCheck] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
+  const [domain, setDomain] = useState<string>("");
+
+  const [memberIdErr, setMemberIdErr] = useState(false);
+  const [nicknameErr, setNicknameErr] = useState(false);
+  const [passwordErr, setPasswordErr] = useState(false);
+  const [passwordCheckErr, setPasswordCheckErr] = useState(false);
 
   const [error, setError] = useState(false);
 
@@ -27,35 +31,25 @@ function Signup() {
     isError,
     isLoading,
     refetch,
-  } = useQuery<LoginQuery, Error>({
+  } = useQuery<SignupQuery, Error>({
     queryKey: ["user"],
-    queryFn: () => handleLogin(memberId, password),
+    queryFn: () => handleSignup({
+      memberId,
+      name,
+      password,
+      nickname,
+      email: `${email}@${domain}`
+    }),
     enabled: false,
   });
 
   useEffect(() => {
-    if (isError) {
-      setError(true);
-    }
-  }, [isError]);
+    if(password !== passwordCheck){
+      setPasswordCheckErr(true);
+    };
+  },[passwordCheck]);
 
-  useEffect(() => {
-    if (userData) {
-      const { nickname, profileImage } = userData;
-      const res: UserState = {
-        user: {
-          memberId,
-          nickname,
-          profileImage,
-          password,
-        },
-        isLoggedIn: true,
-      };
-      dispatch(login(res));
-    }
-  }, [userData]);
-
-  const loginHandler = (e: FormEvent<HTMLFormElement>) => {
+  const signupHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(false);
     refetch();
@@ -64,13 +58,13 @@ function Signup() {
   return (
     <LoginWrapper>
       <LoginTitle>회원가입</LoginTitle>
-      <LoginForm onSubmit={loginHandler}>
+      <LoginForm onSubmit={signupHandler}>
         <LoginContainer>
           <InputLeftContainer>
             <InputContainer>
               <LabelContainer>
                 <InputLabel>아이디</InputLabel>
-                <WarningText>존재하는 아이디입니다</WarningText>
+                {memberIdErr ? <WarningText>존재하는 아이디입니다</WarningText> : null}
               </LabelContainer>
               <LoginInput
                 type="text"
@@ -94,13 +88,14 @@ function Signup() {
             <InputContainer>
               <LabelContainer>
                 <InputLabel>닉네임</InputLabel>
-                <WarningText>존재하는 닉네임입니다</WarningText>
+                {nicknameErr ? <WarningText>존재하는 닉네임입니다</WarningText> : null}
               </LabelContainer>
               <LoginInput
                 $option={error}
+                placeholder="진짜공부만함"
                 type="text"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
               />
             </InputContainer>
           </InputLeftContainer>
@@ -110,26 +105,30 @@ function Signup() {
               <EmailContainer>
                 <LoginInput
                   $option={error}
+                  placeholder="example1234"
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 @
-                <LoginInput
-                  $option={error}
-                  type="text"
-                  value={domain}
+                <DomainSelect
                   onChange={(e) => setDomain(e.target.value)}
-                />
+                >
+                  <DomainOption value="naver.com">naver.com</DomainOption>
+                  <DomainOption value="gmail.com">gmail.com</DomainOption>
+                  <DomainOption value="kakao.com">kakao.com</DomainOption>
+                  <DomainOption value="hanmail.net">hanmail.net</DomainOption>
+                </DomainSelect>
               </EmailContainer>
             </InputContainer>
 
             <InputContainer>
               <LabelContainer>
                 <InputLabel>비밀번호</InputLabel>
-                <WarningText>형식을 맞춰주세요</WarningText>
+                {passwordErr ? <WarningText>형식을 맞춰주세요</WarningText> : null}
               </LabelContainer>
               <LoginInput
+                placeholder="영문, 숫자, 특수문자 포함 8자 이상"
                 $option={error}
                 type="password"
                 value={password}
@@ -137,8 +136,13 @@ function Signup() {
               />
             </InputContainer>
             <InputContainer>
-              <InputLabel>비밀번호 확인</InputLabel>
+            <LabelContainer>
+                <InputLabel>비밀번호 확인</InputLabel>
+                {passwordCheckErr ? <WarningText>일치하지 않습니다</WarningText> : null}
+              </LabelContainer>
+            
               <LoginInput
+                $option={error}
                 type="password"
                 value={passwordCheck}
                 onChange={(e) => setPasswordCheck(e.target.value)}
@@ -238,8 +242,26 @@ const LoginInput = tw.input<{ $option: boolean }>`
 `;
 
 const DomainSelect = tw.select`
-
+  bg-[#26252A]
+  focus:outline-none
+  text-white
+  rounded-sm
+  border
+  border-[#5A2DB8]
+  p-1
 `;
+
+const DomainOption = tw.option`
+  bg-[#26252A]
+  focus:outline-none
+  text-white
+  rounded-sm
+  border
+  border-[#5A2DB8]
+  p-1
+  min-w-[25px]
+`;
+
 
 const EmailContainer = tw.div`
 flex
@@ -270,7 +292,8 @@ const LoginButton = tw.button`
   justify-center
   items-center
   gap-2
-  bg-[#1F3172]
+  bg-[#433e4e]
+  text-[#d9e5bd]
   p-2
   mt-4
   rounded-md
