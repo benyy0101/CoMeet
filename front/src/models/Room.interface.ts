@@ -34,5 +34,10 @@ export interface SearchRoomParams {
 }
 
 export interface DeleteRoomParams {
-  roomId?: number; //필수
+  roomId: number; //필수
+}
+
+export interface PermitJoinRoomParams {
+  roomId: number; //필수
+  memberId: string; //필수
 }
