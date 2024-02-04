@@ -1,5 +1,2 @@
-interface example {
-  ex1: string;
-  ex2: number;
-}
-export {};
+//어차피 아무 값도 없을 건데 이렇게 굳이 지정할 필요가 있을까?
+export interface SearchKeywordParams {}
