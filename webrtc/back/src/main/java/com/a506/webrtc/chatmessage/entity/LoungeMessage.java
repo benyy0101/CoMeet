@@ -6,7 +6,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
-@Builder
 @Document(collection = "loungeMessage")
 public class LoungeMessage {
     @Id

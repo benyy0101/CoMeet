@@ -14,16 +14,7 @@ public class LoungeMessageService {
 
     private final LoungeMessageRepository loungeMessageRepository;
 
-    public void create(Map<String, Object> data) {
-        LoungeMessage loungeMessage = LoungeMessage.builder()
-                .loungeId(Long.parseLong(data.get("loungeId").toString()))
-                .memberId((String) data.get("memberId"))
-                .nickname((String) data.get("nickname"))
-                .message((String) data.get("message"))
-                .imageUrl((String) data.get("imageUrl"))
-                .createdAt((String) data.get("createdAt"))
-                .build();
-
+    public void create(LoungeMessage loungeMessage) {
         loungeMessageRepository.save(loungeMessage);
     }
 

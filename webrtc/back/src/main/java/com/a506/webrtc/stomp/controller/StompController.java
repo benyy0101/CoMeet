@@ -1,16 +1,16 @@
 package com.a506.webrtc.stomp.controller;
 
+import com.a506.webrtc.chatmessage.entity.ChannelMessage;
+import com.a506.webrtc.chatmessage.entity.LoungeMessage;
 import com.a506.webrtc.chatmessage.service.ChannelMessageService;
 import com.a506.webrtc.chatmessage.service.LoungeMessageService;
+import com.a506.webrtc.stomp.entity.Event;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,16 +22,22 @@ public class StompController {
 
     @MessageMapping("/chat/channel/send")
     @SendTo
-    public void sendChannelMsg(@Payload Map<String, Object> data){
-        System.out.println(data);
-        chatMessageService.create(data);
-        simpMessagingTemplate.convertAndSend("/chat/channel/" + data.get("channelId"), data);
+    public void sendChannelMsg(ChannelMessage channelMessage){
+        System.out.println(channelMessage.getMessage());
+        chatMessageService.create(channelMessage);
+        simpMessagingTemplate.convertAndSend("/chat/channel/" + channelMessage.getChannelId(), channelMessage);
     }
 
-    @MessageMapping("/lounge/send")
+    @MessageMapping("/chat/lounge/send")
     @SendTo
-    public void sendLoungeMsg(@Payload Map<String, Object> data){
-        loungeMessageService.create(data);
-        simpMessagingTemplate.convertAndSend("/chat/lounge/" + data.get("loungeId"), data);
+    public void sendLoungeMsg(LoungeMessage loungeMessage){
+        loungeMessageService.create(loungeMessage);
+        simpMessagingTemplate.convertAndSend("/chat/lounge/" + loungeMessage.getLoungeId(), loungeMessage);
+    }
+
+    @MessageMapping("/room/info/send")
+    @SendTo
+    public void sendRoomInfo(Event event){
+        simpMessagingTemplate.convertAndSend("/room/info/" + event.getRoomId(), event);
     }
 }
