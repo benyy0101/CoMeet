@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/board")
@@ -31,10 +32,10 @@ public class BoardController {
     }
 
     @PatchMapping("/{boardId}")
-    public ResponseEntity<LocalDateTime> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
+    public ResponseEntity<String> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = MemberUtil.getMemberId();
         Board board = boardService.update(req, boardId, memberId);
-        return ResponseEntity.ok(board.getUpdatedAt());
+        return ResponseEntity.ok(board.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     @DeleteMapping("/{boardId}")

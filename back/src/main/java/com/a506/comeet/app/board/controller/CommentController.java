@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/comment")
@@ -30,10 +31,10 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<LocalDateTime> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
+    public ResponseEntity<String> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
         String memberId = MemberUtil.getMemberId();
         Comment comment = commentService.update(req, commentId, memberId);
-        return ResponseEntity.ok(comment.getUpdatedAt());
+        return ResponseEntity.ok(comment.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     @DeleteMapping("/{commentId}")
