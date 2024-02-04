@@ -1,11 +1,11 @@
-import { deleteRoom } from "api/Room";
-import { DeleteRoomParams } from "models/Room.interface";
+import { leaveRoom } from "api/Room";
+import { LeaveRoomParams } from "models/Room.interface";
 
 export function func(lst: any): any {
   console.log("test API");
   for (const elem of lst) {
     console.log("Test data is....", elem);
-    const results = deleteRoom(elem);
+    const results = leaveRoom(elem);
     results.then((d) => {
       console.log("Result is...", d);
       // for (const i of d.content) {
@@ -15,23 +15,21 @@ export function func(lst: any): any {
   }
 }
 
-const data1: DeleteRoomParams = {
+const data1: LeaveRoomParams = {
   roomId: 25,
+  keywords: "Java Python C",
 };
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
-const data2: DeleteRoomParams = {
+const data2: LeaveRoomParams = {
   roomId: 23,
+  keywords: "",
 };
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
 const data3: any = {};
 
 const data4: any = {};
-
-const data5: DeleteRoomParams = {
-  roomId: 5,
-};
 
 export let datas: Array<any> = [
   data1,
