@@ -81,7 +81,7 @@ public class RoomService {
     }
 
     @Transactional
-    public void update(RoomUpdateRequestDto req, String memberId, long roomId) {
+    public Room update(RoomUpdateRequestDto req, String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         authorityValidation(room, memberId);
         Member newManager = req.getMangerId() != null?
@@ -89,6 +89,7 @@ public class RoomService {
                 : null;
         room.updateRoom(req, newManager);
         if (req.getKeywordIds() != null) updateRoomKeywords(req, room);
+        return room;
     }
 
     @Transactional
