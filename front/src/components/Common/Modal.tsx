@@ -4,6 +4,9 @@ import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
+import { set } from "react-hook-form";
+import Follower from "components/Mypage/Follower";
+import Following from "components/Mypage/Following";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -17,6 +20,9 @@ function Modal(props: ModalProps) {
   const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
   const [isRoomCreate, setIsRoomCreate] = React.useState<boolean>(false);
+  const [isFollower, setIsFollower] = React.useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     if (option === "login") {
       // 로그인 모달
@@ -25,14 +31,34 @@ function Modal(props: ModalProps) {
       setIsRoomConfirm(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsFollower(false);
+      setIsFollowing(false);
     } else if (option === "confirm") {
       // 로그인 모달
       setIsRoomConfirm(true);
       setIsLogin(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsFollower(false);
+      setIsFollowing(false);
     } else if (option === "signup") {
       setIsSignup(true);
+      setIsRoomConfirm(false);
+      setIsLogin(false);
+      setIsRoomCreate(false);
+      setIsFollower(false);
+      setIsFollowing(false);
+    } else if (option === "follower") {
+      setIsFollower(true);
+      setIsSignup(false);
+      setIsRoomConfirm(false);
+      setIsLogin(false);
+      setIsRoomCreate(false);
+      setIsFollowing(false);
+    } else if (option === "following") {
+      setIsFollowing(true);
+      setIsFollower(false);
+      setIsSignup(false);
       setIsRoomConfirm(false);
       setIsLogin(false);
       setIsRoomCreate(false);
@@ -49,6 +75,8 @@ function Modal(props: ModalProps) {
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
         {isSignup ? <Signup></Signup> : null}
+        {isFollower ? <Follower /> : null}
+        {isFollowing ? <Following /> : null}
       </ModalContainer>
     </Wrapper>
   );

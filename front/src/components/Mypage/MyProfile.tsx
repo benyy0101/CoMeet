@@ -8,6 +8,7 @@ import ProifleImg from "assets/img/test-user.jpeg";
 import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
+import Modal from "components/Common/Modal";
 
 export const MyProfile = () => {
   //임시 데이터들
@@ -23,6 +24,16 @@ export const MyProfile = () => {
 
   //프로필 변경 이미지 클릭시
   const [isModifyImg, setIsModifyImg] = useState<boolean>(false);
+  //팔로잉, 팔로워 클릭시
+  const [followerModal, setFollowerModal] = useState<boolean>(false);
+  const [followingModal, setFollowingModal] = useState<boolean>(false);
+
+  const followerModalHandler = () => {
+    setFollowerModal(!followerModal);
+  };
+  const followingModalHandler = () => {
+    setFollowingModal(!followingModal);
+  };
 
   const handleMouseOver = () => {
     setIsHovering(true);
@@ -84,11 +95,23 @@ export const MyProfile = () => {
         </LeftContainer>
         <RightContainer>
           <FollowContainer>
-            <SytleFollowing>
+            <SytleFollowing onClick={followingModalHandler}>
+              {followingModal ? (
+                <Modal
+                  toggleModal={followingModalHandler}
+                  option={"following"}
+                ></Modal>
+              ) : null}
               <FollowText>팔로잉</FollowText>
               <FollowNumber>{followingNum}</FollowNumber>
             </SytleFollowing>
-            <StyleFllower>
+            <StyleFllower onClick={followerModalHandler}>
+              {followerModal ? (
+                <Modal
+                  toggleModal={followerModalHandler}
+                  option={"follower"}
+                ></Modal>
+              ) : null}
               <FollowText>팔로워</FollowText>
               <FollowNumber>{followerNum}</FollowNumber>
             </StyleFllower>
@@ -230,17 +253,25 @@ justify-center
 //팔로잉, 팔로우 나타내는 컨테이너
 const FollowContainer = tw.div`
 flex
+space-x-4
 mb-2
 `;
 
 //팔로잉
 const SytleFollowing = tw.div`
 flex
-mr-3
+transition-colors
+hover:text-blue-500
+hover:border-blue-500
+cursor-pointer
 `;
 
 //팔로우
 const StyleFllower = tw.div`
+transition-colors
+hover:text-blue-500
+hover:border-blue-500
+cursor-pointer
 flex`;
 
 //팔로잉, 팔로우 글씨
