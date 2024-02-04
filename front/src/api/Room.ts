@@ -4,6 +4,7 @@ import {
   ModifyRoomParams,
   PermitJoinRoomParams,
   SearchRoomParams,
+  WithdrawRoomParams,
 } from "models/Room.interface";
 import { localAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
@@ -39,9 +40,17 @@ export const deleteRoom = async (params: DeleteRoomParams) => {
 
 export const permitJoinRoom = async (params: PermitJoinRoomParams) => {
   const { roomId, memberId } = params;
-  const url = `room/${roomId}`;
+  const url = `room/join/${roomId}`;
   const body = { memberId };
   const response = await localAxios.post(url, body);
+
+  return response.data; // The token
+};
+
+export const withdrawRoom = async (params: WithdrawRoomParams) => {
+  const { roomId } = params;
+  const url = `room/join/${roomId}`;
+  const response = await localAxios.delete(url);
 
   return response.data; // The token
 };

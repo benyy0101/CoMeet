@@ -41,3 +41,7 @@ export interface PermitJoinRoomParams {
   roomId: number; //필수
   memberId: string; //필수
 }
+
+export interface WithdrawRoomParams {
+  roomId: number; //필수
+}
