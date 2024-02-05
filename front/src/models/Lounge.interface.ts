@@ -1,4 +1,4 @@
-export interface Lounge {
+export interface ILounge {
   loungeId: number; //필수
   name: string; //필수
 }

@@ -1,4 +1,4 @@
-export interface Channel {
+export interface IChannel {
   channelId: number; //필수
   name: string; //필수
 }
