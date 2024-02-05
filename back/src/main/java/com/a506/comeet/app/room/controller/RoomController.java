@@ -37,8 +37,8 @@ public class RoomController {
     @PatchMapping("/{roomId}")
     public ResponseEntity<String> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable(value = "roomId") Long roomId){
         String memberId = MemberUtil.getMemberId();
-        Room room = roomService.update(req, memberId, roomId);
-        return ResponseEntity.ok(room.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        roomService.update(req, memberId, roomId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{roomId}")
