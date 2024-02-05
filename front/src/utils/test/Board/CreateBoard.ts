@@ -1,11 +1,11 @@
-import { createChannel } from "api/Channel";
-import { CreateChannelParams } from "models/Channel.interface";
+import { createBoard } from "api/Board";
+import { CreateBoardParams } from "models/Board.interface";
 
 export function func(lst: any): any {
   console.log("test API");
   for (const elem of lst) {
     console.log("Test data is....", elem);
-    const results = createChannel(elem);
+    const results = createBoard(elem);
     results
       .then((d) => {
         console.log("Result is...", d);
@@ -19,15 +19,20 @@ export function func(lst: any): any {
   }
 }
 
-const data1: CreateChannelParams = {
-  roomId: 26,
-  name: "테스트 채널1",
+const data1: CreateBoardParams = {
+  writerId: "movinggun",
+  title: "free boardtest",
+  context: "this is test content",
+  type: "FREE",
+  category: "CHAT",
 };
 
-//무빙건으로 테스트 시 이건 FAIL이 떠야 정상
-const data2: CreateChannelParams = {
-  roomId: 26,
-  name: "테스트 채널1",
+const data2: CreateBoardParams = {
+  writerId: "movinggun",
+  title: "recruit boardtest",
+  context: "this is test content",
+  type: "RECRUIT",
+  roomId: 32,
 };
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
