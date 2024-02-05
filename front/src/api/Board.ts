@@ -3,20 +3,25 @@ import {
   CreateBoardResponse,
   ModifyBoardParams,
   ModifyBoardResponse,
+  SearchBoardParams,
+  SearchBoardResponse,
 } from "models/Board.interface";
 import { localAxios } from "./http-commons";
+import { makeQuerystring } from "utils/ApiUtil";
 
-export const createBoard = async (
-  params: CreateBoardParams
-): Promise<CreateBoardResponse> => {
+export const createBoard = async (params: CreateBoardParams): Promise<CreateBoardResponse> => {
   const url = `board`;
   const response = await localAxios.post(url, params);
   return response.data;
 };
 
-export const modifyBoard = async (
-  params: ModifyBoardParams
-): Promise<ModifyBoardResponse> => {
+export const searchBoard = async (params: SearchBoardParams): Promise<SearchBoardResponse> => {
+  const url = `board${makeQuerystring(params)}`;
+  const response = await localAxios.get(url);
+  return response.data;
+};
+
+export const modifyBoard = async (params: ModifyBoardParams): Promise<ModifyBoardResponse> => {
   const { boardId } = params;
   const url = `board/${boardId}`;
   const response = await localAxios.patch(url, params);
