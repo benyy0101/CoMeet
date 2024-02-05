@@ -1,18 +1,18 @@
-import axios from "axios";
-import api from "./auth";
+import { localAxios } from "./http-commons";
 
-type BoardListParams = {
-  category: string | null;
-  keyword: string | null;
-  offset: number | null;
-};
+export interface BoardListParams {
+  category?: string;
+  keyword?: string;
+  offset?: number;
+}
 
 export const getBoardList = async (props: BoardListParams) => {
   const { category, keyword, offset } = props;
-  const response = await api.get(
+  const response = await localAxios.get(
     `/board?category=${category}&keyword=${keyword}
     `
   );
+  console.log(response);
 
   return response.data; // The token
 };

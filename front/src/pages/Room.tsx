@@ -1,6 +1,6 @@
 import { OpenVidu } from "openvidu-browser";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import UserVideoComponent from "../components/room/UserVideoComponent";
+import UserVideoComponent from "../components/Room/UserVideoComponent";
 import tw from "tailwind-styled-components";
 import {
   UserGroupIcon,
@@ -14,11 +14,20 @@ import {
   SignalIcon,
   SignalSlashIcon,
   SparklesIcon,
+  BellAlertIcon,
+  ChevronDoubleRightIcon,
+  ChevronDoubleLeftIcon,
+  PlusIcon,
 } from "@heroicons/react/24/solid";
-import Chat from "../components/room/Chat";
-import ShareEditor from "../components/room/ShareEditor";
+import Chat from "../components/Room/Chat";
+import ShareEditor from "../components/Room/ShareEditor";
 import { createSession, createToken } from "../api/OvSession";
-import ChannelButton from "../components/room/ChannelButton";
+import ChannelButton from "../components/Room/ChannelButton";
+import { useParams } from "react-router-dom";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import { useSelector } from "react-redux";
+import { RoomNotice } from "components/RoomNotice";
 
 interface IFilter {
   name: string;
@@ -66,18 +75,27 @@ const channels: IChannel[] = [
 ];
 
 export const Room = () => {
-  const [isJoined, setIsJoined] = useState<boolean>(false);
+  const { roomId } = useParams();
+
+  const userInfo = useSelector((state: any) => state.user);
+  const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
+  const [sideToggle, setSideToggle] = useState<boolean>(false);
+
+  const [isJoined, setIsJoined] = useState<boolean>(userInfo.isLoggedIn);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
-  const [myUserName, setMyUserName] = useState<string>(`사용자 ${Math.floor(Math.random() * 100)}`);
+  const [mySessionName, setMySessionName] = useState<string>("");
+  const [myUserName, setMyUserName] = useState<string>(userInfo.user.nickname);
   const [session, setSession] = useState<any>(undefined);
   const [mainStreamManager, setMainStreamManager] = useState<any>(undefined);
   const [publisher, setPublisher] = useState<any>(undefined);
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState<any>(null);
+  const [speakerIds, setSpeakerIds] = useState<string[]>([]);
 
   // Control Panel
   const [isMuted, setIsMuted] = useState<boolean>(true);
@@ -87,19 +105,89 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
+  const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
 
-  const moveChannel = (sessionId: string) => {
+  useEffect(() => {
+    if (stompClient.current === null) {
+      stompClient.current = Stomp.over(() => {
+        const sock = new SockJS(
+          `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
+        );
+        return sock;
+      });
+
+      stompClient.current.connect(
+        {},
+        () => {
+          stompClient.current.subscribe(`/room/${roomId}`, (e: any) =>
+            handleUpdateInfo(JSON.parse(e.body))
+          );
+        },
+        (e: any) => alert("에러발생!!!!!!")
+      );
+    }
+    return () => {
+      if (stompClient.current) {
+        stompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
+        stompClient.current = null;
+      }
+    };
+  }, []);
+
+  const handleUpdateInfo = (data: any) => {
+    console.log(data);
+    if (data.type === "ROOM") {
+      handleRoomUpdate(data);
+    } else if (data.type === "LOUNGE") {
+      handleLoungeUpdate(data);
+    } else if (data.type === "CHANNEL") {
+      handleChannelUpdate(data);
+    }
+  };
+
+  const handleRoomUpdate = (data: any) => {
+    if (data.action === "MODIFY") {
+      // 방 수정
+    } else if (data.action === "DELETE") {
+      // 방 삭제
+    }
+  };
+  const handleLoungeUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 라운지 추가
+    } else if (data.action === "MODIFY") {
+      // 라운지 수정
+    } else if (data.action === "DELETE") {
+      // 라운지 삭제
+    }
+  };
+  const handleChannelUpdate = (data: any) => {
+    if (data.action === "CREATE") {
+      // 채널 생성
+    } else if (data.action === "MODIFY") {
+      // 채널 수정
+    } else if (data.action === "DELETE") {
+      // 채널 삭제
+    }
+  };
+
+  const moveChannel = (sessionId: string, sessionName: string) => {
+    setIsLoading(true);
     leaveSession();
     setMySessionId(sessionId);
+    setMySessionName(sessionName);
     joinSession();
   };
 
-  const handleChangeUserName: React.ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
-    setMyUserName(e.target.value);
-  }, []);
+  const handleChangeUserName: React.ChangeEventHandler<HTMLInputElement> =
+    useCallback((e) => {
+      setMyUserName(e.target.value);
+    }, []);
 
   const handleMainVideoStream = useCallback(
     (stream: any) => {
@@ -112,18 +200,52 @@ export const Room = () => {
 
   const joinSession = useCallback(() => {
     const mySession = OV.current.initSession();
+    OV.current.setAdvancedConfiguration({
+      publisherSpeakingEventsOptions: {
+        interval: 100, // Frequency of the polling of audio streams in ms (default 100)
+        threshold: -50, // Threshold volume in dB (default -50)
+      },
+    });
 
     mySession.on("streamCreated", (event) => {
-      const subscriber = mySession.subscribe(event.stream, undefined);
+      const subscriber: any = mySession.subscribe(event.stream, undefined);
+      subscriber.updatePublisherSpeakingEventsOptions({
+        interval: 100, // Frequency of the polling of audio streams in ms
+        threshold: -50, // Threshold volume in dB
+      });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-
-    mySession.on("streamDestroyed", (event) => {
-      deleteSubscriber(event.stream.streamManager);
+    mySession.on("streamDestroyed", (event) =>
+      deleteSubscriber(event.stream.streamManager)
+    );
+    mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
+    mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
+    mySession.on("sessionDisconnected", (event) => {
+      if (event.reason === "networkDisconnect") {
+        console.warn("네트워크 연결이 끊어졌습니다.");
+      } else {
+        console.warn("세션 연결이 끊어졌습니다", event);
+      }
+    });
+    mySession.on("exception", (exception) => {
+      if (exception.name === "ICE_CONNECTION_FAILED") {
+        console.warn("ICE 연결이 실패했습니다.");
+      } else if (exception.name === "ICE_CONNECTION_DISCONNECTED") {
+        console.warn("ICE 연결이 끊겼습니다.");
+      }
+      console.warn(exception);
     });
 
-    mySession.on("exception", (exception) => {
-      console.warn(exception);
+    mySession.on("publisherStartSpeaking", (event: any) => {
+      console.log("User " + event.connection.connectionId + " start speaking");
+      setSpeakerIds((prev) => [...prev, event.connection.connectionId]);
+    });
+
+    mySession.on("publisherStopSpeaking", (event: any) => {
+      console.log("User " + event.connection.connectionId + " stop speaking");
+      setSpeakerIds((prev) =>
+        prev.filter((id) => id !== event.connection.connectionId)
+      );
     });
 
     setSession(mySession);
@@ -150,7 +272,9 @@ export const Room = () => {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter((device) => device.kind === "videoinput");
+          const videoDevices = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -163,7 +287,11 @@ export const Room = () => {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log("There was an error connecting to the session:", error.code, error.message);
+          console.log(
+            "There was an error connecting to the session:",
+            error.code,
+            error.message
+          );
         }
       });
     }
@@ -188,7 +316,9 @@ export const Room = () => {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter((device) => device.kind === "videoinput");
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -221,6 +351,12 @@ export const Room = () => {
     }
   }, [currentVideoDevice, session, mainStreamManager]);
 
+  useEffect(() => {
+    if (publisher) {
+      setIsLoading(false);
+    }
+  }, [publisher]);
+
   const deleteSubscriber = useCallback((streamManager: any) => {
     setSubscribers((prevSubscribers) => {
       const index = prevSubscribers.indexOf(streamManager);
@@ -246,7 +382,9 @@ export const Room = () => {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
+    return createSession(mySessionId).then((sessionId) =>
+      createToken(sessionId)
+    );
   }, [mySessionId]);
 
   useEffect(() => {
@@ -343,239 +481,259 @@ export const Room = () => {
     }
   };
 
+  const toggleNotice = () => {
+    setNoticeClicked(!noticeClicked);
+  };
+
+  const toggleSideBar = () => {
+    setSideToggle(!sideToggle);
+  };
+
   return (
-    <Container>
-      {isJoined === false && (
-        <JoinContainer>
-          <JoinForm
-            onSubmit={() => {
-              setIsJoined(true);
+    <RoomContainer>
+      <RoomHeader>
+        <RoomTitleContainer>
+          <RoomTitleImgBorder>
+            <RoomTitleImg
+              style={{
+                backgroundImage:
+                  "url(https://i.pinimg.com/736x/52/8a/4f/528a4f1570bf735b7a772d17562723f1.jpg)",
+              }}
+            />
+          </RoomTitleImgBorder>
+          <RoomTitle>싸피 10기</RoomTitle>
+          <RoomNoticeButton onClick={toggleNotice}>
+            <BellAlertIcon />
+            {noticeClicked ? <RoomNotice></RoomNotice> : null}
+          </RoomNoticeButton>
+        </RoomTitleContainer>
+        <RoomButtonContainer>
+          <RoomButton
+            onClick={() => {
+              leaveSession();
+              setIsJoined(false);
             }}
           >
-            <UsernameInput
-              type="text"
-              id="userName"
-              value={myUserName}
-              onChange={handleChangeUserName}
-              required
-            />
-            <JoinBtn name="commit" type="submit" value="입장" />
-          </JoinForm>
-        </JoinContainer>
-      )}
+            <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
+          </RoomButton>
+          <RoomButton onClick={switchCamera}>
+            <CameraIcon className="w-8 h-8" />
+          </RoomButton>
+        </RoomButtonContainer>
+      </RoomHeader>
 
-      {isJoined === true && (
-        <RoomContainer>
-          <RoomHeader>
-            <RoomTitleContainer>
-              <RoomTitleImg
-                style={{
-                  backgroundImage:
-                    "url(https://i.pinimg.com/736x/52/8a/4f/528a4f1570bf735b7a772d17562723f1.jpg)",
-                }}
-              />
-              <RoomTitle>싸피 10기</RoomTitle>
-            </RoomTitleContainer>
-            <RoomButtonContainer>
-              <RoomButton
-                onClick={() => {
-                  leaveSession();
-                  setIsJoined(false);
-                }}
-              >
-                <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
-              </RoomButton>
-              <RoomButton onClick={switchCamera}>
-                <CameraIcon className="w-8 h-8" />
-              </RoomButton>
-            </RoomButtonContainer>
-          </RoomHeader>
-          <RoomContent>
-            <RoomSidebar>
-              {channels.map((c) => (
-                <ChannelButton id={c.id.toString()} name={c.name} moveChannel={moveChannel} />
-              ))}
-            </RoomSidebar>
-            <ChannelContent>
-              {session !== undefined && (
+      <RoomContent>
+        <RoomSidebar>
+          <SideBarToggler onClick={toggleSideBar}>
+            {sideToggle ? (
+              <ChevronDoubleLeftIcon />
+            ) : (
+              <ChevronDoubleRightIcon />
+            )}
+          </SideBarToggler>
+          {sideToggle ? (
+            <SideWrapper>
+              <SideContent>
+                <SideTitle>라운지</SideTitle>
+                {channels.map((c) => (
+                  <ChannelButton
+                    key={c.id}
+                    disabled={isLoading || mySessionId === c.id.toString()}
+                    id={c.id.toString()}
+                    name={c.name}
+                    moveChannel={moveChannel}
+                  />
+                ))}
+                <SideTitle>채널</SideTitle>
+                {channels.map((c) => (
+                  <ChannelButton
+                    key={c.id}
+                    disabled={isLoading || mySessionId === c.id.toString()}
+                    id={c.id.toString()}
+                    name={c.name}
+                    moveChannel={moveChannel}
+                  />
+                ))}
+              </SideContent>
+              <RoomAddButton>
+                <PlusIcon className="w-6 h-6 "></PlusIcon>
+              </RoomAddButton>
+            </SideWrapper>
+          ) : null}
+        </RoomSidebar>
+
+        <ChannelBorder>
+          <ChannelContent>
+            {session !== undefined && (
+              <>
                 <ChannelHeader>
                   <ChannelTitle>
                     <UserGroupIcon className="text-white w-8 h-8 mr-3" />
-                    {mySessionId}
+                    {mySessionName}
                   </ChannelTitle>
                   <ChannelHeaderButtonContainer>
                     <ChannelHeaderButton onClick={leaveSession}>
-                      <XMarkIcon className="text-white w-6 h-6" />
+                      <XMarkIcon className="text-red-900 w-6 h-6" />
                     </ChannelHeaderButton>
                   </ChannelHeaderButtonContainer>
                 </ChannelHeader>
+                <Divider></Divider>
+              </>
+            )}
+            <VideoContainer>
+              {session !== undefined && (
+                <ChatContainer>
+                  <ChatNavbar>
+                    <ChatNavButton
+                      key={"chat"}
+                      disabled={inChat === true}
+                      onClick={() => setInChat(true)}
+                    >
+                      채팅
+                    </ChatNavButton>
+                    <ChatNavButton
+                      key={"share-editor"}
+                      disabled={inChat === false}
+                      onClick={() => setInChat(false)}
+                    >
+                      공유코드
+                    </ChatNavButton>
+                  </ChatNavbar>
+                  {inChat ? (
+                    <Chat
+                      channelId={mySessionId}
+                      username={myUserName}
+                      setMessage={setMessage}
+                      message={message}
+                    />
+                  ) : (
+                    <ShareEditor
+                      session={session}
+                      username={myUserName}
+                      setMessage={setMessage}
+                      setInChat={setInChat}
+                      editorRef={editorRef}
+                    />
+                  )}
+                </ChatContainer>
               )}
-              <VideoContainer>
-                {session !== undefined && (
-                  <ChatContainer>
-                    <ChatNavbar>
-                      <ChatNavButton disabled={inChat === true} onClick={() => setInChat(true)}>
-                        채팅
-                      </ChatNavButton>
-                      <ChatNavButton disabled={inChat === false} onClick={() => setInChat(false)}>
-                        공유코드
-                      </ChatNavButton>
-                    </ChatNavbar>
-                    {inChat ? (
-                      <Chat
-                        chatId={mySessionId}
-                        username={myUserName}
-                        setMessage={setMessage}
-                        message={message}
-                      />
-                    ) : (
-                      <ShareEditor
-                        session={session}
-                        username={myUserName}
-                        setMessage={setMessage}
-                        setInChat={setInChat}
-                        editorRef={editorRef}
-                      />
-                    )}
-                  </ChatContainer>
-                )}
-                {/* 클릭시 나오는 확대 영상 */}
-                {/* {mainStreamManager !== undefined ? (
+              {/* 클릭시 나오는 확대 영상 */}
+              {/* {mainStreamManager !== undefined ? (
                   <div id="main-video" className="col-md-6">
                     <UserVideoComponent streamManager={mainStreamManager} />
                   </div>
                 ) : null} */}
-                <GridContainer>
-                  {publisher !== undefined && (
-                    <StreamContainer onClick={() => handleMainVideoStream(publisher)}>
-                      <UserVideoComponent streamManager={publisher} />
-                    </StreamContainer>
-                  )}
-                  {subscribers.map((sub, i) => (
-                    <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
-                      <UserVideoComponent streamManager={sub} />
-                    </StreamContainer>
-                  ))}
-                </GridContainer>
-              </VideoContainer>
-            </ChannelContent>
-          </RoomContent>
-          {session !== undefined && (
-            <ControlPanel>
-              <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
-                {isMuted ? (
-                  <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
-                ) : (
-                  <SpeakerWaveIcon className="w-8 h-8" />
+              <GridContainer>
+                {publisher !== undefined && (
+                  <StreamContainer
+                    key={publisher.id}
+                    onClick={() => handleMainVideoStream(publisher)}
+                  >
+                    <UserVideoComponent
+                      streamManager={publisher}
+                      speaking={speakerIds.includes(
+                        publisher.stream.connection.connectionId
+                      )}
+                    />
+                  </StreamContainer>
                 )}
-              </ControlPanelButton>
-              <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
-                {isVideoDisabled ? (
-                  <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
-                ) : (
-                  <VideoCameraIcon className="w-8 h-8" />
-                )}
-              </ControlPanelButton>
-              <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
-                {isScreenShared ? (
-                  <SignalIcon className="w-8 h-8" />
-                ) : (
-                  <SignalSlashIcon className="w-8 h-8 text-red-400" />
-                )}
-              </ControlPanelButton>
-              <ControlPanelButton>
-                {filterApplied ? (
-                  <SparklesIcon
-                    className="w-8 h-8 text-yellow-400"
-                    onClick={() => setFilterApplied(false)}
-                  />
-                ) : (
-                  <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
-                )}
-                {filterMenuOpen && (
-                  <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
-                    {filterType.map((f) => (
-                      <FilterMenuList
-                        key={f.name}
-                        disabled={filter === f}
-                        onClick={() => {
-                          setFilter(f);
-                        }}
-                      >
-                        {f.name}
-                      </FilterMenuList>
-                    ))}
-                  </FilterMenu>
-                )}
-              </ControlPanelButton>
-            </ControlPanel>
-          )}
-        </RoomContainer>
+                {subscribers.map((sub, i) => (
+                  <StreamContainer
+                    key={sub.id}
+                    onClick={() => handleMainVideoStream(sub)}
+                  >
+                    <UserVideoComponent
+                      streamManager={sub}
+                      speaking={speakerIds.includes(
+                        sub.stream.connection.connectionId
+                      )}
+                    />
+                  </StreamContainer>
+                ))}
+              </GridContainer>
+            </VideoContainer>
+          </ChannelContent>
+        </ChannelBorder>
+      </RoomContent>
+      {session !== undefined && (
+        <ControlPanel>
+          <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+            {isMuted ? (
+              <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
+            ) : (
+              <SpeakerWaveIcon className="w-8 h-8" />
+            )}
+          </ControlPanelButton>
+          <ControlPanelButton
+            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+          >
+            {isVideoDisabled ? (
+              <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
+            ) : (
+              <VideoCameraIcon className="w-8 h-8" />
+            )}
+          </ControlPanelButton>
+          <ControlPanelButton
+            onClick={() => setIsScreenShared(!isScreenShared)}
+          >
+            {isScreenShared ? (
+              <SignalIcon className="w-8 h-8" />
+            ) : (
+              <SignalSlashIcon className="w-8 h-8 text-red-400" />
+            )}
+          </ControlPanelButton>
+          <ControlPanelButton>
+            {filterApplied ? (
+              <SparklesIcon
+                className="w-8 h-8 text-yellow-400"
+                onClick={() => setFilterApplied(false)}
+              />
+            ) : (
+              <SparklesIcon
+                className="w-8 h-8"
+                onClick={() => setFilterMenuOpen(true)}
+              />
+            )}
+            {filterMenuOpen && (
+              <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
+                {filterType.map((f) => (
+                  <FilterMenuList
+                    key={f.name}
+                    disabled={filter === f}
+                    onClick={() => {
+                      setFilter(f);
+                    }}
+                  >
+                    {f.name}
+                  </FilterMenuList>
+                ))}
+              </FilterMenu>
+            )}
+          </ControlPanelButton>
+        </ControlPanel>
       )}
-    </Container>
+    </RoomContainer>
   );
 };
 
-const Container = tw.div`
-w-full
-h-full
-bg-slate-400
-realtive
-overflow-hidden
-`;
-
-const JoinContainer = tw.div`
-absolute
-w-96
-h-44
-left-1/2
-top-1/2
--translate-x-1/2
--translate-y-2/3
-bg-slate-300
-rounded-lg
-shadow-md
-flex
-justify-center
-items-center
-`;
-
-const JoinForm = tw.form`
-flex
-flex-col
-space-y-3
-`;
-
-const UsernameInput = tw.input`
-w-60
-h-10
-rounded-sm
-shadow-sm
-text-center
-p-3
-`;
-
-const JoinBtn = tw.input`
-w-60
-h-8
-rounded-sm
-shadow-sm
-bg-slate-200
-`;
-
 const RoomContainer = tw.div`
 w-full
-h-full
+h-[calc(100vh-48px)]
 flex
 flex-col
 relative
-bg-[#3b3b3b]
+bg-gradient-to-b
+from-[#0A031C]
+from-80%
+to-[#100530]
+
 `;
 
 const RoomHeader = tw.div`
 w-full
 h-20
-px-10
+px-2
+pl-10
 flex
 justify-between
 items-center
@@ -583,14 +741,28 @@ items-center
 
 const RoomTitleContainer = tw.div`
 flex
+items-end
+gap-2
+`;
+
+const RoomTitleImgBorder = tw.div`
+w-12
+h-12
+flex
+justify-center
 items-center
-space-x-6
+rounded-full
+bg-gradient-to-r
+from-[#c840cb]
+from-1%
+via-[#9eaed6]
+to-99%
+to-[#972da0]
 `;
 
 const RoomTitleImg = tw.div`
-w-12
-h-12
-bg-slate-500
+w-11
+h-11
 rounded-full
 bg-contain
 bg-no-repeat
@@ -599,16 +771,23 @@ shadow-md
 `;
 
 const RoomTitle = tw.h1`
-font-medium
+font-semibold
 text-3xl
 text-slate-100
+tracking-wide
+pl-4
 `;
-
+const RoomNoticeButton = tw.button`
+w-6
+h-6
+text-white
+`;
+//오른쪽 위 카메라 &
 const RoomButtonContainer = tw.div`
 h-full
 flex
 items-center
-space-x-3
+space-x-5
 `;
 
 const RoomButton = tw.button`
@@ -625,26 +804,79 @@ w-auto
 h-auto
 flex
 flex-grow-[1]
-px-4
+pr-4
 pb-4
 `;
 
 const RoomSidebar = tw.div`
-w-32
+mx-4
+pt-4
 h-full
-space-y-6
+space-y-3
+flex
+flex-col
+items-end
+justify-start
+`;
+
+const SideContent = tw.div`
+w-20
+h-full
+gap-6
 flex
 flex-col
 items-center
-p-10
 `;
 
+const SideBarToggler = tw.button`
+w-4
+h-4
+text-white
+flex
+`;
+
+const SideTitle = tw.div`
+  text-white
+  font-bold
+  text-xl
+`;
+
+const SideWrapper = tw.div`
+h-full
+flex
+flex-col
+justify-between
+items-center
+`;
+
+const RoomAddButton = tw.button`
+flex
+justify-center
+mb-1
+w-full
+h-6
+rounded-md
+text-white
+hover:bg-slate-800
+`;
+
+const ChannelBorder = tw.div`
+w-full
+h-full
+p-[1px]
+bg-gradient-to-r
+from-[#9e8caa]
+via-60%
+via-[#a8ad98]
+to-90%
+to-[#cfb2ba]
+rounded-md
+`;
 const ChannelContent = tw.div`
 w-full
 h-full
 bg-[#282828]
-rounded-3xl
-p-3
+rounded-md
 flex
 flex-col
 self-end
@@ -653,8 +885,6 @@ self-end
 const ChannelHeader = tw.div`
 w-full
 h-16
-border-b-2
-border-gray-900
 flex
 items-center
 px-4
@@ -663,22 +893,32 @@ justify-between
 
 const ChannelTitle = tw.h1`
 text-slate-100
-text-2xl
+text-xl
 flex
+items-end
+`;
+
+const Divider = tw.div`
+h-[1px]
+w-[95%]
+bg-gradient-to-r
+self-center
+via-[#4b5082]
+from-[#c5c7bd]
+to-[#972da0]
 `;
 
 const ChannelHeaderButtonContainer = tw.div`
 `;
 
 const ChannelHeaderButton = tw.div`
-w-8
-h-8
+w-7
+h-7
 flex
 justify-center
 items-center
-text-white
+bg-red-100
 rounded-full
-bg-red-500
 cursor-pointer
 `;
 

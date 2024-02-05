@@ -1,7 +1,7 @@
 package com.a506.comeet.common.enums;
 
 public enum RoomConstraints {
-    VIDEOONMICOFF("videomic"), VIDEOON("video"), MICOFF("mic"), FREE("free");
+    VIDEOONMICOFF("VIDEOONMICOFF"), VIDEOON("VIDEOON"), MICOFF("MICOFF"), FREE("FREE");
     private String value;
 
     RoomConstraints(String value) {

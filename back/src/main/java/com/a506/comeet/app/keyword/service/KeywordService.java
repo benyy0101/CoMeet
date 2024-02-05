@@ -2,17 +2,16 @@ package com.a506.comeet.app.keyword.service;
 
 import com.a506.comeet.admin.controller.dto.KeywordRequestDto;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
-import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +40,6 @@ public class KeywordService {
     }
 
     public List<KeywordResponseDto> getAll() {
-        return keywordRepository.findAll().stream().map(m -> new KeywordResponseDto(m.getId(), m.getName())).collect(Collectors.toList());
+        return keywordRepository.findAll().stream().map(m -> new KeywordResponseDto(m.getId(), m.getName())).toList();
     }
 }

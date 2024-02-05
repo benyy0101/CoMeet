@@ -1,5 +1,6 @@
 package com.a506.comeet.metadata.service;
 
+import com.a506.comeet.app.member.MostStudyTime;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberKeywordResponseDto;
 import com.a506.comeet.metadata.entity.Metadata;
@@ -9,16 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static java.time.Duration.between;
 import static com.a506.comeet.metadata.entity.QMetadata.metadata;
+import static java.time.Duration.between;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,67 +47,77 @@ public class MetadataService {
     // 유저 아이디를 받아서 유저의 메타데이터 중 최근 1달 데이터를 가져오고
     public void calculate(MemberDetailResponseDto res, String memberId) {
         // 메타데이터 가져오는 쿼리
-        List<Metadata> metadatas = (List<Metadata>) metadataRepository.findAll(metadata.memberId.eq(memberId).and(metadata.leaveTime.gt(LocalDateTime.now().minusMonths(1).with(LocalDateTime.MIN))));
+        List<Metadata> metadatas = (List<Metadata>) metadataRepository.findAll(metadata.memberId.eq(memberId).and(metadata.leaveTime.gt(LocalDateTime.now().minusMonths(1))));
 
-        // 오늘 공부 시간
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()), ZoneId.systemDefault());
+
+        double dayInMinutes = 0.0;
         LocalDateTime todayStart = LocalDateTime.now().with(LocalTime.MIN);
-        Double day = 0.0;
-        List<Metadata> todaysMetadatas = metadatas.stream()
-                .filter(metadata -> metadata.getLeaveTime().isAfter(todayStart))
-                .collect(Collectors.toList());
-
-        for (Metadata todaysMetadata : todaysMetadatas) {
-            long minutes = between(todaysMetadata.getEnterTime(), todaysMetadata.getLeaveTime()).toMinutes();
-            day += minutes;
-        }
-        day /= (double) todaysMetadatas.size() * 60;
-
-        // 주 공부시간
-        Double week = 0.0;
+        double weekInMinutes = 0.0;
         LocalDateTime thisweekStart = LocalDateTime.now().minusWeeks(1).with(LocalTime.MIN);
-        List<Metadata> thisweekMetadatas = metadatas.stream()
-                .filter(metadata -> metadata.getLeaveTime().isAfter(thisweekStart))
-                .collect(Collectors.toList());
-        for (Metadata thisweekMetadata : thisweekMetadatas) {
-            long minutes = between(thisweekMetadata.getEnterTime(), thisweekMetadata.getLeaveTime()).toMinutes();
-            week += minutes;
-        }
-        week /= (double) thisweekMetadatas.size() * 60;
+        double monthInMinutes = 0.0;
 
-        // 월 공부시간
-        Double month = 0.0;
-        for (Metadata metadata : metadatas) {
-            long minutes = between(metadata.getEnterTime(), metadata.getLeaveTime()).toMinutes();
-            month += minutes;
-        }
-        month /= (double) metadatas.size() * 60;
+        Map<String, Integer> keywordMap = new HashMap<>();
 
+        Map<Integer, Duration> studyTimeMap = new HashMap<>();
+        for (int i = 0; i < 24; i+=2) {
+            studyTimeMap.put(i, Duration.ZERO);
+        }
 
         // 주요 공부 시간대 작성 필요
-
-
-        // 핵심 키워드 가중치 부여하여 전달
-        Map<String, Integer> keywordMap = new HashMap<>();
         for (Metadata metadata : metadatas) {
-            int minute = (int) between(metadata.getEnterTime(), metadata.getLeaveTime()).toMinutes();
+            long minutes = between(metadata.getEnterTime(), metadata.getLeaveTime()).toMinutes();
+
+            // 일/주/월별 공부 시간 계산
+            if (metadata.getLeaveTime().isAfter(todayStart))
+                dayInMinutes += minutes;
+            if (metadata.getLeaveTime().isAfter(thisweekStart))
+                weekInMinutes += minutes;
+            monthInMinutes += minutes;
+
+            // 키워드 가중치 부여
             for (String keyword : metadata.getKeywords().split(" ")) {
                 keywordMap.putIfAbsent(keyword, 0);
-                keywordMap.put(keyword, keywordMap.get(keyword) + minute);
+                keywordMap.put(keyword, keywordMap.get(keyword) + (int) minutes);
+            }
+
+            // 스터디 시간대 계산
+            getStudyData(metadata, studyTimeMap);
+        }
+
+        res.setDayStudyHour(dayInMinutes/60);
+        res.setWeekStudyHour(weekInMinutes/60);
+        res.setMonthStudyHour(monthInMinutes/60);
+        res.setKeywords(keywordMap.entrySet()
+                .stream()
+                .map(entry -> new MemberKeywordResponseDto(entry.getKey(), entry.getValue()))
+                .toList());
+        res.setMostStudyTime(MostStudyTime.of(getMostStudyTime(studyTimeMap)));
+
+    }
+
+    private void getStudyData(Metadata metadata, Map<Integer, Duration> studyTimeMap) {
+        LocalDateTime currentTime = metadata.getEnterTime();
+        while(currentTime.isBefore(metadata.getLeaveTime())){
+            int hour = currentTime.getHour()/2*2;
+            Duration duration = studyTimeMap.get(hour);
+            studyTimeMap.put(hour, duration.plusMinutes(30));
+            currentTime = currentTime.plusMinutes(30);
+        }
+    }
+
+    private int getMostStudyTime(Map<Integer, Duration> studyTimeMap){
+        int maxStudyHour = -1;
+        Duration maxStudyDuration = Duration.ZERO;
+
+        for (Map.Entry<Integer, Duration> entry : studyTimeMap.entrySet()) {
+            if (entry.getValue().compareTo(maxStudyDuration) > 0) {
+                maxStudyHour = entry.getKey();
+                maxStudyDuration = entry.getValue();
             }
         }
 
-        List<MemberKeywordResponseDto> keywords = keywordMap.entrySet()
-                .stream()
-                .map(entry -> new MemberKeywordResponseDto(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        res.setDayStudyHour(day);
-        res.setWeekStudyHour(week);
-        res.setMonthStudyHour(month);
-        res.setKeywords(keywords);
-//        res.setStudyHour();
-
+        return maxStudyHour;
     }
 
 }

@@ -1,5 +1,8 @@
 package com.a506.comeet.app.room.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
@@ -7,7 +10,11 @@ import com.a506.comeet.app.room.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +34,8 @@ public class RoomController {
         return ResponseEntity.ok(created.getId());
     }
 
-    @PatchMapping("{roomId}")
-    public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId){
+    @PatchMapping("/{roomId}")
+    public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable(value = "roomId") Long roomId){
         String memberId = MemberUtil.getMemberId();
         roomService.update(req, memberId, roomId);
         return ResponseEntity.ok().build();
@@ -58,8 +65,8 @@ public class RoomController {
 
 
     @GetMapping("")
-    public ResponseEntity<Slice<RoomSearchResponseDto>> search(@Valid RoomSearchRequestDto req) {
-        Slice<RoomSearchResponseDto> res = roomService.search(req);
+    public ResponseEntity<Slice<RoomSearchResponseDto>> search(@Valid RoomSearchRequestDto req, @PageableDefault(size = 20) Pageable pageable) {
+        Slice<RoomSearchResponseDto> res = roomService.search(req, pageable);
         return ResponseEntity.ok(res);
     }
 

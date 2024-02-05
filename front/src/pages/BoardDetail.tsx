@@ -1,8 +1,8 @@
 import React from "react";
 
 import tw from "tailwind-styled-components";
-import { BoardDetailWritingTotal } from "../components/BoardDetailWritingTotal";
-import { BoardDetailComment } from "../components/BoardDetailComment";
+import { BoardDetailWritingTotal } from "components/BoardDetail/BoardDetailWritingTotal";
+import { BoardDetailComment } from "components/BoardDetail/BoardDetailComment";
 
 export const BoardDetail = () => {
   return (

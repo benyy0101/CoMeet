@@ -1,6 +1,6 @@
 package com.a506.comeet.app.member.controller.dto;
 
-import com.a506.comeet.app.member.StudyHour;
+import com.a506.comeet.app.member.MostStudyTime;
 import com.a506.comeet.common.enums.MemberFeature;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +17,11 @@ public class MemberDetailResponseDto {
     private String email;
     private String description;
     private MemberFeature feature;
+
     // 팔로우 관련
+    @Setter
     private Integer followingCount;
+    @Setter
     private Integer followerCount;
 
     // Til 관련
@@ -32,7 +35,7 @@ public class MemberDetailResponseDto {
     @Setter
     private Double monthStudyHour;
     @Setter
-    private StudyHour studyHour;
+    private MostStudyTime mostStudyTime;
     // 키워드 관련
     @Setter
     private List<MemberKeywordResponseDto> keywords;

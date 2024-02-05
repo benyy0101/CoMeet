@@ -1,6 +1,5 @@
 package com.a506.comeet.app.member.repository;
 
-import com.a506.comeet.app.etc.entity.QTil;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.TilSimpleResponseDto;
@@ -17,7 +16,6 @@ import java.util.List;
 import static com.a506.comeet.app.etc.entity.QTil.til;
 import static com.a506.comeet.app.member.entity.QMember.member;
 import static com.a506.comeet.app.member.entity.QFollow.follow;
-
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 
@@ -44,8 +42,8 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .where(member.memberId.eq(memberId).and(til.date.between(from, to))) // 이번달 것만 가져옴
                 .distinct()
                 .transform(
-                        groupBy(member.memberId).list(
-                                        (Projections.constructor(
+                        groupBy(member.memberId).as(
+                                        Projections.constructor(
                                                 MemberDetailResponseDto.class,
                                                 member.memberId,
                                                 member.name,
@@ -59,10 +57,28 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                                                         TilSimpleResponseDto.class,
                                                         til.id,
                                                         til.date
-                                                )))
+                                                ))
                         )
-                )).stream().findFirst().orElse(null);
+                )).get(memberId);
+        if (res == null) return null;
+        // 팔로잉, 팔로워 수 계산
+        res.setFollowerCount(countFollower(memberId));
+        res.setFollowingCount(countFollowing(memberId));
         return res;
+    }
+
+    private int countFollowing(String memberId) {
+        return jpaQueryFactory
+                .selectFrom(follow)
+                .where(follow.to.memberId.eq(memberId))
+                .fetch().size();
+    }
+
+    private int countFollower(String memberId) {
+        return jpaQueryFactory
+                    .selectFrom(follow)
+                    .where(follow.from.memberId.eq(memberId))
+                    .fetch().size();
     }
 
 
