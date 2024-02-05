@@ -34,4 +34,6 @@ export default function MarkdownRenderer({ raw }) {
 }
 
 const CustomSyntaxHighlighter = tw(SyntaxHighlighter)`
+-ml-4
+mt-2
 `;

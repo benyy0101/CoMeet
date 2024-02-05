@@ -64,4 +64,5 @@ text-slate-300/50
 const MarkdownContainer = tw.pre`
 font-light
 text-wrap
+text-sm
 `;
