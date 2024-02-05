@@ -3,6 +3,8 @@ import {
   CreateBoardResponse,
   DeleteBoardParams,
   DeleteBoardResponse,
+  EnterBoardParams,
+  EnterBoardResponse,
   ModifyBoardParams,
   ModifyBoardResponse,
   SearchBoardParams,
@@ -34,5 +36,12 @@ export const deleteBoard = async (params: DeleteBoardParams): Promise<DeleteBoar
   const { boardId } = params;
   const url = `board/${boardId}`;
   const response = await localAxios.delete(url);
+  return response.data;
+};
+
+export const enterBoard = async (params: EnterBoardParams): Promise<EnterBoardResponse> => {
+  const { boardId } = params;
+  const url = `board/${boardId}`;
+  const response = await localAxios.get(url);
   return response.data;
 };
