@@ -1,0 +1,7 @@
+package com.a506.webrtc.stomp.entity;
+
+public enum EventType {
+    ROOM_CREATE, ROOM_DELETE, ROOM_JOIN, ROOM_WITHDRAW, //가입, 탈퇴는 추후에 구현
+    CHANNEL_CREATE, CHANNEL_UPDATE, CHANNEL_DELETE,
+    LOUNGE_CREATE, LOUNGE_UPDATE, LOUNGE_DELETE
+}
