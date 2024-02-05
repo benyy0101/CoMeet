@@ -32,10 +32,10 @@ public class BoardController {
     }
 
     @PatchMapping("/{boardId}")
-    public ResponseEntity<String> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
+    public ResponseEntity<Void> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = MemberUtil.getMemberId();
-        Board board = boardService.update(req, boardId, memberId);
-        return ResponseEntity.ok(board.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        boardService.update(req, boardId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{boardId}")

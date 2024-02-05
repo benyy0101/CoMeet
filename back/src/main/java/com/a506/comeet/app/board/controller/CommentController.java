@@ -31,10 +31,10 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<String> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
+    public ResponseEntity<Void> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
         String memberId = MemberUtil.getMemberId();
-        Comment comment = commentService.update(req, commentId, memberId);
-        return ResponseEntity.ok(comment.getUpdatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        commentService.update(req, commentId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{commentId}")
