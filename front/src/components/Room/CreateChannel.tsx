@@ -1,24 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
 import ChannelItem from "./ChannelItem";
-import LoungeItem from "./LoungeItem";
-import { Channel, CreateChannelParams } from "models/Channel.interface";
-import { ChannelParams } from "models/Channel.interface";
-
-interface IChannel {
-  id: number;
-  roomId: number;
-  name: string;
-}
+import { Channel } from "models/Channel.interface";
+import { Lounge } from "models/Lounge.interface";
 
 interface CreateChannelProps {
   channels?: Channel[];
   removeChannel?: (id: number) => void;
   addChannel?: (name: string) => void;
+
+  lounges?: Lounge[];
+  addLounge?: (name: string) => void;
+  removeLounge?: (id: number) => void;
 }
 
 function CreateChannel(props: CreateChannelProps) {
-  const { channels, removeChannel, addChannel } = props;
+  const {
+    channels,
+    removeChannel,
+    addChannel,
+    lounges,
+    addLounge,
+    removeLounge,
+  } = props;
   const [isAddBtnFocused, setIsAddBtnFocused] = useState<boolean>(false);
   const [isChannelFocused, setIsChannelFocused] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
@@ -42,8 +46,12 @@ function CreateChannel(props: CreateChannelProps) {
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (title) {
+    if (title && isChannelFocused) {
       addChannel!(title);
+      setTitle("");
+      setIsAddBtnFocused(false);
+    } else if (title && !isChannelFocused) {
+      addLounge!(title);
       setTitle("");
       setIsAddBtnFocused(false);
     }
@@ -79,13 +87,21 @@ function CreateChannel(props: CreateChannelProps) {
                 key={channel.channelId}
                 name={channel.name}
                 idx={channel.channelId}
-                removeChannel={removeChannel!}
+                remove={removeChannel!}
               ></ChannelItem>
             );
           })}
+
         {!isChannelFocused &&
-          channels?.map((channel) => {
-            return <LoungeItem key={channel.channelId}></LoungeItem>;
+          lounges?.map((lounge) => {
+            return (
+              <ChannelItem
+                key={lounge.loungeId}
+                name={lounge.name}
+                idx={lounge.loungeId}
+                remove={removeLounge!}
+              ></ChannelItem>
+            );
           })}
       </ContentContainer>
 

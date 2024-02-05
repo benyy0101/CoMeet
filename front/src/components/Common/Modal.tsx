@@ -6,12 +6,8 @@ import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
 import { set } from "react-hook-form";
 import CreateChannel from "components/Room/CreateChannel";
-import {
-  CreateChannelParams,
-  CreateChannelResponse,
-  ChannelParams,
-  Channel,
-} from "models/Channel.interface";
+import { Channel } from "models/Channel.interface";
+import { Lounge } from "models/Lounge.interface";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -20,11 +16,24 @@ type ModalProps = {
   channels?: Channel[];
   addChannel?: (name: string) => void;
   removeChannel?: (id: number) => void;
+
+  lounges?: Lounge[];
+  addLounge?: (name: string) => void;
+  removeLounge?: (id: number) => void;
 };
 
 function Modal(props: ModalProps) {
-  const { toggleModal, option, setting, channels, removeChannel, addChannel } =
-    props;
+  const {
+    toggleModal,
+    option,
+    setting,
+    channels,
+    removeChannel,
+    addChannel,
+    lounges,
+    addLounge,
+    removeLounge,
+  } = props;
   const [isLogin, setIsLogin] = React.useState<boolean>(false);
   const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
@@ -80,6 +89,9 @@ function Modal(props: ModalProps) {
             channels={channels}
             removeChannel={removeChannel}
             addChannel={addChannel}
+            lounges={lounges}
+            addLounge={addLounge}
+            removeLounge={removeLounge}
           />
         ) : null}
       </ModalContainer>

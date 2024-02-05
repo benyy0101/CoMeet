@@ -8,10 +8,6 @@ export interface CreateChannelParams {
   name: string; //필수
 }
 
-export interface ChannelParams extends CreateChannelParams {
-  id: number;
-}
-
 export interface CreateChannelResponse {
   channelId: number; //필수
 }

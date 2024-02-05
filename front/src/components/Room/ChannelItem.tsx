@@ -8,13 +8,13 @@ interface IChannel {
 interface IChannelItem {
   name: string;
   idx: number;
-  removeChannel: (id: number) => void;
+  remove: (id: number) => void;
 }
 
 function ChannelItem(props: IChannelItem) {
-  const { name, idx, removeChannel } = props;
+  const { name, idx, remove } = props;
   const removeHandler = () => {
-    removeChannel(idx);
+    remove(idx);
   };
   return (
     <Wrapper>
@@ -23,7 +23,7 @@ function ChannelItem(props: IChannelItem) {
         <Title>{name}</Title>
       </LeftContainer>
       <RightContainer>
-        <Destroy onClick={removeHandler}>채널 삭제</Destroy>
+        <Destroy onClick={removeHandler}>삭제</Destroy>
       </RightContainer>
     </Wrapper>
   );
@@ -63,9 +63,8 @@ const RightContainer = tw.div`
 `;
 
 const Destroy = tw.button`
-  bg-red-600
-  rounded-md
-  p-2
+  text-red-800
+  text-lg
 `;
 
 export default ChannelItem;

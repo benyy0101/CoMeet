@@ -30,17 +30,17 @@ import { useSelector } from "react-redux";
 import { RoomNotice } from "components/RoomNotice";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { Channel } from "models/Channel.interface";
+import { Channel, CreateChannelResponse } from "models/Channel.interface";
+import { CreateLoungeParams, Lounge } from "models/Lounge.interface";
+import { set } from "react-hook-form";
+import { createChannel, deleteChannel } from "api/Channel";
+import { useQuery } from "@tanstack/react-query";
+import { create } from "domain";
+import { createLounge } from "api/Lounge";
 
 interface IFilter {
   name: string;
   command: string;
-}
-
-interface IChannel {
-  id: number;
-  roomId: number;
-  name: string;
 }
 
 const filterType: IFilter[] = [
@@ -85,7 +85,7 @@ export const Room = () => {
   const [sideToggle, setSideToggle] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
   const [channels, setChannels] = useState<Channel[]>([]);
-  const [lounge, setLounge] = useState<Channel[]>([]);
+  const [lounges, setLounges] = useState<Lounge[]>([]);
 
   const [isJoined, setIsJoined] = useState<boolean>(userInfo.isLoggedIn);
   const [inChat, setInChat] = useState<boolean>(true);
@@ -501,16 +501,52 @@ export const Room = () => {
   };
 
   //여기에 채널 추가, 삭제 함수 추가
-  const addChannel = (props: string) => {
-    const temp = {
-      channelId: channels.length + 1,
-      name: props,
-    };
-    channels.push(temp);
+  const addChannel = async (props: string) => {
+    try {
+      const res = await createChannel({
+        roomId: parseInt(roomId!),
+        name: props,
+      });
+      const newChannel: Channel = {
+        channelId: res,
+        name: props,
+      };
+      setChannels((prev) => [...prev, newChannel]);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const removeChannel = (id: number) => {
-    channels.filter((channel) => channel.channelId !== id);
+  const removeChannel = async (id: number) => {
+    setChannels((prev) =>
+      prev.filter((channel: { channelId: number }) => channel.channelId !== id)
+    );
+    try {
+      await deleteChannel({ channelId: id });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const addLounge = async (props: string) => {
+    try {
+      const data: CreateLoungeParams = {
+        roomId: parseInt(roomId!),
+        name: props,
+      };
+      const res = await createLounge(data);
+      const temp: Lounge = {
+        loungeId: res,
+        name: props,
+      };
+      setLounges((prev) => [...prev, temp]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const removeLounge = (id: number) => {
+    setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
   };
 
   return (
@@ -559,13 +595,13 @@ export const Room = () => {
             <SideWrapper>
               <SideContent>
                 <SideTitle>라운지</SideTitle>
-                {channels.map((c) => (
+                {lounges.map((c) => (
                   <ChannelButton
-                    key={c.channelId}
+                    key={c.loungeId}
                     disabled={
-                      isLoading || mySessionId === c.channelId.toString()
+                      isLoading || mySessionId === c.loungeId.toString()
                     }
-                    id={c.channelId.toString()}
+                    id={c.loungeId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
                   />
@@ -588,11 +624,14 @@ export const Room = () => {
                 <ModalPortal>
                   {modal ? (
                     <Modal
+                      channels={channels}
                       removeChannel={removeChannel}
                       addChannel={addChannel}
                       toggleModal={handleModal}
                       option="channelCreate"
-                      channels={channels}
+                      lounges={lounges}
+                      addLounge={addLounge}
+                      removeLounge={removeLounge}
                     ></Modal>
                   ) : null}
                 </ModalPortal>
@@ -658,10 +697,10 @@ export const Room = () => {
               )}
               {/* 클릭시 나오는 확대 영상 */}
               {/* {mainStreamManager !== undefined ? (
-                  <div id="main-video" className="col-md-6">
-                    <UserVideoComponent streamManager={mainStreamManager} />
-                  </div>
-                ) : null} */}
+                    <div id="main-video" className="col-md-6">
+                      <UserVideoComponent streamManager={mainStreamManager} />
+                    </div>
+                  ) : null} */}
               <GridContainer>
                 {publisher !== undefined && (
                   <StreamContainer
