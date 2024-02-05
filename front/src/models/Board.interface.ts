@@ -60,3 +60,46 @@ export interface DeleteBoardParams {
 }
 
 export interface DeleteBoardResponse {}
+
+export interface EnterBoardParams {
+  boardId: number; //필수
+}
+
+/**
+ * 모집글 일때만 방 관련 정보가 오고 아닐 때는 null
+ * category 역시 자유글일때만 마찬가지
+ */
+export interface EnterBoardResponse {
+  id: number;
+  title: string;
+  content: string;
+  likeCount: number;
+  type: BOARD_TYPE;
+  category: BOARD_CATEGORY | null;
+  isValid: boolean;
+  roomKeywords: string;
+  roomTitle: string;
+  roomDescription: string;
+  roomMcount: number;
+  roomCapacity: number;
+  roomImage: string;
+  isLocked: boolean;
+  writerNickname: string;
+  writerImage: string;
+  isLike: boolean;
+  createdAt: string;
+  updatedAt: string;
+  roomLink: string;
+}
+
+export interface LikeBoardParams {
+  boardId: number; //필수
+}
+
+export interface LikeBoardResponse {}
+
+export interface UnlikeBoardParams {
+  boardId: number; //필수
+}
+
+export interface UnlikeBoardResponse {}
