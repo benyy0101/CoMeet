@@ -39,7 +39,6 @@ export interface SearchBoardContent {
   writerImage: string;
   createdAt: string;
   updatedAt: string;
-  ff: number;
 }
 export interface SearchBoardResponse {
   content: SearchBoardContent[];
