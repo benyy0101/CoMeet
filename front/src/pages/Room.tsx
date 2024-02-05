@@ -88,7 +88,7 @@ export const Room = () => {
 
   const userInfo = useSelector((state: any) => state.user);
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
-  const [sideToggle, setSideToggle] = useState<boolean>(false);
+  const [sideToggle, setSideToggle] = useState<boolean>(true);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -122,7 +122,9 @@ export const Room = () => {
   useEffect(() => {
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
-        const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+        const sock = new SockJS(
+          `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
+        );
         return sock;
       });
 
@@ -138,7 +140,9 @@ export const Room = () => {
     }
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        stompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         stompClient.current = null;
       }
     };
@@ -182,7 +186,6 @@ export const Room = () => {
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
-    setInLounge(false);
     if (sessionId !== mySessionId) {
       setIsLoading(true);
       leaveSession();
@@ -207,6 +210,7 @@ export const Room = () => {
   );
 
   const joinSession = useCallback(() => {
+    setInLounge(false);
     const mySession = OV.current.initSession();
     OV.current.setAdvancedConfiguration({
       publisherSpeakingEventsOptions: {
@@ -223,7 +227,9 @@ export const Room = () => {
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
+    mySession.on("streamDestroyed", (event) =>
+      deleteSubscriber(event.stream.streamManager)
+    );
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -249,7 +255,9 @@ export const Room = () => {
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
+      setSpeakerIds((prev) =>
+        prev.filter((id) => id !== event.connection.connectionId)
+      );
     });
 
     setSession(mySession);
@@ -276,7 +284,9 @@ export const Room = () => {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter((device) => device.kind === "videoinput");
+          const videoDevices = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -289,13 +299,18 @@ export const Room = () => {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log("There was an error connecting to the session:", error.code, error.message);
+          console.log(
+            "There was an error connecting to the session:",
+            error.code,
+            error.message
+          );
         }
       });
     }
   }, [session, myUserName]);
 
   const leaveSession = useCallback(() => {
+    setInLounge(true);
     // Leave the session
     if (session) {
       session.disconnect();
@@ -314,7 +329,9 @@ export const Room = () => {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter((device) => device.kind === "videoinput");
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -378,7 +395,9 @@ export const Room = () => {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
+    return createSession(mySessionId).then((sessionId) =>
+      createToken(sessionId)
+    );
   }, [mySessionId]);
 
   useEffect(() => {
@@ -518,7 +537,11 @@ export const Room = () => {
       <RoomContent>
         <RoomSidebar>
           <SideBarToggler onClick={toggleSideBar}>
-            {sideToggle ? <ChevronDoubleLeftIcon /> : <ChevronDoubleRightIcon />}
+            {sideToggle ? (
+              <ChevronDoubleLeftIcon />
+            ) : (
+              <ChevronDoubleRightIcon />
+            )}
           </SideBarToggler>
           {sideToggle ? (
             <SideWrapper>
@@ -577,14 +600,18 @@ export const Room = () => {
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+          <ControlPanelButton
+            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+          >
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
+          <ControlPanelButton
+            onClick={() => setIsScreenShared(!isScreenShared)}
+          >
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -598,7 +625,10 @@ export const Room = () => {
                 onClick={() => setFilterApplied(false)}
               />
             ) : (
-              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
+              <SparklesIcon
+                className="w-8 h-8"
+                onClick={() => setFilterMenuOpen(true)}
+              />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
