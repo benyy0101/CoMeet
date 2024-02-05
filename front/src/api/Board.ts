@@ -1,6 +1,8 @@
 import {
   CreateBoardParams,
   CreateBoardResponse,
+  DeleteBoardParams,
+  DeleteBoardResponse,
   ModifyBoardParams,
   ModifyBoardResponse,
   SearchBoardParams,
@@ -25,5 +27,12 @@ export const modifyBoard = async (params: ModifyBoardParams): Promise<ModifyBoar
   const { boardId } = params;
   const url = `board/${boardId}`;
   const response = await localAxios.patch(url, params);
+  return response.data;
+};
+
+export const deleteBoard = async (params: DeleteBoardParams): Promise<DeleteBoardResponse> => {
+  const { boardId } = params;
+  const url = `board/${boardId}`;
+  const response = await localAxios.delete(url);
   return response.data;
 };

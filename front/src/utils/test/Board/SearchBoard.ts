@@ -7,7 +7,7 @@ export async function func(lst: any) {
   for (const elem of lst) {
     console.log("Test data", i++, " is....", elem);
     const results = await searchBoard(elem);
-    console.log(results);
+    console.log("Result is...", results);
     // results
     //   .then((d) => {
     //     console.log("Result is...", d);
@@ -77,10 +77,22 @@ const data5: SearchBoardParams = {
   // freeBoardCategory: "CHAT",
 };
 
+const data6: SearchBoardParams = {
+  // boardType: "RECRUIT",
+  // searchKeyword: "test",
+  writerNickname: "빙건이테스트용",
+  sortBy: "LATEST",
+  // recruitBoardCategory: "ON",
+  // keywordIds: [3],
+  // capacity: 10,
+  // freeBoardCategory: "CHAT",
+};
+
 export let datas: Array<any> = [
   // data1,
   // data2,
   // data3,
   data4,
   data5,
+  data6,
 ];

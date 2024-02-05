@@ -15,7 +15,7 @@ export interface CreateBoardResponse {
 }
 
 export interface SearchBoardParams {
-  boardType: BOARD_TYPE; //필수
+  boardType?: BOARD_TYPE; //필수
   searchKeyword?: string; //선택
   writerNickname?: string; //선택
   sortBy: BOARD_SORTBY; //필수.
@@ -39,6 +39,7 @@ export interface SearchBoardContent {
   writerImage: string;
   createdAt: string;
   updatedAt: string;
+  ff: number;
 }
 export interface SearchBoardResponse {
   content: SearchBoardContent[];
@@ -55,6 +56,8 @@ export interface ModifyBoardParams {
 
 export interface ModifyBoardResponse {}
 
-export interface DeleteBoardParams {}
+export interface DeleteBoardParams {
+  boardId: number; //필수
+}
 
 export interface DeleteBoardResponse {}
