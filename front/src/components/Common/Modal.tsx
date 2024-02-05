@@ -4,20 +4,44 @@ import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
+import { set } from "react-hook-form";
+import CreateChannel from "components/Room/CreateChannel";
+import { IChannel } from "models/Channel.interface";
+import { ILounge } from "models/Lounge.interface";
 
 type ModalProps = {
   toggleModal: () => void;
   option: string;
   setting?: RoomItemProps | null;
+  channels?: IChannel[];
+  addChannel?: (name: string) => void;
+  removeChannel?: (id: number) => void;
+
+  lounges?: ILounge[];
+  addLounge?: (name: string) => void;
+  removeLounge?: (id: number) => void;
 };
 
 function Modal(props: ModalProps) {
-  const { toggleModal, option, setting } = props;
+  const {
+    toggleModal,
+    option,
+    setting,
+    channels,
+    removeChannel,
+    addChannel,
+    lounges,
+    addLounge,
+    removeLounge,
+  } = props;
   const [isLogin, setIsLogin] = React.useState<boolean>(false);
   const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
   const [isRoomCreate, setIsRoomCreate] = React.useState<boolean>(false);
+  const [isChannelCreate, setIsChannelCreate] = React.useState<boolean>(false);
+
   React.useEffect(() => {
+    console.log(option);
     if (option === "login") {
       // 로그인 모달
       console.log("login");
@@ -25,17 +49,28 @@ function Modal(props: ModalProps) {
       setIsRoomConfirm(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsChannelCreate(false);
     } else if (option === "confirm") {
-      // 로그인 모달
+      console.log("confirm");
       setIsRoomConfirm(true);
       setIsLogin(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsChannelCreate(false);
     } else if (option === "signup") {
+      console.log("signup");
       setIsSignup(true);
       setIsRoomConfirm(false);
       setIsLogin(false);
       setIsRoomCreate(false);
+      setIsChannelCreate(false);
+    } else if (option === "channelCreate") {
+      console.log("roomCreate");
+      setIsChannelCreate(true);
+      setIsRoomCreate(false);
+      setIsSignup(false);
+      setIsRoomConfirm(false);
+      setIsLogin(false);
     }
   }, [option]);
 
@@ -49,6 +84,16 @@ function Modal(props: ModalProps) {
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
         {isSignup ? <Signup></Signup> : null}
+        {isChannelCreate ? (
+          <CreateChannel
+            channels={channels}
+            removeChannel={removeChannel}
+            addChannel={addChannel}
+            lounges={lounges}
+            addLounge={addLounge}
+            removeLounge={removeLounge}
+          />
+        ) : null}
       </ModalContainer>
     </Wrapper>
   );

@@ -1,9 +1,13 @@
-import { ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { ILounge } from "pages/Room";
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
+
 import tw from "tailwind-styled-components";
 import Chat from "./Chat";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { ILounge } from "models/Lounge.interface";
 
 interface IProps {
   lounge: ILounge;
@@ -30,7 +34,7 @@ export default function Lounge({ lounge }: IProps) {
       <ChatContainer>
         <Chat
           chatDomain={"lounge"}
-          id={lounge.id.toString()}
+          id={lounge.loungeId.toString()}
           username={userInfo.user.nickname}
           setMessage={setMessage}
           message={message}

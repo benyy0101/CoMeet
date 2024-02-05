@@ -34,6 +34,7 @@ export default function Chat({
         `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       )
       .then((response) => {

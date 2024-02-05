@@ -23,6 +23,15 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
 import { RoomNotice } from "components/RoomNotice";
+import ModalPortal from "utils/Portal";
+import Modal from "components/Common/Modal";
+import { IChannel, CreateChannelResponse } from "models/Channel.interface";
+import { CreateLoungeParams, ILounge } from "models/Lounge.interface";
+import { set } from "react-hook-form";
+import { createChannel, deleteChannel } from "api/Channel";
+import { useQuery } from "@tanstack/react-query";
+import { create } from "domain";
+import { createLounge } from "api/Lounge";
 import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
@@ -30,18 +39,6 @@ import Lounge from "components/Room/Lounge";
 interface IFilter {
   name: string;
   command: string;
-}
-
-export interface IChannel {
-  id: number;
-  roomId: number;
-  name: string;
-}
-
-export interface ILounge {
-  id: number;
-  roomId: number;
-  name: string;
 }
 
 const filterType: IFilter[] = [
@@ -72,29 +69,24 @@ const filterType: IFilter[] = [
   },
 ];
 
-const channels: IChannel[] = [
-  { id: 1, roomId: 1, name: "채널 1" },
-  { id: 2, roomId: 1, name: "채널 2" },
-  { id: 3, roomId: 1, name: "채널 3" },
-];
-const lounges: ILounge[] = [
-  { id: 1, roomId: 1, name: "라운지 1" },
-  { id: 2, roomId: 1, name: "라운지 2" },
-  { id: 3, roomId: 1, name: "라운지 3" },
-];
-
 export const Room = () => {
   const { roomId } = useParams();
 
   const userInfo = useSelector((state: any) => state.user);
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
-  const [sideToggle, setSideToggle] = useState<boolean>(true);
+  const [sideToggle, setSideToggle] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [channels, setChannels] = useState<IChannel[]>([]);
+  const [lounges, setLounges] = useState<ILounge[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>(lounges[0]);
+  const [currentLounge, setCurrentLounge] = useState<ILounge>({
+    loungeId: 0,
+    name: "",
+  });
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -123,7 +115,7 @@ export const Room = () => {
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
         const sock = new SockJS(
-          `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
+          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
         );
         return sock;
       });
@@ -502,10 +494,63 @@ export const Room = () => {
     setSideToggle(!sideToggle);
   };
 
+  const handleModal = () => {
+    setModal(!modal);
+    console.log("modal:", modal);
+  };
+
+  //여기에 채널 추가, 삭제 함수 추가
+  const addChannel = async (props: string) => {
+    try {
+      const res = await createChannel({
+        roomId: parseInt(roomId!),
+        name: props,
+      });
+      const newChannel: IChannel = {
+        channelId: res,
+        name: props,
+      };
+      setChannels((prev) => [...prev, newChannel]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const removeChannel = async (id: number) => {
+    setChannels((prev) =>
+      prev.filter((channel: { channelId: number }) => channel.channelId !== id)
+    );
+    try {
+      await deleteChannel({ channelId: id });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const addLounge = async (props: string) => {
+    try {
+      const data: CreateLoungeParams = {
+        roomId: parseInt(roomId!),
+        name: props,
+      };
+      const res = await createLounge(data);
+      const temp: ILounge = {
+        loungeId: res,
+        name: props,
+      };
+      setLounges((prev) => [...prev, temp]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const removeLounge = (id: number) => {
+    setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
+  };
+
   const leaveRoom = () => {
     leaveSession();
   };
-
   return (
     <RoomContainer>
       <RoomHeader>
@@ -547,27 +592,46 @@ export const Room = () => {
             <SideWrapper>
               <SideContent>
                 <SideTitle>라운지</SideTitle>
-                {lounges.map((l) => (
-                  <LoungeButton
-                    key={l.id}
-                    disabled={isLoading || currentLounge.id === l.id}
-                    lounge={l}
-                    moveLounge={moveLounge}
+                {lounges.map((c) => (
+                  <ChannelButton
+                    key={c.loungeId}
+                    disabled={
+                      isLoading || mySessionId === c.loungeId.toString()
+                    }
+                    id={c.loungeId.toString()}
+                    name={c.name}
+                    moveChannel={moveChannel}
                   />
                 ))}
                 <SideTitle>채널</SideTitle>
                 {channels.map((c) => (
                   <ChannelButton
-                    key={c.id}
-                    disabled={isLoading || mySessionId === c.id.toString()}
-                    id={c.id.toString()}
+                    key={c.channelId}
+                    disabled={
+                      isLoading || mySessionId === c.channelId.toString()
+                    }
+                    id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
                   />
                 ))}
               </SideContent>
-              <RoomAddButton>
+              <RoomAddButton onClick={handleModal}>
                 <PlusIcon className="w-6 h-6 "></PlusIcon>
+                <ModalPortal>
+                  {modal ? (
+                    <Modal
+                      channels={channels}
+                      removeChannel={removeChannel}
+                      addChannel={addChannel}
+                      toggleModal={handleModal}
+                      option="channelCreate"
+                      lounges={lounges}
+                      addLounge={addLounge}
+                      removeLounge={removeLounge}
+                    ></Modal>
+                  ) : null}
+                </ModalPortal>
               </RoomAddButton>
             </SideWrapper>
           ) : null}
