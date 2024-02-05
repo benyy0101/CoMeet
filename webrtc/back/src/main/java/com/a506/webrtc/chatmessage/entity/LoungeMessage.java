@@ -12,6 +12,7 @@ public class LoungeMessage {
     private String id;
     private Long loungeId;
     private String memberId;
+    private String profileImage;
     private String nickname;
     private String message;
     private String imageUrl;

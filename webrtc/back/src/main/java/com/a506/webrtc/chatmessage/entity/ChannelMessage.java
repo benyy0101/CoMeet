@@ -11,6 +11,7 @@ public class ChannelMessage {
     private String id;
     private Long channelId;
     private String memberId;
+    private String profileImage;
     private String nickname;
     private String message;
     private String imageUrl;
