@@ -1,6 +1,6 @@
 package com.a506.comeet.metadata.service;
 
-import com.a506.comeet.app.member.StudyTimeZone;
+import com.a506.comeet.app.member.MostStudyTime;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberKeywordResponseDto;
 import com.a506.comeet.metadata.entity.Metadata;
@@ -92,7 +92,7 @@ public class MetadataService {
                 .stream()
                 .map(entry -> new MemberKeywordResponseDto(entry.getKey(), entry.getValue()))
                 .toList());
-        res.setStudyTimeZone(StudyTimeZone.of(getMaxStudyTimeZone(studyTimeMap)));
+        res.setMostStudyTime(MostStudyTime.of(getMostStudyTime(studyTimeMap)));
 
     }
 
@@ -106,7 +106,7 @@ public class MetadataService {
         }
     }
 
-    private int getMaxStudyTimeZone(Map<Integer, Duration> studyTimeMap){
+    private int getMostStudyTime(Map<Integer, Duration> studyTimeMap){
         int maxStudyHour = -1;
         Duration maxStudyDuration = Duration.ZERO;
 

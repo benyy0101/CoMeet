@@ -1,5 +1,6 @@
 package com.a506.comeet.functional;
 
+import com.a506.comeet.auth.AES128Util;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.member.entity.Member;
@@ -10,6 +11,7 @@ import com.a506.comeet.app.room.service.RoomService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class SimpleTests {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private AES128Util aes128Util;
 
     @Test
     @DisplayName("프록시 객체의 pk로 접근할 때, 프록시 객체는 초기화되지 않는다")
@@ -79,4 +84,13 @@ public class SimpleTests {
         log.info("room : {}", foundRoom.getTitle());
 
     }
+
+    @Test
+    void test(){
+        String str = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkYW1vbmdzYW5nYSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3MDY5NDM0MTV9.W1pAabPr6S5a2bjMSMpm8kmwsn7tG3Yzn3K4exiGKDg";
+        String encrypt = aes128Util.encryptAes(str);
+        String decrypt = aes128Util.decryptAes(encrypt);
+        Assertions.assertThat(str).isEqualTo(decrypt);
+    }
+
 }

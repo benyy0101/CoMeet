@@ -26,6 +26,8 @@ public class RoomResponseDto {
     private String password;
     private RoomConstraints constraints;
     private RoomType type;
+    @Setter
+    private Integer currentMcount;
 
     @Setter
     private List<RoomMemberResponseDto> members = new ArrayList<>();
@@ -36,7 +38,7 @@ public class RoomResponseDto {
     @Setter
     private List<RoomKeywordResponseDto> keywords = new ArrayList<>();
 
-    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, int mcount, int capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type) {
+    public RoomResponseDto(Long roomId, String managerId, String managerNickname, String description, String link, String room_image, String notice, Integer mcount, Integer capacity, Boolean isLocked, String password, RoomConstraints constraints, RoomType type, List<RoomChannelResponseDto> channels, List<RoomLoungeResponseDto> lounges) {
         this.roomId = roomId;
         this.managerId = managerId;
         this.managerNickname = managerNickname;
@@ -50,5 +52,7 @@ public class RoomResponseDto {
         this.password = password;
         this.constraints = constraints;
         this.type = type;
+        this.channels = channels;
+        this.lounges = lounges;
     }
 }
