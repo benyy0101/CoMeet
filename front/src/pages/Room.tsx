@@ -28,6 +28,9 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
 import { RoomNotice } from "components/RoomNotice";
+import ModalPortal from "utils/Portal";
+import Modal from "components/Common/Modal";
+import { Channel } from "models/Channel.interface";
 
 interface IFilter {
   name: string;
@@ -68,11 +71,11 @@ const filterType: IFilter[] = [
   },
 ];
 
-const channels: IChannel[] = [
-  { id: 1, roomId: 1, name: "채널 1" },
-  { id: 2, roomId: 1, name: "채널 2" },
-  { id: 3, roomId: 1, name: "채널 3" },
-];
+// const channels: Channel[] = [
+//   { channelId: 1, name: "채널 1" },
+//   { channelId: 2, name: "채널 2" },
+//   { channelId: 3, name: "채널 3" },
+// ];
 
 export const Room = () => {
   const { roomId } = useParams();
@@ -80,6 +83,9 @@ export const Room = () => {
   const userInfo = useSelector((state: any) => state.user);
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
   const [sideToggle, setSideToggle] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [lounge, setLounge] = useState<Channel[]>([]);
 
   const [isJoined, setIsJoined] = useState<boolean>(userInfo.isLoggedIn);
   const [inChat, setInChat] = useState<boolean>(true);
@@ -114,7 +120,7 @@ export const Room = () => {
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
         const sock = new SockJS(
-          `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
+          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
         );
         return sock;
       });
@@ -489,6 +495,24 @@ export const Room = () => {
     setSideToggle(!sideToggle);
   };
 
+  const handleModal = () => {
+    setModal(!modal);
+    console.log("modal:", modal);
+  };
+
+  //여기에 채널 추가, 삭제 함수 추가
+  const addChannel = (props: string) => {
+    const temp = {
+      channelId: channels.length + 1,
+      name: props,
+    };
+    channels.push(temp);
+  };
+
+  const removeChannel = (id: number) => {
+    channels.filter((channel) => channel.channelId !== id);
+  };
+
   return (
     <RoomContainer>
       <RoomHeader>
@@ -537,9 +561,11 @@ export const Room = () => {
                 <SideTitle>라운지</SideTitle>
                 {channels.map((c) => (
                   <ChannelButton
-                    key={c.id}
-                    disabled={isLoading || mySessionId === c.id.toString()}
-                    id={c.id.toString()}
+                    key={c.channelId}
+                    disabled={
+                      isLoading || mySessionId === c.channelId.toString()
+                    }
+                    id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
                   />
@@ -547,16 +573,29 @@ export const Room = () => {
                 <SideTitle>채널</SideTitle>
                 {channels.map((c) => (
                   <ChannelButton
-                    key={c.id}
-                    disabled={isLoading || mySessionId === c.id.toString()}
-                    id={c.id.toString()}
+                    key={c.channelId}
+                    disabled={
+                      isLoading || mySessionId === c.channelId.toString()
+                    }
+                    id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
                   />
                 ))}
               </SideContent>
-              <RoomAddButton>
+              <RoomAddButton onClick={handleModal}>
                 <PlusIcon className="w-6 h-6 "></PlusIcon>
+                <ModalPortal>
+                  {modal ? (
+                    <Modal
+                      removeChannel={removeChannel}
+                      addChannel={addChannel}
+                      toggleModal={handleModal}
+                      option="channelCreate"
+                      channels={channels}
+                    ></Modal>
+                  ) : null}
+                </ModalPortal>
               </RoomAddButton>
             </SideWrapper>
           ) : null}

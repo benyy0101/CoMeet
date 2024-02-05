@@ -14,7 +14,12 @@ interface IProps {
   message: string;
 }
 
-export default function Chat({ channelId, username, setMessage, message }: IProps) {
+export default function Chat({
+  channelId,
+  username,
+  setMessage,
+  message,
+}: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -22,9 +27,10 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
+        `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       )
       .then((response) => {
@@ -32,7 +38,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
 
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
-            const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+            const sock = new SockJS(
+              `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
+            );
             return sock;
           });
 
@@ -55,7 +63,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
 
     return () => {
       if (chatStompClient.current) {
-        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        chatStompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         chatStompClient.current = null;
       }
     };
@@ -68,7 +78,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
   }
 
   //메시지 브로커로 메시지 전송
-  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     e.preventDefault();
 
     const data = {
@@ -80,10 +92,17 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send("/app/chat/channel/send", {}, JSON.stringify(data));
+    chatStompClient.current.send(
+      "/app/chat/channel/send",
+      {},
+      JSON.stringify(data)
+    );
     setMessage("");
   };
-  const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
+  const { handlePressEnterFetch } = usePressEnterFetch({
+    handleSubmit,
+    isSubmitting,
+  });
 
   useEffect(() => {
     const chatcontent = document.getElementById("chatcontent");
@@ -93,7 +112,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
     }
   }, [rows]);
 
-  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    e
+  ) => {
     setMessage(e.target.value);
   };
 
