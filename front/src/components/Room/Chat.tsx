@@ -6,6 +6,8 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import MarkdownRenderer from "components/Common/MarkdownRenderer";
+import ChatRow from "./ChatRow";
 
 interface IProps {
   channelId: string;
@@ -77,6 +79,8 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       nickname: username,
       message,
       imageUrl: "",
+      profileImage:
+        "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png",
       createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
@@ -113,8 +117,8 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
-          {rows.map((r, i) => (
-            <ChatRow key={i}>{`${r.nickname} : ${r.message}`}</ChatRow>
+          {rows.map((r) => (
+            <ChatRow key={r.id} chat={r} />
           ))}
         </ChatContent>
       </ChatContentContainer>
@@ -153,12 +157,9 @@ flex-grow-[1]
 
 const ChatContent = tw.div`
 px-4
-`;
-
-const ChatRow = tw.pre`
-w-full
-min-h-10
-text-wrap
+flex
+flex-col
+space-y-10
 `;
 
 const ChatSubmitButton = tw.button`
