@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 
 import useOutsideClick from "hooks/useOutsideClick";
+import Modal from "components/Common/Modal";
 
 import tw from "tailwind-styled-components";
 
@@ -24,6 +25,9 @@ export const MyProfile = () => {
   //프로필 변경 이미지 클릭시
   const [isModifyImg, setIsModifyImg] = useState<boolean>(false);
 
+  //프로필 사진 변경 버튼 클릭시
+  const [modifyImgModal, setModifyImgModal] = useState<boolean>(false);
+
   const handleMouseOver = () => {
     setIsHovering(true);
   };
@@ -36,8 +40,8 @@ export const MyProfile = () => {
     setIsModifyImg(!isModifyImg);
   };
 
-  const handleModifyImgFalse = () => {
-    setIsModifyImg(false);
+  const handleModifyImgModal = () => {
+    setModifyImgModal(!modifyImgModal);
   };
 
   const modifyImgRef = useRef(null);
@@ -75,7 +79,16 @@ export const MyProfile = () => {
             {isModifyImg && (
               <ProfileDropdown>
                 {/* 변경 클릭시 이미지 업로드 모달 나오게 하기 */}
-                <DropdownButton>프로필 사진 변경</DropdownButton>
+                <DropdownButton onClick={handleModifyImgModal}>
+                  프로필 사진 변경
+                  {modifyImgModal === true ? (
+                    <Modal
+                      toggleModal={handleModifyImgModal}
+                      option="modifyProfile"
+                      setting={null}
+                    />
+                  ) : null}
+                </DropdownButton>
                 {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
                 <DropdownButton>제거</DropdownButton>
               </ProfileDropdown>
