@@ -6,17 +6,17 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
-import MarkdownRenderer from "components/Common/MarkdownRenderer";
 import ChatRow from "./ChatRow";
 
 interface IProps {
-  channelId: string;
+  chatDomain: string;
+  id: string;
   username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({ channelId, username, setMessage, message }: IProps) {
+export default function Chat({ chatDomain, id, username, setMessage, message }: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -24,7 +24,7 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -42,9 +42,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
             {},
             () => {
               chatStompClient.current.subscribe(
-                `/chat/channel/${channelId}`,
+                `/chat/${chatDomain}/${id}`,
                 (e: any) => showMessage(JSON.parse(e.body)),
-                { id: "chat" }
+                { id: chatDomain }
               );
             },
             (e: any) => alert("에러발생!!!!!!")
@@ -61,7 +61,7 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
         chatStompClient.current = null;
       }
     };
-  }, [channelId]);
+  }, [id]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: any) {
@@ -74,7 +74,7 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
     e.preventDefault();
 
     const data = {
-      channelId,
+      [`${chatDomain}Id`]: id,
       memberId: "heeyeon3050",
       nickname: username,
       message,
@@ -84,7 +84,7 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send("/app/chat/channel/send", {}, JSON.stringify(data));
+    chatStompClient.current.send(`/app/chat/${chatDomain}/send`, {}, JSON.stringify(data));
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
@@ -131,6 +131,7 @@ w-full
 h-full
 flex
 flex-col-reverse
+text-white
 `;
 
 const ChatInputContainer = tw.form`
