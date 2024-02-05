@@ -79,6 +79,8 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       nickname: username,
       message,
       imageUrl: "",
+      profileImage:
+        "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png",
       createdAt: new Date().toString(),
     };
     // send(destination,헤더,페이로드)

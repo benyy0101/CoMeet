@@ -8,7 +8,15 @@ interface IProps {
 export default function ChatRow({ chat }: IProps) {
   return (
     <ChatRowContainer>
-      <ProfileImg />
+      <ProfileImg
+        style={{
+          backgroundImage: `url(
+            ${
+              chat.profileImage ||
+              "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png"
+            })`,
+        }}
+      />
       <Info>
         <WriterRow>
           <Writer>{chat.nickname}</Writer>
@@ -49,6 +57,8 @@ h-10
 min-w-10
 min-h-10
 rounded-full
+bg-cover
+bg-center
 `;
 
 const Writer = tw.h1`
