@@ -18,7 +18,13 @@ export interface SearchBoardParams {}
 
 export interface SearchBoardResponse {}
 
-export interface ModifyBoardParams {}
+export interface ModifyBoardParams {
+  boardId: number;
+  title: string;
+  content: string;
+  category?: BOARD_CATEGORY;
+  valid?: boolean;
+}
 
 export interface ModifyBoardResponse {}
 
