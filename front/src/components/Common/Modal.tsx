@@ -4,6 +4,7 @@ import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
+import { ImageModify } from "components/Mypage/ImageModify";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -58,6 +59,7 @@ function Modal(props: ModalProps) {
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
         {isSignup ? <Signup></Signup> : null}
+        {isModifyProfileImg ? <ImageModify></ImageModify> : null}
       </ModalContainer>
     </Wrapper>
   );
