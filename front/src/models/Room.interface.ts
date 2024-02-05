@@ -8,6 +8,18 @@ export interface CreateRoomParams {
   type: ROOM_TYPE; //필수
 }
 
+export interface CreateRoomResponse {
+  channelId: number; //필수
+  managerId: String;
+  title: String; // 2 ~ 30 자 제한; Null 불가
+  description: String; // 140자 이하 제한
+  roomImage: String; // Null 불가
+  notice: String; // 1000자 제한 (더 길어야 한다면 피드백 ㄱㄱ)
+  capacity: number; // 1 ~ 20 명 제한
+  isLocked: Boolean; // Null 불가
+  constraint: String; // VIDEOONMICOFF, VIDEOON, MICOFF, FREE 중 한개
+}
+
 export interface ModifyRoomParams {
   roomId: number; //필수
   managerId?: string | undefined; //매니저 변경 시에만 삽입
