@@ -6,18 +6,18 @@ import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
 import { set } from "react-hook-form";
 import CreateChannel from "components/Room/CreateChannel";
-import { Channel } from "models/Channel.interface";
-import { Lounge } from "models/Lounge.interface";
+import { IChannel } from "models/Channel.interface";
+import { ILounge } from "models/Lounge.interface";
 
 type ModalProps = {
   toggleModal: () => void;
   option: string;
   setting?: RoomItemProps | null;
-  channels?: Channel[];
+  channels?: IChannel[];
   addChannel?: (name: string) => void;
   removeChannel?: (id: number) => void;
 
-  lounges?: Lounge[];
+  lounges?: ILounge[];
   addLounge?: (name: string) => void;
   removeLounge?: (id: number) => void;
 };

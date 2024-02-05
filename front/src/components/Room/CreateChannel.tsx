@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
 import ChannelItem from "./ChannelItem";
-import { Channel } from "models/Channel.interface";
-import { Lounge } from "models/Lounge.interface";
+import { IChannel } from "models/Channel.interface";
+import { ILounge } from "models/Lounge.interface";
 
 interface CreateChannelProps {
-  channels?: Channel[];
+  channels?: IChannel[];
   removeChannel?: (id: number) => void;
   addChannel?: (name: string) => void;
 
-  lounges?: Lounge[];
+  lounges?: ILounge[];
   addLounge?: (name: string) => void;
   removeLounge?: (id: number) => void;
 }

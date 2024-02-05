@@ -69,7 +69,6 @@ const filterType: IFilter[] = [
   },
 ];
 
-
 export const Room = () => {
   const { roomId } = useParams();
 
@@ -84,7 +83,10 @@ export const Room = () => {
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>(lounges[0]);
+  const [currentLounge, setCurrentLounge] = useState<ILounge>({
+    loungeId: 0,
+    name: "",
+  });
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -544,10 +546,11 @@ export const Room = () => {
 
   const removeLounge = (id: number) => {
     setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
+  };
+
   const leaveRoom = () => {
     leaveSession();
   };
-
   return (
     <RoomContainer>
       <RoomHeader>

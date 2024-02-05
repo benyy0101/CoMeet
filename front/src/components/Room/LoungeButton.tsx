@@ -1,5 +1,5 @@
 import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/solid";
-import { ILounge } from "pages/Room";
+import { ILounge } from "models/Lounge.interface";
 import { useState } from "react";
 import tw from "tailwind-styled-components";
 
