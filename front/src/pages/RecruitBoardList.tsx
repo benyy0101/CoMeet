@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import SortingIcon from "../assets/img/sorting.svg";
 import SortingDownIcon from "../assets/img/sort-down.svg";
@@ -9,8 +10,10 @@ import useOutsideClick from "../hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
 import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
+import { Pagination } from "components/BoardList/Pagination";
 
-type BoardListProps = {
+//예시
+interface BoardListProps {
   id: number;
   title: string;
   writerNicname: string;
@@ -23,7 +26,7 @@ type BoardListProps = {
   roomImage: string;
   isValid: boolean;
   roomCapacity: number;
-};
+}
 
 export const RecruitBoardList = () => {
   //목록 리스트
@@ -43,6 +46,19 @@ export const RecruitBoardList = () => {
 
   //왼쪽 사이드바 선택 메뉴
   const [currentMenu, setCurrentMenu] = useState<string>("전체");
+
+  //아래는 모두 페이지네이션 임시
+  const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
+  const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
+  const totalPages = 10; //totalPages: 전체 페이지 수
+  const totalElements = 100; //totalElements: 전체 항목 수
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // 페이지 이동 시 스크롤 위치 맨 위로 초기화
+    /* api 호출 및 데이터(totalItems, books) 저장 */
+  }, [page]);
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -290,7 +306,13 @@ export const RecruitBoardList = () => {
                   );
               })}
             </ListContainer>
-            <div className="flex justify-center mt-16">페이지네이션</div>
+            <div className="flex justify-center mt-16">
+              <Pagination
+                totalElements={totalElements}
+                totalPages={totalPages}
+                currentPage={page && parseInt(page) > 0 ? parseInt(page) : 1}
+              />
+            </div>
           </CoreTotalContainer>
         </CenterTotalContainer>
 
