@@ -87,9 +87,7 @@ public class AuthService {
 
     private void memberIdAndPasswordValidation(String memberId, String password) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(LOGIN_FAIL));
-        log.info("입력 패스워드 : {}", password);
         log.info("입력 encode {}", passwordEncoder.encode(password));
-        log.info("db 패스워드 {}", member.getPassword());
 
         if (!passwordEncoder.matches(password, member.getPassword()))
             throw new RestApiException(LOGIN_FAIL);

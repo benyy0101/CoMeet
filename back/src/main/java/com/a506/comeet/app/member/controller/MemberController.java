@@ -6,16 +6,18 @@ import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
+import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
-import com.a506.comeet.app.member.service.MemberService;
+import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,6 +27,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final S3UploadService s3UploadService;
 
     @PostMapping("")
     public ResponseEntity<String> signup(@RequestBody @Valid MemberSigninRequestDto req){
@@ -34,9 +37,30 @@ public class MemberController {
     }
 
     @PatchMapping("")
-    public ResponseEntity<Void> update(@Valid @RequestBody MemberUpdateRequestDto req){
+    public ResponseEntity<Void> update(@Valid @RequestBody MemberUpdateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
         memberService.update(req, memberId);
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/image")
+    public ResponseEntity<?> getImageUrl(
+            @RequestParam("profileImageFile") MultipartFile multipartFile) {
+        log.info("profileImageFile : {}", multipartFile);
+        try{
+            String url = s3UploadService.saveFile(multipartFile, "roomImage/");
+            log.info("url : {}", url);
+            return ResponseEntity.ok(url);
+        } catch (IOException e) {
+            throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR, "이미지 파일 업로드 중 에러가 발생하였습니다");
+        }
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<?> deleteImageUrl(
+            @RequestParam("profileImageUrl") String profileImageUrl) {
+        s3UploadService.deleteImage(profileImageUrl, "profileImage/");
         return ResponseEntity.ok().build();
     }
 

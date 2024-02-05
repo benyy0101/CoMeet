@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface RoomKeywordRepository extends JpaRepository<RoomKeyword, Long>, RoomKeywordCustomRepository {
 
@@ -19,6 +17,4 @@ public interface RoomKeywordRepository extends JpaRepository<RoomKeyword, Long>,
     void deleteByRoomIdAndKeywordId(@Param("roomId") Long roomId, @Param("keywordId") Long keywordId);
 
     void deleteByRoomAndKeyword(Room room, Keyword keyword);
-
-	List<RoomKeyword> findByRoomId(Long roomId);
 }

@@ -13,5 +13,5 @@ public interface RoomRepositoryCustom {
 
     RoomResponseDto enterRoomCustom(Long roomId);
 
-    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId);
+    Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId);
 }

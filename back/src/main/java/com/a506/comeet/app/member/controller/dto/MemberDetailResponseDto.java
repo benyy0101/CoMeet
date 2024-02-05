@@ -25,6 +25,7 @@ public class MemberDetailResponseDto {
     private Integer followerCount;
 
     // Til 관련
+    @Setter
     private List<TilSimpleResponseDto> tils;
 
     // metadata 관련
@@ -40,7 +41,7 @@ public class MemberDetailResponseDto {
     @Setter
     private List<MemberKeywordResponseDto> keywords;
 
-    public MemberDetailResponseDto(String memberId, String name, String nickname, String link, String profileImage, String email, String description, MemberFeature feature, List<TilSimpleResponseDto> tils) {
+    public MemberDetailResponseDto(String memberId, String name, String nickname, String link, String profileImage, String email, String description, MemberFeature feature) {
         this.memberId = memberId;
         this.name = name;
         this.nickname = nickname;
@@ -49,6 +50,5 @@ public class MemberDetailResponseDto {
         this.email = email;
         this.description = description;
         this.feature = feature;
-        this.tils = tils;
     }
 }

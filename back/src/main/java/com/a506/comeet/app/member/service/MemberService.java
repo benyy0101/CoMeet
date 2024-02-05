@@ -9,6 +9,7 @@ import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.image.service.S3UploadService;
 import com.a506.comeet.metadata.service.MetadataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class MemberService {
     private final RoomMemberRepository roomMemberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MetadataService metadataService;
+    private final S3UploadService s3UploadService;
 
     @Transactional
     public Member create(MemberSigninRequestDto req) {
@@ -49,8 +51,12 @@ public class MemberService {
     }
 
     @Transactional
-    public void update(MemberUpdateRequestDto req, String memberId){
+    public void update(MemberUpdateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        if (req.getProfileImage() != null) {
+            String originalProfileImage = member.getProfileImage();
+            s3UploadService.deleteImage(originalProfileImage, "profileImage");
+        }
         member.updateMember(req);
     }
 
@@ -66,7 +72,8 @@ public class MemberService {
     }
 
     public MemberDetailResponseDto getMemberDetail(String memberId) {
-        MemberDetailResponseDto res = memberRepository.getMemberDetail(memberId);
+        MemberDetailResponseDto res = memberRepository.getMemberDetail(memberId)
+                .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         metadataService.calculate(res, memberId);
         return res;
     }
