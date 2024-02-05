@@ -66,8 +66,8 @@ export interface EnterBoardParams {
 }
 
 /**
- * 모집글 일때만 방 관련 정보가 오고 아닐 때는null
- * category역시 자유글일때만 마찬가지
+ * 모집글 일때만 방 관련 정보가 오고 아닐 때는 null
+ * category 역시 자유글일때만 마찬가지
  */
 export interface EnterBoardResponse {
   id: number;
@@ -91,3 +91,15 @@ export interface EnterBoardResponse {
   updatedAt: string;
   roomLink: string;
 }
+
+export interface LikeBoardParams {
+  boardId: number; //필수
+}
+
+export interface LikeBoardResponse {}
+
+export interface UnlikeBoardParams {
+  boardId: number; //필수
+}
+
+export interface UnlikeBoardResponse {}
