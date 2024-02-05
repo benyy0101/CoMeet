@@ -6,16 +6,20 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import ChatRow from "./ChatRow";
+import { formatDate } from "utils/FormatDate";
 
 interface IProps {
-  channelId: string;
+  chatDomain: string;
+  id: string;
   username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
 export default function Chat({
-  channelId,
+  chatDomain,
+  id,
   username,
   setMessage,
   message,
@@ -27,7 +31,7 @@ export default function Chat({
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -39,7 +43,7 @@ export default function Chat({
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
             const sock = new SockJS(
-              `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
+              `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
             );
             return sock;
           });
@@ -48,9 +52,9 @@ export default function Chat({
             {},
             () => {
               chatStompClient.current.subscribe(
-                `/chat/channel/${channelId}`,
+                `/chat/${chatDomain}/${id}`,
                 (e: any) => showMessage(JSON.parse(e.body)),
-                { id: "chat" }
+                { id: chatDomain }
               );
             },
             (e: any) => alert("에러발생!!!!!!")
@@ -69,7 +73,7 @@ export default function Chat({
         chatStompClient.current = null;
       }
     };
-  }, [channelId]);
+  }, [id]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: any) {
@@ -84,16 +88,18 @@ export default function Chat({
     e.preventDefault();
 
     const data = {
-      channelId,
+      [`${chatDomain}Id`]: id,
       memberId: "heeyeon3050",
       nickname: username,
       message,
       imageUrl: "",
-      createdAt: new Date().toString(),
+      profileImage:
+        "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png",
+      createdAt: formatDate(new Date()),
     };
     // send(destination,헤더,페이로드)
     chatStompClient.current.send(
-      "/app/chat/channel/send",
+      `/app/chat/${chatDomain}/send`,
       {},
       JSON.stringify(data)
     );
@@ -134,8 +140,8 @@ export default function Chat({
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
-          {rows.map((r, i) => (
-            <ChatRow key={i}>{`${r.nickname} : ${r.message}`}</ChatRow>
+          {rows.map((r) => (
+            <ChatRow key={r.id} chat={r} />
           ))}
         </ChatContent>
       </ChatContentContainer>
@@ -148,6 +154,7 @@ w-full
 h-full
 flex
 flex-col-reverse
+text-white
 `;
 
 const ChatInputContainer = tw.form`
@@ -174,12 +181,9 @@ flex-grow-[1]
 
 const ChatContent = tw.div`
 px-4
-`;
-
-const ChatRow = tw.pre`
-w-full
-min-h-10
-text-wrap
+flex
+flex-col
+space-y-10
 `;
 
 const ChatSubmitButton = tw.button`

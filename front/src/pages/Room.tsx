@@ -1,12 +1,9 @@
 import { OpenVidu } from "openvidu-browser";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import UserVideoComponent from "../components/Room/UserVideoComponent";
 import tw from "tailwind-styled-components";
 import {
-  UserGroupIcon,
   ArrowRightStartOnRectangleIcon,
   CameraIcon,
-  XMarkIcon,
   SpeakerXMarkIcon,
   SpeakerWaveIcon,
   VideoCameraSlashIcon,
@@ -19,8 +16,6 @@ import {
   ChevronDoubleLeftIcon,
   PlusIcon,
 } from "@heroicons/react/24/solid";
-import Chat from "../components/Room/Chat";
-import ShareEditor from "../components/Room/ShareEditor";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
 import { useParams } from "react-router-dom";
@@ -30,13 +25,16 @@ import { useSelector } from "react-redux";
 import { RoomNotice } from "components/RoomNotice";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { Channel, CreateChannelResponse } from "models/Channel.interface";
-import { CreateLoungeParams, Lounge } from "models/Lounge.interface";
+import { IChannel, CreateChannelResponse } from "models/Channel.interface";
+import { CreateLoungeParams, ILounge } from "models/Lounge.interface";
 import { set } from "react-hook-form";
 import { createChannel, deleteChannel } from "api/Channel";
 import { useQuery } from "@tanstack/react-query";
 import { create } from "domain";
 import { createLounge } from "api/Lounge";
+import LoungeButton from "components/Room/LoungeButton";
+import Channel from "components/Room/Channel";
+import Lounge from "components/Room/Lounge";
 
 interface IFilter {
   name: string;
@@ -71,11 +69,6 @@ const filterType: IFilter[] = [
   },
 ];
 
-// const channels: Channel[] = [
-//   { channelId: 1, name: "채널 1" },
-//   { channelId: 2, name: "채널 2" },
-//   { channelId: 3, name: "채널 3" },
-// ];
 
 export const Room = () => {
   const { roomId } = useParams();
@@ -84,13 +77,14 @@ export const Room = () => {
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
   const [sideToggle, setSideToggle] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
-  const [channels, setChannels] = useState<Channel[]>([]);
-  const [lounges, setLounges] = useState<Lounge[]>([]);
+  const [channels, setChannels] = useState<IChannel[]>([]);
+  const [lounges, setLounges] = useState<ILounge[]>([]);
 
-  const [isJoined, setIsJoined] = useState<boolean>(userInfo.isLoggedIn);
-  const [inChat, setInChat] = useState<boolean>(true);
-  const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Lounge
+  const [inLounge, setInLounge] = useState<boolean>(true);
+  const [currentLounge, setCurrentLounge] = useState<ILounge>(lounges[0]);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -111,7 +105,6 @@ export const Room = () => {
   const [filter, setFilter] = useState<IFilter | null>(null);
   const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
 
-  const editorRef = useRef<any>(null);
   const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
@@ -183,17 +176,19 @@ export const Room = () => {
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
-    setIsLoading(true);
-    leaveSession();
-    setMySessionId(sessionId);
-    setMySessionName(sessionName);
-    joinSession();
+    if (sessionId !== mySessionId) {
+      setIsLoading(true);
+      leaveSession();
+      setMySessionId(sessionId);
+      setMySessionName(sessionName);
+      joinSession();
+    }
   };
 
-  const handleChangeUserName: React.ChangeEventHandler<HTMLInputElement> =
-    useCallback((e) => {
-      setMyUserName(e.target.value);
-    }, []);
+  const moveLounge = (lounge: ILounge) => {
+    setInLounge(true);
+    setCurrentLounge(lounge);
+  };
 
   const handleMainVideoStream = useCallback(
     (stream: any) => {
@@ -205,6 +200,7 @@ export const Room = () => {
   );
 
   const joinSession = useCallback(() => {
+    setInLounge(false);
     const mySession = OV.current.initSession();
     OV.current.setAdvancedConfiguration({
       publisherSpeakingEventsOptions: {
@@ -304,6 +300,7 @@ export const Room = () => {
   }, [session, myUserName]);
 
   const leaveSession = useCallback(() => {
+    setInLounge(true);
     // Leave the session
     if (session) {
       session.disconnect();
@@ -507,7 +504,7 @@ export const Room = () => {
         roomId: parseInt(roomId!),
         name: props,
       });
-      const newChannel: Channel = {
+      const newChannel: IChannel = {
         channelId: res,
         name: props,
       };
@@ -535,7 +532,7 @@ export const Room = () => {
         name: props,
       };
       const res = await createLounge(data);
-      const temp: Lounge = {
+      const temp: ILounge = {
         loungeId: res,
         name: props,
       };
@@ -547,6 +544,8 @@ export const Room = () => {
 
   const removeLounge = (id: number) => {
     setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
+  const leaveRoom = () => {
+    leaveSession();
   };
 
   return (
@@ -568,12 +567,7 @@ export const Room = () => {
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
-          <RoomButton
-            onClick={() => {
-              leaveSession();
-              setIsJoined(false);
-            }}
-          >
+          <RoomButton onClick={leaveRoom}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
           <RoomButton onClick={switchCamera}>
@@ -641,99 +635,24 @@ export const Room = () => {
         </RoomSidebar>
 
         <ChannelBorder>
-          <ChannelContent>
-            {session !== undefined && (
-              <>
-                <ChannelHeader>
-                  <ChannelTitle>
-                    <UserGroupIcon className="text-white w-8 h-8 mr-3" />
-                    {mySessionName}
-                  </ChannelTitle>
-                  <ChannelHeaderButtonContainer>
-                    <ChannelHeaderButton onClick={leaveSession}>
-                      <XMarkIcon className="text-red-900 w-6 h-6" />
-                    </ChannelHeaderButton>
-                  </ChannelHeaderButtonContainer>
-                </ChannelHeader>
-                <Divider></Divider>
-              </>
-            )}
-            <VideoContainer>
-              {session !== undefined && (
-                <ChatContainer>
-                  <ChatNavbar>
-                    <ChatNavButton
-                      key={"chat"}
-                      disabled={inChat === true}
-                      onClick={() => setInChat(true)}
-                    >
-                      채팅
-                    </ChatNavButton>
-                    <ChatNavButton
-                      key={"share-editor"}
-                      disabled={inChat === false}
-                      onClick={() => setInChat(false)}
-                    >
-                      공유코드
-                    </ChatNavButton>
-                  </ChatNavbar>
-                  {inChat ? (
-                    <Chat
-                      channelId={mySessionId}
-                      username={myUserName}
-                      setMessage={setMessage}
-                      message={message}
-                    />
-                  ) : (
-                    <ShareEditor
-                      session={session}
-                      username={myUserName}
-                      setMessage={setMessage}
-                      setInChat={setInChat}
-                      editorRef={editorRef}
-                    />
-                  )}
-                </ChatContainer>
-              )}
-              {/* 클릭시 나오는 확대 영상 */}
-              {/* {mainStreamManager !== undefined ? (
-                    <div id="main-video" className="col-md-6">
-                      <UserVideoComponent streamManager={mainStreamManager} />
-                    </div>
-                  ) : null} */}
-              <GridContainer>
-                {publisher !== undefined && (
-                  <StreamContainer
-                    key={publisher.id}
-                    onClick={() => handleMainVideoStream(publisher)}
-                  >
-                    <UserVideoComponent
-                      streamManager={publisher}
-                      speaking={speakerIds.includes(
-                        publisher.stream.connection.connectionId
-                      )}
-                    />
-                  </StreamContainer>
-                )}
-                {subscribers.map((sub, i) => (
-                  <StreamContainer
-                    key={sub.id}
-                    onClick={() => handleMainVideoStream(sub)}
-                  >
-                    <UserVideoComponent
-                      streamManager={sub}
-                      speaking={speakerIds.includes(
-                        sub.stream.connection.connectionId
-                      )}
-                    />
-                  </StreamContainer>
-                ))}
-              </GridContainer>
-            </VideoContainer>
-          </ChannelContent>
+          {inLounge ? (
+            <Lounge lounge={currentLounge} />
+          ) : (
+            <Channel
+              session={session}
+              mySessionName={mySessionName}
+              mySessionId={mySessionId}
+              myUserName={myUserName}
+              publisher={publisher}
+              subscribers={subscribers}
+              speakerIds={speakerIds}
+              leaveSession={leaveSession}
+              handleMainVideoStream={handleMainVideoStream}
+            />
+          )}
         </ChannelBorder>
       </RoomContent>
-      {session !== undefined && (
+      {session !== undefined && inLounge === false && (
         <ControlPanel>
           <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
             {isMuted ? (
@@ -949,106 +868,8 @@ via-[#a8ad98]
 to-90%
 to-[#cfb2ba]
 rounded-md
-`;
-const ChannelContent = tw.div`
-w-full
-h-full
-bg-[#282828]
-rounded-md
-flex
-flex-col
-self-end
-`;
-
-const ChannelHeader = tw.div`
-w-full
-h-16
-flex
-items-center
-px-4
-justify-between
-`;
-
-const ChannelTitle = tw.h1`
-text-slate-100
-text-xl
-flex
-items-end
-`;
-
-const Divider = tw.div`
-h-[1px]
-w-[95%]
-bg-gradient-to-r
-self-center
-via-[#4b5082]
-from-[#c5c7bd]
-to-[#972da0]
-`;
-
-const ChannelHeaderButtonContainer = tw.div`
-`;
-
-const ChannelHeaderButton = tw.div`
-w-7
-h-7
-flex
-justify-center
-items-center
-bg-red-100
-rounded-full
-cursor-pointer
-`;
-
-const VideoContainer = tw.div`
-w-full
-h-full
-flex
-flex-row-reverse
-`;
-
-const GridContainer = tw.div`
-text-white
-grid
-grid-cols-3
-gap-4
-p-6
-`;
-
-const StreamContainer = tw.div`
-flex
-justify-center
-items-center
-`;
-
-const ChatContainer = tw.div`
-w-0
-xl:min-w-96
-h-full
-rounded-lg
-text-white
-flex
-flex-col
-justify-between
-items-center
-bg-[#333333]
-overflow-hidden
-`;
-
-const ChatNavbar = tw.div`
-w-full
-h-10
-min-h-10
-bg-gray-900
-`;
-
-const ChatNavButton = tw.button`
-w-1/2
-h-full
-bg-slate-50/5
-text-slate-500
-disabled:bg-transparent
-disabled:text-slate-200
+relative
+box-border
 `;
 
 const ControlPanel = tw.div`
