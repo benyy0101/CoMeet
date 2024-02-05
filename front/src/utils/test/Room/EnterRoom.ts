@@ -6,17 +6,21 @@ export function func(lst: any): any {
   for (const elem of lst) {
     console.log("Test data is....", elem);
     const results = enterRoom(elem);
-    results.then((d) => {
-      console.log("Result is...", d);
-      // for (const i of d.content) {
-      //   console.log(i);
-      // }
-    });
+    results
+      .then((d) => {
+        console.log("Result is...", d);
+        // for (const i of d.content) {
+        //   console.log(i);
+        // }
+      })
+      .catch((d) => {
+        console.log("failed...", d.response.data);
+      });
   }
 }
 
 const data1: EnterRoomParams = {
-  roomId: 25,
+  roomId: 32,
   password: null,
 };
 

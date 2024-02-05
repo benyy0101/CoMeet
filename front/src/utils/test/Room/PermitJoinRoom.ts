@@ -6,29 +6,33 @@ export function func(lst: any): any {
   for (const elem of lst) {
     console.log("Test data is....", elem);
     const results = permitJoinRoom(elem);
-    results.then((d) => {
-      console.log("Result is...", d);
-      // for (const i of d.content) {
-      //   console.log(i);
-      // }
-    });
+    results
+      .then((d) => {
+        console.log("Result is...", d);
+        // for (const i of d.content) {
+        //   console.log(i);
+        // }
+      })
+      .catch((d) => {
+        console.log("failed...", d.response.data);
+      });
   }
 }
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
 const data1: PermitJoinRoomParams = {
-  roomId: 22,
+  roomId: 32,
   memberId: "movinggun",
 };
 
 const data2: PermitJoinRoomParams = {
-  roomId: 22,
+  roomId: 32,
   memberId: "damongsanga",
 };
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
 const data3: any = {
-  roomId: 22,
+  roomId: 32,
   memberId: "testmember",
 };
 

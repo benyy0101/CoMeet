@@ -7,7 +7,10 @@ export function func(lst: any): any {
     console.log(elem);
     const results = createRoom(elem);
     results.then((d) => {
-      console.log(d);
+      console.log("Result is...", d);
+      // for (const i of d.content) {
+      //   console.log(i);
+      // }
     });
   }
 }
@@ -20,8 +23,8 @@ const data1: CreateRoomParams = {
   type: "DISPOSABLE",
 };
 const data2: CreateRoomParams = {
-  title: "이것도 방제목",
-  description: "방방봐",
+  title: "영구방",
+  description: "영구없다",
   capacity: 15,
   constraints: "VIDEOON",
   type: "PERMANENT",
