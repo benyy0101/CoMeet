@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class KeyUtil {
-    public static String getRoomMemberKey(Long roomId, String memberId) {
-        return "ROOM_MEMBER:" + roomId + ":" + memberId;
+    public static String getRoomKey(Long roomId) {
+        return "ROOMID:" + roomId;
     }
 
     public static String getCurrentMemberKey(String memberId) {

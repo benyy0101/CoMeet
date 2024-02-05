@@ -42,8 +42,8 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .where(member.memberId.eq(memberId).and(til.date.between(from, to))) // 이번달 것만 가져옴
                 .distinct()
                 .transform(
-                        groupBy(member.memberId).list(
-                                        (Projections.constructor(
+                        groupBy(member.memberId).as(
+                                        Projections.constructor(
                                                 MemberDetailResponseDto.class,
                                                 member.memberId,
                                                 member.name,
@@ -57,9 +57,9 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                                                         TilSimpleResponseDto.class,
                                                         til.id,
                                                         til.date
-                                                )))
+                                                ))
                         )
-                )).stream().findFirst().orElse(null);
+                )).get(memberId);
         if (res == null) return null;
         // 팔로잉, 팔로워 수 계산
         res.setFollowerCount(countFollower(memberId));

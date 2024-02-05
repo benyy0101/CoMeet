@@ -1,6 +1,5 @@
 package com.a506.comeet.auth.service;
 
-import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.auth.AES128Util;
@@ -8,6 +7,7 @@ import com.a506.comeet.auth.JwtToken;
 import com.a506.comeet.auth.JwtTokenProvider;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
 import com.a506.comeet.auth.repository.JwtRedisRepository;
+import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.error.exception.RestApiException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +72,7 @@ public class AuthService {
 
     public String reissueAccessToken(String encryptedRefreshToken) {
         // 유저가 제공한 refreshToken이 있는지 확인
-        if (encryptedRefreshToken == null) throw new RestApiException(HEADER_REFRESH_TOKEN_NOT_EXISTS);
+        if (encryptedRefreshToken == null) throw new RestApiException(COOKIE_REFRESH_TOKEN_NOT_EXISTS);
         String refreshToken = aes128Util.decryptAes(encryptedRefreshToken);
         log.info("{}", refreshToken);
         // userId 정보를 가져와서 redis에 있는 refreshtoken과 같은지 확인

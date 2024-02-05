@@ -1,7 +1,7 @@
 package com.a506.comeet.auth;
 
-import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.auth.repository.JwtRedisRepository;
+import com.a506.comeet.common.util.KeyUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -126,8 +126,9 @@ public class JwtTokenProvider {
             log.info("Invalid JWT Token", e);
             throw new JwtException("Invalid JWT Token");
         } catch (ExpiredJwtException e) {
+            // access token이 expire될 시에 바로 reissue로 redirect
             log.info("Expired JWT Token", e);
-            throw new JwtException("Expired JWT Token");
+            throw new ExpiredJwtException(null, null,"Expired JWT Token");
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT Token", e);
             throw new JwtException("Unsupported JWT Token");

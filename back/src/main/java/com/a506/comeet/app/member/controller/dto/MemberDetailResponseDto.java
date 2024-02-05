@@ -1,6 +1,6 @@
 package com.a506.comeet.app.member.controller.dto;
 
-import com.a506.comeet.app.member.StudyTimeZone;
+import com.a506.comeet.app.member.MostStudyTime;
 import com.a506.comeet.common.enums.MemberFeature;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +35,7 @@ public class MemberDetailResponseDto {
     @Setter
     private Double monthStudyHour;
     @Setter
-    private StudyTimeZone studyTimeZone;
+    private MostStudyTime mostStudyTime;
     // 키워드 관련
     @Setter
     private List<MemberKeywordResponseDto> keywords;
