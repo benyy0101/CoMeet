@@ -9,7 +9,6 @@ import com.a506.comeet.app.board.repository.BoardRepository;
 import com.a506.comeet.app.board.repository.CommentRepository;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ public class CommentService {
     @Transactional
     public Comment create(CommentCreateRequestDto req, String memberId){
 
-        Board board = boardRepository.findById(req.getBoardId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(req.getBoardId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         Comment comment = Comment.builder()
                 .board(board)
@@ -44,7 +43,7 @@ public class CommentService {
 
     @Transactional
     public Comment update(CommentUpdateRequestDto req, Long commentId, String memberId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_COMMENT));
         authorityValidation(comment, memberId);
         comment.update(req);
         return comment;
@@ -52,7 +51,7 @@ public class CommentService {
 
     @Transactional
     public void delete(Long commentId, String memberId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_COMMENT));
         authorityValidation(comment, memberId);
         comment.delete();
     }
@@ -64,6 +63,6 @@ public class CommentService {
 
     public void authorityValidation(Comment comment, String memberId) {
         if (!comment.getWriter().getMemberId().equals(memberId))
-            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "댓글 작성자가 아닙니다");
     }
 }

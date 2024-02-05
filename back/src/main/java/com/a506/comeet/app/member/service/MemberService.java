@@ -6,11 +6,10 @@ import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
-import com.a506.comeet.metadata.service.MetadataService;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
-import com.a506.comeet.app.room.repository.RoomMemberRepository;
+import com.a506.comeet.metadata.service.MetadataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,14 +43,14 @@ public class MemberService {
                         .memberId(member.getMemberId())
                         .nickname(member.getNickname())
                         .email(member.getEmail()).build()) != 0)
-            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "중복되는 아이디, 닉네임, 이메일이 존재합니다");
 
         return memberRepository.save(member);
     }
 
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId){
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         member.updateMember(req);
     }
 
@@ -61,7 +60,7 @@ public class MemberService {
 
     @Transactional
     public void delete(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         member.delete();
         roomMemberRepository.deleteAll(member.getRoomMembers());
     }
