@@ -5,7 +5,10 @@ export function func(lst: any): any {
   console.log("test API");
   for (const elem of lst) {
     console.log(elem);
-    createRoom(elem);
+    const results = createRoom(elem);
+    results.then((d) => {
+      console.log(d);
+    });
   }
 }
 
@@ -24,4 +27,7 @@ const data2: CreateRoomParams = {
   type: "PERMANENT",
 };
 
-export let datas: Array<any> = [data1, data2];
+export let datas: Array<any> = [
+  //data1,
+  data2,
+];

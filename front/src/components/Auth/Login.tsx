@@ -1,24 +1,17 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { UserState } from "../../types";
-import { handleLogin } from "api/auth";
+import { handleLogin } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
 import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginQuery, JwtToken } from "models/Login.interface";
 import { login } from "store/reducers/userSlice";
-
-function Signup() {
+function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
-  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
-  const [email, setEmail] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [domain, setDomain] = useState("");
-
   const [error, setError] = useState(false);
 
   const {
@@ -37,6 +30,12 @@ function Signup() {
       setError(true);
     }
   }, [isError]);
+
+  useEffect(() => {
+    if(memberId === ""){
+      setError(false);
+    }
+  }, [memberId]);
 
   useEffect(() => {
     if (userData) {
@@ -64,71 +63,23 @@ function Signup() {
     <LoginWrapper>
       <LoginImage src={LoginBanner} alt="LoginBanner" />
       <LoginContainer>
-        <LoginTitle>회원가입</LoginTitle>
-
+        <LoginTitle>로그인</LoginTitle>
         <LoginForm onSubmit={loginHandler}>
           <InputContainer>
             <InputLabel>아이디</InputLabel>
             <LoginInput
               type="text"
-              placeholder="example1234"
+              placeholder="example"
               value={memberId}
               $option={error}
               onChange={(e) => setMemberId(e.target.value)}
             />
           </InputContainer>
-
-          <InputContainer>
-            <InputLabel>이름</InputLabel>
-            <LoginInput
-              type="text"
-              placeholder="김코밋"
-              value={name}
-              $option={error}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </InputContainer>
-
           <InputContainer>
             <InputLabel>비밀번호</InputLabel>
             <LoginInput
               $option={error}
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <InputLabel>비밀번호 확인</InputLabel>
-            <LoginInput
-              $option={error}
-              type="password"
-              value={passwordCheck}
-              onChange={(e) => setPasswordCheck(e.target.value)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <InputLabel>이메일</InputLabel>
-            <LoginInput
-              $option={error}
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <LoginInput
-              $option={error}
-              type="text"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <InputLabel>닉네임</InputLabel>
-            <LoginInput
-              $option={error}
-              type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -243,4 +194,4 @@ const LoginButton = tw.button`
   mt-4
   rounded-md
 `;
-export default Signup;
+export default Login;

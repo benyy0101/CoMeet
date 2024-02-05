@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import { logout, login } from "../store/reducers/userSlice";
 import store from "../store/index";
 
-const baseURL: string = process.env.REACT_APP_API_SERVER_URL ?? "";
+const baseURL: string = process.env.REACT_APP_API_SERVER_URL + "/api" ?? "";
 
 export const localAxios: AxiosInstance = axios.create({
   baseURL,
@@ -21,7 +21,7 @@ export const imgageAxios: AxiosInstance = axios.create({
 
 localAxios.interceptors.request.use(
   (config) => {
-    //console.log("interceptor");
+    console.log("interceptor");
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -35,13 +35,10 @@ localAxios.interceptors.request.use(
 
 localAxios.interceptors.response.use(
   async (response) => {
-    console.log(response);
+    // console.log(response);
     if (response.data.jwtToken) {
       sessionStorage.setItem("accessToken", response.data.jwtToken.accessToken);
-      sessionStorage.setItem(
-        "refreshToken",
-        response.data.jwtToken.refreshToken
-      );
+      sessionStorage.setItem("refreshToken", response.data.jwtToken.refreshToken);
       return response;
     } else if (response.data.code === "NOT_VALID_USER") {
       sessionStorage.removeItem("accessToken");
