@@ -3,7 +3,6 @@ package com.a506.comeet.app.room.controller.dto;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.RoomConstraints;
-import com.a506.comeet.common.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,6 @@ public class RoomSearchResponseDto {
     private Boolean isLocked;
     private String password;
     private RoomConstraints constraints;
-    private RoomType type;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
     private List<KeywordResponseDto> keywords;
@@ -42,7 +40,6 @@ public class RoomSearchResponseDto {
         this.isLocked = room.getIsLocked();
         this.password = room.getPassword();
         this.constraints = room.getConstraints();
-        this.type = room.getType();
         this.createdAt = room.getCreatedAt();
         this.keywords = room.getRoomKeywords().stream().map(a -> new KeywordResponseDto(a.getKeyword().getId(), a.getKeyword().getName())).toList();
     }

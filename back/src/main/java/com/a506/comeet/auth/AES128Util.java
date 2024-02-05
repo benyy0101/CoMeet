@@ -32,7 +32,7 @@ public class AES128Util {
     @PostConstruct
     public void init() throws NoSuchPaddingException, NoSuchAlgorithmException {
         SecureRandom secureRandom = new SecureRandom();
-        byte[] iv = new byte[16];   // 16bytes = 128bits
+        byte[] iv = new byte[16];
         secureRandom.nextBytes(iv);
         ivParameterSpec = new IvParameterSpec(iv);
         secretKeySpec = new SecretKeySpec(secretKey.getBytes(ENCODING_TYPE), "AES");
