@@ -62,7 +62,7 @@ export interface SearchRoomContent {
   isLocked: boolean;
   //password: string | null;
   constraints: ROOM_CONSTRAINTS;
-  createdAt: Date;
+  createdAt: string;
   keywords: number[];
 }
 
