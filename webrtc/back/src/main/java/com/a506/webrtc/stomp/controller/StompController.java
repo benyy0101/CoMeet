@@ -22,7 +22,7 @@ public class StompController {
 
     @MessageMapping("/chat/channel/send")
     @SendTo
-    public void sendChannelMsg(ChannelMessage channelMessage){
+    public void sendChannelMsg(ChannelMessage channelMessage) {
         System.out.println(channelMessage.getMessage());
         chatMessageService.create(channelMessage);
         simpMessagingTemplate.convertAndSend("/chat/channel/" + channelMessage.getChannelId(), channelMessage);
@@ -30,14 +30,14 @@ public class StompController {
 
     @MessageMapping("/chat/lounge/send")
     @SendTo
-    public void sendLoungeMsg(LoungeMessage loungeMessage){
+    public void sendLoungeMsg(LoungeMessage loungeMessage) {
         loungeMessageService.create(loungeMessage);
         simpMessagingTemplate.convertAndSend("/chat/lounge/" + loungeMessage.getLoungeId(), loungeMessage);
     }
 
     @MessageMapping("/room/info/send")
     @SendTo
-    public void sendRoomInfo(Event event){
+    public void sendRoomInfo(Event event) {
         simpMessagingTemplate.convertAndSend("/room/info/" + event.getRoomId(), event);
     }
 }
