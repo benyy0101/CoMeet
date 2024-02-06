@@ -57,8 +57,8 @@ public class RoomService {
     private final ObjectMapper mapper;
 
     @Transactional
-    public Room create(RoomCreateRequestDto req) {
-        Member member = memberRepository.findById(req.getManagerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+    public Room create(RoomCreateRequestDto req, String memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         Room room = Room.builder().
                 manager(member).

@@ -218,7 +218,7 @@ public class InitData {
                     .type(type)
                     .keywordIds(keywordIds)
                     .build();
-            roomService.create(req);
+            roomService.create(req, managerId);
         }
     }
 
