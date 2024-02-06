@@ -36,3 +36,16 @@ logging.level:
 
 aes:
   secret-key:
+
+cloud:
+  aws:
+    s3:
+      bucket:
+    credentials:
+      access-key:
+      secret-key:
+    region:
+      static:
+      auto:
+    stack:
+      auto:

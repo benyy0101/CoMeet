@@ -4,18 +4,12 @@ import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
 import com.a506.comeet.app.member.MemberUtil;
-import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/board")

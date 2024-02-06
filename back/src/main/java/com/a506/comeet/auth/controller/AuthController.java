@@ -19,7 +19,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -62,7 +61,7 @@ public class AuthController {
     }
 
     @GetMapping("/reissue")
-    public ResponseEntity<String> reissue(HttpServletRequest req) throws UnsupportedEncodingException {
+    public ResponseEntity<String> reissue(HttpServletRequest req) {
         log.info("redirected to reissue");
         Cookie[] cookies = req.getCookies();
         if (cookies == null) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "쿠키가 존재하지 않습니다");

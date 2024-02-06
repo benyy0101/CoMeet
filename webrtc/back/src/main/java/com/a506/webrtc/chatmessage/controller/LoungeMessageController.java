@@ -16,8 +16,8 @@ public class LoungeMessageController {
     private final LoungeMessageService loungeMessageService;
 
     @GetMapping("/messages")
-    public ResponseEntity<?> getMessages(@RequestParam(name = "channelId") Long channelId){
-        System.out.println(channelId);
-        return ResponseEntity.ok(loungeMessageService.getMessagesByLoungeId(channelId));
+    public ResponseEntity<?> getMessages(@RequestParam(name = "loungeId") Long loungeId){
+        System.out.println(loungeId);
+        return ResponseEntity.ok(loungeMessageService.getMessagesByLoungeId(loungeId));
     }
 }

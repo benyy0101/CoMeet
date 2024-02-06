@@ -79,7 +79,7 @@ public class SimpleTests {
 
         Room room = roomService.create(req);
 
-        Room foundRoom = roomRepository.findByIdAndIsDeletedFalse(room.getId()).get();
+        Room foundRoom = roomRepository.findById(room.getId()).get();
 
         log.info("room : {}", foundRoom.getTitle());
 
