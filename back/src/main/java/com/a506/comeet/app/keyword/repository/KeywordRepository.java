@@ -11,4 +11,5 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     Optional<Keyword> findByIdAndIsDeletedFalse(Long id);
 
+    Boolean existsByName(String name);
 }

@@ -2,8 +2,6 @@ package com.a506.comeet.app.room.controller.dto;
 
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +10,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +20,7 @@ import java.util.List;
 public class RoomCreateRequestDto {
 
     @Setter
-    private String mangerId;
+    private String managerId;
     @NotNull
     @Size(min = 2, max = 30, message = "이름은 2자 이상, 30자 이하여야 합니다.")
     private String title;
@@ -38,8 +35,8 @@ public class RoomCreateRequestDto {
     private RoomType type;
     private List<Long> keywordIds;
 
-    public RoomCreateRequestDto(String mangerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, List<Long> keywordIds) {
-        this.mangerId = mangerId;
+    public RoomCreateRequestDto(String managerId, String title, String description, int capacity, RoomConstraints constraints, RoomType type, List<Long> keywordIds) {
+        this.managerId = managerId;
         this.title = title;
         this.description = description;
         this.capacity = capacity;

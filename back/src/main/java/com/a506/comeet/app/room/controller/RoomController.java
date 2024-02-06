@@ -1,8 +1,5 @@
 package com.a506.comeet.app.room.controller;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import com.a506.comeet.app.member.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
@@ -11,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -29,7 +25,7 @@ public class RoomController {
     @PostMapping("")
     public ResponseEntity<Long> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
-        req.setMangerId(memberId);
+        req.setManagerId(memberId);
         Room created = roomService.create(req);
         return ResponseEntity.ok(created.getId());
     }

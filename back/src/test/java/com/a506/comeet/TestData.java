@@ -84,7 +84,7 @@ public class TestData {
     @Rollback(value = false)
     void init2(){
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                mangerId("멤버1000").
+                managerId("멤버1000").
                 title("title").description("설명").capacity(1000).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         Long roomId = roomService.create(reqR).getId();
@@ -112,7 +112,7 @@ public class TestData {
         //방 생성
         for (int i = 1; i <= 1000; i++) {
             RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                    mangerId("멤버1000").
+                    managerId("멤버1000").
                     title("title"+i).description("설명"+i).capacity(9).constraints(RoomConstraints.FREE).keywordIds(List.of(keywordId1, keywordId2, keywordId3)).type(RoomType.PERMANENT).
                     build();
             roomService.create(reqR);

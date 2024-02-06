@@ -58,7 +58,7 @@ public class RoomService {
 
     @Transactional
     public Room create(RoomCreateRequestDto req) {
-        Member member = memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(req.getManagerId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         Room room = Room.builder().
                 manager(member).
