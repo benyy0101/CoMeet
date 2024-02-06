@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public interface TilCustomRepository {
 
-    Boolean tilWithMemberAndDateExists(String memberId, LocalDate date);
+    boolean tilWithMemberAndDateExists(String memberId, LocalDate date);
 
     TilListResponseDto tilWithSearchRequest(TilSearchRequestDto req, String memberId);
 }
