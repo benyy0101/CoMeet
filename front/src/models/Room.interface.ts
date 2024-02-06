@@ -1,3 +1,4 @@
+import { Pageable } from "models/Util";
 import { ROOM_CONSTRAINTS, ROOM_TYPE, ROOM_SORTBY } from "models/Enums.type";
 
 export interface CreateRoomParams {
@@ -68,6 +69,7 @@ export interface SearchRoomContent {
 
 export interface SearchRoomResponse {
   content: SearchRoomContent[];
+  pageable: Pageable;
 }
 
 export interface DeleteRoomParams {

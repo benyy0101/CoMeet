@@ -1,3 +1,5 @@
+import { Pageable } from "./Util";
+
 export interface CreateCommentParams {
   boardId: number;
   content: string;
@@ -22,7 +24,7 @@ export interface SearchCommentContent {
 
 export interface SearchCommentResponse {
   content: SearchCommentContent[];
-  pageable: Object;
+  pageable: Pageable;
 }
 
 export interface ModifyCommentParams {
