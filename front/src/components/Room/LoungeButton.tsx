@@ -1,33 +1,33 @@
-import { UserGroupIcon } from "@heroicons/react/24/solid";
+import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/solid";
+import { ILounge } from "models/Lounge.interface";
 import { useState } from "react";
 import tw from "tailwind-styled-components";
 
 interface IProps {
-  id: string;
-  name: string;
+  lounge: ILounge;
   disabled: boolean;
-  moveChannel: (channelId: string, channelName: string) => void;
+  moveLounge: (lounge: ILounge) => void;
 }
 
-export default function ChannelButton({ id, name, disabled, moveChannel }: IProps) {
+export default function LoungeButton({ lounge, disabled, moveLounge }: IProps) {
   const [isIn, setIsIn] = useState<boolean>(false);
   const isInHandler = () => {
     setIsIn(!isIn);
   };
   return (
-    <ChannelButtonContainer>
+    <LoungeButtonContainer>
       <IconButton
         disabled={disabled}
         onClick={() => {
-          moveChannel(id, name);
+          moveLounge(lounge);
         }}
         onMouseEnter={isInHandler}
         onMouseLeave={isInHandler}
       >
-        <UserGroupIcon className="text-white w-8 h-8" />
-        {isIn ? <ChannelButtonTitle>{name}</ChannelButtonTitle> : null}
+        <ChatBubbleOvalLeftEllipsisIcon className="text-white w-8 h-8" />
+        {isIn ? <LoungeButtonTitle>{lounge.name}</LoungeButtonTitle> : null}
       </IconButton>
-    </ChannelButtonContainer>
+    </LoungeButtonContainer>
   );
 }
 
@@ -47,13 +47,13 @@ relative
 z-20
 `;
 
-const ChannelButtonContainer = tw.div`
+const LoungeButtonContainer = tw.div`
 flex
 flex-col
 items-center
 `;
 
-const ChannelButtonTitle = tw.h1`
+const LoungeButtonTitle = tw.h1`
 absolute
 left-12
 text-sm

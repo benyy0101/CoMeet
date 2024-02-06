@@ -1,3 +1,8 @@
+export interface ILounge {
+  loungeId: number; //필수
+  name: string; //필수
+}
+
 export interface CreateLoungeParams {
   roomId: number; //필수
   name: string; //필수

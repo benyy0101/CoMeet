@@ -6,15 +6,24 @@ import { Stomp } from "@stomp/stompjs";
 import axios from "axios";
 import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import ChatRow from "./ChatRow";
+import { formatDate } from "utils/FormatDate";
 
 interface IProps {
-  channelId: string;
+  chatDomain: string;
+  id: string;
   username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({ channelId, username, setMessage, message }: IProps) {
+export default function Chat({
+  chatDomain,
+  id,
+  username,
+  setMessage,
+  message,
+}: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -22,9 +31,10 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/channel/messages?channelId=${channelId}`,
+        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
       )
       .then((response) => {
@@ -32,7 +42,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
 
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
-            const sock = new SockJS(`${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`);
+            const sock = new SockJS(
+              `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
+            );
             return sock;
           });
 
@@ -40,9 +52,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
             {},
             () => {
               chatStompClient.current.subscribe(
-                `/chat/channel/${channelId}`,
+                `/chat/${chatDomain}/${id}`,
                 (e: any) => showMessage(JSON.parse(e.body)),
-                { id: "chat" }
+                { id: chatDomain }
               );
             },
             (e: any) => alert("에러발생!!!!!!")
@@ -55,11 +67,13 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
 
     return () => {
       if (chatStompClient.current) {
-        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        chatStompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         chatStompClient.current = null;
       }
     };
-  }, [channelId]);
+  }, [id]);
 
   //화면에 메시지를 표시하는 함수
   function showMessage(data: any) {
@@ -68,22 +82,33 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
   }
 
   //메시지 브로커로 메시지 전송
-  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     e.preventDefault();
 
     const data = {
-      channelId,
+      [`${chatDomain}Id`]: id,
       memberId: "heeyeon3050",
       nickname: username,
       message,
       imageUrl: "",
-      createdAt: new Date().toString(),
+      profileImage:
+        "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png",
+      createdAt: formatDate(new Date()),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send("/app/chat/channel/send", {}, JSON.stringify(data));
+    chatStompClient.current.send(
+      `/app/chat/${chatDomain}/send`,
+      {},
+      JSON.stringify(data)
+    );
     setMessage("");
   };
-  const { handlePressEnterFetch } = usePressEnterFetch({ handleSubmit, isSubmitting });
+  const { handlePressEnterFetch } = usePressEnterFetch({
+    handleSubmit,
+    isSubmitting,
+  });
 
   useEffect(() => {
     const chatcontent = document.getElementById("chatcontent");
@@ -93,7 +118,9 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
     }
   }, [rows]);
 
-  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    e
+  ) => {
     setMessage(e.target.value);
   };
 
@@ -113,8 +140,8 @@ export default function Chat({ channelId, username, setMessage, message }: IProp
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
-          {rows.map((r, i) => (
-            <ChatRow key={i}>{`${r.nickname} : ${r.message}`}</ChatRow>
+          {rows.map((r) => (
+            <ChatRow key={r.id} chat={r} />
           ))}
         </ChatContent>
       </ChatContentContainer>
@@ -127,6 +154,7 @@ w-full
 h-full
 flex
 flex-col-reverse
+text-white
 `;
 
 const ChatInputContainer = tw.form`
@@ -153,12 +181,9 @@ flex-grow-[1]
 
 const ChatContent = tw.div`
 px-4
-`;
-
-const ChatRow = tw.pre`
-w-full
-min-h-10
-text-wrap
+flex
+flex-col
+space-y-10
 `;
 
 const ChatSubmitButton = tw.button`

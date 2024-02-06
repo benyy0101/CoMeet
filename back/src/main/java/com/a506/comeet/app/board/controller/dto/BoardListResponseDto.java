@@ -56,6 +56,7 @@ public class BoardListResponseDto {
 			.writerNickname(writer.getNickname())
 			.writerImage(writer.getProfileImage())
 			.createdAt(board.getCreatedAt())
+			.updatedAt(board.getUpdatedAt())
 			.build();
 	}
 }

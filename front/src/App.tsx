@@ -21,6 +21,7 @@ import Login from "./components/Auth/Login";
 import { UserState } from "./types";
 import { UseSelector, useSelector } from "react-redux";
 import ProfileEdit from "pages/ProfileEdit";
+import RoomCreate from "pages/RoomCreate";
 
 function App() {
   //임시
@@ -42,6 +43,7 @@ function App() {
             <Route path="/" element={<Mainpage />} />
             {!isLogin ? (
               <>
+                <Route path="/room-regist" element={<RoomCreate />} />
                 <Route path="/roomlist" element={<RoomList />} />
 
                 {/* 커뮤니티인데 곧 삭제 예정... */}

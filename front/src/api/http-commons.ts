@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { logout, login } from "../store/reducers/userSlice";
 import store from "../store/index";
-
-const baseURL: string = process.env.REACT_APP_API_SERVER_URL + "/api" ?? "";
+//DO NOT TOUCH THIS SHIT
+const baseURL: string = process.env.REACT_APP_API_SERVER_URL ?? "";
 
 export const localAxios: AxiosInstance = axios.create({
   baseURL,
@@ -38,7 +38,10 @@ localAxios.interceptors.response.use(
     // console.log(response);
     if (response.data.jwtToken) {
       sessionStorage.setItem("accessToken", response.data.jwtToken.accessToken);
-      sessionStorage.setItem("refreshToken", response.data.jwtToken.refreshToken);
+      sessionStorage.setItem(
+        "refreshToken",
+        response.data.jwtToken.refreshToken
+      );
       return response;
     } else if (response.data.code === "NOT_VALID_USER") {
       sessionStorage.removeItem("accessToken");

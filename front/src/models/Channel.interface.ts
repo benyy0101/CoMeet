@@ -1,3 +1,8 @@
+export interface IChannel {
+  channelId: number; //필수
+  name: string; //필수
+}
+
 export interface CreateChannelParams {
   roomId: number; //필수
   name: string; //필수
