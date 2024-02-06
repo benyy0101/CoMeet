@@ -44,6 +44,7 @@ function RoomCreate() {
   return (
     <Wrapper>
       <Form onSubmit={submitHandler}>
+        <Title>방 만들기</Title>
         <InputUnit>
           <Label>방 이름</Label>
           <TextInput
@@ -101,15 +102,34 @@ const Wrapper = tw.div`
     justify-center
     items-center
 `;
-
+const Title = tw.h1`
+    text-4xl
+    text-white
+    mb-4
+`;
 const Form = tw.form`
+w-1/3
+space-y-4
 `;
 
-const InputUnit = tw.div``;
+const InputUnit = tw.div`
+flex
+flex-col
+gap-2
 
-const Label = tw.label``;
+`;
 
-const TextInput = tw.input``;
+const Label = tw.label`
+text-white
+
+`;
+
+const TextInput = tw.input`
+p-2
+mr-2
+bg-transparent
+focus:outline-none
+`;
 
 const SubmitButton = tw.button``;
 

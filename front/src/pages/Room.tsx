@@ -35,6 +35,14 @@ import { createLounge } from "api/Lounge";
 import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
+import { enterRoom } from "api/Room";
+import {
+  EnterRoomChannel,
+  EnterRoomLounge,
+  EnterRoomParams,
+  EnterRoomResponse,
+} from "models/Room.interface";
+import { query } from "express";
 
 interface IFilter {
   name: string;
@@ -76,14 +84,14 @@ export const Room = () => {
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
   const [sideToggle, setSideToggle] = useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
-  const [channels, setChannels] = useState<IChannel[]>([]);
-  const [lounges, setLounges] = useState<ILounge[]>([]);
+  const [channels, setChannels] = useState<EnterRoomChannel[]>([]);
+  const [lounges, setLounges] = useState<EnterRoomLounge[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>({
+  const [currentLounge, setCurrentLounge] = useState<EnterRoomLounge>({
     loungeId: 0,
     name: "",
   });
@@ -551,6 +559,34 @@ export const Room = () => {
   const leaveRoom = () => {
     leaveSession();
   };
+
+  // const getRoom = async () => {
+
+  //   const req: EnterRoomParams = {
+  //     roomId: parseInt(roomId!),
+  //     password: null,
+  //   };
+  //   const res = await enterRoom(req);
+  //   console.log(res);
+  //   setChannels(() => [...res.channels]);
+  //   setLounges(() => [...res.lounges]);
+  // };
+
+  const {
+    data: roomData,
+    isError: roomError,
+    isLoading: roomLoading,
+  } = useQuery<EnterRoomResponse, Error>({
+    queryKey: ["room"],
+    queryFn: () => enterRoom({ roomId: parseInt(roomId!), password: null }),
+  });
+
+  useEffect(() => {
+    if (roomData) {
+      setChannels(() => [...roomData.channels]);
+      setLounges(() => [...roomData.lounges]);
+    }
+  }, [roomData]);
   return (
     <RoomContainer>
       <RoomHeader>
