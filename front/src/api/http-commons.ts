@@ -12,7 +12,7 @@ export const localAxios: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-export const imgageAxios: AxiosInstance = axios.create({
+export const imageAxios: AxiosInstance = axios.create({
   baseURL,
   headers: {
     "Content-Type": "multipart/form-data",
@@ -38,7 +38,10 @@ localAxios.interceptors.response.use(
     // console.log(response);
     if (response.data.jwtToken) {
       sessionStorage.setItem("accessToken", response.data.jwtToken.accessToken);
-      sessionStorage.setItem("refreshToken", response.data.jwtToken.refreshToken);
+      sessionStorage.setItem(
+        "refreshToken",
+        response.data.jwtToken.refreshToken
+      );
       return response;
     } else if (response.data.code === "NOT_VALID_USER") {
       sessionStorage.removeItem("accessToken");

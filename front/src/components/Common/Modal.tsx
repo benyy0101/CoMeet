@@ -4,7 +4,6 @@ import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
-import { ImageModify } from "components/Mypage/ImageModify";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -18,8 +17,6 @@ function Modal(props: ModalProps) {
   const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
   const [isRoomCreate, setIsRoomCreate] = React.useState<boolean>(false);
-  const [isModifyProfileImg, setIsModifyProfileImg] =
-    React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (option === "login") {
@@ -40,12 +37,6 @@ function Modal(props: ModalProps) {
       setIsRoomConfirm(false);
       setIsLogin(false);
       setIsRoomCreate(false);
-    } else if (option === "modifyProfile") {
-      setIsModifyProfileImg(true);
-      setIsSignup(false);
-      setIsRoomConfirm(false);
-      setIsLogin(false);
-      setIsRoomCreate(false);
     }
   }, [option]);
 
@@ -59,7 +50,6 @@ function Modal(props: ModalProps) {
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
         {isSignup ? <Signup></Signup> : null}
-        {isModifyProfileImg ? <ImageModify></ImageModify> : null}
       </ModalContainer>
     </Wrapper>
   );
