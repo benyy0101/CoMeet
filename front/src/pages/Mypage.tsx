@@ -6,9 +6,30 @@ import { MyStudyTime } from "components/Mypage/MyStudyTime";
 import { MyTILCalendar } from "components/Mypage/MyTILCalendar";
 import { MySumTime } from "components/Mypage/MySumTime";
 
+import { useQuery } from "@tanstack/react-query";
+
 import tw from "tailwind-styled-components";
+import { MemberQuery } from "models/Member.interface";
+import { handleMember } from "api/Member";
+import { useSelector } from "react-redux";
+
+import userSlice from "store/reducers/userSlice";
 
 export const Mypage = () => {
+  const memberId = useSelector((state: any) => state.user.user.memberId);
+  console.log(memberId);
+
+  const {
+    data: myPageData,
+    isError,
+    isLoading,
+    refetch,
+  } = useQuery<MemberQuery, Error>({
+    queryKey: ["user"],
+    queryFn: () => handleMember(memberId),
+    enabled: false,
+  });
+
   return (
     <AllContainer>
       {/* 왼쪽 부분 - 프로필, 키워드, 공부타입, 공부타임 */}

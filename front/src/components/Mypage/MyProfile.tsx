@@ -54,10 +54,6 @@ export const MyProfile = () => {
     }
   });
 
-  const imageSave = function (url: string) {
-    setImageUrl(url);
-  };
-
   return (
     <TotalContainer>
       <ProfileModButton>

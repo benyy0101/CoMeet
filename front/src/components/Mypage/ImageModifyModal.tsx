@@ -57,18 +57,7 @@ function ImageModifyModal(props: ModalProps) {
   //업로드
   const handleUpload = async function () {
     if (selectedFile) {
-      try {
-        const response = await uploadImage(selectedFile);
-        if (response && response.url) {
-          // console.log(response.url);
-          setImageUrl(response.url);
-          toggleModal();
-        } else {
-          alert("이미지를 업로드하는데 실패했습니다. 다시 시도해주세요.");
-        }
-      } catch (error) {
-        console.error("이미지 업로드 중 오류가 발생했습니다.", error);
-      }
+      //axios 해야 함
     } else {
       alert("업로드 할 이미지를 선택해주세요.");
     }
