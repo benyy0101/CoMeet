@@ -17,13 +17,7 @@ interface IProps {
   message: string;
 }
 
-export default function Chat({
-  chatDomain,
-  id,
-  username,
-  setMessage,
-  message,
-}: IProps) {
+export default function Chat({ chatDomain, id, username, setMessage, message }: IProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -31,7 +25,7 @@ export default function Chat({
   useEffect(() => {
     axios
       .get(
-        `${process.env.REACT_APP_APPLICATION_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
+        `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}chat/${chatDomain}/messages?${chatDomain}Id=${id}`,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -42,9 +36,7 @@ export default function Chat({
 
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
-            const sock = new SockJS(
-              `${process.env.REACT_APP_APPLICATION_SERVER_URL}stomp`
-            );
+            const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
             return sock;
           });
 
@@ -67,9 +59,7 @@ export default function Chat({
 
     return () => {
       if (chatStompClient.current) {
-        chatStompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
+        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
         chatStompClient.current = null;
       }
     };
@@ -82,9 +72,7 @@ export default function Chat({
   }
 
   //메시지 브로커로 메시지 전송
-  const handleSubmit = (
-    e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
-  ) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
 
     const data = {
@@ -98,11 +86,7 @@ export default function Chat({
       createdAt: formatDate(new Date()),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send(
-      `/app/chat/${chatDomain}/send`,
-      {},
-      JSON.stringify(data)
-    );
+    chatStompClient.current.send(`/app/chat/${chatDomain}/send`, {}, JSON.stringify(data));
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({
@@ -118,9 +102,7 @@ export default function Chat({
     }
   }, [rows]);
 
-  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (
-    e
-  ) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setMessage(e.target.value);
   };
 
