@@ -44,13 +44,19 @@ function CreateChannel(props: CreateChannelProps) {
     setIsChannelFocused(false);
   };
 
+  useEffect(() => {
+    console.log(isChannelFocused);
+  }, [isChannelFocused]);
+
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (title && isChannelFocused) {
+      console.log("channel");
       addChannel!(title);
       setTitle("");
       setIsAddBtnFocused(false);
     } else if (title && !isChannelFocused) {
+      console.log("lounge");
       addLounge!(title);
       setTitle("");
       setIsAddBtnFocused(false);

@@ -100,38 +100,38 @@ export interface EnterRoomParams {
 }
 
 export interface EnterRoomMember {
-  memberId: String;
-  nickname: String;
-  profileImage: String;
-  feature: String;
+  memberId: string;
+  nickname: string;
+  profileImage: string;
+  feature: string;
 }
 
 export interface EnterRoomLounge {
   loungeId: number;
-  name: String;
+  name: string;
 }
 export interface EnterRoomChannel {
   channelId: number;
-  name: String;
+  name: string;
 }
 export interface EnterRoomKeyword {
   keywordId: number;
-  name: String;
+  name: string;
 }
 
 export interface EnterRoomResponse {
-  managerId: String;
-  managerNickname: String;
-  title: String;
-  description: String;
-  link: String;
-  room_image: String;
-  notice: String;
+  managerId: string;
+  managerNickname: string;
+  title: string;
+  description: string;
+  link: string;
+  room_image: string;
+  notice: string;
   mcount: number;
   capacity: number;
-  // 안들어가도 될 수도 keyword: String; // 아직 구현 안함
+  // 안들어가도 될 수도 keyword: string; // 아직 구현 안함
   isLocked: boolean;
-  password: String; // null 가능
+  password: string; // null 가능
   constraints: ROOM_CONSTRAINTS;
   type: ROOM_TYPE;
   members: EnterRoomMember[];
