@@ -87,12 +87,13 @@ export const enterRoom = async (
   return response.data;
 };
 
-export const leaveRoom = async (
-  params: LeaveRoomParams
-): Promise<LeaveRoomResponse> => {
+export const leaveRoom = async (params: LeaveRoomParams) => {
   const { roomId } = params;
   const url = `room/${roomId}/enter`;
+  const data = {
+    keywords: "",
+  };
   //이거 잘되는지 확인 필요
-  const response = await localAxios.delete(url, { data: params });
+  const response = await localAxios.delete(url, { data: data });
   return response.data;
 };

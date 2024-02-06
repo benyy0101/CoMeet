@@ -1,4 +1,5 @@
 import { MEMEBER_FEATURE } from "./Enums.type";
+import { Pageable } from "./Util";
 
 export interface FollowParams {
   memberId: string;
@@ -28,7 +29,7 @@ export interface FollowContent {
 }
 export interface ListFollowingResponse {
   content: FollowContent[];
-  pageable: Object;
+  pageable: Pageable;
 }
 
 export interface ListFollowerParams {
@@ -38,5 +39,5 @@ export interface ListFollowerParams {
 }
 export interface ListFollowerResponse {
   content: FollowContent[];
-  pageable: Object;
+  pageable: Pageable;
 }
