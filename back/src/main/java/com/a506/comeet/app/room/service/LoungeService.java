@@ -6,6 +6,7 @@ import com.a506.comeet.app.room.entity.Lounge;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.LoungeRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +63,15 @@ public class LoungeService {
 
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, lounge.getRoom());
+        // 방에는 최소 1개의 라운지가 남아있어야 함
+        atLeastOneLoungeValitadion(lounge.getRoom());
 
         lounge.delete();
+    }
+
+    private void atLeastOneLoungeValitadion(Room room) {
+        if (loungeRepository.countByRoom(room) <= 1)
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "최소 1개의 라운지가 필요합니다");
     }
 
     private void managerAuthorization(String memberId, Room room){

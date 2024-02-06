@@ -50,7 +50,7 @@ public class SimpleTests {
 
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         Room newRoom = roomService.create(reqR);
@@ -73,7 +73,7 @@ public class SimpleTests {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
