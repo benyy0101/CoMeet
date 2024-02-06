@@ -49,7 +49,7 @@ public class MemberController {
             @RequestParam("profileImageFile") MultipartFile multipartFile) {
         log.info("profileImageFile : {}", multipartFile);
         try{
-            String url = s3UploadService.saveFile(multipartFile, "roomImage/");
+            String url = s3UploadService.saveFile(multipartFile, "profileImage/");
             log.info("url : {}", url);
             return ResponseEntity.ok(url);
         } catch (IOException e) {

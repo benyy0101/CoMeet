@@ -53,10 +53,10 @@ public class MemberService {
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        if (req.getProfileImage() != null) {
-            String originalProfileImage = member.getProfileImage();
-            s3UploadService.deleteImage(originalProfileImage, "profileImage");
-        }
+//        if (req.getProfileImage() != null) {
+//            String originalProfileImage = member.getProfileImage();
+//            s3UploadService.deleteImage(originalProfileImage, "profileImage");
+//        }
         member.updateMember(req);
     }
 

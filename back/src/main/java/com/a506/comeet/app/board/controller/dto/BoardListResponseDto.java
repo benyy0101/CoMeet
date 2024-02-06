@@ -6,6 +6,7 @@ import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
