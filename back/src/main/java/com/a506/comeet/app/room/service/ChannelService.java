@@ -2,13 +2,12 @@ package com.a506.comeet.app.room.service;
 
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.ChannelUpdateRequestDto;
-import com.a506.comeet.app.room.repository.ChannelRepository;
-import com.a506.comeet.app.room.repository.RoomRepository;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
-import com.a506.comeet.error.errorcode.CustomErrorCode;
-import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.app.room.entity.Channel;
 import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.app.room.repository.ChannelRepository;
+import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.error.errorcode.CustomErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,13 +26,13 @@ public class ChannelService {
 
     @Transactional
     public Channel create(ChannelCreateRequestDto req, String memberId) {
-        Room room = roomRepository.findByIdAndIsDeletedFalse(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, room);
 
         // 이름 중복 확인 로직
         for(Channel c : room.getChannels()){
-            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 채널 이름이 중복됩니다");
         }
 
         Channel channel = channelRepository.save(Channel.builder().name(req.getName()).room(room).build());
@@ -44,14 +43,14 @@ public class ChannelService {
 
     @Transactional
     public void update(ChannelUpdateRequestDto req, Long channelId, String memberId) {
-        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_CHANNEL));
         Room room = channel.getRoom();
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, room);
 
         // 이름 중복 확인 로직
         for(Channel c : room.getChannels()){
-            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 채널 이름이 중복됩니다");
         }
         channel.update(req);
         channelRepository.save(channel);
@@ -59,7 +58,7 @@ public class ChannelService {
 
     @Transactional
     public void delete(Long channelId, String memberId) {
-        Channel channel = channelRepository.findByIdAndIsDeletedFalse(channelId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_CHANNEL));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, channel.getRoom());
         channel.delete();
@@ -67,6 +66,6 @@ public class ChannelService {
 
     private void managerAuthorization(String memberId, Room room){
         if (!memberId.equals(room.getManager().getMemberId()))
-            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "방장이 아닙니다");
     }
 }

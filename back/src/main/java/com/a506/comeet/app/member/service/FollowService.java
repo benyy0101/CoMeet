@@ -34,7 +34,7 @@ public class FollowService {
         if (req.getMemberId().equals(fromId)) return null;
         Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE);
+        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 팔로우하고 있습니다");
         Follow created = followRepository.save(new Follow(from, to));
         return created.getTo().getMemberId();
     }
@@ -44,7 +44,7 @@ public class FollowService {
         if (req.getMemberId().equals(fromId)) return false;
         Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        Follow find = followRepository.findByFromAndTo(from, to).orElseThrow(() -> new RestApiException(CommonErrorCode.WRONG_REQUEST));
+        Follow find = followRepository.findByFromAndTo(from, to).orElseThrow(() -> new RestApiException(CommonErrorCode.WRONG_REQUEST, "해당 유저를 팔로우하고 있지 않습니다"));
         followRepository.delete(find);
         return true;
     }

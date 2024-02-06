@@ -1,20 +1,17 @@
 package com.a506.comeet.app.board.controller.dto;
 
 import com.a506.comeet.app.board.entity.Board;
-import com.a506.comeet.app.board.entity.Comment;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder

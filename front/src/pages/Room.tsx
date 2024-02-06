@@ -77,24 +77,32 @@ const filterType: IFilter[] = [
   },
 ];
 
+const initialChannels: IChannel[] = [
+  { channelId: 1, name: "채널 1" },
+  { channelId: 2, name: "채널 2" },
+  { channelId: 3, name: "채널 3" },
+];
+const initialLounges: ILounge[] = [
+  { loungeId: 1, name: "라운지 1" },
+  { loungeId: 2, name: "라운지 2" },
+  { loungeId: 3, name: "라운지 3" },
+];
+
 export const Room = () => {
   const { roomId } = useParams();
 
   const userInfo = useSelector((state: any) => state.user);
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
-  const [sideToggle, setSideToggle] = useState<boolean>(false);
+  const [sideToggle, setSideToggle] = useState<boolean>(true);
   const [modal, setModal] = useState<boolean>(false);
-  const [channels, setChannels] = useState<EnterRoomChannel[]>([]);
-  const [lounges, setLounges] = useState<EnterRoomLounge[]>([]);
+  const [channels, setChannels] = useState<IChannel[]>(initialChannels);
+  const [lounges, setLounges] = useState<ILounge[]>(initialLounges);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<EnterRoomLounge>({
-    loungeId: 0,
-    name: "",
-  });
+  const [currentLounge, setCurrentLounge] = useState<ILounge>(initialLounges[0]);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -122,9 +130,7 @@ export const Room = () => {
   useEffect(() => {
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
-        const sock = new SockJS(
-          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
-        );
+        const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
         return sock;
       });
 
@@ -140,9 +146,7 @@ export const Room = () => {
     }
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
+        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
         stompClient.current = null;
       }
     };
@@ -186,6 +190,7 @@ export const Room = () => {
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
+    setInLounge(false);
     if (sessionId !== mySessionId) {
       setIsLoading(true);
       leaveSession();
@@ -227,9 +232,7 @@ export const Room = () => {
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) =>
-      deleteSubscriber(event.stream.streamManager)
-    );
+    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -255,9 +258,7 @@ export const Room = () => {
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) =>
-        prev.filter((id) => id !== event.connection.connectionId)
-      );
+      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
     });
 
     setSession(mySession);
@@ -284,9 +285,7 @@ export const Room = () => {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -299,11 +298,7 @@ export const Room = () => {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -329,9 +324,7 @@ export const Room = () => {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -395,9 +388,7 @@ export const Room = () => {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   useEffect(() => {
@@ -618,34 +609,27 @@ export const Room = () => {
       <RoomContent>
         <RoomSidebar>
           <SideBarToggler onClick={toggleSideBar}>
-            {sideToggle ? (
-              <ChevronDoubleLeftIcon />
-            ) : (
-              <ChevronDoubleRightIcon />
-            )}
+            {sideToggle ? <ChevronDoubleLeftIcon /> : <ChevronDoubleRightIcon />}
           </SideBarToggler>
           {sideToggle ? (
             <SideWrapper>
               <SideContent>
                 <SideTitle>라운지</SideTitle>
-                {lounges.map((c) => (
-                  <ChannelButton
-                    key={c.loungeId}
-                    disabled={
-                      isLoading || mySessionId === c.loungeId.toString()
-                    }
-                    id={c.loungeId.toString()}
-                    name={c.name}
-                    moveChannel={moveChannel}
+                {lounges.map((l) => (
+                  <LoungeButton
+                    key={l.loungeId}
+                    active={inLounge && currentLounge.loungeId === l.loungeId}
+                    disabled={isLoading || (inLounge && currentLounge.loungeId === l.loungeId)}
+                    lounge={l}
+                    moveLounge={moveLounge}
                   />
                 ))}
                 <SideTitle>채널</SideTitle>
                 {channels.map((c) => (
                   <ChannelButton
                     key={c.channelId}
-                    disabled={
-                      isLoading || mySessionId === c.channelId.toString()
-                    }
+                    active={mySessionId === c.channelId.toString()}
+                    disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
                     id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
@@ -700,18 +684,14 @@ export const Room = () => {
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-          >
+          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsScreenShared(!isScreenShared)}
-          >
+          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -725,10 +705,7 @@ export const Room = () => {
                 onClick={() => setFilterApplied(false)}
               />
             ) : (
-              <SparklesIcon
-                className="w-8 h-8"
-                onClick={() => setFilterMenuOpen(true)}
-              />
+              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>

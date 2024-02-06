@@ -1,6 +1,7 @@
 package com.a506.comeet.app.room.controller.dto;
 
 
+import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import lombok.Getter;
@@ -31,6 +32,8 @@ public class RoomResponseDto {
 
     @Setter
     private List<RoomMemberResponseDto> members = new ArrayList<>();
+    @Setter
+    private List<MemberSimpleResponseDto> currentMembers = new ArrayList<>();
     @Setter
     private List<RoomChannelResponseDto> channels = new ArrayList<>();
     @Setter

@@ -1,18 +1,16 @@
 package com.a506.comeet.app.member.entity;
 
 import com.a506.comeet.app.etc.entity.Til;
-import com.a506.comeet.common.enums.MemberFeature;
-import com.a506.comeet.app.keyword.entity.MemberKeyword;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import com.a506.comeet.app.room.entity.RoomMember;
+import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.enums.MemberFeature;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,10 +65,6 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     @Builder.Default
     @OneToMany(mappedBy = "member")
-    private List<MemberKeyword> keywords = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member")
     private List<Til> tils = new ArrayList<>();
 
     @Builder.Default
@@ -102,6 +96,8 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     public void delete(){
         deleteSoftly();
+        this.getRoomMembers().forEach(RoomMember::deleteSoftly);
+        this.getTils().forEach(Til::deleteSoftly);
     }
 
 

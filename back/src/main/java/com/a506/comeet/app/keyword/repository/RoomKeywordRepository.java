@@ -1,7 +1,5 @@
 package com.a506.comeet.app.keyword.repository;
 
-import java.util.List;
-
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.room.entity.Room;
@@ -19,6 +17,4 @@ public interface RoomKeywordRepository extends JpaRepository<RoomKeyword, Long>,
     void deleteByRoomIdAndKeywordId(@Param("roomId") Long roomId, @Param("keywordId") Long keywordId);
 
     void deleteByRoomAndKeyword(Room room, Keyword keyword);
-
-	List<RoomKeyword> findByRoomId(Long roomId);
 }

@@ -77,6 +77,7 @@ public class MetadataService {
 
             // 키워드 가중치 부여
             for (String keyword : metadata.getKeywords().split(" ")) {
+                if (keyword.isBlank()) continue;
                 keywordMap.putIfAbsent(keyword, 0);
                 keywordMap.put(keyword, keywordMap.get(keyword) + (int) minutes);
             }
