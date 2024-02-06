@@ -35,7 +35,10 @@ public class BoardListResponseDto {
 	private String writerNickname; //작성자 닉네임
 	private String writerImage; //작성자 이미지
 
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDateTime createdAt; //작성 날짜
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDateTime updatedAt; //수정 날짜
 
 	public static BoardListResponseDto toBoardListResponseDto(Board board, Room room, Member writer, List<KeywordResponseDto> keywords) {
 

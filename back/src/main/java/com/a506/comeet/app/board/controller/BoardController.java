@@ -4,17 +4,12 @@ import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
 import com.a506.comeet.app.member.MemberUtil;
-import com.a506.comeet.app.room.controller.dto.RoomSearchResponseDto;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/board")
@@ -31,10 +26,10 @@ public class BoardController {
     }
 
     @PatchMapping("/{boardId}")
-    public ResponseEntity<LocalDateTime> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
+    public ResponseEntity<Void> update(@RequestBody BoardUpdateRequestDto req, @PathVariable(value = "boardId") Long boardId) {
         String memberId = MemberUtil.getMemberId();
-        Board board = boardService.update(req, boardId, memberId);
-        return ResponseEntity.ok(board.getUpdatedAt());
+        boardService.update(req, boardId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{boardId}")
