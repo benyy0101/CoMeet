@@ -9,5 +9,4 @@ public class CommentCreateRequestDto {
 
     private Long boardId;
     private String content;
-    private String WriterNickname;
 }
