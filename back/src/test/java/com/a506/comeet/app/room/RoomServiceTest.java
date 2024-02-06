@@ -53,7 +53,7 @@ class RoomServiceTest {
     @Transactional
     void validationTest(){
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                managerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
         boolean res = isValidating(req);
         assertThat(res).isTrue();
@@ -85,7 +85,7 @@ class RoomServiceTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("매니저").
+                managerId("매니저").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
 
@@ -107,7 +107,7 @@ class RoomServiceTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
@@ -136,7 +136,7 @@ class RoomServiceTest {
 
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         // 생성된 방의 id

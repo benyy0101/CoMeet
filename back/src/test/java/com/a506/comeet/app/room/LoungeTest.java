@@ -55,7 +55,7 @@ public class LoungeTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
         roomService.create(req);

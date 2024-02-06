@@ -8,8 +8,12 @@ import com.a506.comeet.app.member.controller.dto.MemberSimpleResponseDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.controller.dto.*;
+import com.a506.comeet.app.room.entity.Channel;
+import com.a506.comeet.app.room.entity.Lounge;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.entity.RoomMember;
+import com.a506.comeet.app.room.repository.ChannelRepository;
+import com.a506.comeet.app.room.repository.LoungeRepository;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.RoomType;
@@ -18,7 +22,6 @@ import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
-import com.a506.comeet.image.service.S3UploadService;
 import com.a506.comeet.metadata.repository.MemberRedisRepository;
 import com.a506.comeet.metadata.repository.RoomRedisRepository;
 import com.a506.comeet.metadata.service.MetadataCreateDto;
@@ -50,16 +53,20 @@ public class RoomService {
     private final RoomMemberRepository roomMemberRepository;
     private final RoomKeywordRepository roomKeywordRepository;
     private final KeywordRepository keywordRepository;
+    private final LoungeRepository loungeRepository;
+    private final ChannelRepository channelRepository;
 
     private final MemberRedisRepository memberRedisRepository;
     private final RoomRedisRepository roomRedisRepository;
 
     private final MetadataService metadataService;
-    private final S3UploadService s3UploadService;
+
+    private final String DEFAULT_CHANNEL_NAME = "기본 채널";
+    private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
 
     @Transactional
     public Room create(RoomCreateRequestDto req) {
-        Member member = memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Member member = memberRepository.findById(req.getManagerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         Room room = Room.builder().
                 manager(member).
@@ -79,6 +86,10 @@ public class RoomService {
                 room.addKeyword(roomKeyword);
             }
         }
+
+        // 방 생성시 기본 라운지, 기본 채널 생성
+        loungeRepository.save(Lounge.builder().name(DEFAULT_LOUNGE_NAME).room(created).build());
+        channelRepository.save(Channel.builder().name(DEFAULT_CHANNEL_NAME).room(created).build());
 
         // 지속방이면 방장을 해당 방에 가입
         if (req.getType() != null && req.getType().equals(RoomType.PERMANENT))
@@ -170,12 +181,13 @@ public class RoomService {
         // 이미 방에 들어있는지 확인
         doubleEnterValidation(memberId);
 
-        // 현재 멤버가 어디에 있고, 언제 들어갔는지 저장
+        RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
+
+        // Redis 로직
+       // 현재 멤버가 어디에 있고, 언제 들어갔는지 저장
         memberRedisRepository.save(KeyUtil.getCurrentMemberKey(memberId), roomId, LocalDateTime.now());
         // 현재 어떤방에 어떤 멤버가 들어왔는지 저장
         roomRedisRepository.add(KeyUtil.getRoomKey(roomId), memberId);
-
-        RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
 
         List<MemberSimpleResponseDto> currentMembers =
                 memberRepository.getCurrentMembers(roomRedisRepository.getMembers(KeyUtil.getRoomKey(roomId)));

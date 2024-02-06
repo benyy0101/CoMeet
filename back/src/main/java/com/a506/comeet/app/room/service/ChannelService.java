@@ -6,6 +6,7 @@ import com.a506.comeet.app.room.entity.Channel;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.ChannelRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,14 @@ public class ChannelService {
         Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_CHANNEL));
         // 사용자가 방장인지 확인
         managerAuthorization(memberId, channel.getRoom());
+        // 방에는 최소 1개의 채널이 남아있어야 함
+        atLeastOneChannelValitadion(channel.getRoom());
         channel.delete();
+    }
+
+    private void atLeastOneChannelValitadion(Room room) {
+        if (channelRepository.countByRoom(room) <= 1)
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "최소 1개의 채널가 필요합니다");
     }
 
     private void managerAuthorization(String memberId, Room room){
