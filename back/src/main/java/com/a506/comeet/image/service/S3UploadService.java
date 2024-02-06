@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +25,17 @@ public class S3UploadService {
     private String bucket;
 
     public String saveFile(MultipartFile multipartFile, String path) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
+        String originalName = multipartFile.getOriginalFilename();
+        String pureFileName = originalName.split("\\.")[0];
+        String extension = "." + originalName.split("\\.")[1];
+        String filename = pureFileName+LocalDateTime.now() + extension;
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
-        amazonS3.putObject(bucket, path + originalFilename, multipartFile.getInputStream(), metadata);
-        return amazonS3.getUrl(bucket, originalFilename).toString();
+        amazonS3.putObject(bucket, path + filename, multipartFile.getInputStream(), metadata);
+        return amazonS3.getUrl(bucket, filename).toString();
     }
 
     public void deleteImage(String url, String path)  {

@@ -22,8 +22,8 @@ public class Keyword extends BaseEntityWithSoftDelete {
     private Long id;
 
     @Setter
+    @Column(unique = true)
     private String name;
-
 
     @OneToMany(mappedBy = "keyword")
     private List<RoomKeyword> roomKeywords = new ArrayList<>();

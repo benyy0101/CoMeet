@@ -31,7 +31,7 @@ public class RoomController {
     @PostMapping("")
     public ResponseEntity<Long> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
-        req.setMangerId(memberId);
+        req.setManagerId(memberId);
         Room created = roomService.create(req);
         return ResponseEntity.ok(created.getId());
     }
