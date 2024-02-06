@@ -62,7 +62,7 @@ function RoomCreate() {
           </InputUnit>
           <RadioSelect>
             <RadioContainer onClick={() => setType("DISPOSABLE")}>
-              <RadioInput type="radio" checked={type === "DISPOSABLE"} />
+              <RadioInput type="radio" checked={type === "DISPOSABLE"} readOnly />
               <BoltIcon className="w-10 h-10" />
               <RadioTitleContainer>
                 <RadioTitle>일회성 스터디 방</RadioTitle>
@@ -72,7 +72,7 @@ function RoomCreate() {
               </RadioTitleContainer>
             </RadioContainer>
             <RadioContainer onClick={() => setType("PERMANENT")}>
-              <RadioInput type="radio" checked={type === "PERMANENT"} />
+              <RadioInput type="radio" checked={type === "PERMANENT"} readOnly />
               <BuildingOffice2Icon className="w-10 h-10" />
               <RadioTitleContainer>
                 <RadioTitle>지속 스터디 방</RadioTitle>
