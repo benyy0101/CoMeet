@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import tw from "tailwind-styled-components";
 import { NavBar } from "./components/Common/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
@@ -9,7 +8,6 @@ import { Mypage } from "./pages/Mypage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { Room } from "./pages/Room";
-import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
 import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
@@ -22,6 +20,7 @@ import { UserState } from "./types";
 import { UseSelector, useSelector } from "react-redux";
 import ProfileEdit from "pages/ProfileEdit";
 import RoomCreate from "pages/RoomCreate";
+import tw from "tailwind-styled-components";
 
 function App() {
   //임시
@@ -52,24 +51,15 @@ function App() {
                 {/* 모집 게시판 */}
                 <Route path="/recruit-board" element={<RecruitBoardList />} />
 
-                <Route
-                  path="/recruit-board/edit"
-                  element={<Board isFree={true} isEdit={true} />}
-                />
+                <Route path="/recruit-board/edit" element={<Board isFree={true} isEdit={true} />} />
                 {/* 모집게시판 글 상세보기 */}
-                <Route
-                  path="/recruit-board/:boardId"
-                  element={<BoardDetail />}
-                ></Route>
+                <Route path="/recruit-board/:boardId" element={<BoardDetail />}></Route>
 
                 {/* 자유 게시판 */}
                 <Route path="/free-board" element={<FreeBoardList />}></Route>
 
                 {/* 자유게시판 글 상세보기 */}
-                <Route
-                  path="/free-board/:boardId"
-                  element={<BoardDetail />}
-                ></Route>
+                <Route path="/free-board/:boardId" element={<BoardDetail />}></Route>
 
                 {/* 마이페이지 */}
                 <Route path="/mypage" element={<Mypage />} />
@@ -82,7 +72,6 @@ function App() {
                 <Route path="/signup" element={<SignupPage />} />
               </>
             )}
-            <Route path="/new-room" element={<NewRoom />} />
             <Route path="/before-entrance" element={<ConditionCheck />} />
           </Routes>
         </RoutesContainer>
@@ -99,7 +88,6 @@ z-10
 `;
 
 const RoutesContainer = tw.div`
-
 pt-12
 `;
 
