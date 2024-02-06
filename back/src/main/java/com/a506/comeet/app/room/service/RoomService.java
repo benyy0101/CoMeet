@@ -65,8 +65,8 @@ public class RoomService {
     private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
 
     @Transactional
-    public Room create(RoomCreateRequestDto req) {
-        Member member = memberRepository.findById(req.getManagerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+    public Room create(RoomCreateRequestDto req, String memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         Room room = Room.builder().
                 manager(member).

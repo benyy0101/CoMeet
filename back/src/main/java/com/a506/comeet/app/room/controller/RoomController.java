@@ -10,6 +10,7 @@ import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -31,8 +32,8 @@ public class RoomController {
     @PostMapping("")
     public ResponseEntity<Long> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
+        Room created = roomService.create(req, memberId);
         req.setManagerId(memberId);
-        Room created = roomService.create(req);
         return ResponseEntity.ok(created.getId());
     }
 
