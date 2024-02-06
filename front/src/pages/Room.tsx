@@ -35,12 +35,13 @@ import { createLounge } from "api/Lounge";
 import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
-import { enterRoom } from "api/Room";
+import { enterRoom, leaveRoom } from "api/Room";
 import {
   EnterRoomChannel,
   EnterRoomLounge,
   EnterRoomParams,
   EnterRoomResponse,
+  LeaveRoomParams,
 } from "models/Room.interface";
 import { query } from "express";
 
@@ -95,14 +96,16 @@ export const Room = () => {
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
   const [sideToggle, setSideToggle] = useState<boolean>(true);
   const [modal, setModal] = useState<boolean>(false);
+  const [roomData, setRoomData] = useState<EnterRoomResponse | null>(null);
   const [channels, setChannels] = useState<IChannel[]>(initialChannels);
   const [lounges, setLounges] = useState<ILounge[]>(initialLounges);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>(initialLounges[0]);
+  const [currentLounge, setCurrentLounge] = useState<ILounge>(
+    initialLounges[0]
+  );
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -128,9 +131,12 @@ export const Room = () => {
   const OV = useRef(new OpenVidu());
 
   useEffect(() => {
+    enterRoomHandler();
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
-        const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
+        const sock = new SockJS(
+          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
+        );
         return sock;
       });
 
@@ -144,10 +150,14 @@ export const Room = () => {
         (e: any) => alert("에러발생!!!!!!")
       );
     }
+
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        stompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         stompClient.current = null;
+        leaveRoomHandler();
       }
     };
   }, []);
@@ -232,7 +242,9 @@ export const Room = () => {
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
+    mySession.on("streamDestroyed", (event) =>
+      deleteSubscriber(event.stream.streamManager)
+    );
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -258,7 +270,9 @@ export const Room = () => {
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
+      setSpeakerIds((prev) =>
+        prev.filter((id) => id !== event.connection.connectionId)
+      );
     });
 
     setSession(mySession);
@@ -285,7 +299,9 @@ export const Room = () => {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter((device) => device.kind === "videoinput");
+          const videoDevices = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -298,7 +314,11 @@ export const Room = () => {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log("There was an error connecting to the session:", error.code, error.message);
+          console.log(
+            "There was an error connecting to the session:",
+            error.code,
+            error.message
+          );
         }
       });
     }
@@ -324,7 +344,9 @@ export const Room = () => {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter((device) => device.kind === "videoinput");
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -379,6 +401,7 @@ export const Room = () => {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       leaveSession();
+      leaveRoomHandler();
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -388,7 +411,9 @@ export const Room = () => {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
+    return createSession(mySessionId).then((sessionId) =>
+      createToken(sessionId)
+    );
   }, [mySessionId]);
 
   useEffect(() => {
@@ -547,37 +572,43 @@ export const Room = () => {
     setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
   };
 
-  const leaveRoom = () => {
+  const leaveSessionHandler = () => {
     leaveSession();
   };
 
-  // const getRoom = async () => {
+  const enterRoomHandler = async () => {
+    const res = await enterRoom({ roomId: parseInt(roomId!), password: "" });
+    setRoomData(res);
+    setChannels(res.channels);
+    setLounges(res.lounges);
+  };
 
-  //   const req: EnterRoomParams = {
-  //     roomId: parseInt(roomId!),
-  //     password: null,
-  //   };
-  //   const res = await enterRoom(req);
-  //   console.log(res);
-  //   setChannels(() => [...res.channels]);
-  //   setLounges(() => [...res.lounges]);
-  // };
-
-  const {
-    data: roomData,
-    isError: roomError,
-    isLoading: roomLoading,
-  } = useQuery<EnterRoomResponse, Error>({
-    queryKey: ["room"],
-    queryFn: () => enterRoom({ roomId: parseInt(roomId!), password: null }),
-  });
+  const leaveRoomHandler = () => {
+    const data: LeaveRoomParams = {
+      roomId: parseInt(roomId!),
+      keywords: undefined,
+    };
+    try {
+      console.log("나갈게~");
+      const res = leaveRoom(data);
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     if (roomData) {
-      setChannels(() => [...roomData.channels]);
-      setLounges(() => [...roomData.lounges]);
+      if (roomData!.channels.length > 0) {
+        setChannels(roomData!.channels);
+      }
+      if (roomData!.lounges.length > 0) {
+        setLounges(roomData!.lounges);
+        setCurrentLounge(roomData!.lounges[0]);
+      }
     }
   }, [roomData]);
+
   return (
     <RoomContainer>
       <RoomHeader>
@@ -597,7 +628,7 @@ export const Room = () => {
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
-          <RoomButton onClick={leaveRoom}>
+          <RoomButton onClick={leaveSessionHandler}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
           <RoomButton onClick={switchCamera}>
@@ -609,7 +640,11 @@ export const Room = () => {
       <RoomContent>
         <RoomSidebar>
           <SideBarToggler onClick={toggleSideBar}>
-            {sideToggle ? <ChevronDoubleLeftIcon /> : <ChevronDoubleRightIcon />}
+            {sideToggle ? (
+              <ChevronDoubleLeftIcon />
+            ) : (
+              <ChevronDoubleRightIcon />
+            )}
           </SideBarToggler>
           {sideToggle ? (
             <SideWrapper>
@@ -619,7 +654,10 @@ export const Room = () => {
                   <LoungeButton
                     key={l.loungeId}
                     active={inLounge && currentLounge.loungeId === l.loungeId}
-                    disabled={isLoading || (inLounge && currentLounge.loungeId === l.loungeId)}
+                    disabled={
+                      isLoading ||
+                      (inLounge && currentLounge.loungeId === l.loungeId)
+                    }
                     lounge={l}
                     moveLounge={moveLounge}
                   />
@@ -629,7 +667,10 @@ export const Room = () => {
                   <ChannelButton
                     key={c.channelId}
                     active={mySessionId === c.channelId.toString()}
-                    disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
+                    disabled={
+                      isLoading ||
+                      (!inLounge && mySessionId === c.channelId.toString())
+                    }
                     id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
@@ -684,14 +725,18 @@ export const Room = () => {
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+          <ControlPanelButton
+            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+          >
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
+          <ControlPanelButton
+            onClick={() => setIsScreenShared(!isScreenShared)}
+          >
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -705,7 +750,10 @@ export const Room = () => {
                 onClick={() => setFilterApplied(false)}
               />
             ) : (
-              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
+              <SparklesIcon
+                className="w-8 h-8"
+                onClick={() => setFilterMenuOpen(true)}
+              />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
@@ -936,3 +984,6 @@ bg-[#2f2f2f]
 hover:bg-slate-400
 disabled:bg-slate-400
 `;
+function sleep(arg0: number) {
+  throw new Error("Function not implemented.");
+}
