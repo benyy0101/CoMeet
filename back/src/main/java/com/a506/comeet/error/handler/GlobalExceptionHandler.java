@@ -5,6 +5,7 @@ import com.a506.comeet.error.errorcode.ErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.error.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +61,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
         return handleExceptionInternal(errorCode, e.getMessage());
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.warn("handleAllException : {}", e.getMessage());
+        log.warn("handleAllException : {}", (Object) e.getStackTrace());
+        e.printStackTrace(); // 개발 끝나고 삭제 필요
+
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
+        return handleExceptionInternal(errorCode, "data 제한조건에 위반되는 요청입니다");
+    }
+
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
         return ResponseEntity.status(errorCode.getHttpStatus())

@@ -5,6 +5,7 @@ import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
 import { RoomItemProps } from "../types";
+import { SearchRoomContent } from "models/Room.interface";
 
 const Wrapper = tw.div`
 flex  
@@ -88,7 +89,8 @@ gap-2
 
 const Img = tw.img`w-6`;
 
-function RoomItem(props: RoomItemProps) {
+function RoomItem(props: SearchRoomContent) {
+  // function RoomItem(props: RoomItemProps) {
   const [modal, setModal] = React.useState<boolean>(false);
   const modalHandler = () => {
     setModal(!modal);
@@ -117,7 +119,7 @@ function RoomItem(props: RoomItemProps) {
         </OptionContainer>
         <CountContainer>
           <CountTitle>인원</CountTitle>
-          <Count>30 / {props.maxcount}</Count>
+          <Count>30 / {props.capacity}</Count>
         </CountContainer>
       </RightContainer>
 
@@ -125,7 +127,7 @@ function RoomItem(props: RoomItemProps) {
         <Modal
           toggleModal={modalHandler}
           option="confirm"
-          setting={props}
+          // setting={props}
         ></Modal>
       )}
     </Wrapper>

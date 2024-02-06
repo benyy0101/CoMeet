@@ -1,21 +1,22 @@
 package com.a506.comeet.app.room;
 
-import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.RoomJoinRequestDto;
 import com.a506.comeet.app.room.controller.dto.RoomUpdateRequestDto;
-import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.room.entity.Room;
-import static org.assertj.core.api.Assertions.*;
-
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.app.room.service.RoomService;
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Slf4j
@@ -50,7 +53,7 @@ class RoomServiceTest {
     @Transactional
     void validationTest(){
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
+                managerId("멤버1").description("설명").capacity(-1).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
         boolean res = isValidating(req);
         assertThat(res).isTrue();
@@ -82,7 +85,7 @@ class RoomServiceTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("매니저").
+                managerId("매니저").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
 
@@ -104,7 +107,7 @@ class RoomServiceTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
@@ -133,7 +136,7 @@ class RoomServiceTest {
 
         //방 생성
         RoomCreateRequestDto reqR = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
         // 생성된 방의 id
@@ -152,7 +155,7 @@ class RoomServiceTest {
         roomService.join(req, "멤버1", roomId);
 
         //assert
-        Room room = roomRepository.findByIdAndIsDeletedFalse(roomId).get();
+        Room room = roomRepository.findById(roomId).get();
         assertThat(room.getRoomMembers().get(0).getMember().getMemberId()).isEqualTo("멤버1");
         assertThat(room.getRoomMembers().get(1).getMember().getMemberId()).isEqualTo("member1");
         assertThat(room.getRoomMembers().size()).isEqualTo(2);
@@ -168,7 +171,7 @@ class RoomServiceTest {
         // leave
         log.info("멤버 방 나가기");
         roomService.withdraw("member1", roomId);
-        room = roomRepository.findByIdAndIsDeletedFalse(roomId).get(); // 다시 가져와야?
+        room = roomRepository.findById(roomId).get(); // 다시 가져와야?
         // assert
         assertThat(room.getRoomMembers().size()).isEqualTo(2);
         assertThat(room.getMcount()).isEqualTo(2);

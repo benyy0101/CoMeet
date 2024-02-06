@@ -7,7 +7,8 @@ import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,7 @@ import static com.a506.comeet.app.room.entity.QChannel.channel;
 import static com.a506.comeet.app.room.entity.QLounge.lounge;
 import static com.a506.comeet.app.room.entity.QRoom.room;
 import static com.a506.comeet.app.room.entity.QRoomMember.roomMember;
-import static com.querydsl.core.group.GroupBy.groupBy;
-import static com.querydsl.core.group.GroupBy.list;
+
 
 @RequiredArgsConstructor
 @Repository
@@ -65,44 +65,36 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 
     @Override
     public RoomResponseDto enterRoomCustom(Long roomId) {
-        RoomResponseDto res = jpaQueryFactory.selectFrom(room)
-                .leftJoin(room.manager, member)
-                .leftJoin(room.channels, channel)
-                .leftJoin(room.lounges, lounge)
-                .where(room.id.eq(roomId).and(room.manager.eq(member)))
-                .transform(
-                        groupBy(room.id).as(
-                                Projections.constructor(
-                                        RoomResponseDto.class,
-                                        room.id,
-                                        member.memberId,
-                                        member.nickname,
-                                        room.title,
-                                        room.description,
-                                        room.link,
-                                        room.roomImage,
-                                        room.mcount,
-                                        room.capacity,
-                                        room.isLocked,
-                                        room.password,
-                                        room.constraints,
-                                        room.type,
-                                        list(Projections.constructor(
-                                                RoomChannelResponseDto.class,
-                                                channel.id,
-                                                channel.name
-                                        )),
-                                        list(Projections.constructor(
-                                                RoomLoungeResponseDto.class,
-                                                lounge.id,
-                                                lounge.name
-                                        ))
-                                )
-                        )).get(roomId);
+        RoomResponseDto res = jpaQueryFactory.select(
+                        Projections.constructor(
+                                RoomResponseDto.class,
+                                room.id,
+                                member.memberId,
+                                member.nickname,
+                                room.title,
+                                room.description,
+                                room.link,
+                                room.roomImage,
+                                room.notice,
+                                room.mcount,
+                                room.capacity,
+                                room.isLocked,
+                                room.password,
+                                room.constraints,
+                                room.type
+                        )
+                ).
+                from(room).
+                leftJoin(room.manager, member).
+                where(room.id.eq(roomId).and(room.manager.eq(member))).fetchOne();
 
         if (res == null) return null;
+
         res.setMembers(getMembers(roomId));
+        res.setLounges(getLounges(roomId));
+        res.setChannels(getChannels(roomId));
         res.setKeywords(getKeywords(roomId));
+
         return res;
     }
 
@@ -121,10 +113,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 roomMember.member.nickname,
                                 roomMember.member.profileImage,
                                 roomMember.member.feature
-                        )).
-                from(roomMember).
-                leftJoin(roomMember.member, member).
-                where(roomMember.room.id.eq(roomId)).fetch();
+                        ))
+                .from(roomMember)
+                .leftJoin(roomMember.member, member)
+                .where(roomMember.room.id.eq(roomId)).fetch();
     }
 
     private List<RoomKeywordResponseDto> getKeywords(Long roomId) {
@@ -136,6 +128,27 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 from(roomKeyword).
                 leftJoin(roomKeyword.keyword, keyword).
                 where(roomKeyword.room.id.eq(roomId)).fetch();
+    }
+
+    private List<RoomLoungeResponseDto> getLounges(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomLoungeResponseDto.class,
+                                lounge.id,
+                                lounge.name
+                        )).
+                from(lounge).
+                where(lounge.room.id.eq(roomId)).fetch();
+    }
+
+
+    private List<RoomChannelResponseDto> getChannels(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomChannelResponseDto.class,
+                                channel.id,
+                                channel.name
+                        )).
+                from(channel).
+                where(channel.room.id.eq(roomId)).fetch();
     }
 
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
@@ -173,7 +186,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if (keywordIds == null || keywordIds.isEmpty()) return null;
 
         // 주어진 keyword id를 모두 가지고 있는 room의 id를 선택
-        JPAQuery<Long> subQuery = jpaQueryFactory
+        JPQLQuery<Long> subQuery = JPAExpressions
                 .select(roomKeyword.room.id)
                 .from(roomKeyword)
                 .leftJoin(roomKeyword.keyword)

@@ -25,7 +25,7 @@ public class TilCustomRepositoryImpl implements TilCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Boolean tilWithMemberAndDateExists(String memberId, LocalDate date) {
+    public boolean tilWithMemberAndDateExists(String memberId, LocalDate date) {
         Long tilId = jpaQueryFactory.select(til.id)
                 .from(til)
                 .where(til.member.memberId.eq(memberId)

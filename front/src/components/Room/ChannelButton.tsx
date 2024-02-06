@@ -1,50 +1,38 @@
 import { UserGroupIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
 import tw from "tailwind-styled-components";
 
 interface IProps {
   id: string;
   name: string;
+  active: boolean;
   disabled: boolean;
   moveChannel: (channelId: string, channelName: string) => void;
 }
 
-export default function ChannelButton({
-  id,
-  name,
-  disabled,
-  moveChannel,
-}: IProps) {
-  const [isIn, setIsIn] = useState<boolean>(false);
-  const isInHandler = () => {
-    setIsIn(!isIn);
-    console.log("isIn!!!!");
-  };
+export default function ChannelButton({ id, name, active, disabled, moveChannel }: IProps) {
   return (
     <ChannelButtonContainer>
       <IconButton
+        $active={active}
         disabled={disabled}
         onClick={() => {
           moveChannel(id, name);
         }}
-        onMouseEnter={isInHandler}
-        onMouseLeave={isInHandler}
       >
         <UserGroupIcon className="text-white w-8 h-8" />
-        {isIn ? <ChannelButtonTitle>{name}</ChannelButtonTitle> : null}
+        <ChannelButtonTitle>{name}</ChannelButtonTitle>
       </IconButton>
     </ChannelButtonContainer>
   );
 }
 
-const IconButton = tw.button`
+const IconButton = tw.button<{ $active: boolean }>`
 w-10
 h-10
 flex
 justify-center
 items-center
-bg-slate-800
-disabled:bg-slate-500
+${(p) => (p.$active ? "bg-purple-600" : "bg-slate-800")}
 rounded-full
 text-3xl
 cursor-pointer
@@ -54,6 +42,7 @@ z-20
 `;
 
 const ChannelButtonContainer = tw.div`
+group
 flex
 flex-col
 items-center
@@ -72,4 +61,6 @@ py-2
 rounded-md
 border
 border-[#d9e5db]
+hidden
+group-hover:block
 `;

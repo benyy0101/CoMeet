@@ -55,11 +55,11 @@ public class ChannelTest {
         em.clear();
 
         RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
+                managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
         roomService.create(req);
-        room = roomRepository.findByTitle("title");
+        room = roomRepository.findByTitle("title").get();
     }
 
     @Test
@@ -108,7 +108,7 @@ public class ChannelTest {
     @Test
     @Transactional
     void roomDeleteTest(){
-        Room room = roomRepository.findByTitle("title");
+        Room room = roomRepository.findByTitle("title").get();
         ChannelCreateRequestDto req = new ChannelCreateRequestDto(room.getId(), "channel1");
         channelService.create(req, "멤버1");
         Channel channel = channelRepository.findAll().get(0);

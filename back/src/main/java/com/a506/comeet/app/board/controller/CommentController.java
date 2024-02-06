@@ -13,8 +13,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
@@ -30,10 +28,10 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    public ResponseEntity<LocalDateTime> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
+    public ResponseEntity<Void> update(@RequestBody CommentUpdateRequestDto req, @PathVariable(value = "commentId") Long commentId) {
         String memberId = MemberUtil.getMemberId();
-        Comment comment = commentService.update(req, commentId, memberId);
-        return ResponseEntity.ok(comment.getUpdatedAt());
+        commentService.update(req, commentId, memberId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{commentId}")
