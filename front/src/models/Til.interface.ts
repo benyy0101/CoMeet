@@ -1,5 +1,41 @@
-interface example {
-  ex1: string;
-  ex2: number;
+export interface CreateTilParams {
+  context: string;
+  date: string; // 무조건 날짜형식 2022-10-11
 }
-export {};
+
+export interface CreateTilResponse {
+  tilId: number;
+}
+
+export interface SearchTilParams {
+  memberId: string;
+  year: number;
+  month: number;
+}
+
+export interface SearchTilContent {
+  tilid: number;
+  date: string;
+}
+
+export interface SearchTilResponse {
+  content: SearchTilContent[];
+}
+
+export interface ModifyTilParams {
+  tilId: number;
+  context: string;
+}
+
+export interface ModifyTilResponse {}
+
+export interface EnterTilParams {
+  tilId: number;
+}
+
+export interface EnterTilResponse {
+  id: number;
+  memberId: string;
+  context: string;
+  date: string;
+}
