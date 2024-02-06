@@ -18,10 +18,10 @@ import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.common.util.DateParser;
-import com.a506.comeet.common.util.KeyUtil;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.metadata.repository.CustomRedisRepository;
 import com.a506.comeet.metadata.repository.MemberRedisRepository;
 import com.a506.comeet.metadata.repository.RoomRedisRepository;
 import com.a506.comeet.metadata.service.MetadataCreateDto;
@@ -58,6 +58,7 @@ public class RoomService {
 
     private final MemberRedisRepository memberRedisRepository;
     private final RoomRedisRepository roomRedisRepository;
+    private final CustomRedisRepository customRedisRepository;
 
     private final MetadataService metadataService;
 
@@ -116,23 +117,6 @@ public class RoomService {
     }
 
     @Transactional
-    public void updateImage(RoomUpdateRequestDto req, String memberId, long roomId) {
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
-        // 해당 요청을 방장이 요청했는지 확인
-        authorityValidation(room, memberId);
-        Member newManager = req.getMangerId() != null?
-                memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "변경 요청한 새로운 매니저 아이디가 서비스 내에 존재하지 않습니다"))
-                : null;
-
-        //        if (req.getRoomImage() != null){
-//            String originalRoomImage = room.getRoomImage();
-//            s3Uploader.delete(originalRoomImage);
-
-        room.updateRoom(req, newManager);
-        if (req.getKeywordIds() != null) updateRoomKeywords(req, room);
-    }
-
-    @Transactional
     public void delete(String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         // 해당 요청을 방장이 요청했는지 확인
@@ -169,7 +153,6 @@ public class RoomService {
     }
 
     // 방 들어가는 로직 때문에 Transactional
-    @Transactional
     public RoomResponseDto enter(RoomEnterRequestDto req, Long roomId, String memberId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
@@ -179,25 +162,22 @@ public class RoomService {
         // 방이 잠금이라면 비밀번호를 확인하고, 비밀번호가 없거나 틀렸다면 해당 방 멤버인지 확인
         passwordValidation(req, room);
         // 이미 방에 들어있는지 확인
-        doubleEnterValidation(memberId);
-
+        doubleEnterValidation(memberId, roomId);
         RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
 
         // Redis 로직
-       // 현재 멤버가 어디에 있고, 언제 들어갔는지 저장
-        memberRedisRepository.save(KeyUtil.getCurrentMemberKey(memberId), roomId, LocalDateTime.now());
-        // 현재 어떤방에 어떤 멤버가 들어왔는지 저장
-        roomRedisRepository.add(KeyUtil.getRoomKey(roomId), memberId);
+        customRedisRepository.enterMember(memberId, roomId, LocalDateTime.now());
 
         List<MemberSimpleResponseDto> currentMembers =
-                memberRepository.getCurrentMembers(roomRedisRepository.getMembers(KeyUtil.getRoomKey(roomId)));
+                memberRepository.getCurrentMembers(roomRedisRepository.getMembers(roomId));
         res.setCurrentMembers(currentMembers);
         res.setCurrentMcount(currentMembers.size());
         return res;
     }
 
-    private void doubleEnterValidation(String memberId) {
-        if (memberRedisRepository.findCurrentRoom(KeyUtil.getCurrentMemberKey(memberId))){
+
+    private void doubleEnterValidation(String memberId, Long roomId) {
+        if (memberRedisRepository.alreadyInRoom(memberId)){
             throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 방에 들어있는 유저입니다");
         }
     }
@@ -216,12 +196,13 @@ public class RoomService {
         }
     }
 
-    @Transactional
     public String leave(RoomLeaveRequestDto req, Long roomId, String memberId){
-        // 현재 유저의 시간 정보를 추출하고 위치정보와 시간정보를 삭제
-        String enterTimeString = memberRedisRepository.delete(KeyUtil.getCurrentMemberKey(memberId));
-        // 해당 방 들어있는 유저정보에서 유저를 삭제
-        roomRedisRepository.delete(KeyUtil.getRoomKey(roomId), memberId);
+        // redis 로직
+        String enterTimeString = memberRedisRepository.getEnterTime(memberId);
+        log.info("enterTimeString : {}", enterTimeString);
+
+        customRedisRepository.leaveMember(memberId, roomId);
+
         // 해당 유저가 방에 입장한 적이 없으면 잘못된 요청
         if (enterTimeString == null) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "유저는 해당 방에 입장한 적이 없습니다");
         // 시간이 5초 이내라면 meatadata 만들지 않고 리턴 (테스트 후 5분으로 수정 필요)
@@ -260,12 +241,13 @@ public class RoomService {
     private void deleteRoom(Room room){
         // 방과 관련된 엔티티 전부 삭제
         room.delete();
-        Set<String> currentMemberId = roomRedisRepository.getMembers(KeyUtil.getRoomKey(room.getId()));
+        Set<String> currentMemberId = roomRedisRepository.getMembers(room.getId());
         String roomKeywords = roomKeywordRepository.getRoomKeywordValuesInString(room.getId());
         for (String memberId : currentMemberId) {
             log.info("{}", memberId);
             leave(new RoomLeaveRequestDto(roomKeywords), room.getId(), memberId);
         }
+        roomRedisRepository.deleteAll(room.getId());
     }
 
 

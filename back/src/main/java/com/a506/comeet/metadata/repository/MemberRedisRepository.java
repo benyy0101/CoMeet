@@ -3,11 +3,15 @@ package com.a506.comeet.metadata.repository;
 import com.a506.comeet.common.util.DateParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+
+import static com.a506.comeet.common.util.KeyUtil.getCurrentMemberKey;
 
 @RequiredArgsConstructor
 @Component
@@ -15,23 +19,26 @@ import java.time.LocalDateTime;
 public class MemberRedisRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
-    @Transactional
-    public void save(String currentMemberKey, Long roomId, LocalDateTime enterTime){
-        redisTemplate.opsForHash().put(currentMemberKey, "roomId", roomId.toString());
-        redisTemplate.opsForHash().put(currentMemberKey, "enterTime", DateParser.stringParse(enterTime));
+
+    public void save(String memberId, Long roomId, LocalDateTime enterTime){
+        redisTemplate.execute(new SessionCallback<>() {
+            @Override
+            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+                operations.multi();
+                redisTemplate.opsForHash().put(getCurrentMemberKey(memberId), "roomId", roomId.toString());
+                redisTemplate.opsForHash().put(getCurrentMemberKey(memberId), "enterTime", DateParser.stringParse(enterTime));
+                return operations.exec();
+            }
+        });
     }
 
-    @Transactional
-    public String delete(String currentMemberKey){
-        redisTemplate.opsForHash().delete(currentMemberKey, "roomId");
-        String returnValue = (String) redisTemplate.opsForHash().get(currentMemberKey, "enterTime");
-        redisTemplate.opsForHash().delete(currentMemberKey, "enterTime");
-        return returnValue;
+    public String getEnterTime(String memberId){
+        return (String) redisTemplate.opsForHash().get(getCurrentMemberKey(memberId), "enterTime");
     }
 
-    public boolean findCurrentRoom(String currentMemberKey){
-        log.info("{}", currentMemberKey);
-        return redisTemplate.opsForHash().hasKey(currentMemberKey, "roomId");
+    public boolean alreadyInRoom(String memberId){
+        log.info("{}", memberId);
+        return redisTemplate.opsForHash().hasKey(getCurrentMemberKey(memberId), "roomId");
     }
 
 }
