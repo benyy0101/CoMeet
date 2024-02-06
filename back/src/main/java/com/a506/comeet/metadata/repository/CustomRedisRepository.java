@@ -2,6 +2,8 @@ package com.a506.comeet.metadata.repository;
 
 import com.a506.comeet.common.util.DateParser;
 import com.a506.comeet.common.util.KeyUtil;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -9,6 +11,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -16,9 +19,10 @@ import java.time.LocalDateTime;
 @Component
 @Slf4j
 public class CustomRedisRepository {
+
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void enterMember(String memberId, Long roomId, LocalDateTime enterTime){
+    public void enterMember(String memberId, Long roomId, LocalDateTime enterTime) {
         String currentMemberKey = KeyUtil.getCurrentMemberKey(memberId);
         String roomKey = KeyUtil.getRoomKey(roomId);
 
@@ -26,6 +30,7 @@ public class CustomRedisRepository {
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.watch(roomKey); // 공통자원에 낙관적 락
                 operations.multi();
                 // 현재 멤버가 어디에 있고, 언제 들어갔는지 저장
                 operations.opsForHash().put(currentMemberKey, "roomId", roomId.toString());
@@ -37,7 +42,7 @@ public class CustomRedisRepository {
         });
     }
 
-    public void leaveMember(String memberId, Long roomId){
+    public void leaveMember(String memberId, Long roomId) {
         String currentMemberKey = KeyUtil.getCurrentMemberKey(memberId);
         String roomKey = KeyUtil.getRoomKey(roomId);
 
@@ -45,6 +50,7 @@ public class CustomRedisRepository {
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.watch(roomKey); // 공통자원에 낙관적 락
                 operations.multi();
                 // 해당 방 들어있는 유저정보에서 유저를 삭제
                 operations.opsForSet().remove(roomKey, memberId);

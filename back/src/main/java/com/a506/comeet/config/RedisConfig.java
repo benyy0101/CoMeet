@@ -8,13 +8,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @RequiredArgsConstructor
 @Configuration
 @EnableRedisRepositories
+//@EnableTransactionManagement (@Transaction 사용 X)
 public class RedisConfig {
 
     private final EntityManagerFactory entityManagerFactory;
@@ -28,9 +31,8 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<String, String> redisTemplate() {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setEnableTransactionSupport(true); // redis @Transaction 사용시
+        StringRedisTemplate redisTemplate = new StringRedisTemplate(redisConnectionFactory());
+//        redisTemplate.setEnableTransactionSupport(true); // redis @Transaction 사용시
         return redisTemplate;
     }
 
