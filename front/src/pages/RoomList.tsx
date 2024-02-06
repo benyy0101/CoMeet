@@ -1,54 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomItem";
 import Search from "../assets/img/search.svg";
 import FilterImg from "../assets/img/filter.png";
 import FilterMenu from "../components/FilterMenu";
 import { RoomItemProps } from "../types";
+import { useQuery } from "@tanstack/react-query";
+import { searchBoard } from "api/Board";
+import { SearchBoardParams } from "models/Board.interface";
+import {
+  SearchRoomContent,
+  SearchRoomParams,
+  SearchRoomResponse,
+} from "models/Room.interface";
+import { searchRoom } from "api/Room";
 
 export const RoomList = () => {
-  const [roomList, setRoomList] = React.useState<RoomItemProps[]>([]);
+  const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [filterActive, setFilterActive] = React.useState<boolean>(false);
   const [activeCat, setActiveCat] = React.useState<string>("전체");
   const activeHandler = (value: string) => {
     setActiveCat(value);
   };
 
+  const params: SearchRoomParams = {
+    // constraints: "FREE",
+    page: 0,
+    size: 10,
+    sortBy: "LATEST",
+  };
+  const { data, isLoading, isError } = useQuery<SearchRoomResponse, Error>({
+    queryKey: ["roomList"],
+    queryFn: () => searchRoom(params),
+  });
+
   const filterHandler = () => {
     setFilterActive(!filterActive);
   };
 
-  React.useEffect(() => {
-    // 일단 더미 데이터로 대체
-    const fetchedTemps: RoomItemProps[] = [
-      {
-        title: "방제목2",
-        roomId: "1",
-        managerId: "방장아이디임 닉네임임?",
-        description: "방설명이 짧으니가 뭐가 이상하네요",
-        url: "url1",
-        roomImage: "https://picsum.photos/100",
-        maxcount: 45,
-        isLocked: false,
-        password: "1234",
-        constraint: "B",
-      },
-      {
-        title: "방제목2",
-        roomId: "2",
-        managerId: "zeroGun",
-        description: "방설명도 좀 긴게 좋을것 같습니다.",
-        url: "url2",
-        roomImage: "https://picsum.photos/100",
-        maxcount: 30,
-        isLocked: true,
-        password: "5678",
-        constraint: "A",
-      },
-    ];
-    setRoomList(fetchedTemps);
-  }, []);
-
+  useEffect(() => {
+    if (data?.content) {
+      setRoomList(data.content);
+    }
+  }, [data]);
   return (
     <Wrapper>
       <SearchBarContainer>
@@ -74,7 +68,9 @@ export const RoomList = () => {
           <Button onClick={() => activeHandler("전체")}>전체</Button>
           <Button onClick={() => activeHandler("최신순")}>최신순</Button>
           <Button onClick={() => activeHandler("오래된순")}>오래된순</Button>
-          <Button onClick={() => activeHandler("참여인원순")}>참여인원순</Button>
+          <Button onClick={() => activeHandler("참여인원순")}>
+            참여인원순
+          </Button>
         </LeftContainer>
         <ListContainer>
           {roomList.map((temp) => (

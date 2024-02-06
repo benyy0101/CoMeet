@@ -1,4 +1,10 @@
-import { BOARD_CATEGORY, BOARD_IS_RECRUITING, BOARD_SORTBY, BOARD_TYPE } from "./Enums.type";
+import {
+  BOARD_CATEGORY,
+  BOARD_IS_RECRUITING,
+  BOARD_SORTBY,
+  BOARD_TYPE,
+} from "./Enums.type";
+import { Pageable } from "./Util";
 
 export interface CreateBoardParams {
   writerId: String; //필수
@@ -42,7 +48,7 @@ export interface SearchBoardContent {
 }
 export interface SearchBoardResponse {
   content: SearchBoardContent[];
-  pageable: Object;
+  pageable: Pageable;
 }
 
 export interface ModifyBoardParams {
