@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
@@ -27,7 +29,8 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(req, res); // go to 'JwtAuthenticationFilter'
         } catch (ExpiredJwtException e){
-            res.sendRedirect("auth/reissue");
+            log.info("expired jwt token, redirect");
+            res.sendRedirect("/auth/reissue");
         }
         catch (JwtException e) {
             makeErrorResponse(res);
