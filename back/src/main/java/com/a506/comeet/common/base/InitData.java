@@ -2,9 +2,12 @@ package com.a506.comeet.common.base;
 
 import com.a506.comeet.admin.controller.dto.KeywordRequestDto;
 import com.a506.comeet.app.board.controller.dto.BoardCreateRequestDto;
+import com.a506.comeet.app.board.controller.dto.CommentCreateRequestDto;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.repository.BoardRepository;
+import com.a506.comeet.app.board.repository.CommentRepository;
 import com.a506.comeet.app.board.service.BoardService;
+import com.a506.comeet.app.board.service.CommentService;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
 import com.a506.comeet.app.keyword.service.KeywordService;
 import com.a506.comeet.app.member.controller.dto.FollowRequestDto;
@@ -57,6 +60,7 @@ public class InitData {
     private final FollowService followService;
     private final ChannelService channelService;
     private final LoungeService loungeService;
+    private final CommentService commentService;
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
     private final KeywordRepository keywordRepository;
@@ -65,6 +69,7 @@ public class InitData {
     private final FollowRepository followRepository;
     private final ChannelRepository channelRepository;
     private final LoungeRepository loungeRepository;
+    private final CommentRepository commentRepository;
 
     // 애플리케이션 시작 후 초기 데이터 설정
     @PostConstruct
@@ -122,14 +127,54 @@ public class InitData {
         createBoard("user4", "인공지능 학습 모델 개발", "딥러닝을 활용한 이미지 인식 모델 개발 프로젝트입니다. 텐서플로우/케라스 경험자 우대.", BoardType.RECRUIT, null, null);
         createBoard("user5", "모바일 게임 개발 프로젝트", "Unity를 이용한 모바일 게임 개발에 참여할 분을 모집합니다. 게임에 열정적인 분 환영!", BoardType.RECRUIT, null, null);
 
-        //좋아요
-        for (int boardId = 1; boardId <= 10; boardId++) {
-            for (int userId = 1; userId <= boardId; userId++) {
-                addLike((long) boardId, "user" + userId);
+        // 댓글 생성
+        List<String> commentsForJava = Arrays.asList(
+                "자바는 정말 다재다능한 언어인 것 같아요.",
+                "자바 기초부터 차근차근 배워보려고 합니다. 좋은 정보 감사합니다!",
+                "자바 스터디에 참여하고 싶어요. 어떻게 신청하나요?",
+                "이클립스와 인텔리제이 중 어떤 IDE를 사용하는 게 더 좋을까요?",
+                "자바8의 스트림 API 정말 편리한 것 같아요."
+        );
+
+        List<String> commentsForReact = Arrays.asList(
+                "리액트 시작하기 전에 자바스크립트 기초를 탄탄히 하는 게 중요하다고 들었어요.",
+                "리액트로 SPA 개발할 때 상태 관리가 정말 중요한 포인트인 것 같아요.",
+                "함수형 컴포넌트와 클래스 컴포넌트 중에 선호하는 건 무엇인가요?",
+                "리액트 훅 사용법이 아직 어렵네요. 좋은 학습 자료 있으면 공유 부탁드려요!",
+                "리액트 네이티브로 모바일 앱 개발해보신 분 계신가요? 경험을 듣고 싶어요."
+        );
+
+        // 댓글 생성
+        for (int i = 1; i < 5; i++) {
+            for(int j = 0; j < 5; j++) {
+                System.out.println("================================");
+                System.out.println(commentsForJava.get(j));
+                createComment((long) (15 + i), commentsForJava.get(j), "user" + i);
+                createComment((long) (35 + i), commentsForReact.get(j), "user" + i);
             }
         }
 
-        //팔로우
+        createComment(20L, "제네릭스 부분이 아직 어려운데, 누군가 설명해 줄 수 있나요?", "user1");
+        createComment(20L, "자바의 가비지 컬렉션에 대해 알게 되어 유익했어요.", "user2");
+        createComment(20L, "예외 처리 방법에 대한 세션도 추가되면 좋을 것 같아요.", "user3");
+        createComment(20L, "JVM이 실제로 어떻게 작동하는지 궁금했는데, 설명해주셔서 감사합니다!", "user4");
+        createComment(20L, "다음 스터디 모임은 언제인가요? 참여하고 싶습니다.", "user5");
+
+        createComment(40L, "컴포넌트 라이프사이클에 대해 배울 수 있어서 좋았어요.", "user1");
+        createComment(40L, "Hook을 사용한 상태 관리 예제가 정말 도움이 되었습니다.", "user2");
+        createComment(40L, "리액트 라우터를 사용한 SPA 구현 부분이 인상적이었어요.", "user3");
+        createComment(40L, "Context API 사용 방법을 자세히 알게 되어서 유익했습니다.", "user4");
+        createComment(40L, "다음 워크샵도 기대되네요. 언제 열리나요?", "user5");
+
+        //좋아요 생성
+        for (int i = 10; i <= 20; i++) {
+            for (int j = 1; j <= i-10; j++) {
+                addLike((long) i, "user" + j);
+                addLike((long) (i+20), "user" + j);
+            }
+        }
+
+        //팔로우 생성
         follow("user1", "user2");
         follow("user2", "user1");
         follow("user3", "user4");
@@ -137,13 +182,13 @@ public class InitData {
         follow("user5", "user4");
 
         //채널 생성
-        for(int i=1; i<=4; i++) {
-            createChannel(20L, "채널" + i);
-            createLounge(20L, "라운지" + i);
-        }
         for(int i=1; i<=3; i++) {
-            createChannel(19L, "채널" + i);
-            createLounge(19L, "라운지" + i);
+            for(int j=1; j<=5; j++) {
+                createChannel((long)(15+j), "채널" + i);
+                createLounge((long)(15+j), "라운지" + i);
+                createChannel((long)(35+j), "채널" + i);
+                createLounge((long)(35+j), "라운지" + i);
+            }
         }
     }
 
@@ -199,6 +244,17 @@ public class InitData {
                     .roomId(roomId)
                     .build();
             boardService.create(req, writerId);
+        }
+    }
+
+    private void createComment(Long boardId, String content, String memberId) {
+        Boolean exists = commentRepository.existsByBoardIdAndContent(boardId, content);
+        if (!exists) {
+            CommentCreateRequestDto req = CommentCreateRequestDto.builder()
+                    .boardId(boardId)
+                    .content(content)
+                    .build();
+            commentService.create(req, memberId);
         }
     }
 
