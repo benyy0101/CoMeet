@@ -53,7 +53,7 @@ public class SimpleTests {
                 managerId("멤버1").
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.PERMANENT).
                 build();
-        Room newRoom = roomService.create(reqR);
+        Room newRoom = roomService.create(reqR, "멤버1");
 
         log.info("방 생성");
 
