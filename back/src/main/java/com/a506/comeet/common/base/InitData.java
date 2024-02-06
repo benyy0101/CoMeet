@@ -22,7 +22,6 @@ import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.RoomCreateRequestDto;
-import com.a506.comeet.app.room.controller.dto.RoomSearchRequestDto;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.ChannelRepository;
 import com.a506.comeet.app.room.repository.LoungeRepository;
@@ -37,10 +36,7 @@ import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
