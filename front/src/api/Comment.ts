@@ -2,13 +2,13 @@ import {
   CreateCommentParams,
   CreateCommentResponse,
   DeleteCommentParams,
+  DeleteCommentResponse,
   ModifyCommentParams,
   ModifyCommentResponse,
   SearchCommentParams,
   SearchCommentResponse,
 } from "models/Comments.interface";
 import { localAxios } from "./http-commons";
-import { DeleteChannelResponse } from "models/Channel.interface";
 
 export const createComment = async (
   params: CreateCommentParams
@@ -38,7 +38,7 @@ export const modifyComment = async (
 
 export const deleteComment = async (
   params: DeleteCommentParams
-): Promise<DeleteChannelResponse> => {
+): Promise<DeleteCommentResponse> => {
   const { commentId } = params;
   const url = `comment/${commentId}`;
   const response = await localAxios.delete(url);
