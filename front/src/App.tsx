@@ -21,6 +21,7 @@ import { UseSelector, useSelector } from "react-redux";
 import ProfileEdit from "pages/ProfileEdit";
 import RoomCreate from "pages/RoomCreate";
 import tw from "tailwind-styled-components";
+import RoomModify from "pages/RoomModify";
 
 function App() {
   //임시
@@ -43,6 +44,7 @@ function App() {
             {!isLogin ? (
               <>
                 <Route path="/room-regist" element={<RoomCreate />} />
+                <Route path="/room-modify/:roomId" element={<RoomModify />} />
                 <Route path="/roomlist" element={<RoomList />} />
 
                 {/* 커뮤니티인데 곧 삭제 예정... */}

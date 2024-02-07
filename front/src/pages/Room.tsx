@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import {
   ArrowRightStartOnRectangleIcon,
-  CameraIcon,
   SpeakerXMarkIcon,
   SpeakerWaveIcon,
   VideoCameraSlashIcon,
@@ -15,10 +14,11 @@ import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
   PlusIcon,
+  CameraIcon,
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -44,6 +44,7 @@ import {
   setMicStatus,
   setVideoStatus,
 } from "store/reducers/roomSlice";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 export const Room = () => {
   const { roomId } = useParams();
@@ -592,15 +593,17 @@ export const Room = () => {
           <RoomTitle>{roomData?.title}</RoomTitle>
           <RoomNoticeButton onClick={toggleNotice}>
             <BellAlertIcon />
-            {noticeClicked ? <RoomNotice></RoomNotice> : null}
+            {noticeClicked ? <RoomNotice /> : null}
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
+          <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
+            <RoomButton>
+              <Cog6ToothIcon className="w-8 h-8" />
+            </RoomButton>
+          </Link>
           <RoomButton onClick={leaveSessionHandler}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
-          </RoomButton>
-          <RoomButton onClick={switchCamera}>
-            <CameraIcon className="w-8 h-8" />
           </RoomButton>
         </RoomButtonContainer>
       </RoomHeader>
@@ -734,6 +737,9 @@ export const Room = () => {
               </FilterMenu>
             )}
           </ControlPanelButton>
+          <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+            <CameraIcon className="w-8 h-8" />
+          </ControlPanelButton>
         </ControlPanel>
       )}
     </RoomContainer>
@@ -812,6 +818,7 @@ h-full
 flex
 items-center
 space-x-5
+px-4
 `;
 
 const RoomButton = tw.button`
