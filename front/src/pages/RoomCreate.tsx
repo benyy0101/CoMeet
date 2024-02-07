@@ -3,16 +3,19 @@ import { createRoom } from "api/Room";
 import { ROOM_CONSTRAINTS, ROOM_TYPE } from "models/Enums.type";
 import { CreateRoomParams } from "models/Room.interface";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 function RoomCreate() {
+  const navigate = useNavigate();
+
   const [title, setTitle] = React.useState<string>("");
   const [description, setDescription] = React.useState<string>("");
   const [maxPeople, setMaxPeople] = React.useState<number>(10);
   const [option, setOption] = React.useState<ROOM_CONSTRAINTS>("FREE");
   const [type, setType] = React.useState<ROOM_TYPE>("DISPOSABLE");
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data: CreateRoomParams = {
       title,
@@ -22,8 +25,9 @@ function RoomCreate() {
       type: type,
     };
 
-    const res = createRoom(data);
-    console.log(res);
+    const res = await createRoom(data);
+
+    navigate(`/room/${res}`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

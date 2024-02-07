@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardListResponseDto {
+
 	private Long id;
 	private String title;
 	private String content;
