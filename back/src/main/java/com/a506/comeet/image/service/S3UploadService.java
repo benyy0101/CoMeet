@@ -41,7 +41,7 @@ public class S3UploadService {
     }
 
     public void deleteImage(String url, String path)  {
-        String key = path + url.split("/")[4];
+        String key = path + url.split("/")[5];
         log.info("{}", key);
         try{
             amazonS3.deleteObject(bucket, key);
