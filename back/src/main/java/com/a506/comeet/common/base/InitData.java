@@ -118,11 +118,11 @@ public class InitData {
         // 모집게시판 생성
         for (int i = 1; i <= 15; i++)
             createBoard("user" + (i % 5 + 1), "모집게시판 주제 " + i, "모집게시판 내용 " + i, BoardType.RECRUIT, null, null);
-        createBoard("user1", "새로운 웹 앱 프로젝트 팀원 모집", "React와 Node.js를 사용한 웹 애플리케이션을 개발할 팀원을 모집합니다.", BoardType.RECRUIT, null, null);
-        createBoard("user2", "알고리즘 스터디 그룹", "알고리즘 문제 풀이를 함께할 스터디 멤버를 찾습니다. 주 1회 온라인 모임 예정.", BoardType.RECRUIT, null, null);
-        createBoard("user3", "블록체인 프로젝트 참여자", "이더리움 기반의 스마트 컨트랙트 개발 프로젝트입니다. 관심있는 분들의 많은 참여 바랍니다.", BoardType.RECRUIT, null, null);
-        createBoard("user4", "인공지능 학습 모델 개발", "딥러닝을 활용한 이미지 인식 모델 개발 프로젝트입니다. 텐서플로우/케라스 경험자 우대.", BoardType.RECRUIT, null, null);
-        createBoard("user5", "모바일 게임 개발 프로젝트", "Unity를 이용한 모바일 게임 개발에 참여할 분을 모집합니다. 게임에 열정적인 분 환영!", BoardType.RECRUIT, null, null);
+        createBoard("user1", "새로운 웹 앱 프로젝트 팀원 모집", "React와 Node.js를 사용한 웹 애플리케이션을 개발할 팀원을 모집합니다.", BoardType.RECRUIT, null, 36L);
+        createBoard("user2", "알고리즘 스터디 그룹", "알고리즘 문제 풀이를 함께할 스터디 멤버를 찾습니다. 주 1회 온라인 모임 예정.", BoardType.RECRUIT, null, 37L);
+        createBoard("user3", "블록체인 프로젝트 참여자", "이더리움 기반의 스마트 컨트랙트 개발 프로젝트입니다. 관심있는 분들의 많은 참여 바랍니다.", BoardType.RECRUIT, null, 38L);
+        createBoard("user4", "인공지능 학습 모델 개발", "딥러닝을 활용한 이미지 인식 모델 개발 프로젝트입니다. 텐서플로우/케라스 경험자 우대.", BoardType.RECRUIT, null, 39L);
+        createBoard("user5", "모바일 게임 개발 프로젝트", "Unity를 이용한 모바일 게임 개발에 참여할 분을 모집합니다. 게임에 열정적인 분 환영!", BoardType.RECRUIT, null, 40L);
 
         // 댓글 생성
         List<String> commentsForJava = Arrays.asList(
@@ -261,7 +261,7 @@ public class InitData {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
         Boolean exists = likeRepository.existsByBoardAndMember(board, member);
         if (!exists) {
-            likeService.addLike(boardId, memberId);
+            boardService.addLike(boardId, memberId);
         }
     }
 
