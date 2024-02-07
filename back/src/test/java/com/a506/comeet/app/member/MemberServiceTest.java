@@ -53,7 +53,7 @@ class MemberServiceTest {
     @Transactional
     void updateTest(){
         MemberUpdateRequestDto req = MemberUpdateRequestDto.builder()
-                        .name("이름").link("링크").description("설명").feature(MemberFeature.EARTH).email("newEmail@naber.com")
+                        .name("이름").description("설명").feature(MemberFeature.EARTH).email("newEmail@naber.com")
                 .password("newASDF12@").nickname("새닉네임").profileImage("profileImageLink").build();
         memberService.update(req, "멤버아이디1");
         Member member = memberRepository.findById("멤버아이디1").get();

@@ -73,7 +73,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 member.nickname,
                                 room.title,
                                 room.description,
-                                room.link,
                                 room.roomImage,
                                 room.notice,
                                 room.mcount,
@@ -201,6 +200,4 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if (managerNickname == null) return null;
         return room.manager.nickname.eq(managerNickname);
     }
-
-
 }

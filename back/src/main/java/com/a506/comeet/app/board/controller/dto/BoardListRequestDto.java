@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class BoardListRequestDto {
+
     private BoardType boardType;    //게시판 타입
 
     private String searchKeyword;   //제목 + 본문

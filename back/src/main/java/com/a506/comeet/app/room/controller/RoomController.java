@@ -94,7 +94,6 @@ public class RoomController {
         return ResponseEntity.ok(res);
     }
 
-    // 수정 필요합니다
     @PostMapping("/{roomId}/enter")
     public ResponseEntity<RoomResponseDto> enter(@RequestBody RoomEnterRequestDto req, @PathVariable Long roomId){
         String memberId = MemberUtil.getMemberId();
