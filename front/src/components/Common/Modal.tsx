@@ -12,7 +12,7 @@ import { ILounge } from "models/Lounge.interface";
 type ModalProps = {
   toggleModal: () => void;
   option: string;
-  setting?: RoomItemProps | null;
+  setting?: any;
   channels?: IChannel[];
   addChannel?: (name: string) => void;
   removeChannel?: (id: number) => void;
@@ -100,11 +100,11 @@ function Modal(props: ModalProps) {
 }
 
 const Wrapper = tw.div`
-fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
+fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center
 `;
 
 const ModalContainer = tw.div`
-  rounded-md 
-  shadow-md
+rounded-md 
+shadow-md
 `;
 export default Modal;
