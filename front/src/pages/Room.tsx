@@ -34,7 +34,8 @@ import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
 import { enterRoom, leaveRoom } from "api/Room";
 import { EnterRoomResponse, LeaveRoomParams } from "models/Room.interface";
-import { IFilter, filterType } from "models/Filter.interface";
+import { IFilter } from "models/Filter.interface";
+import { filterType } from "constants/Filter";
 
 export const Room = () => {
   const { roomId } = useParams();
