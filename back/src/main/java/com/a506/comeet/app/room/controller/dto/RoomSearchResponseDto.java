@@ -18,7 +18,6 @@ public class RoomSearchResponseDto {
     private String managerNickname;
     private String title;
     private String description;
-    private String link;
     private String roomImage;
     private Integer capacity;
     private Boolean isLocked;
@@ -34,7 +33,6 @@ public class RoomSearchResponseDto {
         this.managerNickname = room.getManager().getNickname();
         this.title = room.getTitle();
         this.description = room.getDescription();
-        this.link = room.getLink();
         this.roomImage = room.getRoomImage();
         this.capacity = room.getCapacity();
         this.isLocked = room.getIsLocked();

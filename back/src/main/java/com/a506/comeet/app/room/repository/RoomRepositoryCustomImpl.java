@@ -73,7 +73,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 member.nickname,
                                 room.title,
                                 room.description,
-                                room.link,
                                 room.roomImage,
                                 room.notice,
                                 room.mcount,
