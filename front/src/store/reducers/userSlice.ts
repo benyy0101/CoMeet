@@ -1,7 +1,8 @@
 // userSlice.ts
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
-import { UserState } from "../../types";
+import Login from "components/Auth/Login";
+import { LoginResponse, UserState } from "models/Login.interface";
 
 // Function to retrieve user state from sessionStorage
 const loadUserState = (): UserState => {
@@ -11,10 +12,10 @@ const loadUserState = (): UserState => {
 
 const initialState: UserState = {
   user: {
-    memberId: "",
-    password: "",
-    profileImage: "",
     nickname: "",
+    profileImage: "",
+    unreadNoteCount: 0,
+    joinedRooms: [],
   },
   isLoggedIn: false,
 };
@@ -23,22 +24,13 @@ const userSlice = createSlice({
   name: "user",
   initialState: loadUserState(),
   reducers: {
-    login: (state, action: PayloadAction<{ user: UserState["user"] }>) => {
-      const { user } = action.payload;
-      state.user = user;
+    login: (state, action: PayloadAction<LoginResponse>) => {
+      state.user = action.payload;
       state.isLoggedIn = true;
     },
     logout: (state) => {
       state.user = initialState.user;
       state.isLoggedIn = false;
-    },
-    signup: (
-      state,
-      action: PayloadAction<{ user: UserState["user"]; token: string }>
-    ) => {
-      const { user } = action.payload;
-      state.user = user;
-      state.isLoggedIn = true;
     },
   },
 });
@@ -54,5 +46,5 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout, signup } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;
