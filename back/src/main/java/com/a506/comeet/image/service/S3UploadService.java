@@ -4,6 +4,7 @@ import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 public class S3UploadService {
 
     private final AmazonS3 amazonS3;
+    private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -35,7 +37,7 @@ public class S3UploadService {
         metadata.setContentType(multipartFile.getContentType());
 
         amazonS3.putObject(bucket, path + filename, multipartFile.getInputStream(), metadata);
-        return amazonS3.getUrl(bucket, filename).toString();
+        return amazonS3Client.getUrl(bucket, path + filename).toString();
     }
 
     public void deleteImage(String url, String path)  {

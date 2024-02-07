@@ -36,7 +36,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginReqeustDto req){
-        log.info("request memberId = {}, password = {}", req.getMemberId(), req.getPassword());
+        log.info("request memberId = {}", req.getMemberId());
         LoginResponseDto res = authService.login(req.getMemberId(), req.getPassword());
         log.info("jwtToken accessToken = {}, refreshToken = {}", res.getJwtToken().getAccessToken(), res.getJwtToken().getRefreshToken());
 
