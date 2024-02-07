@@ -18,7 +18,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
@@ -98,13 +97,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
-    @Override
-    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId) {
-        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
-                .from(room)
-                .innerJoin(member).on(room.manager.eq(member))
-                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
-    }
 
     private List<RoomMemberResponseDto> getMembers(Long roomId) {
         return jpaQueryFactory.select(

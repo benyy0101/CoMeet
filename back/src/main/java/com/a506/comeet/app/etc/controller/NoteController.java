@@ -2,12 +2,16 @@ package com.a506.comeet.app.etc.controller;
 
 import com.a506.comeet.app.etc.controller.dto.NoteCreateRequestDto;
 import com.a506.comeet.app.etc.controller.dto.NoteResponseDto;
+import com.a506.comeet.app.etc.controller.dto.NoteSimpleResponseDto;
 import com.a506.comeet.app.etc.entity.Note;
 import com.a506.comeet.app.etc.service.NoteService;
 import com.a506.comeet.app.member.MemberUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +35,11 @@ public class NoteController {
         return ResponseEntity.ok(noteService.findAndRead(noteId));
     }
 
-//    @GetMapping("/list/{memberId}")
-//    public ResponseEntity<List<NoteResponseDto>> getList(@Valid Notr req, @PathVariable String memberId){
-//        return ResponseEntity.ok(noteService.findList(req, memberId));
-//    }
+    @GetMapping("")
+    public ResponseEntity<Page<NoteSimpleResponseDto>> getList(@PageableDefault(size = 20) Pageable pageable){
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(noteService.findList(memberId, pageable));
+    }
 
     @DeleteMapping("/{noteId}")
     public ResponseEntity<Void> delete(@PathVariable Long noteId){
@@ -43,5 +48,10 @@ public class NoteController {
         return ResponseEntity.ok().build();
     }
 
-
+    @PostMapping("/join-request/{roomId}")
+    public ResponseEntity<Void> joinRequest(@PathVariable Long roomId){
+        String memberId = MemberUtil.getMemberId();
+        noteService.sendJoinNote(roomId, memberId);
+        return ResponseEntity.ok().build();
+    }
 }
