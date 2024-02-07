@@ -31,7 +31,7 @@ import { set } from "react-hook-form";
 import { createChannel, deleteChannel } from "api/Channel";
 import { useQuery } from "@tanstack/react-query";
 import { create } from "domain";
-import { createLounge } from "api/Lounge";
+import { createLounge, deleteLounge } from "api/Lounge";
 import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
@@ -103,9 +103,7 @@ export const Room = () => {
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>(
-    initialLounges[0]
-  );
+  const [currentLounge, setCurrentLounge] = useState<ILounge>(initialLounges[0]);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
@@ -134,16 +132,14 @@ export const Room = () => {
     enterRoomHandler();
     if (stompClient.current === null) {
       stompClient.current = Stomp.over(() => {
-        const sock = new SockJS(
-          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
-        );
+        const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
         return sock;
       });
 
       stompClient.current.connect(
         {},
         () => {
-          stompClient.current.subscribe(`/room/${roomId}`, (e: any) =>
+          stompClient.current.subscribe(`/room/info/${roomId}`, (e: any) =>
             handleUpdateInfo(JSON.parse(e.body))
           );
         },
@@ -153,49 +149,41 @@ export const Room = () => {
 
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
+        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
         stompClient.current = null;
         leaveRoomHandler();
       }
     };
   }, []);
 
-  const handleUpdateInfo = (data: any) => {
-    console.log(data);
-    if (data.type === "ROOM") {
-      handleRoomUpdate(data);
-    } else if (data.type === "LOUNGE") {
-      handleLoungeUpdate(data);
-    } else if (data.type === "CHANNEL") {
-      handleChannelUpdate(data);
-    }
-  };
+  const handleUpdateInfo = (event: any) => {
+    console.log("받은 동시성 이벤트", event);
 
-  const handleRoomUpdate = (data: any) => {
-    if (data.action === "MODIFY") {
-      // 방 수정
-    } else if (data.action === "DELETE") {
-      // 방 삭제
-    }
-  };
-  const handleLoungeUpdate = (data: any) => {
-    if (data.action === "CREATE") {
-      // 라운지 추가
-    } else if (data.action === "MODIFY") {
-      // 라운지 수정
-    } else if (data.action === "DELETE") {
-      // 라운지 삭제
-    }
-  };
-  const handleChannelUpdate = (data: any) => {
-    if (data.action === "CREATE") {
-      // 채널 생성
-    } else if (data.action === "MODIFY") {
-      // 채널 수정
-    } else if (data.action === "DELETE") {
-      // 채널 삭제
+    switch (event.eventType) {
+      case "ROOM_CREATE":
+        break;
+      case "ROOM_DELETE":
+        break;
+      case "ROOM_JOIN":
+        break;
+      case "ROOM_WITHDRAW":
+        break;
+      case "CHANNEL_CREATE":
+        setChannels((prev) => [...prev, event.data]);
+        break;
+      case "CHANNEL_UPDATE":
+        break;
+      case "CHANNEL_DELETE":
+        setChannels((prev) => prev.filter((channel) => channel.channelId !== event.data.channelId));
+        break;
+      case "LOUNGE_CREATE":
+        setLounges((prev) => [...prev, event.data]);
+        break;
+      case "LOUNGE_UPDATE":
+        break;
+      case "LOUNGE_DELETE":
+        setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== event.data.loungeId));
+        break;
     }
   };
 
@@ -242,9 +230,7 @@ export const Room = () => {
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) =>
-      deleteSubscriber(event.stream.streamManager)
-    );
+    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -270,9 +256,7 @@ export const Room = () => {
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) =>
-        prev.filter((id) => id !== event.connection.connectionId)
-      );
+      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
     });
 
     setSession(mySession);
@@ -299,9 +283,7 @@ export const Room = () => {
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -314,11 +296,7 @@ export const Room = () => {
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -344,9 +322,7 @@ export const Room = () => {
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -411,9 +387,7 @@ export const Room = () => {
   }, [leaveSession]);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   useEffect(() => {
@@ -534,18 +508,30 @@ export const Room = () => {
         channelId: res,
         name: props,
       };
-      setChannels((prev) => [...prev, newChannel]);
+      // 동시성 이벤트
+      const event = {
+        eventType: "CHANNEL_CREATE",
+        roomId: parseInt(roomId!),
+        data: newChannel,
+      };
+      console.log("보내는 이벤트", event);
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
   };
 
   const removeChannel = async (id: number) => {
-    setChannels((prev) =>
-      prev.filter((channel: { channelId: number }) => channel.channelId !== id)
-    );
     try {
       await deleteChannel({ channelId: id });
+      // 동시성 이벤트
+      const event = {
+        eventType: "CHANNEL_DELETE",
+        roomId: parseInt(roomId!),
+        data: { channelId: id },
+      };
+      console.log("보내는 이벤트", event);
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
@@ -558,18 +544,37 @@ export const Room = () => {
         name: props,
       };
       const res = await createLounge(data);
-      const temp: ILounge = {
+      const newLounge: ILounge = {
         loungeId: res,
         name: props,
       };
-      setLounges((prev) => [...prev, temp]);
+      // 동시성 이벤트
+      const event = {
+        eventType: "LOUNGE_CREATE",
+        roomId: parseInt(roomId!),
+        data: newLounge,
+      };
+      console.log("보내는 이벤트", event);
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
   };
 
-  const removeLounge = (id: number) => {
-    setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== id));
+  const removeLounge = async (id: number) => {
+    try {
+      await deleteLounge({ loungeId: id });
+      // 동시성 이벤트
+      const event = {
+        eventType: "LOUNGE_DELETE",
+        roomId: parseInt(roomId!),
+        data: { loungeId: id },
+      };
+      console.log("보내는 이벤트", event);
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const leaveSessionHandler = () => {
@@ -640,11 +645,7 @@ export const Room = () => {
       <RoomContent>
         <RoomSidebar>
           <SideBarToggler onClick={toggleSideBar}>
-            {sideToggle ? (
-              <ChevronDoubleLeftIcon />
-            ) : (
-              <ChevronDoubleRightIcon />
-            )}
+            {sideToggle ? <ChevronDoubleLeftIcon /> : <ChevronDoubleRightIcon />}
           </SideBarToggler>
           {sideToggle ? (
             <SideWrapper>
@@ -654,10 +655,7 @@ export const Room = () => {
                   <LoungeButton
                     key={l.loungeId}
                     active={inLounge && currentLounge.loungeId === l.loungeId}
-                    disabled={
-                      isLoading ||
-                      (inLounge && currentLounge.loungeId === l.loungeId)
-                    }
+                    disabled={isLoading || (inLounge && currentLounge.loungeId === l.loungeId)}
                     lounge={l}
                     moveLounge={moveLounge}
                   />
@@ -667,10 +665,7 @@ export const Room = () => {
                   <ChannelButton
                     key={c.channelId}
                     active={mySessionId === c.channelId.toString()}
-                    disabled={
-                      isLoading ||
-                      (!inLounge && mySessionId === c.channelId.toString())
-                    }
+                    disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
                     id={c.channelId.toString()}
                     name={c.name}
                     moveChannel={moveChannel}
@@ -725,18 +720,14 @@ export const Room = () => {
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-          >
+          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsScreenShared(!isScreenShared)}
-          >
+          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -750,10 +741,7 @@ export const Room = () => {
                 onClick={() => setFilterApplied(false)}
               />
             ) : (
-              <SparklesIcon
-                className="w-8 h-8"
-                onClick={() => setFilterMenuOpen(true)}
-              />
+              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
@@ -984,6 +972,3 @@ bg-[#2f2f2f]
 hover:bg-slate-400
 disabled:bg-slate-400
 `;
-function sleep(arg0: number) {
-  throw new Error("Function not implemented.");
-}
