@@ -74,6 +74,7 @@ public class RoomService {
                 title(req.getTitle()).
                 description(req.getDescription()).
                 capacity(req.getCapacity()).
+                type(req.getType()).
                 constraints(req.getConstraints()).build();
 
         Room created = roomRepository.save(room);
