@@ -1,5 +1,5 @@
 import { OpenVidu } from "openvidu-browser";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import {
   ArrowRightStartOnRectangleIcon,
@@ -25,69 +25,16 @@ import { useSelector } from "react-redux";
 import { RoomNotice } from "components/RoomNotice";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { IChannel, CreateChannelResponse } from "models/Channel.interface";
+import { IChannel } from "models/Channel.interface";
 import { CreateLoungeParams, ILounge } from "models/Lounge.interface";
-import { set } from "react-hook-form";
 import { createChannel, deleteChannel } from "api/Channel";
-import { useQuery } from "@tanstack/react-query";
-import { create } from "domain";
 import { createLounge, deleteLounge } from "api/Lounge";
 import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
 import { enterRoom, leaveRoom } from "api/Room";
-import {
-  EnterRoomChannel,
-  EnterRoomLounge,
-  EnterRoomParams,
-  EnterRoomResponse,
-  LeaveRoomParams,
-} from "models/Room.interface";
-import { query } from "express";
-
-interface IFilter {
-  name: string;
-  command: string;
-}
-
-const filterType: IFilter[] = [
-  { name: "Edgetv", command: "edgetv" },
-  { name: "Revtv", command: "revtv" },
-  { name: "Agingtv", command: "agingtv" },
-  { name: "Optv", command: "optv" },
-  { name: "Quarktv", command: "quarktv" },
-  { name: "Radioactv", command: "radioactv" },
-  { name: "Rippletv", command: "rippletv" },
-  { name: "Shagadelictv", command: "shagadelictv" },
-  { name: "Streaktv", command: "streaktv" },
-  { name: "Vertigotv", command: "vertigotv" },
-  { name: "Warptv", command: "warptv" },
-  { name: "Bulge", command: "bulge" },
-  { name: "Kaleidoscope", command: "kaleidoscope" },
-  { name: "Mirror", command: "mirror" },
-  { name: "Pinch", command: "pinch" },
-  { name: "Stretch", command: "stretch" },
-  { name: "Twirl", command: "twirl" },
-  { name: "Square", command: "square" },
-  { name: "Heat", command: "coloreffects preset=heat" },
-  { name: "GrayScale", command: "videobalance saturation=0.0" },
-  { name: "Dicetv", command: "dicetv" },
-  {
-    name: "Time overlay",
-    command: `timeoverlay valignment=bottom halignment=right font-desc="Sans, 30"`,
-  },
-];
-
-const initialChannels: IChannel[] = [
-  { channelId: 1, name: "채널 1" },
-  { channelId: 2, name: "채널 2" },
-  { channelId: 3, name: "채널 3" },
-];
-const initialLounges: ILounge[] = [
-  { loungeId: 1, name: "라운지 1" },
-  { loungeId: 2, name: "라운지 2" },
-  { loungeId: 3, name: "라운지 3" },
-];
+import { EnterRoomResponse, LeaveRoomParams } from "models/Room.interface";
+import { IFilter, filterType } from "models/Filter.interface";
 
 export const Room = () => {
   const { roomId } = useParams();
@@ -97,18 +44,17 @@ export const Room = () => {
   const [sideToggle, setSideToggle] = useState<boolean>(true);
   const [modal, setModal] = useState<boolean>(false);
   const [roomData, setRoomData] = useState<EnterRoomResponse | null>(null);
-  const [channels, setChannels] = useState<IChannel[]>(initialChannels);
-  const [lounges, setLounges] = useState<ILounge[]>(initialLounges);
+  const [channels, setChannels] = useState<IChannel[]>([]);
+  const [lounges, setLounges] = useState<ILounge[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Lounge
   const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge>(initialLounges[0]);
+  const [currentLounge, setCurrentLounge] = useState<ILounge | null>(null);
 
   // Openvidu states
   const [mySessionId, setMySessionId] = useState<string>("");
   const [mySessionName, setMySessionName] = useState<string>("");
-  const [myUserName, setMyUserName] = useState<string>(userInfo.user.nickname);
   const [session, setSession] = useState<any>(undefined);
   const [mainStreamManager, setMainStreamManager] = useState<any>(undefined);
   const [publisher, setPublisher] = useState<any>(undefined);
@@ -267,7 +213,7 @@ export const Room = () => {
       // Get a token from the OpenVidu deployment
       getToken().then(async (token) => {
         try {
-          await session.connect(token, { clientData: myUserName });
+          await session.connect(token, { clientData: userInfo.user.nickname });
 
           let publisher = await OV.current.initPublisherAsync(undefined, {
             audioSource: undefined,
@@ -300,7 +246,7 @@ export const Room = () => {
         }
       });
     }
-  }, [session, myUserName]);
+  }, [session, userInfo.user.nickname]);
 
   const leaveSession = useCallback(() => {
     setInLounge(true);
@@ -314,7 +260,6 @@ export const Room = () => {
     setSession(undefined);
     setSubscribers([]);
     setMySessionId("");
-    // setMyUserName("사용자 " + Math.floor(Math.random() * 100));
     setMainStreamManager(undefined);
     setPublisher(undefined);
   }, [session]);
@@ -654,8 +599,8 @@ export const Room = () => {
                 {lounges.map((l) => (
                   <LoungeButton
                     key={l.loungeId}
-                    active={inLounge && currentLounge.loungeId === l.loungeId}
-                    disabled={isLoading || (inLounge && currentLounge.loungeId === l.loungeId)}
+                    active={inLounge && currentLounge?.loungeId === l.loungeId}
+                    disabled={isLoading || (inLounge && currentLounge?.loungeId === l.loungeId)}
                     lounge={l}
                     moveLounge={moveLounge}
                   />
@@ -694,14 +639,14 @@ export const Room = () => {
         </RoomSidebar>
 
         <ChannelBorder>
-          {inLounge ? (
+          {inLounge && currentLounge ? (
             <Lounge lounge={currentLounge} />
           ) : (
             <Channel
               session={session}
               mySessionName={mySessionName}
               mySessionId={mySessionId}
-              myUserName={myUserName}
+              myUserName={userInfo.user.nickname}
               publisher={publisher}
               subscribers={subscribers}
               speakerIds={speakerIds}
