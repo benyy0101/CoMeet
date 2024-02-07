@@ -12,7 +12,7 @@ export const localAxios: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-export const imgageAxios: AxiosInstance = axios.create({
+export const imageAxios: AxiosInstance = axios.create({
   baseURL,
   headers: {
     "Content-Type": "multipart/form-data",
