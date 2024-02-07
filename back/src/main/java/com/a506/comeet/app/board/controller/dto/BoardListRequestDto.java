@@ -1,7 +1,9 @@
 package com.a506.comeet.app.board.controller.dto;
 
-import com.a506.comeet.common.enums.*;
-import jakarta.validation.constraints.NotNull;
+import com.a506.comeet.common.enums.BoardSortBy;
+import com.a506.comeet.common.enums.BoardType;
+import com.a506.comeet.common.enums.FreeBoardCategory;
+import com.a506.comeet.common.enums.RecruitBoardCategory;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +18,7 @@ public class BoardListRequestDto {
 
     private String searchKeyword;   //제목 + 본문
     private String writerNickname;          //작성자
-    private BoardSortBy sortBy;     //정렬 타입 (최신순, 좋아요순, 모집률순)
+    private final BoardSortBy sortBy = BoardSortBy.LATEST;     //정렬 타입 (최신순, 좋아요순, 모집률순)
 
     private RecruitBoardCategory recruitBoardCategory;  //모집 게시판 카테고리 (모집중, 모집완료)
     private List<Long> keywordIds;  //모집 게시판 프로그래밍 키워드
