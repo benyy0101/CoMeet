@@ -4,7 +4,7 @@ import {
   BOARD_SORTBY,
   BOARD_TYPE,
 } from "./Enums.type";
-import { Pageable } from "./Util";
+import { Keyword, Pageable } from "./Util";
 
 export interface CreateBoardParams {
   writerId: String; //필수
@@ -29,6 +29,8 @@ export interface SearchBoardParams {
   keywordIds?: number[]; //선택
   capacity?: number; //선택
   freeBoardCategory?: BOARD_CATEGORY; //선택. 자유에서만 사용
+  page: number;
+  size: number;
 }
 
 export interface SearchBoardContent {
@@ -36,19 +38,21 @@ export interface SearchBoardContent {
   title: string;
   content: string;
   likeCount: number;
-  type: string;
-  category: BOARD_CATEGORY;
+  type: BOARD_TYPE;
+  category: BOARD_CATEGORY | null;
   isValid: true;
-  roomKeywords: number[];
+  roomKeywords: Keyword[];
   roomImage: string;
   writerNickname: string;
   writerImage: string;
   createdAt: string;
   updatedAt: string;
 }
-export interface SearchBoardResponse {
+export default interface SearchBoardResponse {
   content: SearchBoardContent[];
   pageable: Pageable;
+  totalPages: number;
+  totalElements: number;
 }
 
 export interface ModifyBoardParams {

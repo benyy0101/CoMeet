@@ -5,12 +5,23 @@ import { BoardListProps } from "types";
 
 import StarFill from "assets/img/star-fill.svg";
 import { SearchBoardContent } from "models/Board.interface";
+import { Keyword } from "models/Util";
 
 //export const RecruitBoardListLink = (props: BoardListProps) => {
 export const RecruitBoardListLink = (props: SearchBoardContent) => {
   //const keywordArr: string[] = props.roomKeywords.split("-");
+  // let keywordArr: string[] = [];
+  // for (let index = 0; index < array.length; index++) {
+  //   const element = array[index];
 
-  const keywordArr: number[] = props.roomKeywords;
+  // }
+
+  const keywordArr: Keyword[] = props.roomKeywords;
+  // props.roomKeywords.map((key) => {
+  //   console.log(key);
+  //   props.roomKeywords.
+  //   return key.name;
+  // });
 
   return (
     <Link to="/recruit-board/1">
@@ -31,7 +42,7 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
           </TitleAndValidContainer>
           <RoomKeywordContainer>
             {keywordArr?.map((keyword) => (
-              <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
+              <RoomKeyword key={keyword.id}>{keyword.name}</RoomKeyword>
             ))}
           </RoomKeywordContainer>
         </CenterContainer>

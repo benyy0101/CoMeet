@@ -4,6 +4,11 @@ export interface Sort {
   unsorted: Boolean;
 }
 
+export interface Keyword {
+  id: number;
+  name: string;
+}
+
 export interface Pageable {
   pageNumber: number;
   pageSize: number;
