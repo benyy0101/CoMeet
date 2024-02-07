@@ -1,5 +1,5 @@
 import React from "react";
-import TextEditor from "../components/TextEditor";
+import TextEditor from "../components/BoardWrite/TextEditor";
 import tw from "tailwind-styled-components";
 
 type BoardProps = {
