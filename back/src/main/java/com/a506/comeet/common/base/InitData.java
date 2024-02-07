@@ -17,7 +17,6 @@ import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.repository.LikeRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.member.service.FollowService;
-import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
@@ -52,7 +51,6 @@ public class InitData {
     private final RoomService roomService;
     private final KeywordService keywordService;
     private final BoardService boardService;
-    private final LikeService likeService;
     private final FollowService followService;
     private final ChannelService channelService;
     private final LoungeService loungeService;
@@ -173,10 +171,16 @@ public class InitData {
 
         //팔로우 생성
         follow("user1", "user2");
+        follow("user1", "user3");
         follow("user2", "user1");
-        follow("user3", "user4");
-        follow("user4", "user5");
-        follow("user5", "user4");
+        follow("user3", "user1");
+        follow("user4", "user1");
+        follow("user5", "user1");
+        follow("user5", "user1");
+        follow("user6", "user2");
+        follow("user7", "user2");
+        follow("user8", "user3");
+        follow("user9", "user10");
 
         //채널 생성
         for(int i=1; i<=3; i++) {
