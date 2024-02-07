@@ -31,6 +31,7 @@ export interface SearchBoardParams {
   freeBoardCategory?: BOARD_CATEGORY; //선택. 자유에서만 사용
   page: number;
   size: number;
+  isValid?: boolean;
 }
 
 export interface SearchBoardContent {

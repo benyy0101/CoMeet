@@ -25,7 +25,6 @@ export const RecruitBoardList = () => {
 
   const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
     {
-      boardType: "RECRUIT",
       sortBy: "LATEST",
       page: 0,
       size: 10,
@@ -48,7 +47,8 @@ export const RecruitBoardList = () => {
   const [currentCount, setCurrentCount] = useState<number>(25);
 
   //왼쪽 사이드바 선택 메뉴
-  const [currentMenu, setCurrentMenu] = useState<string>("전체");
+  type CurrentMenu = "전체" | "모집중" | "모집완료";
+  const [currentMenu, setCurrentMenu] = useState<CurrentMenu>("전체");
 
   //아래는 모두 페이지네이션 임시
   const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
@@ -108,24 +108,32 @@ export const RecruitBoardList = () => {
   const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
     queryKey: ["boardList", JSON.stringify(searchBoardParams)],
     queryFn: () => {
-      console.log("query exeeting", searchBoardParams);
+      console.log("execute query", searchBoardParams);
       return searchBoard(searchBoardParams);
     },
   });
 
   useEffect(() => {
     if (page) {
-      console.log("page is..", page);
       searchBoardParams.page = parseInt(page) - 1;
       setSearchBoardParams(searchBoardParams);
     }
   }, [page]);
 
   useEffect(() => {
+    if (currentMenu === "전체") {
+      delete searchBoardParams.isValid;
+    } else if (currentMenu === "모집중") {
+      searchBoardParams.isValid = true;
+    } else {
+      searchBoardParams.isValid = false;
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentMenu]);
+
+  useEffect(() => {
     if (QDboardList?.content) {
-      console.log("resultis", QDboardList);
-      setTotalElements(QDboardList.totalElements);
-      setTotalPages(QDboardList.totalPages);
+      console.log(QDboardList);
       setBoardList(QDboardList.content);
     }
   }, [QDboardList]);
