@@ -31,12 +31,24 @@ public class FollowService {
 
     @Transactional
     public String follow(FollowRequestDto req, String fromId) {
-        if (req.getMemberId().equals(fromId)) return null;
+        selfFollowValidation(fromId, req.getMemberId());
+
         Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 팔로우하고 있습니다");
+        alreadyFollowingValidation(from, to);
+
         Follow created = followRepository.save(new Follow(from, to));
+        log.info("{}", created.getId());
         return created.getTo().getMemberId();
+    }
+
+    private void alreadyFollowingValidation(Member from, Member to) {
+        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 팔로우하고 있습니다");
+    }
+
+    private void selfFollowValidation(String fromId, String toId) {
+        if (fromId.equals(toId))
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "자기 자신을 팔로우 할 수 없습니다");
     }
 
     @Transactional
