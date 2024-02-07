@@ -87,7 +87,20 @@ flex-col
 gap-2
 `;
 
-const Img = tw.img`w-6`;
+const Img = tw.img`
+w-6
+`;
+
+const ProfileImg = tw.div`
+bg-slate-100
+w-20
+h-20
+min-w-10
+min-h-10
+rounded-full
+bg-cover
+bg-center
+`;
 
 function RoomItem(props: SearchRoomContent) {
   // function RoomItem(props: RoomItemProps) {
@@ -98,7 +111,16 @@ function RoomItem(props: SearchRoomContent) {
   return (
     <Wrapper onClick={modalHandler}>
       <LeftContainer>
-        <Image src={props.roomImage} alt="room thumbnail" />
+        <ProfileImg
+          style={{
+            backgroundImage: `url(
+            ${
+              props.roomImage === "" || props.roomImage === "default_room_image_letsgo"
+                ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
+                : props.roomImage
+            })`,
+          }}
+        />
         <InfoContainer>
           <TitleContainer>
             <Title>{props.title}</Title>

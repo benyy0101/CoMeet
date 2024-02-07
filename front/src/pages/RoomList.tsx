@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
 import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomItem";
-import Search from "../assets/img/search.svg";
-import FilterImg from "../assets/img/filter.png";
-import FilterMenu from "../components/FilterMenu";
 import { RoomItemProps } from "../types";
+import { useEffect, useState } from "react";
+import FilterMenu from "components/FilterMenu";
+import { Link } from "react-router-dom";
+import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
@@ -17,11 +17,6 @@ import { searchRoom } from "api/Room";
 
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
-  const [filterActive, setFilterActive] = React.useState<boolean>(false);
-  const [activeCat, setActiveCat] = React.useState<string>("전체");
-  const activeHandler = (value: string) => {
-    setActiveCat(value);
-  };
 
   const params: SearchRoomParams = {
     // constraints: "FREE",
@@ -34,10 +29,6 @@ export const RoomList = () => {
     queryFn: () => searchRoom(params),
   });
 
-  const filterHandler = () => {
-    setFilterActive(!filterActive);
-  };
-
   useEffect(() => {
     if (data?.content) {
       setRoomList(data.content);
@@ -45,40 +36,41 @@ export const RoomList = () => {
   }, [data]);
   return (
     <Wrapper>
-      <SearchBarContainer>
-        <Form>
-          <DropDowns>
-            <option value="제목+설명">제목+설명</option>
-            <option value="방장명">방장명</option>
-          </DropDowns>
-          <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
-          <Shoot>
-            <Img src={Search} alt="" />
-          </Shoot>
-        </Form>
-        <Filter>
-          <FilterIcon onClick={filterHandler}>
-            <img src={FilterImg} alt="" />
-          </FilterIcon>
-          {filterActive && <FilterMenu />}
-        </Filter>
-      </SearchBarContainer>
       <MainContainer>
         <LeftContainer>
-          <Button onClick={() => activeHandler("전체")}>전체</Button>
-          <Button onClick={() => activeHandler("최신순")}>최신순</Button>
-          <Button onClick={() => activeHandler("오래된순")}>오래된순</Button>
-          <Button onClick={() => activeHandler("참여인원순")}>
-            참여인원순
-          </Button>
+          <FilterMenu />
         </LeftContainer>
         <ListContainer>
+          <SearchBarContainer>
+            <SearchForm>
+              <DropDowns>
+                <option value="제목+설명">제목+설명</option>
+                <option value="방장명">방장명</option>
+              </DropDowns>
+              <SearchInputContainer>
+                <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
+                <CustomMagnifyingGlassIcon />
+              </SearchInputContainer>
+            </SearchForm>
+          </SearchBarContainer>
           {roomList.map((temp) => (
             <Items key={temp.roomId} {...temp} />
           ))}
         </ListContainer>
-        <RightContainer></RightContainer>
       </MainContainer>
+      <Link to={"/room-regist"}>
+        <BottomButton className="right-24">
+          <PlusIcon className="w-6 h-6" />
+        </BottomButton>
+      </Link>
+      <BottomButton
+        className="right-10"
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      >
+        <ChevronDoubleUpIcon className="w-6 h-6" />
+      </BottomButton>
     </Wrapper>
   );
 };
@@ -95,13 +87,12 @@ flex
 flex-col
 items-center
 gap-5
+relative
 `;
 
-const RightContainer = tw.div`
-w-1/6
-`;
 const LeftContainer = tw.div`
-m-3
+fixed
+left-2
 flex
 flex-col
 w-1/6
@@ -112,55 +103,70 @@ const ListContainer = tw.div`
 flex
 flex-col
 gap-5
-w-4/6
+w-[60rem]
 `;
 
-const Button = tw.button`
-w-3/4
-border-2
-p-2
-rounded-md
-focus:bg-gray-600
-hover:bg-gray-500
-focus:text-white
-transition
-`;
 const MainContainer = tw.div`
 flex
+flex-col
+items-center
 w-full
+relative
+pt-10
 `;
 const SearchBarContainer = tw.div`
 w-full
 flex
-justify-center
+flex-row-reverse
+justify-between
+py-3
 `;
+
 const DropDowns = tw.select`
+h-10
+p-2
+focus:outline-none
 `;
-const Shoot = tw.button`
+
+const SearchInputContainer = tw.div`
+flex
+h-10
+items-center
+justify-end
+relative
+border-b-[1px]
 `;
+
 const SearchBar = tw.input`
-  focus:outline-none
+w-full
+h-full
+focus:outline-none
+p-2
+pr-6
 `;
-const Img = tw.img`
+const CustomMagnifyingGlassIcon = tw(MagnifyingGlassIcon)`
+h-4
 w-4
-`;
-const Form = tw.form`
-  flex
-  w-5/6
-  items-center
-  justify-end
+absolute
+right-0
 `;
 
-const FilterIcon = tw.button`
-  rounded-full
-  w-4
+const SearchForm = tw.form`
+flex
+items-center
+space-x-2
 `;
 
-const Filter = tw.div`
-  w-1/6
-  flex
-  justify-start
-  ml-5
-  items-start
-  relative
-  `;
+const BottomButton = tw.button`
+fixed
+bottom-6
+w-10
+h-10
+flex
+justify-center
+items-center
+bg-slate-400
+hover:bg-slate-500
+text-slate-100
+rounded-full
+`;
