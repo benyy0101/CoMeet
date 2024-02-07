@@ -77,6 +77,7 @@ public class InitData {
             String password = "User123!";
             String email = userId + "@example.com";
             String nickname = "nickname" + i;
+
             createMember(userId, name, password, email, nickname);
         }
 
@@ -198,6 +199,7 @@ public class InitData {
                     .email(email)
                     .nickname(nickname)
                     .build();
+            req.setRoles(List.of("USER"));
             memberService.create(req);
         }
     }

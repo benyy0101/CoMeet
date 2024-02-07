@@ -32,7 +32,7 @@ function Login() {
   }, [isError]);
 
   useEffect(() => {
-    if(memberId === ""){
+    if (memberId === "") {
       setError(false);
     }
   }, [memberId]);
