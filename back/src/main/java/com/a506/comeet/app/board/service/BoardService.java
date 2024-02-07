@@ -11,6 +11,7 @@ import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.BoardType;
+import com.a506.comeet.common.enums.FreeBoardCategory;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import static com.a506.comeet.error.errorcode.CommonErrorCode.WRONG_REQUEST;
+import static com.a506.comeet.error.errorcode.CustomErrorCode.*;
 
 @Slf4j
 @Service
@@ -39,9 +40,14 @@ public class BoardService {
     @Transactional
     public Board create(BoardCreateRequestDto req, String memberId) {
 
+        checkBoardStatus(req.getType(), req.getRoomId(), req.getCategory());
+
         Room room = null;
-        if(req.getRoomId() != null)
-            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
+        if(req.getType().equals(BoardType.RECRUIT)){
+            if(boardRepository.existsById(req.getRoomId()))
+                throw new RestApiException(DUPLICATE_VALUE, "해당 방이 이미 게시되어 있습니다.");
+            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(NO_ROOM));
+        }
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
@@ -81,19 +87,12 @@ public class BoardService {
     public BoardDetailResponseDto getById(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
 
-        //모집 게시판은 방이 있어야 하고, 자유 게시판은 방이 없어야 한다.
-        if(board.getType().equals(BoardType.RECRUIT)){
-            if(board.getRoom() == null)
-                throw new RestApiException(WRONG_REQUEST);
-        } else{
-            if(board.getRoom() != null)
-                throw new RestApiException(WRONG_REQUEST);
-        }
+        checkBoardStatus(board.getType(), board.getRoom().getId(), board.getCategory());
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         StringBuilder keywordsString = new StringBuilder();
-        if(board.getRoom() != null) {
+        if (board.getRoom() != null) {
             if (board.getRoom().getRoomKeywords() == null)
                 return null;
             for (RoomKeyword roomKeyword : board.getRoom().getRoomKeywords()) {
@@ -110,7 +109,7 @@ public class BoardService {
     @Transactional
     public void addLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
-        if(!checkLikeStatus(boardId, memberId)){
+        if (!checkLikeStatus(boardId, memberId)) {
             likeService.addLike(boardId, memberId);
             board.incrementLikeCount();
         }
@@ -119,7 +118,7 @@ public class BoardService {
     @Transactional
     public void removeLike(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
-        if(checkLikeStatus(boardId, memberId)){
+        if (checkLikeStatus(boardId, memberId)) {
             likeService.removeLike(boardId, memberId);
             board.decrementLikeCount();
         }
@@ -130,9 +129,21 @@ public class BoardService {
             throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "게시글 작성자가 아닙니다");
     }
 
-    public boolean checkLikeStatus(Long boardId, String memberId) {
+    public Boolean checkLikeStatus(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         return likeRepository.existsByBoardAndMember(board, member);
+    }
+
+    public void checkBoardStatus(BoardType type, Long RoomId, FreeBoardCategory category){
+        if(type.equals(BoardType.RECRUIT)){
+            if (RoomId == null)
+                throw new RestApiException(NO_ROOM, "모집 게시판은 방이 존재해야 합니다.");
+            if(category != null)
+                throw new RestApiException(YES_CATEGORY, "모집 게시판은 카테고리가 존재하지 않아야 합니다.");
+        } else {
+            if(RoomId != null)
+                throw new RestApiException(YES_ROOM, "자유 게시판은 방이 존재하지 않아야 합니다.");
+        }
     }
 }
