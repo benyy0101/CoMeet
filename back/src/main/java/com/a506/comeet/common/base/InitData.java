@@ -178,7 +178,7 @@ public class InitData {
         follow("user3", "user1");
         follow("user4", "user1");
         follow("user5", "user1");
-        follow("user5", "user2");
+        follow("user5", "user1");
         follow("user6", "user2");
         follow("user7", "user2");
         follow("user8", "user3");
