@@ -12,9 +12,8 @@ export const profileModifyImage = async (updateData: object) => {
 };
 
 export const profileImageDelete = async (url: string | undefined) => {
-  await localAxios.delete("/member/image", {
-    params: {
-      profileImageUrl: url,
-    },
-  });
+  if (url != undefined) {
+    const encodedUrl = "/member/image?profileImageUrl=" + url;
+    const response = await localAxios.delete(encodedUrl);
+  }
 };

@@ -30,7 +30,6 @@ export default function MyProfile({
   link,
   handleChange,
 }: myProps) {
-  console.log(profileImage);
   //프로필 사진 마우스 오버로 바꾸기
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
@@ -140,6 +139,7 @@ export default function MyProfile({
                 toggleModal={handleModifyImgModal}
                 option="modifyProfile"
                 handleChange={handleChange}
+                profileImage={profileImage}
               />
             ) : null}
           </ul>

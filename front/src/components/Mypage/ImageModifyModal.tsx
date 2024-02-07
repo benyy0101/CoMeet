@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 
-import { uploadImage, profileModifyImage } from "api/image";
+import { uploadImage, profileModifyImage, profileImageDelete } from "api/image";
 
 import { Navigate } from "react-router-dom";
 
@@ -10,12 +10,12 @@ import axios from "axios";
 type ModalProps = {
   toggleModal: () => void;
   handleChange: () => void;
-
+  profileImage: string | undefined;
   option: string;
 };
 
 function ImageModifyModal(props: ModalProps) {
-  const { toggleModal, handleChange, option } = props;
+  const { toggleModal, handleChange, profileImage, option } = props;
 
   //selectedFile 현재 올린파일
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
@@ -36,9 +36,9 @@ function ImageModifyModal(props: ModalProps) {
     setSelectedFile(file);
 
     if (file) {
-      //3메가 아래의 이미지만 업로드하게 하기 - s3 과금 피하기
-      if (file.size >= 3 * 1024 * 1024) {
-        alert("3mb 이하의 파일만 업로드 가능합니다.");
+      //1메가 아래의 이미지만 업로드하게 하기 - 1메가 이상은 안 보내진다... 왜지?
+      if (file.size >= 1 * 1024 * 1024) {
+        alert("1mb 이하의 파일만 업로드 가능합니다.");
         e.target.value = null;
       } else {
         //파일 선택시
@@ -63,6 +63,13 @@ function ImageModifyModal(props: ModalProps) {
     if (selectedFile) {
       // console.log(selectedFile);
 
+      //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
+      if (profileImage != "default_profile_image_letsgo") {
+        console.log(profileImage);
+        await profileImageDelete(profileImage);
+        console.log("안녕");
+      }
+
       try {
         //s3에 업로드
         const formData = new FormData();
@@ -76,9 +83,8 @@ function ImageModifyModal(props: ModalProps) {
         //이미지 업로드 모달창 닫고
         toggleModal();
 
+        //마이페이지 useEffect
         handleChange();
-
-        // <Navigate to="/mypage" replace={true} />;
       } catch {
         alert("이미지 업로드에 실패했습니다.");
       }
