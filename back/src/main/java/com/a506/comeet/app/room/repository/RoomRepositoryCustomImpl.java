@@ -200,6 +200,4 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         if (managerNickname == null) return null;
         return room.manager.nickname.eq(managerNickname);
     }
-
-
 }

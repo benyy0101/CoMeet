@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class RoomUpdateRequestDto {
+
     @Setter
     private String mangerId;
     @Size(min = 2, max = 30, message = "이름은 2자 이상, 30자 이하여야 합니다.")

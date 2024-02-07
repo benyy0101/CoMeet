@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class RoomResponseDto {
+
     private Long roomId;
     private String managerId;
     private String managerNickname;
@@ -28,7 +29,6 @@ public class RoomResponseDto {
     private RoomType type;
     @Setter
     private Integer currentMcount;
-
     @Setter
     private List<RoomMemberResponseDto> members = new ArrayList<>();
     @Setter

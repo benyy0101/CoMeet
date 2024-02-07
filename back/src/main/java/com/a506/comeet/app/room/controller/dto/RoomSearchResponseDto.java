@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class RoomSearchResponseDto {
+
     private Long roomId;
     private String managerId;
     private String managerNickname;
