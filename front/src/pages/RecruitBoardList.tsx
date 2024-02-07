@@ -17,6 +17,7 @@ import SearchBoardResponse, {
 } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
+import { BOARD_SORTBY } from "models/Enums.type";
 
 export const RecruitBoardList = () => {
   //목록 리스트
@@ -41,14 +42,20 @@ export const RecruitBoardList = () => {
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
 
-  const [currentSort, setCurrentSort] = useState<string>("최신순");
+  const [currentSort, setCurrentSort] = useState<BOARD_SORTBY>("LATEST");
+  const sortTable = {
+    LATEST: "최신순",
+    LIKES: "좋아요순",
+    RECRUIT: "모집률순",
+  };
 
   const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
 
   const [currentCount, setCurrentCount] = useState<number>(25);
 
   //왼쪽 사이드바 선택 메뉴
-  const [currentMenu, setCurrentMenu] = useState<string>("전체");
+  type CurrentMenu = "전체" | "모집중" | "모집완료";
+  const [currentMenu, setCurrentMenu] = useState<CurrentMenu>("전체");
 
   //아래는 모두 페이지네이션 임시
   const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
@@ -81,7 +88,8 @@ export const RecruitBoardList = () => {
     setIsCountOpen(!isCountOpen);
   };
 
-  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMaxCount = (e: any) => {
     setCurrentCount(Number(e.target.value));
   };
 
@@ -108,24 +116,42 @@ export const RecruitBoardList = () => {
   const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
     queryKey: ["boardList", JSON.stringify(searchBoardParams)],
     queryFn: () => {
-      console.log("query exeeting", searchBoardParams);
+      console.log("execute query", searchBoardParams);
       return searchBoard(searchBoardParams);
     },
   });
 
   useEffect(() => {
     if (page) {
-      console.log("page is..", page);
       searchBoardParams.page = parseInt(page) - 1;
       setSearchBoardParams(searchBoardParams);
     }
   }, [page]);
 
   useEffect(() => {
+    if (currentMenu === "전체") {
+      delete searchBoardParams.isValid;
+    } else if (currentMenu === "모집중") {
+      searchBoardParams.isValid = true;
+    } else {
+      searchBoardParams.isValid = false;
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentMenu]);
+
+  useEffect(() => {
+    searchBoardParams.sortBy = currentSort;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentSort]);
+
+  useEffect(() => {
+    searchBoardParams.capacity = currentCount;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentCount]);
+
+  useEffect(() => {
     if (QDboardList?.content) {
-      console.log("resultis", QDboardList);
-      setTotalElements(QDboardList.totalElements);
-      setTotalPages(QDboardList.totalPages);
+      console.log(QDboardList);
       setBoardList(QDboardList.content);
     }
   }, [QDboardList]);
@@ -217,7 +243,7 @@ export const RecruitBoardList = () => {
                       <SortDropDown>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("최신순");
+                            setCurrentSort("LATEST");
                             setIsSortOpen(false);
                           }}
                         >
@@ -225,7 +251,7 @@ export const RecruitBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("좋아요순");
+                            setCurrentSort("LIKES");
                             setIsSortOpen(false);
                           }}
                         >
@@ -233,7 +259,7 @@ export const RecruitBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("모집률순");
+                            setCurrentSort("RECRUIT");
                             setIsSortOpen(false);
                           }}
                         >
@@ -242,7 +268,7 @@ export const RecruitBoardList = () => {
                       </SortDropDown>
                     </ul>
                   )}
-                  <SortCountText>{currentSort}</SortCountText>
+                  <SortCountText>{sortTable[currentSort]}</SortCountText>
                 </SortCountButton>
               </SortCountContainer>
               <SortCountContainer>
@@ -257,7 +283,7 @@ export const RecruitBoardList = () => {
                           <CountInputContainer>
                             <MaxMinNum>0</MaxMinNum>
                             <input
-                              onChange={handleMaxCount}
+                              onMouseUp={handleMaxCount}
                               min="0"
                               max="50"
                               type="range"
