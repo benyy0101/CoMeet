@@ -60,8 +60,8 @@ mb-2
 const Description = tw.p`
 overflow-clip
 overflow-ellipsis
-break-words
-line-clamp-3
+break-keep
+line-clamp-2
 font-medium
 text-center
 `;
