@@ -38,7 +38,9 @@ public class Board extends BaseEntityWithSoftDelete {
     private String content;
     @Column(name = "like_count")
     private Integer likeCount;
+    @Enumerated(EnumType.STRING)
     private BoardType type;
+    @Enumerated(EnumType.STRING)
     private FreeBoardCategory category;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")

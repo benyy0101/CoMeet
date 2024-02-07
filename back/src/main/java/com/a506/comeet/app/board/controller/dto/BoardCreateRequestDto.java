@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.a506.comeet.common.enums.FreeBoardCategory.CHAT;
-
 @Getter
 @Builder
 @AllArgsConstructor
@@ -21,6 +19,6 @@ public class BoardCreateRequestDto {
     private String title;
     private String content;
     private BoardType type;
-    private FreeBoardCategory category = CHAT;
+    private FreeBoardCategory category;
     private Long roomId;
 }

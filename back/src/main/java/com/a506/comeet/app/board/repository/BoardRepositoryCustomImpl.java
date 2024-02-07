@@ -90,15 +90,13 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		if(freeBoardCategory.equals(FreeBoardCategory.POPULAR)){
 			return board.likeCount.goe(10);
 		}
-
-
 		return board.category.eq(freeBoardCategory);
 	}
 
 	private BooleanExpression eqCapacity(Integer capacity) {
 		if(capacity == null)
 			return null;
-		return board.room.capacity.eq(capacity);
+		return board.room.capacity.loe(capacity);
 	}
 
 	private BooleanExpression eqBoardType(BoardType boardType) {
