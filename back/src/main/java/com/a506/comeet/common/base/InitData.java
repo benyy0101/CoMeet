@@ -173,10 +173,16 @@ public class InitData {
 
         //팔로우 생성
         follow("user1", "user2");
+        follow("user1", "user3");
         follow("user2", "user1");
-        follow("user3", "user4");
-        follow("user4", "user5");
-        follow("user5", "user4");
+        follow("user3", "user1");
+        follow("user4", "user1");
+        follow("user5", "user1");
+        follow("user5", "user2");
+        follow("user6", "user2");
+        follow("user7", "user2");
+        follow("user8", "user3");
+        follow("user9", "user10");
 
         //채널 생성
         for(int i=1; i<=3; i++) {
