@@ -5,17 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class TilCreateRequestDto {
+public class NoteCreateRequestDto {
 
     @NotNull
     public String context;
 
     @NotNull
-    public LocalDate date;
+    public String receiverId;
 
 }

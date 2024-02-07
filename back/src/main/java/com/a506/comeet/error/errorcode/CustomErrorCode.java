@@ -18,6 +18,7 @@ public enum CustomErrorCode implements ErrorCode{
     NO_KEYWORD(HttpStatus.BAD_REQUEST, "키워드가 존재하지 않습니다"),
     NO_CHANNEL(HttpStatus.BAD_REQUEST, "채널이 존재하지 않습니다"),
     NO_LOUNGE(HttpStatus.BAD_REQUEST, "라운지가 존재하지 않습니다"),
+    NO_NOTE(HttpStatus.BAD_REQUEST, "쪽지가 존재하지 않습니다"),
     COOKIE_REFRESH_TOKEN_NOT_EXISTS(HttpStatus.BAD_REQUEST, "refresh token이 존재하지 않습니다"),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "사용가능한 refresh token이 아닙니다"),
     NOT_VALID_USER(HttpStatus.UNAUTHORIZED, "사용자 권한이 유효하지 않습니다"),

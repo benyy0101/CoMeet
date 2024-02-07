@@ -253,10 +253,14 @@ public class RoomService {
 
     private void joinMemberInnerLogic(Member member, Room room){
         RoomMember roomMember = new RoomMember(member, room);
-        if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
-            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "이미 방에 가입되어있습니다");
+        alreadyJoinedValidation(member, room);
         roomMemberRepository.save(roomMember);
         roomMember.joinRoom();
+    }
+
+    private void alreadyJoinedValidation(Member member, Room room) {
+        if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "이미 방에 가입되어있습니다");
     }
 
     private void updateRoomKeywords(RoomUpdateRequestDto req, Room room){
