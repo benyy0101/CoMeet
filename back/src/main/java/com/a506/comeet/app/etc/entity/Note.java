@@ -1,6 +1,5 @@
 package com.a506.comeet.app.etc.entity;
 
-import com.a506.comeet.app.etc.controller.dto.TilUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
@@ -9,38 +8,42 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDate;
-
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @SQLRestriction("is_deleted = 0")
-public class Til extends BaseEntityWithSoftDelete {
+public class Note extends BaseEntityWithSoftDelete {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="member_id")
-    private Member member;
+    @JoinColumn(name="writer_member_id")
+    private Member writer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="receiver_member_id")
+    private Member receiver;
 
     private String context;
 
-    private LocalDate date;
+    private Boolean isRead;
 
     @Builder
-    public Til(Member member, String context, LocalDate date) {
-        this.member = member;
+    public Note(Member writer, Member receiver, String context, Boolean isRead) {
+        this.writer = writer;
+        this.receiver = receiver;
         this.context = context;
-        this.date = date;
+        this.isRead = isRead;
     }
 
-    public void update(TilUpdateRequestDto req){
-        if (req.getContext() != null) this.context = req.getContext();
-    }
     public void delete(){
         deleteSoftly();
+    }
+    public void read() {
+        this.isRead = true;
     }
 }

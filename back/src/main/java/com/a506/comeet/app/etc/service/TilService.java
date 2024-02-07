@@ -27,7 +27,11 @@ public class TilService {
         if (tilRepository.tilWithMemberAndDateExists(memberId, req.getDate()))
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "해당 날짜의 TIL이 이미 존재합니다");
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        Til til = new Til(member, req.getContext(), req.getDate());
+        Til til = Til.builder()
+                .member(member)
+                .context(req.getContext())
+                .date(req.getDate())
+                .build();
         return tilRepository.save(til);
     }
 

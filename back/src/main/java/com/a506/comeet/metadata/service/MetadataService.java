@@ -48,6 +48,7 @@ public class MetadataService {
     public void calculate(MemberDetailResponseDto res, String memberId) {
         // 메타데이터 가져오는 쿼리
         List<Metadata> metadatas = (List<Metadata>) metadataRepository.findAll(metadata.memberId.eq(memberId).and(metadata.leaveTime.gt(LocalDateTime.now().minusMonths(1))));
+        if (metadatas.isEmpty()) return;
 
         LocalDateTime now = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()), ZoneId.systemDefault());
 
