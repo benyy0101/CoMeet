@@ -1,12 +1,12 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { UserState } from "../../types";
+import { UserState } from "models/Login.interface";
 import { handleLogin } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
 import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
-import { LoginQuery, JwtToken } from "models/Login.interface";
+import { LoginResponse } from "models/Login.interface";
 import { login } from "store/reducers/userSlice";
 function Login() {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ function Login() {
     isError,
     isLoading,
     refetch,
-  } = useQuery<LoginQuery, Error>({
+  } = useQuery<LoginResponse, Error>({
     queryKey: ["user"],
     queryFn: () => handleLogin(memberId, password),
     enabled: false,
@@ -39,16 +39,7 @@ function Login() {
 
   useEffect(() => {
     if (userData) {
-      const { nickname, profileImage } = userData;
-      const res: UserState = {
-        user: {
-          memberId,
-          nickname,
-          profileImage,
-          password,
-        },
-        isLoggedIn: true,
-      };
+      const res = userData;
       dispatch(login(res));
     }
   }, [userData]);

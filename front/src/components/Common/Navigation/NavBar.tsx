@@ -2,22 +2,21 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
-import BasicProfile from "../../assets/img/basic-profile.svg";
-import IMac from "../../assets/img/iMac.svg";
-import MicMute from "../../assets/img/mic-mute.svg";
-import VideoWhite from "../../assets/img/video-white.svg";
-import RoomDefault from "../../assets/img/room-default.svg";
+import BasicProfile from "assets/img/basic-profile.svg";
+import IMac from "assets/img/iMac.svg";
+import MicMute from "assets/img/mic-mute.svg";
+import VideoWhite from "assets/img/video-white.svg";
+import RoomDefault from "assets/img/room-default.svg";
 
-import { ServerDropDownList } from "../ServerDropDownList";
-import useOutsideClick from "../../hooks/useOutsideClick";
-import ModalPortal from "../../utils/Portal";
-import Modal from "./Modal";
+import { ServerDropDownList } from "./ServerDropDownList";
+import useOutsideClick from "hooks/useOutsideClick";
+import ModalPortal from "utils/Portal";
+import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
-
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
   };
@@ -25,20 +24,15 @@ export const NavBar = () => {
     setSignupModal(!signupModal);
   };
 
-  const isLogin = useSelector((state: any) => state.user.isLoggedIn);
+  const userInfo = useSelector((state: any) => state.user);
 
   const roomInfo = useSelector((state: any) => state.room);
 
   useEffect(() => {
     if (roomInfo) {
-      console.log(roomInfo);
       setIsChannelIn(true);
     }
   }, [roomInfo]);
-
-  useEffect(() => {
-    console.log(isLogin);
-  }, [isLogin]);
 
   const [isChannelIn, setIsChannelIn] = useState<boolean>(false);
 
@@ -78,7 +72,7 @@ export const NavBar = () => {
         <Link to="/">[코밋]</Link>
       </Logo>
       {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
-      {isLogin ? (
+      {userInfo.isLoggedIn ? (
         <>
           <Menu>
             <EachMenu>
@@ -104,7 +98,7 @@ export const NavBar = () => {
         </>
       ) : null}
       <Menu2>
-        {isLogin ? (
+        {userInfo.isLoggedIn ? (
           <>
             {roomInfo.isRoomIn ? (
               <InServer>
