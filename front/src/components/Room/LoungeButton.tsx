@@ -20,15 +20,17 @@ export default function LoungeButton({ lounge, active, disabled, moveLounge }: I
         }}
       >
         <ChatBubbleOvalLeftEllipsisIcon className="text-white w-8 h-8" />
-        <LoungeButtonTitle>{lounge.name}</LoungeButtonTitle>
       </IconButton>
+      <TitleCotainer>
+        <Title>{lounge.name}</Title>
+      </TitleCotainer>
     </LoungeButtonContainer>
   );
 }
 
 const IconButton = tw.button<{ $active: boolean }>`
-w-10
-h-10
+w-12
+h-12
 flex
 justify-center
 items-center
@@ -42,25 +44,28 @@ z-20
 `;
 
 const LoungeButtonContainer = tw.div`
+relative
 flex
-flex-col
 items-center
 group
 `;
 
-const LoungeButtonTitle = tw.h1`
+const TitleCotainer = tw.div`
 absolute
-left-12
-text-sm
-min-w-16
+left-14
 z-10
 h-10
-text-slate-200
 bg-[#170f2a]
-py-2
+p-2
 rounded-md
 border
 border-[#d9e5db]
 hidden
 group-hover:block
+`;
+
+const Title = tw.h1`
+text-sm
+text-slate-200
+whitespace-nowrap
 `;

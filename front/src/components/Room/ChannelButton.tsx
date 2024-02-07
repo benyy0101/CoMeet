@@ -1,4 +1,5 @@
 import { UserGroupIcon } from "@heroicons/react/24/solid";
+import { channel } from "diagnostics_channel";
 import tw from "tailwind-styled-components";
 
 interface IProps {
@@ -20,15 +21,17 @@ export default function ChannelButton({ id, name, active, disabled, moveChannel 
         }}
       >
         <UserGroupIcon className="text-white w-8 h-8" />
-        <ChannelButtonTitle>{name}</ChannelButtonTitle>
+        <TitleCotainer>
+          <Title>{name}</Title>
+        </TitleCotainer>
       </IconButton>
     </ChannelButtonContainer>
   );
 }
 
 const IconButton = tw.button<{ $active: boolean }>`
-w-10
-h-10
+w-11
+h-12
 flex
 justify-center
 items-center
@@ -42,25 +45,28 @@ z-20
 `;
 
 const ChannelButtonContainer = tw.div`
-group
+relative
 flex
-flex-col
 items-center
+group
 `;
 
-const ChannelButtonTitle = tw.h1`
+const TitleCotainer = tw.div`
 absolute
-left-12
-text-sm
-min-w-16
+left-14
 z-10
 h-10
-text-slate-200
 bg-[#170f2a]
-py-2
+p-2
 rounded-md
 border
 border-[#d9e5db]
 hidden
 group-hover:block
+`;
+
+const Title = tw.h1`
+text-sm
+text-slate-200
+whitespace-nowrap
 `;
