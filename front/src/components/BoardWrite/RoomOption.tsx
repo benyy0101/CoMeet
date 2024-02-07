@@ -69,12 +69,12 @@ const Wrapper = tw.div`
 `;
 
 const RoomButton = tw.button<RoomButtonProps>`
-  text-white
+  text-purple-400
   rounded-xl
   px-2
   m-2
-  ${(props) => (props.selected && props.active ? "text-purple-400" : "")} 
-  ${(props) => (props.active ? "" : "opacity-50 cursor-not-allowed disabled")}
+  ${(props) => (props.selected && props.active ? "text-purple-700" : "")} 
+  ${(props) => (props.active ? "" : "text-red-900 opacity-40 cursor-not-allowed disabled")}
 `;
 
 export default RoomOption;
