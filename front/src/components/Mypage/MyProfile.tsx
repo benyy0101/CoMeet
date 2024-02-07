@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import ImageModifyModal from "./ImageModifyModal";
@@ -27,14 +27,7 @@ export default function MyProfile({
   description,
   link,
 }: myProps) {
-  //임시 데이터들
-  const [imgUrl, setImageUrl] = useState<string>("");
-  const followingNum = 152;
-  const followerNum = 20;
-  const nickName = "망곰이";
-  const message = "프론트엔드 지망생입니다! 잘 부탁드려용";
-  const url = "http://github.com/mangmang";
-  const recentTime = "2024-01-23";
+  console.log(profileImage);
 
   //프로필 사진 마우스 오버로 바꾸기
   const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -70,6 +63,12 @@ export default function MyProfile({
     }
   });
 
+  useEffect(() => {
+    if (profileImage === "default_profile_image_letsgo") {
+      profileImage = `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`;
+    }
+  }, []);
+
   return (
     <TotalContainer>
       <ProfileModButton>
@@ -81,11 +80,7 @@ export default function MyProfile({
             {isHovering ? (
               <StyleProfileImgHover
                 style={{
-                  backgroundImage: `url(${
-                    profileImage === "default_profile_image_letsgo"
-                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
-                      : profileImage
-                  })`,
+                  backgroundImage: `url(${profileImage})`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -97,11 +92,7 @@ export default function MyProfile({
             ) : (
               <StyleProfileImg
                 style={{
-                  backgroundImage: `url(${
-                    profileImage === "default_profile_image_letsgo"
-                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
-                      : profileImage
-                  })`,
+                  backgroundImage: `url(${profileImage})`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -121,8 +112,6 @@ export default function MyProfile({
             {modifyImgModal === true ? (
               <ImageModifyModal
                 toggleModal={handleModifyImgModal}
-                imageUrl={profileImage}
-                setImageUrl={setImageUrl}
                 option="modifyProfile"
               />
             ) : null}

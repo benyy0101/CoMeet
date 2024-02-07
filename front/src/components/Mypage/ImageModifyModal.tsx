@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 
-import { uploadImage } from "api/image";
+import { uploadImage, profileModifyImage } from "api/image";
+
+import axios from "axios";
 
 type ModalProps = {
   toggleModal: () => void;
-  imageUrl: string | undefined;
-  setImageUrl: (url: string) => void;
+
   option: string;
 };
 
 function ImageModifyModal(props: ModalProps) {
-  const { toggleModal, imageUrl, setImageUrl, option } = props;
+  const { toggleModal, option } = props;
 
   //selectedFile 현재 올린파일
-  const [selectedFile, setSelectedFile] = useState<File | null>();
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
   //
   const [imagePreview, setImagePreview] = useState<string>("");
 
@@ -57,7 +58,16 @@ function ImageModifyModal(props: ModalProps) {
   //업로드
   const handleUpload = async function () {
     if (selectedFile) {
-      //axios 해야 함
+      // console.log(selectedFile);
+
+      //s3에 업로드
+      const formData = new FormData();
+      formData.append("profileImageFile", selectedFile);
+      const res = await uploadImage(formData);
+
+      //프로필 수정에 업로드
+      const updateData = { profileImage: res };
+      profileModifyImage(updateData);
     } else {
       alert("업로드 할 이미지를 선택해주세요.");
     }
@@ -74,6 +84,7 @@ function ImageModifyModal(props: ModalProps) {
               onChange={submitImage}
               className="py-3 w-3/4"
             />
+            {/* 이미지 미리보기 */}
             {imagePreview === "" ? null : (
               <img
                 src={imagePreview}
