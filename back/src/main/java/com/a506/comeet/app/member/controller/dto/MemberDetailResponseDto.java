@@ -12,6 +12,7 @@ public class MemberDetailResponseDto {
     private String memberId;
     private String name;
     private String nickname;
+    private String link;
     private String profileImage;
     private String email;
     private String description;
@@ -40,10 +41,11 @@ public class MemberDetailResponseDto {
     @Setter
     private List<MemberKeywordResponseDto> keywords;
 
-    public MemberDetailResponseDto(String memberId, String name, String nickname, String profileImage, String email, String description, MemberFeature feature) {
+    public MemberDetailResponseDto(String memberId, String name, String nickname, String link, String profileImage, String email, String description, MemberFeature feature) {
         this.memberId = memberId;
         this.name = name;
         this.nickname = nickname;
+        this.link = link;
         this.profileImage = profileImage;
         this.email = email;
         this.description = description;
