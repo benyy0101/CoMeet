@@ -55,8 +55,4 @@ export const setupUserStatePersistence = (store: Store) => {
 };
 
 export const { login, logout, signup } = userSlice.actions;
-export const selectUser = (state: { user: UserState }) => state.user.user;
-export const selectIsLoggedIn = (state: { user: UserState }) =>
-  state.user.isLoggedIn;
-
 export default userSlice.reducer;
