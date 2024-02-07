@@ -11,26 +11,29 @@ import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
 import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 import { Pagination } from "components/BoardList/Pagination";
-
-//예시
-interface BoardListProps {
-  id: number;
-  title: string;
-  writerNicname: string;
-  writerImage: string;
-  createdAt: string;
-  likeCount: number;
-  category: string;
-  type: string;
-  roomKeywords: string;
-  roomImage: string;
-  isValid: boolean;
-  roomCapacity: number;
-}
+import SearchBoardResponse, {
+  SearchBoardContent,
+  SearchBoardParams,
+} from "models/Board.interface";
+import { useQuery } from "@tanstack/react-query";
+import { searchBoard } from "api/Board";
 
 export const RecruitBoardList = () => {
   //목록 리스트
-  const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  //const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
+
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
+    {
+      boardType: "RECRUIT",
+      sortBy: "LATEST",
+      page: 0,
+      size: 10,
+    }
+  );
+  const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
+  const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
+  const [currentPage, setCurrentPage] = useState<number>(0); // 초기 값을 얼마로지해야하지
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
@@ -50,8 +53,8 @@ export const RecruitBoardList = () => {
   //아래는 모두 페이지네이션 임시
   const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
   const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
-  const totalPages = 10; //totalPages: 전체 페이지 수
-  const totalElements = 100; //totalElements: 전체 항목 수
+  // const totalPages = 10; //totalPages: 전체 페이지 수
+  // const totalElements = 100; //totalElements: 전체 항목 수
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
 
@@ -102,54 +105,30 @@ export const RecruitBoardList = () => {
     }
   });
 
-  //임시
-  React.useEffect(() => {
-    const tmpdatas: BoardListProps[] = [
-      {
-        id: 1,
-        title: "알고리즘 스터디",
-        writerNicname: "무빙건",
-        writerImage: "https://picsum.photos/id/64/100",
-        createdAt: "2024-01-01",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "PYTHON-JAVA",
-        roomImage: "https://picsum.photos/id/1/300",
-        isValid: true,
-        roomCapacity: 30,
-      },
-      {
-        id: 2,
-        title: "CS 스터디",
-        writerNicname: "다른 사람",
-        writerImage: "https://picsum.photos/id/65/100",
-        createdAt: "2024-01-12",
-        likeCount: 1,
-        category: "TIP",
-        type: "free",
-        roomKeywords: "",
-        roomImage: "https://picsum.photos/id/20/300",
-        isValid: true,
-        roomCapacity: 25,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: false,
-        roomCapacity: 50,
-      },
-    ];
-    setBoardList(tmpdatas);
-  }, []);
+  const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
+    queryKey: ["boardList", JSON.stringify(searchBoardParams)],
+    queryFn: () => {
+      console.log("query exeeting", searchBoardParams);
+      return searchBoard(searchBoardParams);
+    },
+  });
+
+  useEffect(() => {
+    if (page) {
+      console.log("page is..", page);
+      searchBoardParams.page = parseInt(page) - 1;
+      setSearchBoardParams(searchBoardParams);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (QDboardList?.content) {
+      console.log("resultis", QDboardList);
+      setTotalElements(QDboardList.totalElements);
+      setTotalPages(QDboardList.totalPages);
+      setBoardList(QDboardList.content);
+    }
+  }, [QDboardList]);
 
   return (
     <TotalContainer>
@@ -298,7 +277,7 @@ export const RecruitBoardList = () => {
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => {
-                if (tmp.type === "recruit")
+                if (tmp.type === "RECRUIT")
                   return (
                     <ReadButton>
                       <RecruitBoardListLink key={tmp.id} {...tmp} />

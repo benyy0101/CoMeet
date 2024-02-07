@@ -4,9 +4,24 @@ import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
 
 import StarFill from "assets/img/star-fill.svg";
+import { SearchBoardContent } from "models/Board.interface";
+import { Keyword } from "models/Util";
 
-export const RecruitBoardListLink = (props: BoardListProps) => {
-  const keywordArr: string[] = props.roomKeywords.split("-");
+//export const RecruitBoardListLink = (props: BoardListProps) => {
+export const RecruitBoardListLink = (props: SearchBoardContent) => {
+  //const keywordArr: string[] = props.roomKeywords.split("-");
+  // let keywordArr: string[] = [];
+  // for (let index = 0; index < array.length; index++) {
+  //   const element = array[index];
+
+  // }
+
+  const keywordArr: Keyword[] = props.roomKeywords;
+  // props.roomKeywords.map((key) => {
+  //   console.log(key);
+  //   props.roomKeywords.
+  //   return key.name;
+  // });
 
   return (
     <Link to="/recruit-board/1">
@@ -26,15 +41,15 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
           <RoomKeywordContainer>
-            {keywordArr.map((keyword) => (
-              <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
+            {keywordArr?.map((keyword) => (
+              <RoomKeyword key={keyword.id}>{keyword.name}</RoomKeyword>
             ))}
           </RoomKeywordContainer>
         </CenterContainer>
         <RightContainer>
           <WriterContainer>
             <WriterImg src={props.writerImage} alt="wrtierImg" />
-            <WriterNicname>{props.writerNicname}</WriterNicname>
+            <WriterNicname>{props.writerNickname}</WriterNicname>
           </WriterContainer>
           <WriteDate>{props.createdAt}</WriteDate>
           <LikeContatiner>
