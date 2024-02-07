@@ -42,6 +42,7 @@ import {
   setIsRoomIn,
   setLeaveRoom,
   setMicStatus,
+  setVideoStatus,
 } from "store/reducers/roomSlice";
 
 export const Room = () => {
@@ -378,7 +379,8 @@ export const Room = () => {
   useEffect(() => {
     if (publisher) {
       publisher.publishVideo(!isVideoDisabled);
-      dispatch(setMicStatus(isVideoDisabled));
+      
+      dispatch(setVideoStatus(!isVideoDisabled));
     }
   }, [isVideoDisabled]);
 
@@ -625,7 +627,7 @@ export const Room = () => {
               }}
             />
           </RoomTitleImgBorder>
-          <RoomTitle>싸피 10기</RoomTitle>
+          <RoomTitle>{roomData?.title}</RoomTitle>
           <RoomNoticeButton onClick={toggleNotice}>
             <BellAlertIcon />
             {noticeClicked ? <RoomNotice></RoomNotice> : null}

@@ -106,13 +106,17 @@ export const NavBar = () => {
       <Menu2>
         {isLogin ? (
           <>
-            {isChannelIn ? (
+            {roomInfo.isRoomIn ? (
               <InServer>
                 <ServerImg src={RoomDefault} alt="room" />
-                <ServerText>싸피 10기</ServerText>
+                <ServerText>{roomInfo.title}</ServerText>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                <MicVideoImg src={VideoWhite} alt="video" />
-                <MicVideoImg src={MicMute} alt="mic" />
+                {roomInfo.isMicMuted ? (
+                  <MicVideoImg src={MicMute} alt="mic" />
+                ) : null}
+                {roomInfo.isVideoOn ? (
+                  <MicVideoImg src={VideoWhite} alt="video" />
+                ) : null}
               </InServer>
             ) : null}
 

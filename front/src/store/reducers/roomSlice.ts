@@ -6,11 +6,13 @@ export interface RoomStore {
   isRoomIn: boolean;
   room: EnterRoomResponse;
   isMicMuted: boolean;
-  isVideoOff: boolean;
+  isVideoOn: boolean;
 }
 
 const initialState: RoomStore = {
   isRoomIn: false,
+  isMicMuted: false,
+  isVideoOn: false,
   room: {
     managerId: "",
     managerNickname: "",
@@ -30,8 +32,6 @@ const initialState: RoomStore = {
     channels: [],
     keywords: [],
   },
-  isMicMuted: false,
-  isVideoOff: false,
 };
 
 const loadRoomState = () => {
@@ -54,8 +54,8 @@ const roomSlice = createSlice({
       console.log(state.isMicMuted);
     },
     setVideoStatus: (state, action: PayloadAction<boolean>) => {
-      state.isVideoOff = action.payload;
-      console.log(state.isMicMuted);
+      state.isVideoOn = action.payload;
+      console.log(state.isVideoOn);
     },
     setIsRoomIn: (state, action: PayloadAction<boolean>) => {
       state.isRoomIn = action.payload;
