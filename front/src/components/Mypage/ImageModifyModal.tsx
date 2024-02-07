@@ -3,16 +3,19 @@ import tw from "tailwind-styled-components";
 
 import { uploadImage, profileModifyImage } from "api/image";
 
+import { Navigate } from "react-router-dom";
+
 import axios from "axios";
 
 type ModalProps = {
   toggleModal: () => void;
+  handleChange: () => void;
 
   option: string;
 };
 
 function ImageModifyModal(props: ModalProps) {
-  const { toggleModal, option } = props;
+  const { toggleModal, handleChange, option } = props;
 
   //selectedFile 현재 올린파일
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
@@ -60,14 +63,25 @@ function ImageModifyModal(props: ModalProps) {
     if (selectedFile) {
       // console.log(selectedFile);
 
-      //s3에 업로드
-      const formData = new FormData();
-      formData.append("profileImageFile", selectedFile);
-      const res = await uploadImage(formData);
+      try {
+        //s3에 업로드
+        const formData = new FormData();
+        formData.append("profileImageFile", selectedFile);
+        const res = await uploadImage(formData);
 
-      //프로필 수정에 업로드
-      const updateData = { profileImage: res };
-      profileModifyImage(updateData);
+        //프로필 수정
+        const updateData = { profileImage: res };
+        await profileModifyImage(updateData);
+
+        //이미지 업로드 모달창 닫고
+        toggleModal();
+
+        handleChange();
+
+        // <Navigate to="/mypage" replace={true} />;
+      } catch {
+        alert("이미지 업로드에 실패했습니다.");
+      }
     } else {
       alert("업로드 할 이미지를 선택해주세요.");
     }

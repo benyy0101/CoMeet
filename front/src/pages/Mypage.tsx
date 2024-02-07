@@ -19,17 +19,12 @@ export const Mypage = () => {
   //id 리덕스에서 가져오고
   const memberId = useSelector((state: any) => state.user.user.memberId);
   const [userData, setUserData] = useState<MemberQuery | null>(null);
+  const [isChange, setisChange] = useState<boolean>(false);
 
-  //이건 리액트 쿼리
-  // const {
-  //   data: myPageData,
-  //   isError,
-  //   isLoading,
-  //   refetch,
-  // } = useQuery<MemberQuery, Error>({
+  // // 이건 리액트 쿼리
+  // const { data, isError, isLoading, refetch } = useQuery<MemberQuery, Error>({
   //   queryKey: ["user"],
   //   queryFn: () => handleMember(memberId),
-  //   enabled: false,
   // });
 
   //
@@ -45,11 +40,17 @@ export const Mypage = () => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   if (myPageData) {
-  //     const { nickname, profileImage } = myPageData;
-  //   }
-  // }, [myPageData]);
+  //프로필 이미지 바뀌면 새로 고침
+  useEffect(() => {
+    if (isChange) {
+      fetchData();
+      setisChange(false);
+    }
+  }, [isChange]);
+
+  const handleChange = () => {
+    setisChange(!isChange);
+  };
 
   return (
     <AllContainer>
@@ -64,6 +65,7 @@ export const Mypage = () => {
             nickname={userData?.nickname}
             description={userData?.description}
             link={userData?.link}
+            handleChange={handleChange}
           />
         </ProfileContainer>
         {/* 프로필 밑의 컨테이너 - 키워드, 공부타입, 공부타임 */}

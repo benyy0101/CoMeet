@@ -9,6 +9,7 @@ import ProfileImg from "assets/img/test-user.jpeg";
 import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
+import { profileImageDelete, profileModifyImage } from "api/image";
 
 interface myProps {
   profileImage: string | undefined;
@@ -17,6 +18,7 @@ interface myProps {
   nickname: string | undefined;
   description: string | undefined;
   link: string | undefined;
+  handleChange: () => void;
 }
 
 export default function MyProfile({
@@ -26,9 +28,9 @@ export default function MyProfile({
   nickname,
   description,
   link,
+  handleChange,
 }: myProps) {
   console.log(profileImage);
-
   //프로필 사진 마우스 오버로 바꾸기
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
@@ -55,6 +57,22 @@ export default function MyProfile({
     setIsModifyImg(false);
   };
 
+  //이미지 삭제
+  const handleDelteImg = async function () {
+    if (profileImage != "default_profile_image_letsgo") {
+      //s3에서 이미지 삭제
+      profileImageDelete(profileImage);
+
+      //DB에서 삭제
+      const updateData = { profileImage: `default_profile_image_letsgo` };
+      await profileModifyImage(updateData);
+    }
+    //수정
+    setIsModifyImg(false);
+
+    handleChange();
+  };
+
   //버튼 닫히기
   const modifyImgRef = useRef(null);
   useOutsideClick<HTMLDivElement>(modifyImgRef, () => {
@@ -63,11 +81,11 @@ export default function MyProfile({
     }
   });
 
-  useEffect(() => {
-    if (profileImage === "default_profile_image_letsgo") {
-      profileImage = `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`;
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (profileImage === "default_profile_image_letsgo") {
+  //     profileImage = `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`;
+  //   }
+  // }, [profileImage]);
 
   return (
     <TotalContainer>
@@ -80,7 +98,11 @@ export default function MyProfile({
             {isHovering ? (
               <StyleProfileImgHover
                 style={{
-                  backgroundImage: `url(${profileImage})`,
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : `${profileImage}`
+                  })`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -92,7 +114,11 @@ export default function MyProfile({
             ) : (
               <StyleProfileImg
                 style={{
-                  backgroundImage: `url(${profileImage})`,
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : `${profileImage}`
+                  })`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -105,7 +131,7 @@ export default function MyProfile({
                   프로필 사진 변경
                 </DropdownButton>
                 {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
-                <DropdownButton>제거</DropdownButton>
+                <DropdownButton onClick={handleDelteImg}>제거</DropdownButton>
               </ProfileDropdown>
             )}
             {/* 프로필 사진 수정 모달 */}
@@ -113,6 +139,7 @@ export default function MyProfile({
               <ImageModifyModal
                 toggleModal={handleModifyImgModal}
                 option="modifyProfile"
+                handleChange={handleChange}
               />
             ) : null}
           </ul>
