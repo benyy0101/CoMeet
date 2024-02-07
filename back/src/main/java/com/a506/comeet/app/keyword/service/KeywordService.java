@@ -4,6 +4,7 @@ import com.a506.comeet.admin.controller.dto.KeywordRequestDto;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.keyword.entity.Keyword;
 import com.a506.comeet.app.keyword.repository.KeywordRepository;
+import com.a506.comeet.app.keyword.repository.RoomKeywordRepository;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class KeywordService {
 
     private final KeywordRepository keywordRepository;
+    private final RoomKeywordRepository roomKeywordRepository;
 
     @Transactional
     public Keyword create(KeywordRequestDto req){
@@ -37,6 +39,7 @@ public class KeywordService {
     public void delete(Long keywordId){
         Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD));
         keyword.delete();
+        roomKeywordRepository.deleteAll();
     }
 
     public List<KeywordResponseDto> getAll() {

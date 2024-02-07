@@ -31,34 +31,34 @@ public class FollowService {
 
     @Transactional
     public String follow(FollowRequestDto req, String fromId) {
-        selfFollowValidation(fromId, req.getMemberId());
+        selfValidation(fromId, req.getMemberId());
 
         Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         alreadyFollowingValidation(from, to);
 
         Follow created = followRepository.save(new Follow(from, to));
-        log.info("{}", created.getId());
         return created.getTo().getMemberId();
     }
 
     private void alreadyFollowingValidation(Member from, Member to) {
-        if(followRepository.findByFromAndTo(from, to).isPresent()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 팔로우하고 있습니다");
+        if(followRepository.findByFromAndTo(from, to).isPresent())
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 팔로우하고 있습니다");
     }
 
-    private void selfFollowValidation(String fromId, String toId) {
+    private void selfValidation(String fromId, String toId) {
         if (fromId.equals(toId))
             throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "자기 자신을 팔로우 할 수 없습니다");
     }
 
     @Transactional
-    public boolean unfollow(UnfollowRequestDto req, String fromId){
-        if (req.getMemberId().equals(fromId)) return false;
+    public void unfollow(UnfollowRequestDto req, String fromId){
+        selfValidation(fromId, req.getMemberId());
+
         Member from = memberRepository.findById(fromId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Member to = memberRepository.findById(req.getMemberId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         Follow find = followRepository.findByFromAndTo(from, to).orElseThrow(() -> new RestApiException(CommonErrorCode.WRONG_REQUEST, "해당 유저를 팔로우하고 있지 않습니다"));
         followRepository.delete(find);
-        return true;
     }
 
     public Slice<MemberSimpleResponseDto> getFollowers(FollowerRequestDto req, String memberId){

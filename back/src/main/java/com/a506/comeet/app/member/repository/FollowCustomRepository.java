@@ -7,8 +7,5 @@ import org.springframework.data.domain.Slice;
 public interface FollowCustomRepository {
 
     Slice<MemberSimpleResponseDto> getFollowers(Pageable pageable, String memberId, String prevMemberId);
-
-    Slice<MemberSimpleResponseDto> getFollowersLegacy(Pageable pageable, String memberId, String prevMemberId);
-
     Slice<MemberSimpleResponseDto> getFollowings(Pageable pageable, String memberId, String prevMemberId);
 }

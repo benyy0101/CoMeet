@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface RoomRepositoryCustom {
-    Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable);
+    Slice<RoomSearchResponseDto> searchDisposableRoom(RoomSearchRequestDto req, Pageable pageable);
 
-    RoomResponseDto enterRoomCustom(Long roomId);
+    RoomResponseDto getDetailRoomInfo(Long roomId);
 
 }

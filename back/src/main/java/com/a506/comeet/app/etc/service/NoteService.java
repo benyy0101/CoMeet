@@ -28,10 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoteService {
 
     private final NoteRepository noteRepository;
-
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
-
     private final RoomMemberRepository roomMemberRepository;
 
     @Transactional
@@ -53,8 +51,6 @@ public class NoteService {
         authorityValidation(memberId, note);
         note.delete();
     }
-
-
 
     @Transactional
     public NoteResponseDto findAndRead(Long noteId) {

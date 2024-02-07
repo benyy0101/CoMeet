@@ -24,17 +24,12 @@ public class LoungeService {
 
     private final RoomRepository roomRepository;
 
-
     @Transactional
     public Lounge create(LoungeCreateRequestDto req, String memberId) {
         Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
-        // 사용자가 방장인지 확인
-        managerAuthorization(memberId, room);
 
-        // 이름 중복 확인 로직
-        for(Lounge l : room.getLounges()){
-            if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 라운지명이 중복됩니다");
-        }
+        managerAuthorization(memberId, room);
+        loungeNameValidation(room, req.getName());
 
         Lounge lounge = loungeRepository.save(Lounge.builder().name(req.getName()).room(room).build());
         room.addLounge(lounge);
@@ -45,14 +40,10 @@ public class LoungeService {
     @Transactional
     public void update(LoungeUpdateRequestDto req, Long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_LOUNGE));
-        Room room = lounge.getRoom(); // 프록시
-        // 사용자가 방장인지 확인
-        managerAuthorization(memberId, room);
 
-        // 이름 중복 확인 로직
-        for(Lounge l : room.getLounges()){
-            if (l.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 라운지명이 중복됩니다");
-        }
+        managerAuthorization(memberId, lounge.getRoom());
+        loungeNameValidation(lounge.getRoom(), req.getName());
+
         lounge.update(req);
         loungeRepository.save(lounge);
     }
@@ -61,12 +52,16 @@ public class LoungeService {
     public void delete(Long loungeId, String memberId) {
         Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_LOUNGE));
 
-        // 사용자가 방장인지 확인
         managerAuthorization(memberId, lounge.getRoom());
-        // 방에는 최소 1개의 라운지가 남아있어야 함
         atLeastOneLoungeValitadion(lounge.getRoom());
 
         lounge.delete();
+    }
+
+    private static void loungeNameValidation(Room room, String name) {
+        for (Lounge l : room.getLounges()) {
+            if (l.getName().equals(name)) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 라운지명이 중복됩니다");
+        }
     }
 
     private void atLeastOneLoungeValitadion(Room room) {

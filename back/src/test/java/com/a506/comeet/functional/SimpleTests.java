@@ -1,6 +1,6 @@
 package com.a506.comeet.functional;
 
-import com.a506.comeet.auth.AES128Util;
+import com.a506.comeet.common.util.AES128Util;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.member.entity.Member;

@@ -3,7 +3,7 @@ package com.a506.comeet.app.board.controller;
 import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.service.BoardService;
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
