@@ -77,7 +77,7 @@ public class SimpleTests {
                 title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
                 build();
 
-        Room room = roomService.create(req);
+        Room room = roomService.create(req, manager.getMemberId());
 
         Room foundRoom = roomRepository.findById(room.getId()).get();
 
