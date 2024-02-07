@@ -1,23 +1,21 @@
 import React, { FormEvent, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { UserState } from "../../types";
-import { handleLogin, handleSignup } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
-import { LoginQuery, SignupQuery} from "models/Login.interface";
-import { login } from "store/reducers/userSlice";
-import { Domain } from "domain";
+import { SignupQuery } from "models/Login.interface";
+import { handleSignup } from "api/Member";
+import { redirect, useNavigate } from "react-router-dom";
 
 function Signup() {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [memberId, setMemberId] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordCheck, setPasswordCheck] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
-  const [domain, setDomain] = useState<string>("");
+  const [domain, setDomain] = useState<string>("naver.com");
 
   const [memberIdErr, setMemberIdErr] = useState(false);
   const [nicknameErr, setNicknameErr] = useState(false);
@@ -26,33 +24,28 @@ function Signup() {
 
   const [error, setError] = useState(false);
 
-  const {
-    data: userData,
-    isError,
-    isLoading,
-    refetch,
-  } = useQuery<SignupQuery, Error>({
-    queryKey: ["user"],
-    queryFn: () => handleSignup({
-      memberId,
-      name,
-      password,
-      nickname,
-      email: `${email}@${domain}`
-    }),
-    enabled: false,
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if(password !== passwordCheck){
+    if (password !== passwordCheck) {
       setPasswordCheckErr(true);
-    };
-  },[passwordCheck]);
+    }
+  }, [passwordCheck]);
 
   const signupHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(false);
-    refetch();
+    setIsLoading(true);
+    handleSignup({
+      memberId,
+      name,
+      password,
+      nickname,
+      email: `${email}@${domain}`,
+    }).then((res) => {
+      setIsLoading(false);
+      window.location.reload();
+    });
   };
 
   return (
@@ -111,9 +104,7 @@ function Signup() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 @
-                <DomainSelect
-                  onChange={(e) => setDomain(e.target.value)}
-                >
+                <DomainSelect onChange={(e) => setDomain(e.target.value)} value={domain}>
                   <DomainOption value="naver.com">naver.com</DomainOption>
                   <DomainOption value="gmail.com">gmail.com</DomainOption>
                   <DomainOption value="kakao.com">kakao.com</DomainOption>
@@ -136,11 +127,11 @@ function Signup() {
               />
             </InputContainer>
             <InputContainer>
-            <LabelContainer>
+              <LabelContainer>
                 <InputLabel>비밀번호 확인</InputLabel>
                 {passwordCheckErr ? <WarningText>일치하지 않습니다</WarningText> : null}
               </LabelContainer>
-            
+
               <LoginInput
                 $option={error}
                 type="password"
@@ -261,7 +252,6 @@ const DomainOption = tw.option`
   p-1
   min-w-[25px]
 `;
-
 
 const EmailContainer = tw.div`
 flex
