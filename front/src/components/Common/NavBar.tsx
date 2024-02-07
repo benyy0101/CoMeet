@@ -24,15 +24,23 @@ export const NavBar = () => {
   const signupModalHandler = () => {
     setSignupModal(!signupModal);
   };
-  //임시
+
   const isLogin = useSelector((state: any) => state.user.isLoggedIn);
+
+  const roomInfo = useSelector((state: any) => state.room);
+
+  useEffect(() => {
+    if (roomInfo) {
+      console.log(roomInfo);
+      setIsChannelIn(true);
+    }
+  }, [roomInfo]);
 
   useEffect(() => {
     console.log(isLogin);
   }, [isLogin]);
 
-  //임시
-  const isChannelIn = true;
+  const [isChannelIn, setIsChannelIn] = useState<boolean>(false);
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
@@ -98,13 +106,17 @@ export const NavBar = () => {
       <Menu2>
         {isLogin ? (
           <>
-            {isChannelIn ? (
+            {roomInfo.isRoomIn ? (
               <InServer>
                 <ServerImg src={RoomDefault} alt="room" />
-                <ServerText>싸피 10기</ServerText>
+                <ServerText>{roomInfo.title}</ServerText>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                <MicVideoImg src={VideoWhite} alt="video" />
-                <MicVideoImg src={MicMute} alt="mic" />
+                {roomInfo.isMicMuted ? (
+                  <MicVideoImg src={MicMute} alt="mic" />
+                ) : null}
+                {roomInfo.isVideoOn ? (
+                  <MicVideoImg src={VideoWhite} alt="video" />
+                ) : null}
               </InServer>
             ) : null}
 
@@ -128,7 +140,11 @@ export const NavBar = () => {
               <button onClick={signupModalHandler}>회원가입</button>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -137,7 +153,11 @@ export const NavBar = () => {
               <button onClick={loginModalHandler}>로그인</button>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>

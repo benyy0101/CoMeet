@@ -5,18 +5,21 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 import userReducer, { setupUserStatePersistence } from "./reducers/userSlice";
+import roomReducer from "./reducers/roomSlice"; // 
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"],
+  whitelist: ["user","room"],
 };
 
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const userPersistReducer = persistReducer(persistConfig, userReducer);
+const roomPersistReducer = persistReducer(persistConfig, roomReducer);
 
 const store = configureStore({
   reducer: {
-    user: persistedReducer,
+    user: userPersistReducer,
+    room: roomPersistReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false, serializableCheck: false }), // Disable thunk and serializableCheck
