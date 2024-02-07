@@ -4,29 +4,29 @@ import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.Getter;
 
-public enum StudyTimeZone {
-    TIMEZONE0_2(0),
-    TIMEZONE2_4(2),
-    TIMEZONE4_6(4),
-    TIMEZONE6_8(6),
-    TIMEZONE8_10(8),
-    TIMEZONE10_12(10),
-    TIMEZONE12_14(12),
-    TIMEZONE14_16(14),
-    TIMEZONE16_18(16),
-    TIMEZONE18_20(18),
-    TIMEZONE20_22(20),
-    TIMEZONE22_24(22);
+public enum MostStudyTime {
+    FROM0TO2(0),
+    FROM2TO4(2),
+    FROM4TO6(4),
+    FROM6TO8(6),
+    FROM8TO10(8),
+    FROM10TO12(10),
+    FROM12TO14(12),
+    FROM14TO16(14),
+    FROM16TO18(16),
+    FROM18TO20(18),
+    FROM20TO22(20),
+    FROM22TO24(22);
 
     @Getter
     private int order;
 
-    StudyTimeZone(int order) {
+    MostStudyTime(int order) {
         this.order = order;
     }
 
-    public static StudyTimeZone of(int time){
-        for (StudyTimeZone value : values()) {
+    public static MostStudyTime of(int time){
+        for (MostStudyTime value : values()) {
             if (value.getOrder() == time){
                 return value;
             }

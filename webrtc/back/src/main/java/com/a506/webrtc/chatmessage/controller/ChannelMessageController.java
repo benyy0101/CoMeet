@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/chat/channel")
 public class ChannelMessageController {
 
-    private final ChannelMessageService chatMessageService;
+    private final ChannelMessageService channelMessageService;
 
     @GetMapping("/messages")
-    public ResponseEntity<?> getMessage(@RequestParam(name = "channelId") Long channelId){
+    public ResponseEntity<?> getMessages(@RequestParam(name = "channelId") Long channelId){
         System.out.println(channelId);
-        return ResponseEntity.ok(chatMessageService.getMessagesByChannelId(channelId));
+        return ResponseEntity.ok(channelMessageService.getMessagesByChannelId(channelId));
     }
 }

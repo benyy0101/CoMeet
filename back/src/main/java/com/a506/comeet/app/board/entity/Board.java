@@ -49,6 +49,7 @@ public class Board extends BaseEntityWithSoftDelete {
     @OneToMany(mappedBy = "board")
     private List<Like> likes = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 

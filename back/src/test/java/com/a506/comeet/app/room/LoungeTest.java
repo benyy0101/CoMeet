@@ -43,25 +43,6 @@ public class LoungeTest {
     @Autowired
     private LoungeRepository loungeRepository;
 
-    private Member manager;
-
-    private Room room;
-
-    @BeforeEach
-    public void init(){
-        manager = Member.builder().memberId("멤버1").email("ee").name("ss").nickname("ss").password("ss").build();
-        em.persist(manager);
-        em.flush();
-        em.clear();
-
-        RoomCreateRequestDto req = RoomCreateRequestDto.builder().
-                mangerId("멤버1").
-                title("title").description("설명").capacity(10).constraints(RoomConstraints.FREE).type(RoomType.DISPOSABLE).
-                build();
-        roomService.create(req);
-        room = roomRepository.findByTitle("title");
-    }
-
     @Test
     @Transactional
     void createTest(){
@@ -108,7 +89,7 @@ public class LoungeTest {
     @Test
     @Transactional
     void roomDeleteTest(){
-        Room room = roomRepository.findByTitle("title");
+        Room room = roomRepository.findByTitle("title").get();
         LoungeCreateRequestDto req = new LoungeCreateRequestDto(room.getId(), "lounge1");
         loungeService.create(req, "멤버1");
         Lounge lounge = loungeRepository.findAll().get(0);

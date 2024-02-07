@@ -22,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @SQLRestriction("is_deleted = 0")
+
 public class Room extends BaseEntityWithSoftDelete {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +46,6 @@ public class Room extends BaseEntityWithSoftDelete {
 
     private String title;
     private String description;
-    private String link;
     @Column(name = "room_image")
     private String roomImage = "default_room_image_letsgo";
     private String notice;
@@ -62,14 +62,13 @@ public class Room extends BaseEntityWithSoftDelete {
     private RoomType type;
 
     @Builder
-    public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type, String link) {
+    public Room(Member manager, String title, String description, int capacity, RoomConstraints constraints, RoomType type) {
         this.manager = manager;
         this.title = title;
         this.description = description;
         this.capacity = capacity;
         this.constraints = constraints;
         this.type = type;
-        this.link = link;
     }
 
     public void updateRoom(RoomUpdateRequestDto req, Member newManager) {

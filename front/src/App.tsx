@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import tw from "tailwind-styled-components";
-import { NavBar } from "./components/Common/NavBar";
+import { NavBar } from "./components/Common/Navigation/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
 import { Community } from "./pages/Community";
@@ -9,18 +8,16 @@ import { Mypage } from "./pages/Mypage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { Room } from "./pages/Room";
-import NewRoom from "./pages/NewRoom";
 import ConditionCheck from "./pages/ConditionCheck";
-import TextEditor from "./components/TextEditor";
 import { RecruitBoardList } from "./pages/RecruitBoardList";
 import { FreeBoardList } from "./pages/FreeBoardList";
 //import { RecruitBoardDetail } from "./pages/RecruitBoardDetail";
 import Board from "./pages/Board";
 import { BoardDetail } from "./pages/BoardDetail";
-import Login from "./components/Auth/Login";
-import { UserState } from "./types";
 import { UseSelector, useSelector } from "react-redux";
 import ProfileEdit from "pages/ProfileEdit";
+import RoomCreate from "pages/RoomCreate";
+import tw from "tailwind-styled-components";
 
 function App() {
   //임시
@@ -42,6 +39,7 @@ function App() {
             <Route path="/" element={<Mainpage />} />
             {!isLogin ? (
               <>
+                <Route path="/room-regist" element={<RoomCreate />} />
                 <Route path="/roomlist" element={<RoomList />} />
 
                 {/* 커뮤니티인데 곧 삭제 예정... */}
@@ -80,7 +78,6 @@ function App() {
                 <Route path="/signup" element={<SignupPage />} />
               </>
             )}
-            <Route path="/new-room" element={<NewRoom />} />
             <Route path="/before-entrance" element={<ConditionCheck />} />
           </Routes>
         </RoutesContainer>
@@ -97,7 +94,6 @@ z-10
 `;
 
 const RoutesContainer = tw.div`
-
 pt-12
 `;
 

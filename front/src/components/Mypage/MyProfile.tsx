@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 
 import useOutsideClick from "hooks/useOutsideClick";
+import ImageModifyModal from "./ImageModifyModal";
 
 import tw from "tailwind-styled-components";
 
@@ -12,6 +13,7 @@ import Modal from "components/Common/Modal";
 
 export const MyProfile = () => {
   //임시 데이터들
+  const [imgUrl, setImageUrl] = useState<string>("");
   const followingNum = 152;
   const followerNum = 20;
   const nickName = "망곰이";
@@ -35,6 +37,9 @@ export const MyProfile = () => {
     setFollowingModal(!followingModal);
   };
 
+  //프로필 사진 변경 버튼 클릭시
+  const [modifyImgModal, setModifyImgModal] = useState<boolean>(false);
+
   const handleMouseOver = () => {
     setIsHovering(true);
   };
@@ -47,10 +52,12 @@ export const MyProfile = () => {
     setIsModifyImg(!isModifyImg);
   };
 
-  const handleModifyImgFalse = () => {
+  const handleModifyImgModal = () => {
+    setModifyImgModal(!modifyImgModal);
     setIsModifyImg(false);
   };
 
+  //버튼 닫히기
   const modifyImgRef = useRef(null);
   useOutsideClick<HTMLDivElement>(modifyImgRef, () => {
     if (isModifyImg) {
@@ -78,7 +85,9 @@ export const MyProfile = () => {
               </StyleProfileImgHover>
             ) : (
               <StyleProfileImg
-                style={{ backgroundImage: `url(${ProifleImg})` }}
+                style={{
+                  backgroundImage: `url(${imgUrl === "" ? ProifleImg : imgUrl})`,
+                }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
               />
@@ -86,11 +95,22 @@ export const MyProfile = () => {
             {isModifyImg && (
               <ProfileDropdown>
                 {/* 변경 클릭시 이미지 업로드 모달 나오게 하기 */}
-                <DropdownButton>프로필 사진 변경</DropdownButton>
+                <DropdownButton onClick={handleModifyImgModal}>
+                  프로필 사진 변경
+                </DropdownButton>
                 {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
                 <DropdownButton>제거</DropdownButton>
               </ProfileDropdown>
             )}
+            {/* 프로필 사진 수정 모달 */}
+            {modifyImgModal === true ? (
+              <ImageModifyModal
+                toggleModal={handleModifyImgModal}
+                imageUrl={imgUrl}
+                setImageUrl={setImageUrl}
+                option="modifyProfile"
+              />
+            ) : null}
           </ul>
         </LeftContainer>
         <RightContainer>
@@ -237,9 +257,9 @@ rounded-md
 w-44
 px-4
 py-2
-cursor-pointer
 transition-colors
 hover:bg-gray-300
+cursor-pointer
 `;
 
 //팔로잉, 팔로우, 닉네임, 메세지, url 들어있는 오른쪽 컨테이너

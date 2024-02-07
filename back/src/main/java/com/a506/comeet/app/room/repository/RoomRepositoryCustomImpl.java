@@ -7,6 +7,8 @@ import com.a506.comeet.common.enums.RoomType;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
@@ -26,6 +27,7 @@ import static com.a506.comeet.app.room.entity.QLounge.lounge;
 import static com.a506.comeet.app.room.entity.QRoom.room;
 import static com.a506.comeet.app.room.entity.QRoomMember.roomMember;
 
+
 @RequiredArgsConstructor
 @Repository
 public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
@@ -34,6 +36,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 
     @Override
     public Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable) {
+
         List<Room> content = jpaQueryFactory.selectFrom(room)
                 .innerJoin(room.manager, member) // member는 1개만 사용됨
                 .leftJoin(room.roomKeywords, roomKeyword).fetchJoin()
@@ -45,7 +48,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                         eqConstraints(req.getConstraints()),
                         eqKeywordIds(req.getKeywordIds()),
                         eqManagerNickname(req.getManagerNickname())
-                        )
+                )
                 .orderBy(makeOrder(req))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1) // 1개를 더 가져온다
@@ -62,14 +65,15 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     @Override
     public RoomResponseDto enterRoomCustom(Long roomId) {
         RoomResponseDto res = jpaQueryFactory.select(
-                        Projections.constructor(RoomResponseDto.class,
+                        Projections.constructor(
+                                RoomResponseDto.class,
                                 room.id,
                                 member.memberId,
                                 member.nickname,
                                 room.title,
                                 room.description,
-                                room.link,
                                 room.roomImage,
+                                room.notice,
                                 room.mcount,
                                 room.capacity,
                                 room.isLocked,
@@ -83,6 +87,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                 where(room.id.eq(roomId).and(room.manager.eq(member))).fetchOne();
 
         if (res == null) return null;
+
         res.setMembers(getMembers(roomId));
         res.setLounges(getLounges(roomId));
         res.setChannels(getChannels(roomId));
@@ -91,13 +96,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
-    @Override
-    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId){
-        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
-                .from(room)
-                .innerJoin(member).on(room.manager.eq(member))
-                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
-    }
 
     private List<RoomMemberResponseDto> getMembers(Long roomId) {
         return jpaQueryFactory.select(
@@ -106,33 +104,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 roomMember.member.nickname,
                                 roomMember.member.profileImage,
                                 roomMember.member.feature
-                        )).
-                from(room).
-                leftJoin(room.roomMembers, roomMember).
-                leftJoin(roomMember.member, member).
-                where(room.id.eq(roomId)).fetch();
-    }
-
-    private List<RoomLoungeResponseDto> getLounges(Long roomId) {
-        return jpaQueryFactory.select(
-                        Projections.constructor(RoomLoungeResponseDto.class,
-                                lounge.id,
-                                lounge.name
-                        )).
-                from(room).
-                leftJoin(room.lounges, lounge).
-                where(room.id.eq(roomId)).fetch();
-    }
-
-    private List<RoomChannelResponseDto> getChannels(Long roomId) {
-        return jpaQueryFactory.select(
-                        Projections.constructor(RoomChannelResponseDto.class,
-                                channel.id,
-                                channel.name
-                        )).
-                from(room).
-                leftJoin(room.channels, channel).
-                where(room.id.eq(roomId)).fetch();
+                        ))
+                .from(roomMember)
+                .leftJoin(roomMember.member, member)
+                .where(roomMember.room.id.eq(roomId)).fetch();
     }
 
     private List<RoomKeywordResponseDto> getKeywords(Long roomId) {
@@ -141,10 +116,30 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
                                 keyword.id,
                                 keyword.name
                         )).
-                from(room).
-                leftJoin(room.roomKeywords, roomKeyword).
+                from(roomKeyword).
                 leftJoin(roomKeyword.keyword, keyword).
-                where(room.id.eq(roomId)).fetch();
+                where(roomKeyword.room.id.eq(roomId)).fetch();
+    }
+
+    private List<RoomLoungeResponseDto> getLounges(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomLoungeResponseDto.class,
+                                lounge.id,
+                                lounge.name
+                        )).
+                from(lounge).
+                where(lounge.room.id.eq(roomId)).fetch();
+    }
+
+
+    private List<RoomChannelResponseDto> getChannels(Long roomId) {
+        return jpaQueryFactory.select(
+                        Projections.constructor(RoomChannelResponseDto.class,
+                                channel.id,
+                                channel.name
+                        )).
+                from(channel).
+                where(channel.room.id.eq(roomId)).fetch();
     }
 
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
@@ -158,35 +153,43 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return path;
     }
 
-    private BooleanExpression eqKeyword(String keyword){
-        if(StringUtils.isEmpty(keyword)) return null;
+    private BooleanExpression eqKeyword(String keyword) {
+        if (StringUtils.isEmpty(keyword)) return null;
         return room.title.contains(keyword)
                 .or(room.description.contains(keyword));
     }
 
-    private BooleanExpression isLocked(Boolean isLocked){
-        if(isLocked == null) return null;
+    private BooleanExpression isLocked(Boolean isLocked) {
+        if (isLocked == null) return null;
         return room.isLocked.eq(isLocked);
     }
 
-    private BooleanExpression eqConstraints(List<RoomConstraints> constraints){
-        if(constraints == null || constraints.isEmpty()) return null;
+    private BooleanExpression eqConstraints(List<RoomConstraints> constraints) {
+        if (constraints == null || constraints.isEmpty()) return null;
         return room.constraints.in(constraints);
     }
 
-    private BooleanExpression eqType(RoomType type){
+    private BooleanExpression eqType(RoomType type) {
         return room.type.eq(type);
     }
 
-    private BooleanExpression eqKeywordIds(List<Long> keywordIds){
-        if(keywordIds == null || keywordIds.isEmpty()) return null;
-        return roomKeyword.keyword.id.in(keywordIds);
+    private BooleanExpression eqKeywordIds(List<Long> keywordIds) {
+        if (keywordIds == null || keywordIds.isEmpty()) return null;
+
+        // 주어진 keyword id를 모두 가지고 있는 room의 id를 선택
+        JPQLQuery<Long> subQuery = JPAExpressions
+                .select(roomKeyword.room.id)
+                .from(roomKeyword)
+                .leftJoin(roomKeyword.keyword)
+                .where(roomKeyword.keyword.id.in(keywordIds))
+                .groupBy(roomKeyword.room.id)
+                .having(roomKeyword.keyword.id.count().eq((long) keywordIds.size()));
+
+        return room.id.in(subQuery);
     }
 
     private BooleanExpression eqManagerNickname(String managerNickname) {
         if (managerNickname == null) return null;
         return room.manager.nickname.eq(managerNickname);
     }
-
-
 }

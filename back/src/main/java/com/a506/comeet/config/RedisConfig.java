@@ -1,5 +1,6 @@
 package com.a506.comeet.config;
 
+import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
@@ -9,12 +10,17 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @RequiredArgsConstructor
 @Configuration
 @EnableRedisRepositories
+//@EnableTransactionManagement (@Transaction 사용 X)
 public class RedisConfig {
+
+    private final EntityManagerFactory entityManagerFactory;
     private final RedisProperties redisProperties;
 
     // RedisProperties로 yaml에 저장한 host, port를 연결
@@ -23,13 +29,16 @@ public class RedisConfig {
         return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
 
-//    // serializer 설정으로 redis-cli를 통해 직접 데이터를 조회할 수 있도록 설정
-//    // 했었으나 StringRedisTemplate로 serializer 적용된 채로 쉽게 사용 가능
-//
-//    @Bean
-//    public RedisTemplate<String, String> redisTemplate() {
-//        StringRedisTemplate redisTemplate = new StringRedisTemplate();
-//        redisTemplate.setConnectionFactory(redisConnectionFactory());
-//        return redisTemplate;
-//    }
+    @Bean
+    public RedisTemplate<String, String> redisTemplate() {
+        StringRedisTemplate redisTemplate = new StringRedisTemplate(redisConnectionFactory());
+//        redisTemplate.setEnableTransactionSupport(true); // redis @Transaction 사용시
+        return redisTemplate;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(){
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+
 }

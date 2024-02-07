@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 public class LoungeCreateRequestDto {
 

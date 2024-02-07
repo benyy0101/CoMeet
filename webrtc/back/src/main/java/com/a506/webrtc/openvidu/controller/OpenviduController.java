@@ -1,4 +1,4 @@
-package com.a506.webrtc.openvidu;
+package com.a506.webrtc.openvidu.controller;
 
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "*")
 @RestController
-public class Controller {
+public class OpenviduController {
 
     @Value("${OPENVIDU_URL}")
     private String OPENVIDU_URL;

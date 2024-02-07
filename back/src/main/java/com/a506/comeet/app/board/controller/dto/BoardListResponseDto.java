@@ -6,6 +6,7 @@ import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardListResponseDto {
+
 	private Long id;
 	private String title;
 	private String content;
@@ -35,7 +37,10 @@ public class BoardListResponseDto {
 	private String writerNickname; //작성자 닉네임
 	private String writerImage; //작성자 이미지
 
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDateTime createdAt; //작성 날짜
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private LocalDateTime updatedAt; //수정 날짜
 
 	public static BoardListResponseDto toBoardListResponseDto(Board board, Room room, Member writer, List<KeywordResponseDto> keywords) {
 
@@ -52,6 +57,7 @@ public class BoardListResponseDto {
 			.writerNickname(writer.getNickname())
 			.writerImage(writer.getProfileImage())
 			.createdAt(board.getCreatedAt())
+			.updatedAt(board.getUpdatedAt())
 			.build();
 	}
 }

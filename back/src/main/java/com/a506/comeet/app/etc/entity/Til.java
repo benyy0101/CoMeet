@@ -4,6 +4,7 @@ import com.a506.comeet.app.etc.controller.dto.TilUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.common.BaseEntityWithSoftDelete;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
@@ -29,6 +30,7 @@ public class Til extends BaseEntityWithSoftDelete {
 
     private LocalDate date;
 
+    @Builder
     public Til(Member member, String context, LocalDate date) {
         this.member = member;
         this.context = context;

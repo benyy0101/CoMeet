@@ -5,6 +5,7 @@ import com.a506.comeet.error.errorcode.ErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.error.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleCustomArgument(RestApiException e) {
         log.warn("RestApiException : {}", e.getMessage());
         log.warn("RestApiException : {}", (Object) e.getStackTrace());
+        e.printStackTrace(); // 개발 끝나고 삭제 필요
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode, e.getMessage());
     }
@@ -51,12 +53,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     // 이외 에러들은 internal error로 처리한다 (NPE등)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleAllException(Exception ex) {
-        log.warn("handleAllException : {}", ex.getMessage());
-        log.warn("handleAllException : {}", (Object) ex.getStackTrace());
+    public ResponseEntity<Object> handleAllException(Exception e) {
+        log.warn("handleAllException : {}", e.getMessage());
+        log.warn("handleAllException : {}", (Object) e.getStackTrace());
+        e.printStackTrace(); // 개발 끝나고 삭제 필요
+
         ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode, ex.getMessage());
+        return handleExceptionInternal(errorCode, e.getMessage());
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.warn("handleAllException : {}", e.getMessage());
+        log.warn("handleAllException : {}", (Object) e.getStackTrace());
+        e.printStackTrace(); // 개발 끝나고 삭제 필요
+
+        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
+        return handleExceptionInternal(errorCode, "data 제한조건에 위반되는 요청입니다");
+    }
+
 
     private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, String message) {
         return ResponseEntity.status(errorCode.getHttpStatus())

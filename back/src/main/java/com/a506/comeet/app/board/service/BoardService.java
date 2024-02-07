@@ -11,12 +11,10 @@ import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.common.enums.BoardType;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,9 +41,9 @@ public class BoardService {
 
         Room room = null;
         if(req.getRoomId() != null)
-            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+            room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         Board board = Board.builder()
                 .writer(member)
@@ -63,7 +61,7 @@ public class BoardService {
 
     @Transactional
     public Board update(BoardUpdateRequestDto req, Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         authorityValidation(board, memberId);
         board.update(req);
         return board;
@@ -71,7 +69,7 @@ public class BoardService {
 
     @Transactional
     public void delete(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         authorityValidation(board, memberId);
         board.delete();
     }
@@ -81,7 +79,7 @@ public class BoardService {
     }
 
     public BoardDetailResponseDto getById(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
 
         //모집 게시판은 방이 있어야 하고, 자유 게시판은 방이 없어야 한다.
         if(board.getType().equals(BoardType.RECRUIT)){
@@ -92,7 +90,7 @@ public class BoardService {
                 throw new RestApiException(WRONG_REQUEST);
         }
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         StringBuilder keywordsString = new StringBuilder();
         if(board.getRoom() != null) {
@@ -111,7 +109,7 @@ public class BoardService {
 
     @Transactional
     public void addLike(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         if(!checkLikeStatus(boardId, memberId)){
             likeService.addLike(boardId, memberId);
             board.incrementLikeCount();
@@ -120,7 +118,7 @@ public class BoardService {
 
     @Transactional
     public void removeLike(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         if(checkLikeStatus(boardId, memberId)){
             likeService.removeLike(boardId, memberId);
             board.decrementLikeCount();
@@ -129,12 +127,12 @@ public class BoardService {
 
     public void authorityValidation(Board board, String memberId) {
         if (!board.getWriter().getMemberId().equals(memberId))
-            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION);
+            throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "게시글 작성자가 아닙니다");
     }
 
     public boolean checkLikeStatus(Long boardId, String memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         return likeRepository.existsByBoardAndMember(board, member);
     }
 }
