@@ -11,26 +11,18 @@ import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
 import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 import { Pagination } from "components/BoardList/Pagination";
-
-//예시
-interface BoardListProps {
-  id: number;
-  title: string;
-  writerNicname: string;
-  writerImage: string;
-  createdAt: string;
-  likeCount: number;
-  category: string;
-  type: string;
-  roomKeywords: string;
-  roomImage: string;
-  isValid: boolean;
-  roomCapacity: number;
-}
+import {
+  SearchBoardContent,
+  SearchBoardParams,
+  SearchBoardResponse,
+} from "models/Board.interface";
+import { useQuery } from "@tanstack/react-query";
+import { searchBoard } from "api/Board";
 
 export const RecruitBoardList = () => {
   //목록 리스트
-  const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  //const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
@@ -103,53 +95,66 @@ export const RecruitBoardList = () => {
   });
 
   //임시
-  React.useEffect(() => {
-    const tmpdatas: BoardListProps[] = [
-      {
-        id: 1,
-        title: "알고리즘 스터디",
-        writerNicname: "무빙건",
-        writerImage: "https://picsum.photos/id/64/100",
-        createdAt: "2024-01-01",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "PYTHON-JAVA",
-        roomImage: "https://picsum.photos/id/1/300",
-        isValid: true,
-        roomCapacity: 30,
-      },
-      {
-        id: 2,
-        title: "CS 스터디",
-        writerNicname: "다른 사람",
-        writerImage: "https://picsum.photos/id/65/100",
-        createdAt: "2024-01-12",
-        likeCount: 1,
-        category: "TIP",
-        type: "free",
-        roomKeywords: "",
-        roomImage: "https://picsum.photos/id/20/300",
-        isValid: true,
-        roomCapacity: 25,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: false,
-        roomCapacity: 50,
-      },
-    ];
-    setBoardList(tmpdatas);
-  }, []);
+  // React.useEffect(() => {
+  //   const tmpdatas: BoardListProps[] = [
+  //     {
+  //       id: 1,
+  //       title: "알고리즘 스터디",
+  //       writerNicname: "무빙건",
+  //       writerImage: "https://picsum.photos/id/64/100",
+  //       createdAt: "2024-01-01",
+  //       likeCount: 22,
+  //       category: "",
+  //       type: "recruit",
+  //       roomKeywords: "PYTHON-JAVA",
+  //       roomImage: "https://picsum.photos/id/1/300",
+  //       isValid: true,
+  //       roomCapacity: 30,
+  //     },
+  //     {
+  //       id: 2,
+  //       title: "CS 스터디",
+  //       writerNicname: "다른 사람",
+  //       writerImage: "https://picsum.photos/id/65/100",
+  //       createdAt: "2024-01-12",
+  //       likeCount: 1,
+  //       category: "TIP",
+  //       type: "free",
+  //       roomKeywords: "",
+  //       roomImage: "https://picsum.photos/id/20/300",
+  //       isValid: true,
+  //       roomCapacity: 25,
+  //     },
+  //     {
+  //       id: 3,
+  //       title: "전세계 개발자들을 위한 모각코 모임",
+  //       writerNicname: "외국인임",
+  //       writerImage: "https://picsum.photos/100",
+  //       createdAt: "2023-12-31",
+  //       likeCount: 22,
+  //       category: "",
+  //       type: "recruit",
+  //       roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+  //       roomImage: "https://picsum.photos//300",
+  //       isValid: false,
+  //       roomCapacity: 50,
+  //     },
+  //   ];
+  //   setBoardList(tmpdatas);
+  // }, []);i
+  const params: SearchBoardParams = {
+    sortBy: "LATEST",
+  };
+
+  const { data, isLoading, isError } = useQuery<SearchBoardResponse, Error>({
+    queryKey: ["boardList"],
+    queryFn: () => searchBoard(params),
+  });
+  useEffect(() => {
+    if (data?.content) {
+      setBoardList(data.content);
+    }
+  }, [data]);
 
   return (
     <TotalContainer>
@@ -298,7 +303,7 @@ export const RecruitBoardList = () => {
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => {
-                if (tmp.type === "recruit")
+                if (tmp.type === "RECRUIT")
                   return (
                     <ReadButton>
                       <RecruitBoardListLink key={tmp.id} {...tmp} />

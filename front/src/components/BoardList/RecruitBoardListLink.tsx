@@ -4,9 +4,13 @@ import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
 
 import StarFill from "assets/img/star-fill.svg";
+import { SearchBoardContent } from "models/Board.interface";
 
-export const RecruitBoardListLink = (props: BoardListProps) => {
-  const keywordArr: string[] = props.roomKeywords.split("-");
+//export const RecruitBoardListLink = (props: BoardListProps) => {
+export const RecruitBoardListLink = (props: SearchBoardContent) => {
+  //const keywordArr: string[] = props.roomKeywords.split("-");
+
+  const keywordArr: number[] = props.roomKeywords;
 
   return (
     <Link to="/recruit-board/1">
@@ -26,7 +30,7 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
           <RoomKeywordContainer>
-            {keywordArr.map((keyword) => (
+            {keywordArr?.map((keyword) => (
               <RoomKeyword key={keyword}>{keyword}</RoomKeyword>
             ))}
           </RoomKeywordContainer>
@@ -34,7 +38,7 @@ export const RecruitBoardListLink = (props: BoardListProps) => {
         <RightContainer>
           <WriterContainer>
             <WriterImg src={props.writerImage} alt="wrtierImg" />
-            <WriterNicname>{props.writerNicname}</WriterNicname>
+            <WriterNicname>{props.writerNickname}</WriterNicname>
           </WriterContainer>
           <WriteDate>{props.createdAt}</WriteDate>
           <LikeContatiner>
