@@ -19,21 +19,30 @@ export const ServerDropDownList = () => {
       <StyleServerTitle>가입한 내 방</StyleServerTitle>
       {roomInfo.length !== 0 ? (
         roomInfo.map((room: any) => (
-          <StyleImgTextBoth key={room.id}>
-            <StyleServerImg src={RoomDefault} alt="" />
-            <li>
-              <Link to={`/room/${room.id}`}>{room.title}</Link>
-            </li>
-          </StyleImgTextBoth>
+          <>
+            <StyleImgTextBoth key={room.id}>
+              <StyleServerImg src={RoomDefault} alt="" />
+              <li>
+                <Link to={`/room/${room.id}`}>{room.title}</Link>
+              </li>
+            </StyleImgTextBoth>
+            <StyleServerGo>
+              <Link to="/room-regist">
+                <PlusIcon />
+              </Link>
+            </StyleServerGo>
+          </>
         ))
       ) : (
-        <NoneText>가입한 방이 없습니다.</NoneText>
+        <>
+          <NoneText>가입한 방이 없습니다.</NoneText>
+          <StyleServerGo>
+            <Link to="/room-regist">
+              <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
+            </Link>
+          </StyleServerGo>
+        </>
       )}
-      <StyleServerGo>
-        <Link to="/room-regist">
-          <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
-        </Link>
-      </StyleServerGo>
     </StyleDropdownMenu>
   );
 };
