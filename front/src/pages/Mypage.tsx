@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MyProfile } from "components/Mypage/MyProfile";
+import MyProfile from "components/Mypage/MyProfile";
 import { MyKeyword } from "components/Mypage/MyKeyword";
 import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
@@ -21,41 +21,23 @@ export const Mypage = () => {
   const [userData, setUserData] = useState<MemberQuery | null>(null);
 
   //이건 리액트 쿼리
-  const {
-    data: myPageData,
-    isError,
-    isLoading,
-    refetch,
-  } = useQuery<MemberQuery, Error>({
-    queryKey: ["user"],
-    queryFn: () => handleMember(memberId),
-    enabled: false,
-  });
+  // const {
+  //   data: myPageData,
+  //   isError,
+  //   isLoading,
+  //   refetch,
+  // } = useQuery<MemberQuery, Error>({
+  //   queryKey: ["user"],
+  //   queryFn: () => handleMember(memberId),
+  //   enabled: false,
+  // });
 
   //
 
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
     const res = await handleMember(memberId);
-    const data: MemberQuery = {
-      memberId: res.memberId,
-      name: res.name,
-      nickname: res.nickname,
-      link: res.link,
-      profileImage: res.profileImage,
-      email: res.email,
-      description: res.description,
-      feature: res.feature,
-      followingCount: res.followingCount,
-      followerCount: res.followerCount,
-      tils: res.tils,
-      dayStudyHour: res.dayStudyHour,
-      weekStudyHour: res.weekStudyHour,
-      monthStudyHour: res.monthStudyHour,
-      mostStudyTime: res.mostStudyTime,
-      keywords: res.keywords,
-    };
-    setUserData(data); // 데이터 상태로 설정
+    setUserData(res); // 데이터 상태로 설정
   };
 
   //시작할 때 데이터 다 들고와
@@ -75,7 +57,14 @@ export const Mypage = () => {
       <FirstContainerLeft>
         {/* 프로필 컨테이너 */}
         <ProfileContainer>
-          <MyProfile />
+          <MyProfile
+            profileImage={userData?.profileImage}
+            followingCount={userData?.followingCount}
+            followerCount={userData?.followerCount}
+            nickname={userData?.nickname}
+            description={userData?.description}
+            link={userData?.link}
+          />
         </ProfileContainer>
         {/* 프로필 밑의 컨테이너 - 키워드, 공부타입, 공부타임 */}
         <SecondContainer>

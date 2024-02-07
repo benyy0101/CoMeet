@@ -5,12 +5,28 @@ import ImageModifyModal from "./ImageModifyModal";
 
 import tw from "tailwind-styled-components";
 
-import ProifleImg from "assets/img/test-user.jpeg";
+import ProfileImg from "assets/img/test-user.jpeg";
 import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
 
-export const MyProfile = () => {
+interface myProps {
+  profileImage: string | undefined;
+  followingCount: number | undefined;
+  followerCount: number | undefined;
+  nickname: string | undefined;
+  description: string | undefined;
+  link: string | undefined;
+}
+
+export default function MyProfile({
+  profileImage,
+  followingCount,
+  followerCount,
+  nickname,
+  description,
+  link,
+}: myProps) {
   //임시 데이터들
   const [imgUrl, setImageUrl] = useState<string>("");
   const followingNum = 152;
@@ -64,7 +80,13 @@ export const MyProfile = () => {
           <ul ref={modifyImgRef}>
             {isHovering ? (
               <StyleProfileImgHover
-                style={{ backgroundImage: `url(${ProifleImg})` }}
+                style={{
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : profileImage
+                  })`,
+                }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
               >
@@ -75,7 +97,11 @@ export const MyProfile = () => {
             ) : (
               <StyleProfileImg
                 style={{
-                  backgroundImage: `url(${imgUrl === "" ? ProifleImg : imgUrl})`,
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : profileImage
+                  })`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -95,7 +121,7 @@ export const MyProfile = () => {
             {modifyImgModal === true ? (
               <ImageModifyModal
                 toggleModal={handleModifyImgModal}
-                imageUrl={imgUrl}
+                imageUrl={profileImage}
                 setImageUrl={setImageUrl}
                 option="modifyProfile"
               />
@@ -106,37 +132,39 @@ export const MyProfile = () => {
           <FollowContainer>
             <SytleFollowing>
               <FollowText>팔로잉</FollowText>
-              <FollowNumber>{followingNum}</FollowNumber>
+              <FollowNumber>{followingCount}</FollowNumber>
             </SytleFollowing>
             <StyleFllower>
               <FollowText>팔로워</FollowText>
-              <FollowNumber>{followerNum}</FollowNumber>
+              <FollowNumber>{followerCount}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
           <div className="flex">
-            <StyleNickName>{nickName}</StyleNickName>
+            <StyleNickName>{nickname}</StyleNickName>
             <button>
               <StyleEdit src={EditPencil} />
             </button>
           </div>
 
           <div className="flex">
-            <StyleMessage>{message}</StyleMessage>
+            <StyleMessage>{description}</StyleMessage>
             <button>
               <StyleEdit src={EditPencil} />
             </button>
           </div>
           <SytleUrl>
-            <StyleA href={url} target="_blank" rel="noopener noreferrer">
-              {url}
+            <StyleA href={link} target="_blank" rel="noopener noreferrer">
+              {link}
             </StyleA>
           </SytleUrl>
         </RightContainer>
       </FullContainer>
-      <RecentIn>최근 접속 시간: {recentTime}</RecentIn>
+      {/* <RecentIn>
+        최근 접속 시간: {recentTime}
+        </RecentIn> */}
     </TotalContainer>
   );
-};
+}
 
 //전체 컨테이너
 const TotalContainer = tw.div`
@@ -170,6 +198,7 @@ const FullContainer = tw.div`
 flex
 flex-grow
 items-center
+pb-10
 
 `;
 

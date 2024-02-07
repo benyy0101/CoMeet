@@ -5,7 +5,7 @@ import { uploadImage } from "api/image";
 
 type ModalProps = {
   toggleModal: () => void;
-  imageUrl: string;
+  imageUrl: string | undefined;
   setImageUrl: (url: string) => void;
   option: string;
 };
