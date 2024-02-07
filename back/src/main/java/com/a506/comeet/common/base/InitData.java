@@ -17,7 +17,6 @@ import com.a506.comeet.app.member.repository.FollowRepository;
 import com.a506.comeet.app.member.repository.LikeRepository;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.member.service.FollowService;
-import com.a506.comeet.app.member.service.LikeService;
 import com.a506.comeet.app.member.service.MemberService;
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.LoungeCreateRequestDto;
@@ -52,7 +51,6 @@ public class InitData {
     private final RoomService roomService;
     private final KeywordService keywordService;
     private final BoardService boardService;
-    private final LikeService likeService;
     private final FollowService followService;
     private final ChannelService channelService;
     private final LoungeService loungeService;
