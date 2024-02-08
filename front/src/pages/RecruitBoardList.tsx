@@ -94,7 +94,12 @@ export const RecruitBoardList = () => {
   };
 
   const TmphandleWordCheck = function () {
-    console.log("검색 단어: " + searchWord);
+    if (searchWord) {
+      searchBoardParams.searchKeyword = searchWord;
+    } else {
+      delete searchBoardParams.searchKeyword;
+    }
+    setSearchBoardParams(searchBoardParams);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -130,11 +135,11 @@ export const RecruitBoardList = () => {
 
   useEffect(() => {
     if (currentMenu === "전체") {
-      delete searchBoardParams.isValid;
+      delete searchBoardParams.recruitBoardCategory;
     } else if (currentMenu === "모집중") {
-      searchBoardParams.isValid = true;
+      searchBoardParams.recruitBoardCategory = "ON";
     } else {
-      searchBoardParams.isValid = false;
+      searchBoardParams.recruitBoardCategory = "OFF";
     }
     setSearchBoardParams(searchBoardParams);
   }, [currentMenu]);
