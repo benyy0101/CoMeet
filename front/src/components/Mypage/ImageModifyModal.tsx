@@ -3,6 +3,8 @@ import tw from "tailwind-styled-components";
 
 import { uploadImage, profileModifyImage, profileImageDelete } from "api/image";
 
+import ArrowTop from "assets/img/top-arrow.png";
+
 import { Navigate } from "react-router-dom";
 
 import axios from "axios";
@@ -87,9 +89,6 @@ function ImageModifyModal(props: ModalProps) {
 
             //이미지 업로드 모달창 닫고
             toggleModal();
-
-            //마이페이지 useEffect
-            handleChange();
           } catch {
             //만약 update 할 때 오류가 나면 이미 s3에 올렸던 이미지를 삭제함
             await profileImageDelete(res);
@@ -102,6 +101,8 @@ function ImageModifyModal(props: ModalProps) {
         alert("업로드 할 이미지를 선택해주세요.");
       }
 
+      //마이페이지 useEffect
+      handleChange();
       setIsClick(false);
     }
   };
@@ -115,27 +116,25 @@ function ImageModifyModal(props: ModalProps) {
               type="file"
               accept="image/*"
               onChange={submitImage}
-              className="py-3 w-3/4"
+              className="text-black p-1 w-3/4"
             />
             {/* 이미지 미리보기 */}
-            {imagePreview === "" ? null : (
+            {imagePreview === "" ? (
+              <div className="flex flex-col items-center">
+                <img src={ArrowTop} alt="" className="w-15 h-20 mb-3" />
+                <p className="text-gray-500 border-b">파일을 선택해주세요</p>
+              </div>
+            ) : (
               <img
                 src={imagePreview}
                 alt="프로필 이미지"
-                className="rounded-full size-1/2 bg-white"
+                className="rounded-full size-1/2 bg-white border"
               />
             )}
 
             <div className="w-full flex justify-around py-3">
-              <button
-                className="bg-black rounded-md"
-                onClick={modalToggleHandler}
-              >
-                취소
-              </button>
-              <button className="bg-black rounded-md" onClick={handleUpload}>
-                확인
-              </button>
+              <ButtonNO onClick={modalToggleHandler}>취소</ButtonNO>
+              <ButtonOK onClick={handleUpload}>확인</ButtonOK>
             </div>
           </div>
         ) : null}
@@ -153,6 +152,29 @@ const ModalContainer = tw.div`
   shadow-md
   w-[350px]
   h-[350px]
-  bg-gray-500
+  bg-white
 `;
+
+const ButtonOK = tw.button`
+py-3
+px-6
+rounded-md
+bg-gradient-to-r
+from-purple-500
+to-pink-500
+hover:bg-gradient-to-l
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
+`;
+
+const ButtonNO = tw.button`
+bg-gray-300
+py-3
+px-6
+rounded-md
+
+`;
+
 export default ImageModifyModal;
