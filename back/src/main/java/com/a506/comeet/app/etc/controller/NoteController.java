@@ -5,7 +5,7 @@ import com.a506.comeet.app.etc.controller.dto.NoteResponseDto;
 import com.a506.comeet.app.etc.controller.dto.NoteSimpleResponseDto;
 import com.a506.comeet.app.etc.entity.Note;
 import com.a506.comeet.app.etc.service.NoteService;
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,8 @@ public class NoteController {
 
     @GetMapping("/{noteId}")
     public ResponseEntity<NoteResponseDto> findAndRead(@PathVariable Long noteId){
-        return ResponseEntity.ok(noteService.findAndRead(noteId));
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(noteService.findAndRead(noteId, memberId));
     }
 
     @GetMapping("")

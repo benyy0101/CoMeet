@@ -28,13 +28,9 @@ public class ChannelService {
     @Transactional
     public Channel create(ChannelCreateRequestDto req, String memberId) {
         Room room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
-        // 사용자가 방장인지 확인
-        managerAuthorization(memberId, room);
 
-        // 이름 중복 확인 로직
-        for(Channel c : room.getChannels()){
-            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 채널 이름이 중복됩니다");
-        }
+        managerAuthorization(memberId, room);
+        channelNameValidation(room, req.getName());
 
         Channel channel = channelRepository.save(Channel.builder().name(req.getName()).room(room).build());
         room.addChannel(channel);
@@ -45,14 +41,10 @@ public class ChannelService {
     @Transactional
     public void update(ChannelUpdateRequestDto req, Long channelId, String memberId) {
         Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_CHANNEL));
-        Room room = channel.getRoom();
-        // 사용자가 방장인지 확인
-        managerAuthorization(memberId, room);
 
-        // 이름 중복 확인 로직
-        for(Channel c : room.getChannels()){
-            if (c.getName().equals(req.getName())) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 채널 이름이 중복됩니다");
-        }
+        managerAuthorization(memberId, channel.getRoom());
+        channelNameValidation(channel.getRoom(), req.getName());
+
         channel.update(req);
         channelRepository.save(channel);
     }
@@ -60,11 +52,17 @@ public class ChannelService {
     @Transactional
     public void delete(Long channelId, String memberId) {
         Channel channel = channelRepository.findById(channelId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_CHANNEL));
-        // 사용자가 방장인지 확인
+
         managerAuthorization(memberId, channel.getRoom());
-        // 방에는 최소 1개의 채널이 남아있어야 함
         atLeastOneChannelValitadion(channel.getRoom());
+
         channel.delete();
+    }
+
+    private static void channelNameValidation(Room room, String name) {
+        for (Channel c : room.getChannels()) {
+            if (c.getName().equals(name)) throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "방 내의 채널 이름이 중복됩니다");
+        }
     }
 
     private void atLeastOneChannelValitadion(Room room) {

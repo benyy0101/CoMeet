@@ -1,6 +1,6 @@
 package com.a506.comeet.app.member.controller;
 
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.member.controller.dto.*;
 import com.a506.comeet.app.member.service.FollowService;
 import jakarta.validation.Valid;
@@ -26,9 +26,7 @@ public class FollowController {
     @DeleteMapping("/follow")
     public ResponseEntity<?> unfollow(@RequestBody @Valid UnfollowRequestDto req){
         String reqMemberId = MemberUtil.getMemberId();
-        if(!followService.unfollow(req, reqMemberId)){
-            return ResponseEntity.badRequest().build();
-        }
+        followService.unfollow(req, reqMemberId);
         return ResponseEntity.ok().build();
     }
 

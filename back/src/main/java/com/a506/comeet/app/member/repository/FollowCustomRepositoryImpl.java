@@ -25,6 +25,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
 
     @Override
     public Slice<MemberSimpleResponseDto> getFollowers(Pageable pageable, String memberId, String prevMemberId) {
+        // noOffset 적용
         List<MemberSimpleResponseDto> content = jpaQueryFactory.select(Projections.constructor(MemberSimpleResponseDto.class,
                 member.memberId,
                 member.nickname,
@@ -45,28 +46,8 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
     }
 
     @Override
-    public Slice<MemberSimpleResponseDto> getFollowersLegacy(Pageable pageable, String memberId, String prevMemberId) {
-        List<MemberSimpleResponseDto> content = jpaQueryFactory.select(Projections.constructor(MemberSimpleResponseDto.class,
-                        member.memberId,
-                        member.nickname,
-                        member.profileImage,
-                        member.feature
-                )).from(follow)
-                .join(member)
-                .on(follow.from.eq(member))
-                .where(follow.to.memberId.eq(memberId))
-                .orderBy(member.memberId.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize()+1)
-                .fetch();
-
-        boolean hasNext = content.size() > pageable.getPageSize(); // 뒤에 더 있는지 확인
-        content = hasNext ? content.subList(0, pageable.getPageSize()) : content; // 뒤에 더 있으면 1개 더 가져온거 빼고 넘긴다
-        return new SliceImpl<>(content, pageable, hasNext);
-    }
-
-    @Override
     public Slice<MemberSimpleResponseDto> getFollowings(Pageable pageable, String memberId, String prevMemberId) {
+        // noOffset 적용
         List<MemberSimpleResponseDto> content = jpaQueryFactory.select(Projections.constructor(MemberSimpleResponseDto.class,
                         member.memberId,
                         member.nickname,

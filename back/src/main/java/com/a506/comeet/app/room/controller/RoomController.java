@@ -1,6 +1,6 @@
 package com.a506.comeet.app.room.controller;
 
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
@@ -102,9 +102,9 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomId}/enter")
-    public ResponseEntity<Void> leave(@RequestBody RoomLeaveRequestDto req, @PathVariable Long roomId){
+    public ResponseEntity<Void> leave(@PathVariable Long roomId){
         String memberId = MemberUtil.getMemberId();
-        String metadataId = roomService.leave(req, roomId, memberId);
+        String metadataId = roomService.leave(roomId, memberId);
         log.info("메타데이터 생성 : {}",metadataId);
         return ResponseEntity.ok().build();
     }

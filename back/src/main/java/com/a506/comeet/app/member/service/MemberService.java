@@ -31,21 +31,14 @@ public class MemberService {
 
     @Transactional
     public Member create(MemberSigninRequestDto req) {
-        Member member = Member.builder().
-                memberId(req.getMemberId()).
-                name(req.getName()).
-                password(passwordEncoder.encode(req.getPassword())). // 비밀번호 인코딩
-                email(req.getEmail()).
-                nickname(req.getNickname()).
-                roles(req.roles).
-                build();
-
-        if (memberRepository.getMemberDuplicationCount(
-                MemberDuplicationRequestDto.builder()
-                        .memberId(member.getMemberId())
-                        .nickname(member.getNickname())
-                        .email(member.getEmail()).build()) != 0)
-            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "중복되는 아이디, 닉네임, 이메일이 존재합니다");
+        Member member = Member.builder()
+                .memberId(req.getMemberId())
+                .name(req.getName())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .email(req.getEmail())
+                .nickname(req.getNickname())
+                .roles(req.roles)
+                .build();
 
         return memberRepository.save(member);
     }

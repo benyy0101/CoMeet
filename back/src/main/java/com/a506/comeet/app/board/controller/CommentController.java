@@ -5,7 +5,7 @@ import com.a506.comeet.app.board.controller.dto.CommentSearchResponseDto;
 import com.a506.comeet.app.board.controller.dto.CommentUpdateRequestDto;
 import com.a506.comeet.app.board.entity.Comment;
 import com.a506.comeet.app.board.service.CommentService;
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
