@@ -3,6 +3,7 @@ package com.a506.comeet.app.board.service;
 import com.a506.comeet.app.board.controller.dto.*;
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.board.repository.BoardRepository;
+import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.LikeRepository;
@@ -21,6 +22,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.a506.comeet.error.errorcode.CustomErrorCode.*;
 
@@ -87,23 +91,10 @@ public class BoardService {
     public BoardDetailResponseDto getById(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
 
-        checkBoardStatus(board.getType(), board.getRoom().getId(), board.getCategory());
-
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
-        StringBuilder keywordsString = new StringBuilder();
-        if (board.getRoom() != null) {
-            if (board.getRoom().getRoomKeywords() == null)
-                return null;
-            for (RoomKeyword roomKeyword : board.getRoom().getRoomKeywords()) {
-                if (!keywordsString.isEmpty()) {
-                    keywordsString.append(", ");
-                }
-                keywordsString.append(roomKeyword.getKeyword());
-            }
-        }
         boolean isLike = checkLikeStatus(boardId, memberId);
-        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, keywordsString.toString(), isLike);
+        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, getKeywords(board.getRoom()), isLike);
     }
 
     @Transactional
@@ -145,5 +136,17 @@ public class BoardService {
             if(RoomId != null)
                 throw new RestApiException(YES_ROOM, "자유 게시판은 방이 존재하지 않아야 합니다.");
         }
+    }
+
+    private List<KeywordResponseDto> getKeywords(Room room){
+        List<KeywordResponseDto> keywords = new ArrayList<>();
+        if(room != null) {
+            if (room.getRoomKeywords() == null)
+                return null;
+            for (RoomKeyword roomKeyword : room.getRoomKeywords()) {
+                keywords.add(new KeywordResponseDto(roomKeyword.getKeyword().getId(), roomKeyword.getKeyword().getName()));
+            }
+        }
+        return keywords;
     }
 }
