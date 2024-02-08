@@ -1,12 +1,12 @@
 export interface MemberQuery {
-  memberId: String;
-  name: String;
-  nickname: String;
-  link: String;
-  profileImage: String;
-  email: String;
-  description: String;
-  feature: String;
+  memberId: string;
+  name: string;
+  nickname: string;
+  link: string;
+  profileImage: string;
+  email: string;
+  description: string;
+  feature: string;
   followingCount: number;
   followerCount: number;
   tils: [
@@ -18,10 +18,10 @@ export interface MemberQuery {
   dayStudyHour: number;
   weekStudyHour: number;
   monthStudyHour: number;
-  mostStudyTime: String;
+  mostStudyTime: string;
   keywords: [
     {
-      name: String;
+      name: string;
       weight: number;
     },
   ];

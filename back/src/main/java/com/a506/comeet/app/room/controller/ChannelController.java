@@ -1,13 +1,12 @@
 package com.a506.comeet.app.room.controller;
 
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.ChannelCreateRequestDto;
 import com.a506.comeet.app.room.controller.dto.ChannelUpdateRequestDto;
 import com.a506.comeet.app.room.entity.Channel;
 import com.a506.comeet.app.room.service.ChannelService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

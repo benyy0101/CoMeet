@@ -7,7 +7,7 @@ import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginResponse } from "models/Login.interface";
-import { login } from "store/reducers/userSlice";
+import { login, storeMemberId } from "store/reducers/userSlice";
 function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
@@ -41,6 +41,7 @@ function Login() {
     if (userData) {
       const res = userData;
       dispatch(login(res));
+      dispatch(storeMemberId(memberId));
     }
   }, [userData]);
 

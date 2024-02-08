@@ -5,7 +5,7 @@ import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.controller.dto.RoomSimpleResponseDto;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
-import com.a506.comeet.auth.AES128Util;
+import com.a506.comeet.common.util.AES128Util;
 import com.a506.comeet.auth.JwtToken;
 import com.a506.comeet.auth.JwtTokenProvider;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;

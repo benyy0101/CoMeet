@@ -12,12 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AdminController {
 
-    // 전체 유저를 가져오..긴 하는데 검색 조건을 줄 수는 있음 필요하면 구현할께..
-//    @GetMapping("/member")
-//    public ResponseEntity allMember(){
-//
-//    }
-
     private final KeywordService keywordService;
 
     @PostMapping("/keyword")

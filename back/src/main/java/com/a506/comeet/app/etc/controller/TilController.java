@@ -1,7 +1,7 @@
 package com.a506.comeet.app.etc.controller;
 
 import com.a506.comeet.app.etc.controller.dto.*;
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.app.etc.service.TilService;
 import jakarta.validation.Valid;

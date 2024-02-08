@@ -28,10 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoteService {
 
     private final NoteRepository noteRepository;
-
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
-
     private final RoomMemberRepository roomMemberRepository;
 
     @Transactional
@@ -50,15 +48,14 @@ public class NoteService {
     @Transactional
     public void delete(Long noteId, String memberId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_NOTE));
-        authorityValidation(memberId, note);
+        writerAuthorityValidation(memberId, note);
         note.delete();
     }
 
-
-
     @Transactional
-    public NoteResponseDto findAndRead(Long noteId) {
+    public NoteResponseDto findAndRead(Long noteId, String memberId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_NOTE));
+        readerAuthorityValidation(memberId, note);
         note.read();
         return NoteResponseDto.builder()
                 .id(note.getId())
@@ -71,8 +68,13 @@ public class NoteService {
     }
 
 
-    private void authorityValidation(String memberId, Note note) {
+    private void writerAuthorityValidation(String memberId, Note note) {
         if (!note.getWriter().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 작성자가 아닙니다");
+    }
+
+
+    private void readerAuthorityValidation(String memberId, Note note) {
+        if (!note.getWriter().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아니어서 읽을 수 없습니다");
     }
 
     public Page<NoteSimpleResponseDto> findList(String memberId, Pageable pageable) {

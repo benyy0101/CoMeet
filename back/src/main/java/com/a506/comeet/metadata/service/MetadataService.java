@@ -1,10 +1,11 @@
 package com.a506.comeet.metadata.service;
 
-import com.a506.comeet.app.member.MostStudyTime;
+import com.a506.comeet.common.enums.MostStudyTime;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberKeywordResponseDto;
 import com.a506.comeet.metadata.entity.Metadata;
 import com.a506.comeet.metadata.repository.MetadataRepository;
+import com.a506.comeet.metadata.service.dto.MetadataCreateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,7 @@ public class MetadataService {
                 .build();
 
         String id = metadataRepository.save(metadata).getId();
-
         metadataRepository.findById(id);
-
         return id;
     }
 

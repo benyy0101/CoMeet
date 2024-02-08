@@ -113,3 +113,8 @@ export interface UnlikeBoardParams {
 }
 
 export interface UnlikeBoardResponse {}
+
+export interface TextEditProps {
+  isFree: boolean;
+  isEdit: boolean;
+}

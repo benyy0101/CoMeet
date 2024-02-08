@@ -1,4 +1,5 @@
 export interface loginState {
+  memberId: string;
   nickname: string;
   profileImage: string;
   unreadNoteCount: number;
