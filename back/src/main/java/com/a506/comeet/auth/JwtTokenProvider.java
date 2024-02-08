@@ -1,6 +1,7 @@
 package com.a506.comeet.auth;
 
 import com.a506.comeet.auth.repository.JwtRedisRepository;
+import com.a506.comeet.common.util.AES128Util;
 import com.a506.comeet.common.util.KeyUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -137,7 +138,6 @@ public class JwtTokenProvider {
             throw new JwtException("JWT claims string is empty.");
         }
     }
-
 
     // accessToken claim parsing (만료된 토큰도 복호화)
     public Claims parseClaims(String token) {

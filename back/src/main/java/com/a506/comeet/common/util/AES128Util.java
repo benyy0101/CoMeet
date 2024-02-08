@@ -1,4 +1,4 @@
-package com.a506.comeet.auth;
+package com.a506.comeet.common.util;
 
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;

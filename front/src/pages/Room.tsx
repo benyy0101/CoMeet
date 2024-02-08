@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import {
   ArrowRightStartOnRectangleIcon,
-  CameraIcon,
   SpeakerXMarkIcon,
   SpeakerWaveIcon,
   VideoCameraSlashIcon,
@@ -15,10 +14,11 @@ import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
   PlusIcon,
+  CameraIcon,
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -36,6 +36,15 @@ import { enterRoom, leaveRoom } from "api/Room";
 import { EnterRoomResponse, LeaveRoomParams } from "models/Room.interface";
 import { IFilter } from "models/Filter.interface";
 import { filterType } from "constants/Filter";
+import { useDispatch } from "react-redux";
+import {
+  setEnterRoom,
+  setIsRoomIn,
+  setLeaveRoom,
+  setMicStatus,
+  setVideoStatus,
+} from "store/reducers/roomSlice";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
 export const Room = () => {
   const { roomId } = useParams();
@@ -74,6 +83,8 @@ export const Room = () => {
   const stompClient = useRef<any>(null);
 
   const OV = useRef(new OpenVidu());
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     enterRoomHandler();
@@ -339,6 +350,7 @@ export const Room = () => {
   useEffect(() => {
     if (publisher) {
       publisher.publishAudio(!isMuted);
+      dispatch(setMicStatus(isMuted));
     } else {
     }
   }, [isMuted]);
@@ -346,6 +358,8 @@ export const Room = () => {
   useEffect(() => {
     if (publisher) {
       publisher.publishVideo(!isVideoDisabled);
+
+      dispatch(setVideoStatus(!isVideoDisabled));
     }
   }, [isVideoDisabled]);
 
@@ -532,6 +546,8 @@ export const Room = () => {
     setRoomData(res);
     setChannels(res.channels);
     setLounges(res.lounges);
+    dispatch(setEnterRoom(res));
+    dispatch(setIsRoomIn(true));
   };
 
   const leaveRoomHandler = () => {
@@ -542,6 +558,8 @@ export const Room = () => {
     try {
       console.log("나갈게~");
       const res = leaveRoom(data);
+      dispatch(setIsRoomIn(false));
+      dispatch(setLeaveRoom());
       console.log(res);
     } catch (e) {
       console.error(e);
@@ -572,71 +590,85 @@ export const Room = () => {
               }}
             />
           </RoomTitleImgBorder>
-          <RoomTitle>싸피 10기</RoomTitle>
+          <RoomTitle>{roomData?.title}</RoomTitle>
           <RoomNoticeButton onClick={toggleNotice}>
             <BellAlertIcon />
-            {noticeClicked ? <RoomNotice></RoomNotice> : null}
+            {noticeClicked ? <RoomNotice /> : null}
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
+          <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
+            <RoomButton>
+              <Cog6ToothIcon className="w-8 h-8" />
+            </RoomButton>
+          </Link>
           <RoomButton onClick={leaveSessionHandler}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
-          </RoomButton>
-          <RoomButton onClick={switchCamera}>
-            <CameraIcon className="w-8 h-8" />
           </RoomButton>
         </RoomButtonContainer>
       </RoomHeader>
 
       <RoomContent>
         <RoomSidebar>
-          <SideBarToggler onClick={toggleSideBar}>
-            {sideToggle ? <ChevronDoubleLeftIcon /> : <ChevronDoubleRightIcon />}
-          </SideBarToggler>
+          <ToggleButtonContainer onClick={toggleSideBar}>
+            <SideBarToggler>
+              {sideToggle ? (
+                <ChevronDoubleLeftIcon className="w-6 h-6" />
+              ) : (
+                <ChevronDoubleRightIcon className="w-6 h-6" />
+              )}
+            </SideBarToggler>
+          </ToggleButtonContainer>
           {sideToggle ? (
             <SideWrapper>
-              <SideContent>
-                <SideTitle>라운지</SideTitle>
-                {lounges.map((l) => (
-                  <LoungeButton
-                    key={l.loungeId}
-                    active={inLounge && currentLounge?.loungeId === l.loungeId}
-                    disabled={isLoading || (inLounge && currentLounge?.loungeId === l.loungeId)}
-                    lounge={l}
-                    moveLounge={moveLounge}
-                  />
-                ))}
-                <SideTitle>채널</SideTitle>
-                {channels.map((c) => (
-                  <ChannelButton
-                    key={c.channelId}
-                    active={mySessionId === c.channelId.toString()}
-                    disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
-                    id={c.channelId.toString()}
-                    name={c.name}
-                    moveChannel={moveChannel}
-                  />
-                ))}
-              </SideContent>
-              <RoomAddButton onClick={handleModal}>
-                <PlusIcon className="w-6 h-6 "></PlusIcon>
-                <ModalPortal>
-                  {modal ? (
-                    <Modal
-                      channels={channels}
-                      removeChannel={removeChannel}
-                      addChannel={addChannel}
-                      toggleModal={handleModal}
-                      option="channelCreate"
-                      lounges={lounges}
-                      addLounge={addLounge}
-                      removeLounge={removeLounge}
-                    ></Modal>
-                  ) : null}
-                </ModalPortal>
-              </RoomAddButton>
+              <SideTitle>라운지</SideTitle>
+              <SideContentContainer>
+                <SideContent>
+                  {lounges.map((l) => (
+                    <LoungeButton
+                      key={l.loungeId}
+                      active={inLounge && currentLounge?.loungeId === l.loungeId}
+                      disabled={isLoading || (inLounge && currentLounge?.loungeId === l.loungeId)}
+                      lounge={l}
+                      moveLounge={moveLounge}
+                    />
+                  ))}
+                </SideContent>
+              </SideContentContainer>
+              <SideTitle>채널</SideTitle>
+              <SideContentContainer>
+                <SideContent>
+                  {channels.map((c) => (
+                    <ChannelButton
+                      key={c.channelId}
+                      active={mySessionId === c.channelId.toString()}
+                      disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
+                      id={c.channelId.toString()}
+                      name={c.name}
+                      moveChannel={moveChannel}
+                    />
+                  ))}
+                </SideContent>
+              </SideContentContainer>
             </SideWrapper>
           ) : null}
+          <RoomAddButton onClick={handleModal}>
+            <PlusIcon className="w-6 h-6"></PlusIcon>
+            <ModalPortal>
+              {modal ? (
+                <Modal
+                  channels={channels}
+                  removeChannel={removeChannel}
+                  addChannel={addChannel}
+                  toggleModal={handleModal}
+                  option="channelCreate"
+                  lounges={lounges}
+                  addLounge={addLounge}
+                  removeLounge={removeLounge}
+                ></Modal>
+              ) : null}
+            </ModalPortal>
+          </RoomAddButton>
         </RoomSidebar>
 
         <ChannelBorder>
@@ -704,6 +736,9 @@ export const Room = () => {
                 ))}
               </FilterMenu>
             )}
+          </ControlPanelButton>
+          <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+            <CameraIcon className="w-8 h-8" />
           </ControlPanelButton>
         </ControlPanel>
       )}
@@ -783,6 +818,7 @@ h-full
 flex
 items-center
 space-x-5
+px-4
 `;
 
 const RoomButton = tw.button`
@@ -807,16 +843,27 @@ const RoomSidebar = tw.div`
 mx-4
 pt-4
 h-full
-space-y-3
 flex
 flex-col
-items-end
+items-center
 justify-start
+space-y-4
+`;
+
+const ToggleButtonContainer = tw.div`
+flex
+justify-center
+mb-1
+w-full
+h-6
+rounded-md
+text-white
+hover:bg-slate-800
+cursor-pointer
 `;
 
 const SideContent = tw.div`
 w-20
-h-full
 gap-6
 flex
 flex-col
@@ -831,17 +878,29 @@ flex
 `;
 
 const SideTitle = tw.div`
-  text-white
-  font-bold
-  text-xl
+text-white
+font-bold
+text-xl
 `;
 
 const SideWrapper = tw.div`
-h-full
 flex
 flex-col
 justify-between
 items-center
+h-10
+flex-grow-[1]
+space-y-4
+`;
+
+const SideContentContainer = tw.div`
+overflow-y-auto
+scrollbar-hide
+h-1/2
+flex
+flex-col
+items-center
+space-y-2
 `;
 
 const RoomAddButton = tw.button`

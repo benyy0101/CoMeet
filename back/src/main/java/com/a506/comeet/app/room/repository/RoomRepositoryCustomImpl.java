@@ -18,7 +18,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.a506.comeet.app.keyword.entity.QKeyword.keyword;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
@@ -36,7 +35,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable) {
+    public Slice<RoomSearchResponseDto> searchDisposableRoom(RoomSearchRequestDto req, Pageable pageable) {
 
         List<Room> content = jpaQueryFactory.selectFrom(room)
                 .innerJoin(room.manager, member) // member는 1개만 사용됨
@@ -64,7 +63,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     }
 
     @Override
-    public RoomResponseDto enterRoomCustom(Long roomId) {
+    public RoomResponseDto getDetailRoomInfo(Long roomId) {
         RoomResponseDto res = jpaQueryFactory.select(
                         Projections.constructor(
                                 RoomResponseDto.class,
@@ -97,13 +96,6 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
-    @Override
-    public Optional<String> findMemberByRoomIdAndMemberId(Long roomId, String memberId) {
-        return Optional.ofNullable(jpaQueryFactory.select(member.memberId)
-                .from(room)
-                .innerJoin(member).on(room.manager.eq(member))
-                .where(room.id.eq(roomId).and(member.memberId.eq(memberId))).fetchOne());
-    }
 
     private List<RoomMemberResponseDto> getMembers(Long roomId) {
         return jpaQueryFactory.select(

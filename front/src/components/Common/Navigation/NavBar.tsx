@@ -2,37 +2,39 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
-import BasicProfile from "../../assets/img/basic-profile.svg";
-import IMac from "../../assets/img/iMac.svg";
-import MicMute from "../../assets/img/mic-mute.svg";
-import VideoWhite from "../../assets/img/video-white.svg";
-import RoomDefault from "../../assets/img/room-default.svg";
+import BasicProfile from "assets/img/basic-profile.svg";
+import IMac from "assets/img/iMac.svg";
+import MicMute from "assets/img/mic-mute.svg";
+import VideoWhite from "assets/img/video-white.svg";
+import RoomDefault from "assets/img/room-default.svg";
 
-import { ServerDropDownList } from "../ServerDropDownList";
-import useOutsideClick from "../../hooks/useOutsideClick";
-import ModalPortal from "../../utils/Portal";
-import Modal from "./Modal";
+import { ServerDropDownList } from "./ServerDropDownList";
+import useOutsideClick from "hooks/useOutsideClick";
+import ModalPortal from "utils/Portal";
+import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
-
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
   };
   const signupModalHandler = () => {
     setSignupModal(!signupModal);
   };
-  //임시
-  const isLogin = useSelector((state: any) => state.user.isLoggedIn);
+
+  const userInfo = useSelector((state: any) => state.user);
+
+  const roomInfo = useSelector((state: any) => state.room);
 
   useEffect(() => {
-    console.log(isLogin);
-  }, [isLogin]);
+    if (roomInfo) {
+      setIsChannelIn(true);
+    }
+  }, [roomInfo]);
 
-  //임시
-  const isChannelIn = true;
+  const [isChannelIn, setIsChannelIn] = useState<boolean>(false);
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
@@ -70,7 +72,7 @@ export const NavBar = () => {
         <Link to="/">[코밋]</Link>
       </Logo>
       {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
-      {isLogin ? (
+      {userInfo.isLoggedIn ? (
         <>
           <Menu>
             <EachMenu>
@@ -96,15 +98,19 @@ export const NavBar = () => {
         </>
       ) : null}
       <Menu2>
-        {isLogin ? (
+        {userInfo.isLoggedIn ? (
           <>
-            {isChannelIn ? (
+            {roomInfo.isRoomIn ? (
               <InServer>
                 <ServerImg src={RoomDefault} alt="room" />
-                <ServerText>싸피 10기</ServerText>
+                <ServerText>{roomInfo.title}</ServerText>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                <MicVideoImg src={VideoWhite} alt="video" />
-                <MicVideoImg src={MicMute} alt="mic" />
+                {roomInfo.isMicMuted ? (
+                  <MicVideoImg src={MicMute} alt="mic" />
+                ) : null}
+                {roomInfo.isVideoOn ? (
+                  <MicVideoImg src={VideoWhite} alt="video" />
+                ) : null}
               </InServer>
             ) : null}
 
@@ -117,7 +123,7 @@ export const NavBar = () => {
               </ul>
             </Menu2>
             <Menu2>
-              <Link to="/Mypage">
+              <Link to="/mypage">
                 <img src={BasicProfile} width={30} alt="profile" />
               </Link>
             </Menu2>
@@ -128,7 +134,11 @@ export const NavBar = () => {
               <button onClick={signupModalHandler}>회원가입</button>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -137,7 +147,11 @@ export const NavBar = () => {
               <button onClick={loginModalHandler}>로그인</button>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>

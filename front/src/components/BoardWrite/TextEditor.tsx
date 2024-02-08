@@ -1,14 +1,10 @@
-import React, { useEffect } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import React, { useEffect, useRef } from "react";
 import RoomOption from "./RoomOption";
 import tw from "tailwind-styled-components";
-
-type QuillEditorProps = {
-  quillRef: string;
-  htmlContent: string;
-  setHtmlContent: string;
-};
+import "@toast-ui/editor/dist/toastui-editor.css";
+import { Editor } from "@toast-ui/react-editor";
+import { TextEditProps } from "models/Board.interface";
+import "@toast-ui/editor/dist/i18n/ko-kr";
 
 type SelectOption = {
   key: number;
@@ -16,29 +12,8 @@ type SelectOption = {
   label: string;
 };
 
-const formats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-  "align",
-  "color",
-  "background",
-];
-
-type QuillProps = {
-  isFree: boolean;
-  isEdit: boolean;
-};
-
-function TextEditor(props: QuillProps) {
+function TextEditor(props: TextEditProps) {
+  const editorRef = useRef();
   const { isFree, isEdit } = props;
   const [selectOption, setSelectOption] = React.useState<SelectOption[]>([
     { key: 1, value: "question", label: "질문하기" },
@@ -56,7 +31,7 @@ function TextEditor(props: QuillProps) {
   const [headerTitle, setHeaderTitle] = React.useState<string>("자유게시판");
 
   useEffect(() => {
-    if (!isFree) {
+    if (isFree) {
       setHeaderTitle("자유게시판");
     } else {
       setHeaderTitle("모집게시판");
@@ -73,7 +48,7 @@ function TextEditor(props: QuillProps) {
         <HeaderTitle> {headerTitle}</HeaderTitle>
       </Header>
       <TitleWrapper>
-        {false ? (
+        {isFree ? (
           <SelectForm>
             {selectOption.map((option) => (
               <option value={option.value} key={option.key}>
@@ -90,7 +65,14 @@ function TextEditor(props: QuillProps) {
         <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption>
       ) : null}
       <QuillContainer>
-        <Quill modules={module} formats={formats} />
+        <Editor
+          initialValue="게시판 성격에 맞는 글만 써주세요"
+          previewStyle="vertical"
+          height="600px"
+          initialEditType="markdown"
+          useCommandShortcut={true}
+          language="ko-KR"
+        />
       </QuillContainer>
       <ButtonWrapper>
         <CancelButton>취소하기</CancelButton>
@@ -112,14 +94,14 @@ const module = {
 };
 
 const Wrapper = tw.div`
-  flex
-  flex-col
-  items-center
-  justify-start
-  w-3/4
-  p-2
-  gap-2
-  text-white
+flex
+flex-col
+justify-center
+self-center
+w-3/4
+p-2
+gap-2
+text-white
 `;
 
 const Header = tw.div`
@@ -131,6 +113,7 @@ const Header = tw.div`
     items-center
 `;
 const HeaderTitle = tw.div`
+text-black
 `;
 
 const SelectForm = tw.select`
@@ -171,13 +154,8 @@ const TitleInput = tw.input`
 const QuillContainer = tw.div`
     w-full
     min-h-[300px]  
-    bg-transparent
     rounded-md
     mb-4           
-`;
-const Quill = tw(ReactQuill)`
-  w-full
-  h-[500px]
 `;
 const ButtonWrapper = tw.div`
   w-full

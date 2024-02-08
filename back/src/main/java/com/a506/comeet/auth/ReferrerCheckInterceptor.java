@@ -1,5 +1,7 @@
 package com.a506.comeet.auth;
 
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +17,7 @@ public class ReferrerCheckInterceptor implements HandlerInterceptor {
         log.info("referer : {}", referer);
         log.info("host : {}", host);
         if (referer == null || !referer.contains(host)) {
-            response.sendRedirect("/");
-            return false;
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "referer 헤더 정보가 설정되어있지 않거나 잘못되었습니다");
         }
         return true;
     }

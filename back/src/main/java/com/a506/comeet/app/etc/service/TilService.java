@@ -19,16 +19,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class TilService {
 
     private final TilRepository tilRepository;
-
     private final MemberRepository memberRepository;
 
     @Transactional
     public Til create(TilCreateRequestDto req, String memberId) {
+        dateDuplicateValidation(req, memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
+        Til til = Til.builder()
+                .member(member)
+                .context(req.getContext())
+                .date(req.getDate())
+                .build();
+        return tilRepository.save(til);
+    }
+
+    private void dateDuplicateValidation(TilCreateRequestDto req, String memberId) {
         if (tilRepository.tilWithMemberAndDateExists(memberId, req.getDate()))
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "해당 날짜의 TIL이 이미 존재합니다");
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        Til til = new Til(member, req.getContext(), req.getDate());
-        return tilRepository.save(til);
     }
 
     @Transactional

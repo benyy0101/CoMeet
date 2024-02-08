@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface RoomMemberRepository extends JpaRepository<RoomMember, Long> {
+public interface RoomMemberRepository extends JpaRepository<RoomMember, Long>, RoomMemberRepositoryCustom {
 
     Optional<RoomMember> findByRoomAndMember(Room room, Member member);
 

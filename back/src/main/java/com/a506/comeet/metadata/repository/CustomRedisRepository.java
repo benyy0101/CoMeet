@@ -30,7 +30,6 @@ public class CustomRedisRepository {
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
-                operations.watch(roomKey); // 공통자원에 낙관적 락
                 operations.multi();
                 // 현재 멤버가 어디에 있고, 언제 들어갔는지 저장
                 operations.opsForHash().put(currentMemberKey, "roomId", roomId.toString());
@@ -50,7 +49,6 @@ public class CustomRedisRepository {
         redisTemplate.execute(new SessionCallback<>() {
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
-                operations.watch(roomKey); // 공통자원에 낙관적 락
                 operations.multi();
                 // 해당 방 들어있는 유저정보에서 유저를 삭제
                 operations.opsForSet().remove(roomKey, memberId);

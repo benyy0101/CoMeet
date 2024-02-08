@@ -63,7 +63,7 @@ public class RoomEnterTest {
         Long roomId = 3L;
         int N = 100;
         int M = 100;
-        RoomResponseDto res = roomRepository.enterRoomCustom(roomId);
+        RoomResponseDto res = roomRepository.getDetailRoomInfo(roomId);
         log.info("멤버 수 : {}", res.getMembers().size());
         for (RoomMemberResponseDto member : res.getMembers()) {
             log.info("멤버 닉네임 : {}", member.getNickname());

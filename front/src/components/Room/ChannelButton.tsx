@@ -1,5 +1,4 @@
 import { UserGroupIcon } from "@heroicons/react/24/solid";
-import { channel } from "diagnostics_channel";
 import tw from "tailwind-styled-components";
 
 interface IProps {
@@ -40,20 +39,21 @@ rounded-full
 text-3xl
 cursor-pointer
 disabled:cursor-default
-relative
 z-20
+
 `;
 
 const ChannelButtonContainer = tw.div`
-relative
 flex
 items-center
 group
+pr-40
+-mr-40
 `;
 
 const TitleCotainer = tw.div`
 absolute
-left-14
+left-24
 z-10
 h-10
 bg-[#170f2a]

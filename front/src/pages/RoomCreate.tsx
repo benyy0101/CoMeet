@@ -6,7 +6,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
-function RoomCreate() {
+export default function RoomCreate() {
   const navigate = useNavigate();
 
   const [title, setTitle] = React.useState<string>("");
@@ -274,5 +274,3 @@ text-white
 font-semibold
 shadow-md
 `;
-
-export default RoomCreate;

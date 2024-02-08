@@ -1,6 +1,6 @@
 package com.a506.comeet.app.member.controller.dto;
 
-import com.a506.comeet.app.member.MostStudyTime;
+import com.a506.comeet.common.enums.MostStudyTime;
 import com.a506.comeet.common.enums.MemberFeature;
 import lombok.Getter;
 import lombok.Setter;

@@ -5,6 +5,8 @@ import RoomConfirm from "../RoomConfirm";
 import { RoomItemProps } from "../../types";
 import Signup from "components/Auth/Signup";
 import { set } from "react-hook-form";
+import Follower from "components/Mypage/Follower";
+import Following from "components/Mypage/Following";
 import CreateChannel from "components/Room/CreateChannel";
 import { IChannel } from "models/Channel.interface";
 import { ILounge } from "models/Lounge.interface";
@@ -12,7 +14,7 @@ import { ILounge } from "models/Lounge.interface";
 type ModalProps = {
   toggleModal: () => void;
   option: string;
-  setting?: RoomItemProps | null;
+  setting?: any;
   channels?: IChannel[];
   addChannel?: (name: string) => void;
   removeChannel?: (id: number) => void;
@@ -38,6 +40,8 @@ function Modal(props: ModalProps) {
   const [isSignup, setIsSignup] = React.useState<boolean>(false);
   const [isRoomConfirm, setIsRoomConfirm] = React.useState<boolean>(true);
   const [isRoomCreate, setIsRoomCreate] = React.useState<boolean>(false);
+  const [isFollower, setIsFollower] = React.useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = React.useState<boolean>(false);
   const [isChannelCreate, setIsChannelCreate] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -49,6 +53,8 @@ function Modal(props: ModalProps) {
       setIsRoomConfirm(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsFollower(false);
+      setIsFollowing(false);
       setIsChannelCreate(false);
     } else if (option === "confirm") {
       console.log("confirm");
@@ -56,10 +62,28 @@ function Modal(props: ModalProps) {
       setIsLogin(false);
       setIsRoomCreate(false);
       setIsSignup(false);
+      setIsFollower(false);
+      setIsFollowing(false);
       setIsChannelCreate(false);
     } else if (option === "signup") {
       console.log("signup");
       setIsSignup(true);
+      setIsRoomConfirm(false);
+      setIsLogin(false);
+      setIsRoomCreate(false);
+      setIsFollower(false);
+      setIsFollowing(false);
+    } else if (option === "follower") {
+      setIsFollower(true);
+      setIsSignup(false);
+      setIsRoomConfirm(false);
+      setIsLogin(false);
+      setIsRoomCreate(false);
+      setIsFollowing(false);
+    } else if (option === "following") {
+      setIsFollowing(true);
+      setIsFollower(false);
+      setIsSignup(false);
       setIsRoomConfirm(false);
       setIsLogin(false);
       setIsRoomCreate(false);
@@ -84,6 +108,8 @@ function Modal(props: ModalProps) {
         {isLogin ? <Login></Login> : null}
         {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
         {isSignup ? <Signup></Signup> : null}
+        {isFollower ? <Follower /> : null}
+        {isFollowing ? <Following /> : null}
         {isChannelCreate ? (
           <CreateChannel
             channels={channels}
@@ -100,11 +126,11 @@ function Modal(props: ModalProps) {
 }
 
 const Wrapper = tw.div`
-fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
+fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center
 `;
 
 const ModalContainer = tw.div`
-  rounded-md 
-  shadow-md
+rounded-md 
+shadow-md
 `;
 export default Modal;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import SortingIcon from "../assets/img/sorting.svg";
 import SortingDownIcon from "../assets/img/sort-down.svg";
@@ -11,47 +11,62 @@ import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
 import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 import { Pagination } from "components/BoardList/Pagination";
-
-//예시
-interface BoardListProps {
-  id: number;
-  title: string;
-  writerNicname: string;
-  writerImage: string;
-  createdAt: string;
-  likeCount: number;
-  category: string;
-  type: string;
-  roomKeywords: string;
-  roomImage: string;
-  isValid: boolean;
-  roomCapacity: number;
-}
+import SearchBoardResponse, {
+  SearchBoardContent,
+  SearchBoardParams,
+} from "models/Board.interface";
+import { useQuery } from "@tanstack/react-query";
+import { searchBoard } from "api/Board";
+import { BOARD_SORTBY } from "models/Enums.type";
+import WriteArticle from "./WriteArticle";
 
 export const RecruitBoardList = () => {
   //목록 리스트
-  const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  //const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
+
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
+    {
+      boardType: "RECRUIT",
+      sortBy: "LATEST",
+      page: 0,
+      size: 10,
+    }
+  );
+  const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
+  const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
+  const [currentPage, setCurrentPage] = useState<number>(0); // 초기 값을 얼마로지해야하지
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+  //검색 기준
+  type Condition = "제목+설명" | "작성자";
+  const [searchCondition, setSearchCondition] =
+    React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
 
-  const [currentSort, setCurrentSort] = useState<string>("최신순");
+  const [currentSort, setCurrentSort] = useState<BOARD_SORTBY>("LATEST");
+  const sortTable = {
+    LATEST: "최신순",
+    LIKES: "좋아요순",
+    RECRUIT: "모집률순",
+  };
 
   const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
 
   const [currentCount, setCurrentCount] = useState<number>(25);
 
   //왼쪽 사이드바 선택 메뉴
-  const [currentMenu, setCurrentMenu] = useState<string>("전체");
+  type CurrentMenu = "전체" | "모집중" | "모집완료";
+  const [currentMenu, setCurrentMenu] = useState<CurrentMenu>("전체");
 
   //아래는 모두 페이지네이션 임시
   const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
   const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
-  const totalPages = 10; //totalPages: 전체 페이지 수
-  const totalElements = 100; //totalElements: 전체 항목 수
+  // const totalPages = 10; //totalPages: 전체 페이지 수
+  // const totalElements = 100; //totalElements: 전체 항목 수
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
 
@@ -66,7 +81,23 @@ export const RecruitBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      TmphandleWordCheck(); // Enter 입력이 되면 클릭 이벤트 실행
+      console.log("condition", searchCondition);
+      if (searchCondition === "작성자") {
+        delete searchBoardParams.searchKeyword;
+        if (searchWord) {
+          searchBoardParams.writerNickname = searchWord;
+        } else {
+          delete searchBoardParams.writerNickname;
+        }
+      } else {
+        delete searchBoardParams.writerNickname;
+        if (searchWord) {
+          searchBoardParams.searchKeyword = searchWord;
+        } else {
+          delete searchBoardParams.searchKeyword;
+        }
+      }
+      setSearchBoardParams(searchBoardParams);
     }
   };
 
@@ -78,12 +109,14 @@ export const RecruitBoardList = () => {
     setIsCountOpen(!isCountOpen);
   };
 
-  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMaxCount = (e: any) => {
     setCurrentCount(Number(e.target.value));
   };
 
-  const TmphandleWordCheck = function () {
-    console.log("검색 단어: " + searchWord);
+  //검색 기준 선택 시
+  const handleSearchCondition = (event: any) => {
+    setSearchCondition(event.target.value);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -102,54 +135,48 @@ export const RecruitBoardList = () => {
     }
   });
 
-  //임시
-  React.useEffect(() => {
-    const tmpdatas: BoardListProps[] = [
-      {
-        id: 1,
-        title: "알고리즘 스터디",
-        writerNicname: "무빙건",
-        writerImage: "https://picsum.photos/id/64/100",
-        createdAt: "2024-01-01",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "PYTHON-JAVA",
-        roomImage: "https://picsum.photos/id/1/300",
-        isValid: true,
-        roomCapacity: 30,
-      },
-      {
-        id: 2,
-        title: "CS 스터디",
-        writerNicname: "다른 사람",
-        writerImage: "https://picsum.photos/id/65/100",
-        createdAt: "2024-01-12",
-        likeCount: 1,
-        category: "TIP",
-        type: "free",
-        roomKeywords: "",
-        roomImage: "https://picsum.photos/id/20/300",
-        isValid: true,
-        roomCapacity: 25,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: false,
-        roomCapacity: 50,
-      },
-    ];
-    setBoardList(tmpdatas);
-  }, []);
+  const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
+    queryKey: ["boardList", JSON.stringify(searchBoardParams)],
+    queryFn: () => {
+      console.log("execute query", searchBoardParams);
+      return searchBoard(searchBoardParams);
+    },
+  });
+
+  useEffect(() => {
+    if (page) {
+      searchBoardParams.page = parseInt(page) - 1;
+      setSearchBoardParams(searchBoardParams);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    if (currentMenu === "전체") {
+      delete searchBoardParams.recruitBoardCategory;
+    } else if (currentMenu === "모집중") {
+      searchBoardParams.recruitBoardCategory = "ON";
+    } else {
+      searchBoardParams.recruitBoardCategory = "OFF";
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentMenu]);
+
+  useEffect(() => {
+    searchBoardParams.sortBy = currentSort;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentSort]);
+
+  useEffect(() => {
+    searchBoardParams.capacity = currentCount;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentCount]);
+
+  useEffect(() => {
+    if (QDboardList?.content) {
+      console.log(QDboardList);
+      setBoardList(QDboardList.content);
+    }
+  }, [QDboardList]);
 
   return (
     <TotalContainer>
@@ -187,10 +214,8 @@ export const RecruitBoardList = () => {
             <BoardListHeader>
               <SearchContainer>
                 <SearchWrapper>
-                  <SearchDropDowns>
-                    <option selected value="제목+설명">
-                      제목+본문
-                    </option>
+                  <SearchDropDowns onChange={handleSearchCondition}>
+                    <option value="제목+설명">제목+설명</option>
                     <option value="작성자">작성자</option>
                   </SearchDropDowns>
                   <SearchImgContainer>
@@ -226,7 +251,9 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <WriteButton>글쓰기</WriteButton>
+              <Link to={`/write-article?type=recruit&option=write`}>
+                <WriteButton>글쓰기</WriteButton>
+              </Link>
             </BoardListHeader>
             <SortCountBothContainer>
               <SortCountContainer>
@@ -238,7 +265,7 @@ export const RecruitBoardList = () => {
                       <SortDropDown>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("최신순");
+                            setCurrentSort("LATEST");
                             setIsSortOpen(false);
                           }}
                         >
@@ -246,7 +273,7 @@ export const RecruitBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("좋아요순");
+                            setCurrentSort("LIKES");
                             setIsSortOpen(false);
                           }}
                         >
@@ -254,7 +281,7 @@ export const RecruitBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("모집률순");
+                            setCurrentSort("RECRUIT");
                             setIsSortOpen(false);
                           }}
                         >
@@ -263,7 +290,7 @@ export const RecruitBoardList = () => {
                       </SortDropDown>
                     </ul>
                   )}
-                  <SortCountText>{currentSort}</SortCountText>
+                  <SortCountText>{sortTable[currentSort]}</SortCountText>
                 </SortCountButton>
               </SortCountContainer>
               <SortCountContainer>
@@ -278,7 +305,7 @@ export const RecruitBoardList = () => {
                           <CountInputContainer>
                             <MaxMinNum>0</MaxMinNum>
                             <input
-                              onChange={handleMaxCount}
+                              onMouseUp={handleMaxCount}
                               min="0"
                               max="50"
                               type="range"
@@ -298,7 +325,7 @@ export const RecruitBoardList = () => {
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => {
-                if (tmp.type === "recruit")
+                if (tmp.type === "RECRUIT")
                   return (
                     <ReadButton>
                       <RecruitBoardListLink key={tmp.id} {...tmp} />

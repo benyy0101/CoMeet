@@ -124,6 +124,7 @@ export interface EnterRoomResponse {
   managerNickname: string;
   title: string;
   description: string;
+  //사라질 예정: 덕주 MR 되면 삭제할게요
   link: string;
   room_image: string;
   notice: string;

@@ -1,4 +1,4 @@
-package com.a506.comeet.app.member;
+package com.a506.comeet.common.enums;
 
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;

@@ -1,10 +1,10 @@
 import {
-  BOARD_CATEGORY,
-  BOARD_IS_RECRUITING,
+  FREE_BOARD_CATEGORY,
   BOARD_SORTBY,
   BOARD_TYPE,
+  RECRUIT_BOARD_CATEGORY,
 } from "./Enums.type";
-import { Pageable } from "./Util";
+import { Keyword, Pageable } from "./Util";
 
 export interface CreateBoardParams {
   writerId: String; //필수
@@ -12,7 +12,7 @@ export interface CreateBoardParams {
   context: String; //필수
   type: BOARD_TYPE; //필수
   roomId?: number; // 모집이면 필수
-  category?: BOARD_CATEGORY; // 자유면 필수
+  category?: FREE_BOARD_CATEGORY; // 자유면 필수
   isValid?: boolean; //선택. 사실 활용할 일 없음
 }
 
@@ -25,10 +25,12 @@ export interface SearchBoardParams {
   searchKeyword?: string; //선택
   writerNickname?: string; //선택
   sortBy: BOARD_SORTBY; //필수.
-  recruitBoardCategory?: BOARD_IS_RECRUITING; // 선택. 모집에서만 사용
+  recruitBoardCategory?: RECRUIT_BOARD_CATEGORY; // 선택. 모집에서만 사용
   keywordIds?: number[]; //선택
   capacity?: number; //선택
-  freeBoardCategory?: BOARD_CATEGORY; //선택. 자유에서만 사용
+  freeBoardCategory?: FREE_BOARD_CATEGORY; //선택. 자유에서만 사용
+  page: number;
+  size: number;
 }
 
 export interface SearchBoardContent {
@@ -36,26 +38,28 @@ export interface SearchBoardContent {
   title: string;
   content: string;
   likeCount: number;
-  type: string;
-  category: BOARD_CATEGORY;
+  type: BOARD_TYPE;
+  category: FREE_BOARD_CATEGORY | null;
   isValid: true;
-  roomKeywords: number[];
+  roomKeywords: Keyword[];
   roomImage: string;
   writerNickname: string;
   writerImage: string;
   createdAt: string;
   updatedAt: string;
 }
-export interface SearchBoardResponse {
+export default interface SearchBoardResponse {
   content: SearchBoardContent[];
   pageable: Pageable;
+  totalPages: number;
+  totalElements: number;
 }
 
 export interface ModifyBoardParams {
   boardId: number;
   title: string;
   content: string;
-  category?: BOARD_CATEGORY;
+  category?: FREE_BOARD_CATEGORY;
   valid?: boolean;
 }
 
@@ -81,7 +85,7 @@ export interface EnterBoardResponse {
   content: string;
   likeCount: number;
   type: BOARD_TYPE;
-  category: BOARD_CATEGORY | null;
+  category: FREE_BOARD_CATEGORY | null;
   isValid: boolean;
   roomKeywords: string;
   roomTitle: string;
@@ -109,3 +113,8 @@ export interface UnlikeBoardParams {
 }
 
 export interface UnlikeBoardResponse {}
+
+export interface TextEditProps {
+  isFree: boolean;
+  isEdit: boolean;
+}
