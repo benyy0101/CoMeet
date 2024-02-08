@@ -22,6 +22,7 @@ const keywordSlice = createSlice({
     getKeywords: (state, action: PayloadAction<SearchKeywordResponse>) => {
       state.keywords = action.payload.lst;
       state.candidate = [""];
+      console.log(state);
     },
     // login: (state, action: PayloadAction<LoginResponse>) => {
     //   state.user = action.payload;

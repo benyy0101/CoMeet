@@ -60,16 +60,16 @@ function Login() {
       const res = userData;
       dispatch(login(res));
       dispatch(storeMemberId(memberId));
-      let keywords: SearchKeywordResponse = {
-        lst: [],
-      };
-      searchKeyword({}).then((data) => {
-        console.log(data);
-        keywords = data;
-        return data;
-      });
-      dispatch(getKeywords(keywords));
-      console.log(keywords);
+      // let keywords: SearchKeywordResponse = {
+      //   lst: [],
+      // };
+      // searchKeyword({}).then((data) => {
+      //   console.log(data);
+      //   keywords = data;
+      //   return data;
+      // });
+      // dispatch(getKeywords(keywords));
+      // console.log(keywords);
     }
   }, [userData]);
 
