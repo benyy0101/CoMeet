@@ -32,20 +32,27 @@ export interface SearchNoteResponse {
   empty: boolean;
 }
 
-export interface ModifyTilParams {
-  tilId: number;
-  context: string;
+export interface EnterNoteParams {
+  noteId: number;
 }
 
-export interface ModifyTilResponse {}
-
-export interface EnterTilParams {
-  tilId: number;
-}
-
-export interface EnterTilResponse {
+export interface EnterNoteResponse {
   id: number;
-  memberId: string;
+  writerId: string;
+  receiverId: string;
   context: string;
-  date: string;
+  isRead: boolean;
+  createdAt: string;
 }
+
+export interface DeleteNoteParams {
+  noteId: number;
+}
+
+export interface DeleteNoteResponse {}
+
+export interface JoinNoteParams {
+  roomId: number;
+}
+
+export interface JoinNoteResponse {}
