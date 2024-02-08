@@ -344,6 +344,7 @@ const SideContainer = tw.div`
 w-0
 xl:min-w-96
 h-full
+overflow-hidden
 `;
 
 const ChatContainer = tw.div`
@@ -389,7 +390,7 @@ h-full
 `;
 
 const SideVideoContainer = tw.div`
-w-78
+w-full
 h-full
 flex
 flex-col
