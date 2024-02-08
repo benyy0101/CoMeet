@@ -43,7 +43,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			.leftJoin(board.room)
 			.fetchJoin()
             .where(eqKeywordIds(req.getKeywordIds()), eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
-					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()), eqCapacity(req.getCapacity()));
+					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()), eqCapacity(req.getCapacity()))
+			;
 
         long total = query.fetchCount(); // 전체 게시물 수
 
@@ -131,6 +132,15 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 				.having(roomKeyword.keyword.id.count().eq((long) keywordIds.size()));
 
 		return board.room.id.in(subQuery);
+	}
+
+	private BooleanExpression eqSortBy(RecruitBoardCategory recruitBoardCategory) {
+		if(recruitBoardCategory == null)
+			return null;
+		if(recruitBoardCategory.equals(RecruitBoardCategory.ON))
+			return board.isValid.eq(true);
+		else
+			return board.isValid.eq(false);
 	}
 
 	private List<KeywordResponseDto> getKeywords(Room room){

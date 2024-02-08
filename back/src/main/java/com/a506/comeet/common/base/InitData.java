@@ -169,6 +169,13 @@ public class InitData {
             }
         }
 
+        addLike(16L, "user8");
+        addLike(16L, "user9");
+        addLike(16L, "user10");
+        addLike(36L, "user8");
+        addLike(36L, "user9");
+        addLike(36L, "user10");
+
         //팔로우 생성
         follow("user1", "user2");
         follow("user1", "user3");
