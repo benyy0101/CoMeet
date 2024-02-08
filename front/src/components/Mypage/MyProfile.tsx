@@ -328,7 +328,6 @@ flex
 transition-colors
 hover:text-blue-500
 hover:border-blue-500
-cursor-pointer
 `;
 
 //팔로우
@@ -336,7 +335,6 @@ const StyleFllower = tw.div`
 transition-colors
 hover:text-blue-500
 hover:border-blue-500
-cursor-pointer
 flex`;
 
 //팔로잉, 팔로우 글씨

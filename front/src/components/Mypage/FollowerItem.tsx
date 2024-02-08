@@ -1,37 +1,37 @@
+import { FollowContent } from "models/Follow.interface";
 import React from "react";
 import tw from "tailwind-styled-components";
 
-interface FollowItemProps {
-  name: string;
-  profile: string;
+interface FollowerItemProps {
+  item: FollowContent;
 }
 
-function FollowerItem(props: FollowItemProps) {
-  const { name, profile } = props;
+const FollowerItem: React.FC<FollowerItemProps> = ({ item }) => {
   return (
     <Wrapper>
       <LeftContainer>
-        <ProfileImage src={profile} />
-        <ProfileName>{name}</ProfileName>
+        <ProfileImage src={item.profileImage} />
+        <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
       <RightContainer>
         <FollowButton>팔로우</FollowButton>
       </RightContainer>
     </Wrapper>
   );
-}
+};
 
 const Wrapper = tw.div`
     flex
     items-center
     justify-between
     w-96
-    h-20
-    bg-slate-500
+    h-12
+    bg-black
     bg-opacity-20
     p-5
     text-black
     rounded-md
+    shadow-md
 `;
 
 const LeftContainer = tw.div`
@@ -56,9 +56,8 @@ const RightContainer = tw.div`
     ml-auto
 `;
 
-const FollowButton = tw.button`
-    bg-slate-500
-    text-white
+const FollowButton = tw.button`s
+    text-purple-500
     w-20
     h-10
     rounded-md
