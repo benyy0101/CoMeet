@@ -2,6 +2,7 @@ package com.a506.comeet.app.member.controller.dto;
 
 import com.a506.comeet.common.enums.MemberFeature;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class MemberUpdateRequestDto {
     @Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,16}", message = "비밀번호는 8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.")
     private String password;
     private String nickname;
+    @Null
     private String profileImage;
     @Email
     private String email;

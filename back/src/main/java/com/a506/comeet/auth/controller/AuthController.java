@@ -1,10 +1,9 @@
 package com.a506.comeet.auth.controller;
 
-import com.a506.comeet.common.util.MemberUtil;
-import com.a506.comeet.auth.JwtTokenProvider;
 import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
 import com.a506.comeet.auth.service.AuthService;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import jakarta.servlet.http.Cookie;
@@ -29,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${spring.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenValidityInSeconds;
