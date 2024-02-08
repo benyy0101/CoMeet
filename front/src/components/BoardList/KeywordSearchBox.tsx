@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useRef } from "react";
+import React, { useState, ChangeEvent, useRef, useEffect, Component } from "react";
 import useOutsideClick from "hooks/useOutsideClick";
 
 import XIcon from "assets/img/x-icon.svg";
@@ -6,25 +6,16 @@ import XIcon from "assets/img/x-icon.svg";
 import tw from "tailwind-styled-components";
 import { Keyword } from "models/Util";
 import { searchKeyword } from "api/Keyword";
+import { useSelector } from "react-redux";
+import { KeywordState } from "models/Keyword.interface";
+
+interface Props {
+  sendKeyword: (data: Keyword[]) => void;
+}
 
 // 키워드 타입도 예시
-
-export const KeywordSearchBox = () => {
-  //키워드 배열 예시
-  const getKeywords = async () => {
-    return await searchKeyword({});
-  };
-  const keywordArr: Keyword[] = [];
-
-  // const keywordArr: Keyword[] = [
-  //   { id: 1, keywordName: "REACT" },
-  //   { id: 2, keywordName: "PYTHON" },
-  //   { id: 3, keywordName: "C++" },
-  //   { id: 4, keywordName: "C" },
-  //   { id: 5, keywordName: "JAVA" },
-  //   { id: 6, keywordName: "HTML" },
-  //   { id: 7, keywordName: "CSS" },
-  // ];
+export const KeywordSearchBox = ({ sendKeyword }: Props) => {
+  const keywordArr = useSelector((state: any) => state.keyword.keywords);
 
   //검색 단어
   const [search, setSearch] = useState<string>("");
@@ -33,8 +24,7 @@ export const KeywordSearchBox = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   //검색으로 필터된 키워드 배열
-  const [filteredKeywords, setFilteredKeywords] =
-    useState<Keyword[]>(keywordArr);
+  const [filteredKeywords, setFilteredKeywords] = useState<Keyword[]>(keywordArr);
 
   //선택된 배열
   const [selectKeywords, setSelectKeywords] = useState<Keyword[]>([]);
@@ -48,7 +38,7 @@ export const KeywordSearchBox = () => {
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
     //검색어에 해당하는 배열만 드롭박스로 보이게 (대소문자 상관 X)
-    const filtered = keywordArr.filter((keyword) =>
+    const filtered = keywordArr.filter((keyword: any) =>
       keyword.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
@@ -59,7 +49,7 @@ export const KeywordSearchBox = () => {
   //키워드 추가했을 때
   const handleClickKeyword = (id: number) => {
     //addKeyword: 추가할 단어
-    const addKeyword = keywordArr.find((keyword) => keyword.id == id);
+    const addKeyword = keywordArr.find((keyword: any) => keyword.id == id);
     //isIn: 이미 선택된 배열에 있는지 확인
     const isIn = selectKeywords.find((keyword) => keyword.id == id);
 
@@ -85,6 +75,13 @@ export const KeywordSearchBox = () => {
       setIsOpen(false);
     }
   });
+
+  //상위로 키워드 전달
+  useEffect(() => {
+    if (selectKeywords) {
+      sendKeyword(selectKeywords);
+    }
+  }, [selectKeywords]);
 
   return (
     <TotalContainer>
@@ -118,10 +115,7 @@ export const KeywordSearchBox = () => {
             {filteredKeywords.length > 0 ? (
               filteredKeywords.map((keyword) => (
                 <li key={keyword.id}>
-                  <KeywordClickButton
-                    className=""
-                    onClick={() => handleClickKeyword(keyword.id)}
-                  >
+                  <KeywordClickButton className="" onClick={() => handleClickKeyword(keyword.id)}>
                     {keyword.name}
                   </KeywordClickButton>
                 </li>

@@ -1,8 +1,9 @@
 // userSlice.ts
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
-import { KeywordState, SearchKeywordResponse } from "models/Keyword.interface";
+import { KeywordState } from "models/Keyword.interface";
 import { LoginResponse, UserState } from "models/Login.interface";
+import { Keyword } from "models/Util";
 
 // Function to retrieve user state from sessionStorage
 const loadKeywordState = (): KeywordState => {
@@ -19,10 +20,9 @@ const keywordSlice = createSlice({
   name: "keyword",
   initialState: loadKeywordState(),
   reducers: {
-    getKeywords: (state, action: PayloadAction<SearchKeywordResponse>) => {
-      state.keywords = action.payload.lst;
+    getKeywords: (state, action: PayloadAction<Keyword[]>) => {
+      state.keywords = action.payload;
       state.candidate = [""];
-      console.log(state);
     },
     // login: (state, action: PayloadAction<LoginResponse>) => {
     //   state.user = action.payload;

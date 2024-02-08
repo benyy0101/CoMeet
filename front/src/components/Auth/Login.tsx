@@ -10,7 +10,7 @@ import { LoginResponse } from "models/Login.interface";
 import { login, storeMemberId } from "store/reducers/userSlice";
 import { getKeywords } from "store/reducers/keywordSlice";
 import { searchKeyword } from "api/Keyword";
-import { SearchKeywordResponse } from "models/Keyword.interface";
+// import { SearchKeywordResponse } from "models/Keyword.interface";
 function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
@@ -28,20 +28,17 @@ function Login() {
     enabled: false,
   });
 
-  const { data: keywordData, refetch: keywordFetch } = useQuery<
-    SearchKeywordResponse,
-    Error
-  >({
-    queryKey: ["keyword"],
-    queryFn: () => searchKeyword({}),
-    enabled: false,
-  });
+  // const { data: keywordData, refetch: keywordFetch } = useQuery<SearchKeywordResponse, Error>({
+  //   queryKey: ["keyword"],
+  //   queryFn: () => searchKeyword({}),
+  //   enabled: false,
+  // });
 
-  useEffect(() => {
-    if (keywordData) {
-      dispatch(getKeywords(keywordData));
-    }
-  }, [keywordData]);
+  // useEffect(() => {
+  //   if (keywordData) {
+  //     dispatch(getKeywords(keywordData));
+  //   }
+  // }, [keywordData]);
 
   useEffect(() => {
     if (isError) {
@@ -63,12 +60,12 @@ function Login() {
       // let keywords: SearchKeywordResponse = {
       //   lst: [],
       // };
-      // searchKeyword({}).then((data) => {
-      //   console.log(data);
-      //   keywords = data;
-      //   return data;
-      // });
-      // dispatch(getKeywords(keywords));
+      searchKeyword({}).then((data) => {
+        console.log(data);
+        // keywords = data;
+        dispatch(getKeywords(data));
+        return data;
+      });
       // console.log(keywords);
     }
   }, [userData]);
@@ -78,7 +75,7 @@ function Login() {
     setError(false);
 
     loginRefetch();
-    keywordFetch();
+    // keywordFetch();
   };
 
   return (
