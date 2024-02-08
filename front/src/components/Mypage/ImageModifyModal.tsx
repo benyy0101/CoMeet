@@ -25,6 +25,8 @@ function ImageModifyModal(props: ModalProps) {
   const [isModifyProfileImg, setIsModifyProfileImg] =
     React.useState<boolean>(false);
 
+  const [isClick, setIsClick] = useState<boolean>(false);
+
   React.useEffect(() => {
     setIsModifyProfileImg(true);
   }, [option]);
@@ -60,36 +62,47 @@ function ImageModifyModal(props: ModalProps) {
 
   //업로드
   const handleUpload = async function () {
-    if (selectedFile) {
-      // console.log(selectedFile);
+    //클릭 했다면
+    if (isClick !== true) {
+      setIsClick(true);
 
-      //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
-      if (profileImage != "default_profile_image_letsgo") {
-        console.log(profileImage);
-        await profileImageDelete(profileImage);
-        console.log("안녕");
+      if (selectedFile) {
+        const prevImageUrl = profileImage;
+
+        try {
+          //s3에 업로드
+          const formData = new FormData();
+          formData.append("profileImageFile", selectedFile);
+          const res = await uploadImage(formData);
+
+          try {
+            //프로필 수정
+            const updateData = { profileImage: res };
+            await profileModifyImage(updateData);
+
+            //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
+            if (prevImageUrl != "default_profile_image_letsgo") {
+              await profileImageDelete(prevImageUrl);
+            }
+
+            //이미지 업로드 모달창 닫고
+            toggleModal();
+
+            //마이페이지 useEffect
+            handleChange();
+          } catch {
+            //만약 update 할 때 오류가 나면 이미 s3에 올렸던 이미지를 삭제함
+            await profileImageDelete(res);
+            alert("이미지 수정에 실패했습니다.");
+          }
+        } catch {
+          alert("이미지 업로드에 실패했습니다.");
+        }
+      } else {
+        alert("업로드 할 이미지를 선택해주세요.");
       }
 
-      try {
-        //s3에 업로드
-        const formData = new FormData();
-        formData.append("profileImageFile", selectedFile);
-        const res = await uploadImage(formData);
-
-        //프로필 수정
-        const updateData = { profileImage: res };
-        await profileModifyImage(updateData);
-
-        //이미지 업로드 모달창 닫고
-        toggleModal();
-
-        //마이페이지 useEffect
-        handleChange();
-      } catch {
-        alert("이미지 업로드에 실패했습니다.");
-      }
-    } else {
-      alert("업로드 할 이미지를 선택해주세요.");
+      setIsClick(false);
     }
   };
 
@@ -109,15 +122,18 @@ function ImageModifyModal(props: ModalProps) {
               <img
                 src={imagePreview}
                 alt="프로필 이미지"
-                className="rounded-full size-1/2 border border-black bg-white"
+                className="rounded-full size-1/2 bg-white"
               />
             )}
 
             <div className="w-full flex justify-around py-3">
-              <button className="bg-black" onClick={modalToggleHandler}>
+              <button
+                className="bg-black rounded-md"
+                onClick={modalToggleHandler}
+              >
                 취소
               </button>
-              <button className="bg-black" onClick={handleUpload}>
+              <button className="bg-black rounded-md" onClick={handleUpload}>
                 확인
               </button>
             </div>
