@@ -2,19 +2,16 @@ import { modifyRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { EnterRoomResponse } from "models/Room.interface";
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
 
 export default function RoomModify() {
   const location = useLocation();
-  const roomData: EnterRoomResponse | null = location.state.data;
-
-  useEffect(() => {
-    console.log(roomData);
-  }, []);
-
   const navigate = useNavigate();
+  const { roomId } = useParams();
+
+  const roomData: EnterRoomResponse | null = location.state.data;
 
   const [title, setTitle] = React.useState<string>(roomData?.title || "");
   const [description, setDescription] = React.useState<string>(roomData?.description || "");
@@ -24,15 +21,16 @@ export default function RoomModify() {
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data: any = {
+      roomId,
       title,
       description,
       capacity: maxPeople,
       constraints: option,
     };
 
-    const res = await modifyRoom(data);
+    await modifyRoom(data);
 
-    navigate(`/room/${res}`, { replace: true });
+    navigate(`/room/${roomId}`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
