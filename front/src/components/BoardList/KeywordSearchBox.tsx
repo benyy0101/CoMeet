@@ -4,24 +4,27 @@ import useOutsideClick from "hooks/useOutsideClick";
 import XIcon from "assets/img/x-icon.svg";
 
 import tw from "tailwind-styled-components";
+import { Keyword } from "models/Util";
+import { searchKeyword } from "api/Keyword";
 
 // 키워드 타입도 예시
-interface Keyword {
-  id: number;
-  keywordName: string;
-}
 
 export const KeywordSearchBox = () => {
   //키워드 배열 예시
-  const keywordArr: Keyword[] = [
-    { id: 1, keywordName: "REACT" },
-    { id: 2, keywordName: "PYTHON" },
-    { id: 3, keywordName: "C++" },
-    { id: 4, keywordName: "C" },
-    { id: 5, keywordName: "JAVA" },
-    { id: 6, keywordName: "HTML" },
-    { id: 7, keywordName: "CSS" },
-  ];
+  const getKeywords = async () => {
+    return await searchKeyword({});
+  };
+  const keywordArr: Keyword[] = [];
+
+  // const keywordArr: Keyword[] = [
+  //   { id: 1, keywordName: "REACT" },
+  //   { id: 2, keywordName: "PYTHON" },
+  //   { id: 3, keywordName: "C++" },
+  //   { id: 4, keywordName: "C" },
+  //   { id: 5, keywordName: "JAVA" },
+  //   { id: 6, keywordName: "HTML" },
+  //   { id: 7, keywordName: "CSS" },
+  // ];
 
   //검색 단어
   const [search, setSearch] = useState<string>("");
@@ -46,7 +49,7 @@ export const KeywordSearchBox = () => {
     setSearch(e.target.value);
     //검색어에 해당하는 배열만 드롭박스로 보이게 (대소문자 상관 X)
     const filtered = keywordArr.filter((keyword) =>
-      keyword.keywordName.toLowerCase().includes(e.target.value.toLowerCase())
+      keyword.name.toLowerCase().includes(e.target.value.toLowerCase())
     );
 
     //
@@ -90,7 +93,7 @@ export const KeywordSearchBox = () => {
       <KeywordUpBox>
         {selectKeywords.map((item) => (
           <KeywordButton onClick={() => handleDeleteKeyword(item.id)}>
-            {item.keywordName}
+            {item.name}
             <XIconImg src={XIcon} alt="" />
           </KeywordButton>
         ))}
@@ -119,7 +122,7 @@ export const KeywordSearchBox = () => {
                     className=""
                     onClick={() => handleClickKeyword(keyword.id)}
                   >
-                    {keyword.keywordName}
+                    {keyword.name}
                   </KeywordClickButton>
                 </li>
               ))

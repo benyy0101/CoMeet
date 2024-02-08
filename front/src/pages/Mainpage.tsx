@@ -1,6 +1,6 @@
 import React from "react";
 import MainpageEx from "../assets/img/mainpage-ex.svg";
-import { datas, func } from "utils/test/Board/SearchBoard";
+import { datas, func } from "utils/test/Keyword/SearchKeyword";
 
 export const Mainpage = () => {
   // 순수 api 테스트용 코드
