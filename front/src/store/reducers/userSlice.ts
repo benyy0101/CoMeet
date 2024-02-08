@@ -12,6 +12,7 @@ const loadUserState = (): UserState => {
 
 const initialState: UserState = {
   user: {
+    memberId: "",
     nickname: "",
     profileImage: "",
     unreadNoteCount: 0,
@@ -32,6 +33,9 @@ const userSlice = createSlice({
       state.user = initialState.user;
       state.isLoggedIn = false;
     },
+    storeMemberId: (state, action: PayloadAction<string>) => {
+      state.user.memberId = action.payload;
+    },
   },
 });
 
@@ -46,5 +50,5 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, storeMemberId } = userSlice.actions;
 export default userSlice.reducer;
