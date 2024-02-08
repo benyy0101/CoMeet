@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import SortingIcon from "../assets/img/sorting.svg";
 import SortingDownIcon from "../assets/img/sort-down.svg";
@@ -18,6 +18,7 @@ import SearchBoardResponse, {
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY } from "models/Enums.type";
+import WriteArticle from "./WriteArticle";
 
 export const RecruitBoardList = () => {
   //목록 리스트
@@ -231,7 +232,9 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <WriteButton>글쓰기</WriteButton>
+              <Link to={`/write-article?type=recruit&option=write`}>
+                <WriteButton>글쓰기</WriteButton>
+              </Link>
             </BoardListHeader>
             <SortCountBothContainer>
               <SortCountContainer>

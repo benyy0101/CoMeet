@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import SortingIcon from "assets/img/sorting.svg";
 import SortingDownIcon from "assets/img/sort-down.svg";
@@ -273,7 +273,9 @@ export const FreeBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <WriteButton>글쓰기</WriteButton>
+              <Link to={`/write-article`}>
+                <WriteButton>글쓰기</WriteButton>
+              </Link>
             </BoardListHeader>
             <SortCountBothContainer>
               <SortCountContainer>
