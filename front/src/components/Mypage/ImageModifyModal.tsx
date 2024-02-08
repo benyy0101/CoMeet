@@ -3,6 +3,8 @@ import tw from "tailwind-styled-components";
 
 import { uploadImage, profileModifyImage, profileImageDelete } from "api/image";
 
+import ArrowTop from "assets/img/top-arrow.png";
+
 import { Navigate } from "react-router-dom";
 
 import axios from "axios";
@@ -24,6 +26,8 @@ function ImageModifyModal(props: ModalProps) {
 
   const [isModifyProfileImg, setIsModifyProfileImg] =
     React.useState<boolean>(false);
+
+  const [isClick, setIsClick] = useState<boolean>(false);
 
   React.useEffect(() => {
     setIsModifyProfileImg(true);
@@ -60,36 +64,46 @@ function ImageModifyModal(props: ModalProps) {
 
   //업로드
   const handleUpload = async function () {
-    if (selectedFile) {
-      // console.log(selectedFile);
+    //클릭 했다면
+    if (isClick !== true) {
+      setIsClick(true);
 
-      //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
-      if (profileImage != "default_profile_image_letsgo") {
-        console.log(profileImage);
-        await profileImageDelete(profileImage);
-        console.log("안녕");
+      if (selectedFile) {
+        const prevImageUrl = profileImage;
+
+        try {
+          //s3에 업로드
+          const formData = new FormData();
+          formData.append("profileImageFile", selectedFile);
+          const res = await uploadImage(formData);
+
+          try {
+            //프로필 수정
+            const updateData = { profileImage: res };
+            await profileModifyImage(updateData);
+
+            //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
+            if (prevImageUrl != "default_profile_image_letsgo") {
+              await profileImageDelete(prevImageUrl);
+            }
+
+            //이미지 업로드 모달창 닫고
+            toggleModal();
+          } catch {
+            //만약 update 할 때 오류가 나면 이미 s3에 올렸던 이미지를 삭제함
+            await profileImageDelete(res);
+            alert("이미지 수정에 실패했습니다.");
+          }
+        } catch {
+          alert("이미지 업로드에 실패했습니다.");
+        }
+      } else {
+        alert("업로드 할 이미지를 선택해주세요.");
       }
 
-      try {
-        //s3에 업로드
-        const formData = new FormData();
-        formData.append("profileImageFile", selectedFile);
-        const res = await uploadImage(formData);
-
-        //프로필 수정
-        const updateData = { profileImage: res };
-        await profileModifyImage(updateData);
-
-        //이미지 업로드 모달창 닫고
-        toggleModal();
-
-        //마이페이지 useEffect
-        handleChange();
-      } catch {
-        alert("이미지 업로드에 실패했습니다.");
-      }
-    } else {
-      alert("업로드 할 이미지를 선택해주세요.");
+      //마이페이지 useEffect
+      handleChange();
+      setIsClick(false);
     }
   };
 
@@ -102,24 +116,25 @@ function ImageModifyModal(props: ModalProps) {
               type="file"
               accept="image/*"
               onChange={submitImage}
-              className="py-3 w-3/4"
+              className="text-black p-1 w-3/4"
             />
             {/* 이미지 미리보기 */}
-            {imagePreview === "" ? null : (
+            {imagePreview === "" ? (
+              <div className="flex flex-col items-center">
+                <img src={ArrowTop} alt="" className="w-15 h-20 mb-3" />
+                <p className="text-gray-500 border-b">파일을 선택해주세요</p>
+              </div>
+            ) : (
               <img
                 src={imagePreview}
                 alt="프로필 이미지"
-                className="rounded-full size-1/2 border border-black bg-white"
+                className="rounded-full size-1/2 bg-white border"
               />
             )}
 
             <div className="w-full flex justify-around py-3">
-              <button className="bg-black" onClick={modalToggleHandler}>
-                취소
-              </button>
-              <button className="bg-black" onClick={handleUpload}>
-                확인
-              </button>
+              <ButtonNO onClick={modalToggleHandler}>취소</ButtonNO>
+              <ButtonOK onClick={handleUpload}>확인</ButtonOK>
             </div>
           </div>
         ) : null}
@@ -137,6 +152,29 @@ const ModalContainer = tw.div`
   shadow-md
   w-[350px]
   h-[350px]
-  bg-gray-500
+  bg-white
 `;
+
+const ButtonOK = tw.button`
+py-3
+px-6
+rounded-md
+bg-gradient-to-r
+from-purple-500
+to-pink-500
+hover:bg-gradient-to-l
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
+`;
+
+const ButtonNO = tw.button`
+bg-gray-300
+py-3
+px-6
+rounded-md
+
+`;
+
 export default ImageModifyModal;

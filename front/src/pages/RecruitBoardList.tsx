@@ -39,6 +39,10 @@ export const RecruitBoardList = () => {
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+  //검색 기준
+  type Condition = "제목+설명" | "작성자";
+  const [searchCondition, setSearchCondition] =
+    React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -77,7 +81,23 @@ export const RecruitBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      TmphandleWordCheck(); // Enter 입력이 되면 클릭 이벤트 실행
+      console.log("condition", searchCondition);
+      if (searchCondition === "작성자") {
+        delete searchBoardParams.searchKeyword;
+        if (searchWord) {
+          searchBoardParams.writerNickname = searchWord;
+        } else {
+          delete searchBoardParams.writerNickname;
+        }
+      } else {
+        delete searchBoardParams.writerNickname;
+        if (searchWord) {
+          searchBoardParams.searchKeyword = searchWord;
+        } else {
+          delete searchBoardParams.searchKeyword;
+        }
+      }
+      setSearchBoardParams(searchBoardParams);
     }
   };
 
@@ -94,8 +114,9 @@ export const RecruitBoardList = () => {
     setCurrentCount(Number(e.target.value));
   };
 
-  const TmphandleWordCheck = function () {
-    console.log("검색 단어: " + searchWord);
+  //검색 기준 선택 시
+  const handleSearchCondition = (event: any) => {
+    setSearchCondition(event.target.value);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -131,11 +152,11 @@ export const RecruitBoardList = () => {
 
   useEffect(() => {
     if (currentMenu === "전체") {
-      delete searchBoardParams.isValid;
+      delete searchBoardParams.recruitBoardCategory;
     } else if (currentMenu === "모집중") {
-      searchBoardParams.isValid = true;
+      searchBoardParams.recruitBoardCategory = "ON";
     } else {
-      searchBoardParams.isValid = false;
+      searchBoardParams.recruitBoardCategory = "OFF";
     }
     setSearchBoardParams(searchBoardParams);
   }, [currentMenu]);
@@ -193,10 +214,8 @@ export const RecruitBoardList = () => {
             <BoardListHeader>
               <SearchContainer>
                 <SearchWrapper>
-                  <SearchDropDowns>
-                    <option selected value="제목+설명">
-                      제목+본문
-                    </option>
+                  <SearchDropDowns onChange={handleSearchCondition}>
+                    <option value="제목+설명">제목+설명</option>
                     <option value="작성자">작성자</option>
                   </SearchDropDowns>
                   <SearchImgContainer>
