@@ -271,7 +271,7 @@ export const Room = () => {
     setSession(undefined);
     setSubscribers([]);
     setMySessionId("");
-    setMainStreamManager(undefined);
+    setMainStreamManager(null);
     setPublisher(undefined);
   }, [session]);
 
@@ -734,7 +734,7 @@ export const Room = () => {
               </FilterMenu>
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+          <ControlPanelButton onClick={switchCamera}>
             <CameraIcon className="w-8 h-8" />
           </ControlPanelButton>
         </ControlPanel>
