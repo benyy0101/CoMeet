@@ -66,7 +66,7 @@ export const Room = () => {
   const [mySessionId, setMySessionId] = useState<string>("");
   const [mySessionName, setMySessionName] = useState<string>("");
   const [session, setSession] = useState<any>(undefined);
-  const [mainStreamManager, setMainStreamManager] = useState<any>(undefined);
+  const [mainStreamManager, setMainStreamManager] = useState<any | null>(null);
   const [publisher, setPublisher] = useState<any>(undefined);
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [currentVideoDevice, setCurrentVideoDevice] = useState<any>(null);
@@ -250,7 +250,6 @@ export const Room = () => {
             (device) => device.deviceId === currentVideoDeviceId
           );
 
-          setMainStreamManager(publisher);
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
@@ -302,7 +301,6 @@ export const Room = () => {
             await session.unpublish(mainStreamManager);
             await session.publish(newPublisher);
             setCurrentVideoDevice(newVideoDevice[0]);
-            setMainStreamManager(newPublisher);
             setPublisher(newPublisher);
           }
         }
@@ -419,7 +417,6 @@ export const Room = () => {
     if (session) {
       await session.unpublish(mainStreamManager);
       await session.publish(publisherScreen);
-      setMainStreamManager(publisherScreen);
       setPublisher(publisherScreen);
     }
   };
@@ -439,7 +436,6 @@ export const Room = () => {
     if (session) {
       await session.unpublish(mainStreamManager);
       await session.publish(publisher);
-      setMainStreamManager(publisher);
       setPublisher(publisher);
     }
   };
@@ -684,6 +680,7 @@ export const Room = () => {
               subscribers={subscribers}
               speakerIds={speakerIds}
               leaveSession={leaveSession}
+              mainStreamManager={mainStreamManager}
               handleMainVideoStream={handleMainVideoStream}
             />
           )}

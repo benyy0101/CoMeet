@@ -2,7 +2,12 @@ import tw from "tailwind-styled-components";
 import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
 import UserVideoComponent from "./UserVideoComponent";
-import { UserGroupIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  UserGroupIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 
 interface IProps {
@@ -14,6 +19,7 @@ interface IProps {
   subscribers: any[];
   speakerIds: string[];
   leaveSession: () => void;
+  mainStreamManager: any;
   handleMainVideoStream: (sub: any) => void;
 }
 
@@ -26,10 +32,12 @@ export default function Channel({
   subscribers,
   speakerIds,
   leaveSession,
+  mainStreamManager,
   handleMainVideoStream,
 }: IProps) {
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
+  const [page, setPage] = useState<number>(0);
 
   const editorRef = useRef<any>(null);
   return (
@@ -95,22 +103,34 @@ export default function Channel({
         </div>
       ) : null} */}
         <GridContainer>
-          {publisher !== undefined && (
+          <ViedoGrid>
+            {/* {publisher !== undefined && (
             <StreamContainer key={publisher.id} onClick={() => handleMainVideoStream(publisher)}>
-              <UserVideoComponent
-                streamManager={publisher}
-                speaking={speakerIds.includes(publisher.stream.connection.connectionId)}
-              />
+            <UserVideoComponent
+            streamManager={publisher}
+            speaking={speakerIds.includes(publisher.stream.connection.connectionId)}
+            />
             </StreamContainer>
+          )} */}
+            {[publisher, ...subscribers].slice(page * 6, (page + 1) * 6).map((sub, i) => (
+              <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
+                <UserVideoComponent
+                  streamManager={sub}
+                  speaking={speakerIds.includes(sub.stream.connection.connectionId)}
+                />
+              </StreamContainer>
+            ))}
+          </ViedoGrid>
+          {page > 0 && (
+            <PaginationButton className="left-1" onClick={() => setPage((prev) => prev - 1)}>
+              <ChevronLeftIcon className="text-white w-8 h-8" />
+            </PaginationButton>
           )}
-          {subscribers.map((sub, i) => (
-            <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
-              <UserVideoComponent
-                streamManager={sub}
-                speaking={speakerIds.includes(sub.stream.connection.connectionId)}
-              />
-            </StreamContainer>
-          ))}
+          {subscribers.length + 1 > (page + 1) * 6 && (
+            <PaginationButton className="right-1" onClick={() => setPage((prev) => prev + 1)}>
+              <ChevronRightIcon className="text-white w-8 h-8" />
+            </PaginationButton>
+          )}
         </GridContainer>
       </VideoContainer>
     </ChannelContent>
@@ -175,6 +195,20 @@ flex-row-reverse
 `;
 
 const GridContainer = tw.div`
+flex
+items-center
+pb-4
+px-4
+relative
+`;
+
+const PaginationButton = tw.div`
+absolute
+top-1/2
+-translate-y-full
+`;
+
+const ViedoGrid = tw.div`
 text-white
 grid
 grid-cols-3
