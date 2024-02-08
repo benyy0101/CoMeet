@@ -32,7 +32,8 @@ public class NoteController {
 
     @GetMapping("/{noteId}")
     public ResponseEntity<NoteResponseDto> findAndRead(@PathVariable Long noteId){
-        return ResponseEntity.ok(noteService.findAndRead(noteId));
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(noteService.findAndRead(noteId, memberId));
     }
 
     @GetMapping("")
