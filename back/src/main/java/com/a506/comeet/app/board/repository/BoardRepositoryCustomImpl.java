@@ -6,16 +6,17 @@ import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
 import com.a506.comeet.app.room.entity.Room;
+import com.a506.comeet.common.enums.BoardSortBy;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import com.a506.comeet.common.enums.RecruitBoardCategory;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.a506.comeet.app.board.entity.QBoard.*;
+import static com.a506.comeet.app.board.entity.QBoard.board;
 import static com.a506.comeet.app.keyword.entity.QRoomKeyword.roomKeyword;
 
 @RequiredArgsConstructor
@@ -44,22 +45,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 			.fetchJoin()
             .where(eqKeywordIds(req.getKeywordIds()), eqBoardType(req.getBoardType()), eqSearchKeyword(req.getSearchKeyword()), eqWriterNickName(req.getWriterNickname()),
 					eqRecruitBoardCategory(req.getRecruitBoardCategory()), eqFreeBoardCategory(req.getFreeBoardCategory()), eqCapacity(req.getCapacity()))
-			;
+			.orderBy(eqSortBy(req.getSortBy()));
 
         long total = query.fetchCount(); // 전체 게시물 수
-
-		switch (req.getSortBy()) {
-			case LIKES:
-				query.orderBy(board.likeCount.desc());
-				break;
-			case RECRUIT:
-				query.orderBy(
-						Expressions.numberTemplate(Double.class, "{{0}/{1})", board.room.mcount, board.room.capacity).desc()
-				);
-				break;
-			default:
-				query.orderBy(board.createdAt.desc()); // 기본 정렬 (최신순)
-		}
 
 		// 페이징된 게시물 조회
 		List<Board> boards = query
@@ -134,13 +122,20 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 		return board.room.id.in(subQuery);
 	}
 
-	private BooleanExpression eqSortBy(RecruitBoardCategory recruitBoardCategory) {
-		if(recruitBoardCategory == null)
-			return null;
-		if(recruitBoardCategory.equals(RecruitBoardCategory.ON))
-			return board.isValid.eq(true);
-		else
-			return board.isValid.eq(false);
+	NumberExpression<Double> recruitRate = Expressions.numberTemplate(Double.class,
+			"CAST({0} AS double) / {1}",
+			board.room.mcount,
+			board.room.capacity);
+
+	private OrderSpecifier<?> eqSortBy(BoardSortBy sortBy) {
+		switch (sortBy) {
+			case LIKES:
+				return board.likeCount.desc();
+			case RECRUIT:
+				return recruitRate.asc();
+			default:
+				return board.createdAt.desc(); // 기본 정렬 (최신순)
+		}
 	}
 
 	private List<KeywordResponseDto> getKeywords(Room room){
