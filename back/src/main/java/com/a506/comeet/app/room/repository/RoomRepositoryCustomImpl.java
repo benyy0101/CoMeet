@@ -35,7 +35,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<RoomSearchResponseDto> searchRoomCustom(RoomSearchRequestDto req, Pageable pageable) {
+    public Slice<RoomSearchResponseDto> searchDisposableRoom(RoomSearchRequestDto req, Pageable pageable) {
 
         List<Room> content = jpaQueryFactory.selectFrom(room)
                 .innerJoin(room.manager, member) // member는 1개만 사용됨
@@ -63,7 +63,7 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     }
 
     @Override
-    public RoomResponseDto enterRoomCustom(Long roomId) {
+    public RoomResponseDto getDetailRoomInfo(Long roomId) {
         RoomResponseDto res = jpaQueryFactory.select(
                         Projections.constructor(
                                 RoomResponseDto.class,

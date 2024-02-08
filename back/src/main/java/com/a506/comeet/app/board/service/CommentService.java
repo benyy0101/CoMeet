@@ -28,7 +28,6 @@ public class CommentService {
 
     @Transactional
     public Comment create(CommentCreateRequestDto req, String memberId){
-
         Board board = boardRepository.findById(req.getBoardId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
@@ -42,11 +41,10 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment update(CommentUpdateRequestDto req, Long commentId, String memberId) {
+    public void update(CommentUpdateRequestDto req, Long commentId, String memberId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_COMMENT));
         authorityValidation(comment, memberId);
         comment.update(req);
-        return comment;
     }
 
     @Transactional

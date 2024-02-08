@@ -1,4 +1,4 @@
-import MarkdownRenderer from "components/Common/MarkdownRenderer";
+import MarkdownRenderer from "components/MarkdownRenderer";
 import tw from "tailwind-styled-components";
 
 interface IProps {

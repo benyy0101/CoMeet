@@ -1,6 +1,6 @@
 package com.a506.comeet.auth.controller;
 
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.auth.JwtTokenProvider;
 import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
@@ -36,7 +36,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginReqeustDto req){
-        log.info("request memberId = {}, password = {}", req.getMemberId(), req.getPassword());
+        log.info("request memberId = {}", req.getMemberId());
         LoginResponseDto res = authService.login(req.getMemberId(), req.getPassword());
         log.info("jwtToken accessToken = {}, refreshToken = {}", res.getJwtToken().getAccessToken(), res.getJwtToken().getRefreshToken());
 
@@ -52,12 +52,6 @@ public class AuthController {
         headers.add("Set-Cookie", cookie.toString());
 
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
-    }
-
-    @PostMapping("/test")
-    public String test(){
-        log.info("test 완료");
-        return MemberUtil.getMemberId();
     }
 
     @GetMapping("/reissue")

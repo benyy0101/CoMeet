@@ -1,6 +1,6 @@
 package com.a506.comeet.app.member.controller;
 
-import com.a506.comeet.app.member.MemberUtil;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;

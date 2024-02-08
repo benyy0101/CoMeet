@@ -11,16 +11,6 @@ export type RoomItemProps = {
   constraint: string;
 };
 
-export type UserState = {
-  user: {
-    memberId: string;
-    password: string;
-    profileImage: string;
-    nickname: string;
-  };
-  isLoggedIn: boolean;
-};
-
 export type BoardListProps = {
   id: number;
   title: string;

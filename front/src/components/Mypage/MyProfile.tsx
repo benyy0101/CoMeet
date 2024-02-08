@@ -1,30 +1,51 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import ImageModifyModal from "./ImageModifyModal";
 
 import tw from "tailwind-styled-components";
 
-import ProifleImg from "assets/img/test-user.jpeg";
+import ProfileImg from "assets/img/test-user.jpeg";
 import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
+import Modal from "components/Common/Modal";
+import { profileImageDelete, profileModifyImage } from "api/image";
 
-export const MyProfile = () => {
-  //임시 데이터들
-  const [imgUrl, setImageUrl] = useState<string>("");
-  const followingNum = 152;
-  const followerNum = 20;
-  const nickName = "망곰이";
-  const message = "프론트엔드 지망생입니다! 잘 부탁드려용";
-  const url = "http://github.com/mangmang";
-  const recentTime = "2024-01-23";
+interface myProps {
+  profileImage: string | undefined;
+  followingCount: number | undefined;
+  followerCount: number | undefined;
+  nickname: string | undefined;
+  description: string | undefined;
+  link: string | undefined;
+  handleChange: () => void;
+}
 
+export default function MyProfile({
+  profileImage,
+  followingCount,
+  followerCount,
+  nickname,
+  description,
+  link,
+  handleChange,
+}: myProps) {
   //프로필 사진 마우스 오버로 바꾸기
   const [isHovering, setIsHovering] = useState<boolean>(false);
 
   //프로필 변경 이미지 클릭시
   const [isModifyImg, setIsModifyImg] = useState<boolean>(false);
+  //팔로잉, 팔로워 클릭시
+  const [followerModal, setFollowerModal] = useState<boolean>(false);
+  const [followingModal, setFollowingModal] = useState<boolean>(false);
+
+  const followerModalHandler = () => {
+    setFollowerModal(!followerModal);
+  };
+  const followingModalHandler = () => {
+    setFollowingModal(!followingModal);
+  };
 
   //프로필 사진 변경 버튼 클릭시
   const [modifyImgModal, setModifyImgModal] = useState<boolean>(false);
@@ -46,6 +67,22 @@ export const MyProfile = () => {
     setIsModifyImg(false);
   };
 
+  //이미지 삭제
+  const handleDelteImg = async function () {
+    if (profileImage != "default_profile_image_letsgo") {
+      //s3에서 이미지 삭제
+      profileImageDelete(profileImage);
+
+      //DB에서 삭제
+      const updateData = { profileImage: `default_profile_image_letsgo` };
+      await profileModifyImage(updateData);
+    }
+    //수정
+    setIsModifyImg(false);
+
+    handleChange();
+  };
+
   //버튼 닫히기
   const modifyImgRef = useRef(null);
   useOutsideClick<HTMLDivElement>(modifyImgRef, () => {
@@ -53,6 +90,12 @@ export const MyProfile = () => {
       setIsModifyImg(false);
     }
   });
+
+  // useEffect(() => {
+  //   if (profileImage === "default_profile_image_letsgo") {
+  //     profileImage = `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`;
+  //   }
+  // }, [profileImage]);
 
   return (
     <TotalContainer>
@@ -64,7 +107,13 @@ export const MyProfile = () => {
           <ul ref={modifyImgRef}>
             {isHovering ? (
               <StyleProfileImgHover
-                style={{ backgroundImage: `url(${ProifleImg})` }}
+                style={{
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : `${profileImage}`
+                  })`,
+                }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
               >
@@ -75,7 +124,11 @@ export const MyProfile = () => {
             ) : (
               <StyleProfileImg
                 style={{
-                  backgroundImage: `url(${imgUrl === "" ? ProifleImg : imgUrl})`,
+                  backgroundImage: `url(${
+                    profileImage === "default_profile_image_letsgo"
+                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                      : `${profileImage}`
+                  })`,
                 }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -88,55 +141,69 @@ export const MyProfile = () => {
                   프로필 사진 변경
                 </DropdownButton>
                 {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
-                <DropdownButton>제거</DropdownButton>
+                <DropdownButton onClick={handleDelteImg}>제거</DropdownButton>
               </ProfileDropdown>
             )}
             {/* 프로필 사진 수정 모달 */}
             {modifyImgModal === true ? (
               <ImageModifyModal
                 toggleModal={handleModifyImgModal}
-                imageUrl={imgUrl}
-                setImageUrl={setImageUrl}
                 option="modifyProfile"
+                handleChange={handleChange}
+                profileImage={profileImage}
               />
             ) : null}
           </ul>
         </LeftContainer>
         <RightContainer>
           <FollowContainer>
-            <SytleFollowing>
+            <SytleFollowing onClick={followingModalHandler}>
+              {followingModal ? (
+                <Modal
+                  toggleModal={followingModalHandler}
+                  option={"following"}
+                ></Modal>
+              ) : null}
               <FollowText>팔로잉</FollowText>
-              <FollowNumber>{followingNum}</FollowNumber>
+              <FollowNumber>{followingCount}</FollowNumber>
             </SytleFollowing>
-            <StyleFllower>
+            <StyleFllower onClick={followerModalHandler}>
+              {followerModal ? (
+                <Modal
+                  toggleModal={followerModalHandler}
+                  option={"follower"}
+                ></Modal>
+              ) : null}
               <FollowText>팔로워</FollowText>
-              <FollowNumber>{followerNum}</FollowNumber>
+              <FollowNumber>{followerCount}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
           <div className="flex">
-            <StyleNickName>{nickName}</StyleNickName>
+            <StyleNickName>{nickname}</StyleNickName>
             <button>
               <StyleEdit src={EditPencil} />
             </button>
           </div>
 
           <div className="flex">
-            <StyleMessage>{message}</StyleMessage>
+            <StyleMessage>{description}</StyleMessage>
             <button>
               <StyleEdit src={EditPencil} />
             </button>
           </div>
           <SytleUrl>
-            <StyleA href={url} target="_blank" rel="noopener noreferrer">
-              {url}
+            <StyleA href={link} target="_blank" rel="noopener noreferrer">
+              {link}
             </StyleA>
           </SytleUrl>
         </RightContainer>
       </FullContainer>
-      <RecentIn>최근 접속 시간: {recentTime}</RecentIn>
+      {/* <RecentIn>
+        최근 접속 시간: {recentTime}
+        </RecentIn> */}
     </TotalContainer>
   );
-};
+}
 
 //전체 컨테이너
 const TotalContainer = tw.div`
@@ -170,6 +237,7 @@ const FullContainer = tw.div`
 flex
 flex-grow
 items-center
+pb-10
 
 `;
 
@@ -250,17 +318,25 @@ justify-center
 //팔로잉, 팔로우 나타내는 컨테이너
 const FollowContainer = tw.div`
 flex
+space-x-4
 mb-2
 `;
 
 //팔로잉
 const SytleFollowing = tw.div`
 flex
-mr-3
+transition-colors
+hover:text-blue-500
+hover:border-blue-500
+cursor-pointer
 `;
 
 //팔로우
 const StyleFllower = tw.div`
+transition-colors
+hover:text-blue-500
+hover:border-blue-500
+cursor-pointer
 flex`;
 
 //팔로잉, 팔로우 글씨
