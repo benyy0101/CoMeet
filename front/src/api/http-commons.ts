@@ -17,9 +17,24 @@ export const imageAxios: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "multipart/form-data",
   },
+  withCredentials: true,
 });
 
 localAxios.interceptors.request.use(
+  (config) => {
+    console.log("interceptor");
+    const token = sessionStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+imageAxios.interceptors.request.use(
   (config) => {
     console.log("interceptor");
     const token = sessionStorage.getItem("accessToken");

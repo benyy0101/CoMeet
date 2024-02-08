@@ -123,7 +123,7 @@ export const NavBar = () => {
               </ul>
             </Menu2>
             <Menu2>
-              <Link to="/Mypage">
+              <Link to="/mypage">
                 <img src={BasicProfile} width={30} alt="profile" />
               </Link>
             </Menu2>
