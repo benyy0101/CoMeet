@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
 import tw from "tailwind-styled-components";
+import styled from "styled-components";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -25,7 +26,4 @@ w-full
 h-full
 `;
 
-const StyledCalendar = tw(Calendar)`
-text-black
-
-`;
+const StyledCalendar = styled(Calendar)``;
