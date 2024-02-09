@@ -7,17 +7,26 @@ interface IProps {
   isMain: boolean;
 }
 
-export default function UserVideoComponent({ streamManager, speaking, isMain }: IProps) {
+export default function UserVideoComponent({
+  streamManager,
+  speaking,
+  isMain,
+}: IProps) {
   const getNicknameTag = () => {
     // Gets the nickName of the user
-    return JSON.parse(streamManager.stream.connection.data).clientData;
+    if (streamManager?.stream?.connection?.data) {
+      return JSON.parse(streamManager.stream.connection.data).clientData;
+    }
   };
 
   return (
     <UserVideoContainer $speaking={speaking} $isMain={isMain}>
       {streamManager !== undefined ? (
         <StreamContainer $isMain={isMain}>
-          <OpenViduVideoComponent streamManager={streamManager} isMain={isMain} />
+          <OpenViduVideoComponent
+            streamManager={streamManager}
+            isMain={isMain}
+          />
           <NickNameTagContainer>
             <NicknameTag>{getNicknameTag()}</NicknameTag>
           </NickNameTagContainer>
@@ -32,14 +41,14 @@ rounded-lg
 overflow-hidden
 shadow-2xl
 box-content
+relative
 ${(p) => (p.$speaking ? "border-2 border-green-400" : "")}
-${(p) => (p.$isMain ? "h-full" : "")}
+${(p) => (p.$isMain ? "h-full max-h-full" : "aspect-4/3 bg-black flex items-center")}
 `;
 
 const StreamContainer = tw.div<{ $isMain: boolean }>`
-relative
 bg-black
-${(p) => (p.$isMain ? "h-full flex items-center justify-center overflow-hidden" : "")}
+${(p) => (p.$isMain ? "h-full max-h-full flex flex-col items-center justify-center overflow-hidden" : "")}
 `;
 
 const NickNameTagContainer = tw.div`

@@ -6,7 +6,10 @@ interface IProps {
   isMain: boolean;
 }
 
-export default function OpenViduVideoComponent({ streamManager, isMain }: IProps) {
+export default function OpenViduVideoComponent({
+  streamManager,
+  isMain,
+}: IProps) {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -19,5 +22,6 @@ export default function OpenViduVideoComponent({ streamManager, isMain }: IProps
 }
 
 const StreamVideo = tw.video<{ $isMain: boolean }>`
-${(p) => (p.$isMain ? "h-full object-contain" : "w-78")}
+flex-grow-[1]
+${(p) => (p.$isMain ? " object-cover h-20" : "")}
 `;

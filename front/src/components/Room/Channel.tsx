@@ -52,8 +52,8 @@ export default function Channel({
   const [pageSize, setPageSize] = useState<number>(6);
 
   useEffect(() => {
-    setPageSize(chatOpen ? 6 : 8);
-  }, [chatOpen]);
+    setPageSize(mainStreamManager ? 2 : chatOpen ? 6 : 8);
+  }, [chatOpen, mainStreamManager]);
 
   useEffect(() => {
     setPage(0);
@@ -147,11 +147,7 @@ export default function Channel({
               <SideVideoContainer>
                 {publisher &&
                   [publisher, ...subscribers]
-                    .filter(
-                      (sub) =>
-                        sub.stream.connection.connectionId !==
-                        mainStreamManager.stream.connection.connectionId
-                    )
+                    .filter((sub) => sub !== mainStreamManager)
                     .slice(page * sidePageSize, (page + 1) * sidePageSize)
                     .map((sub, i) => (
                       <StreamContainer
@@ -168,12 +164,18 @@ export default function Channel({
                       </StreamContainer>
                     ))}
                 {page > 0 && (
-                  <SidePaginationButton className="top-0">
+                  <SidePaginationButton
+                    className="top-2"
+                    onClick={() => setPage((prev) => prev - 1)}
+                  >
                     <UpIcon />
                   </SidePaginationButton>
                 )}
                 {subscribers.length > (page + 1) * pageSize && (
-                  <SidePaginationButton className="bottom-0">
+                  <SidePaginationButton
+                    className="bottom-2"
+                    onClick={() => setPage((prev) => prev + 1)}
+                  >
                     <DownIcon />
                   </SidePaginationButton>
                 )}
@@ -193,9 +195,7 @@ export default function Channel({
             <MainStreamContainer>
               <UserVideoComponent
                 streamManager={mainStreamManager}
-                speaking={speakerIds.includes(
-                  mainStreamManager.stream.connection.connectionId
-                )}
+                speaking={false}
                 isMain={true}
               />
             </MainStreamContainer>
@@ -203,7 +203,7 @@ export default function Channel({
         ) : (
           <GridContainer>
             <ViedoGrid $chatOpen={chatOpen}>
-              {publisher !== undefined &&
+              {publisher &&
                 [publisher, ...subscribers]
                   .slice(page * pageSize, (page + 1) * pageSize)
                   .map((sub, i) => (
@@ -308,6 +308,7 @@ flex-row-reverse
 `;
 
 const GridContainer = tw.div`
+w-full
 flex
 items-center
 pb-4
