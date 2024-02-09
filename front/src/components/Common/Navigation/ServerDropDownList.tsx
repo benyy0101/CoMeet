@@ -13,53 +13,54 @@ export const ServerDropDownList = () => {
   //임시 룸 아이디
   const roomId = 1;
 
-  //const roomInfo = useSelector((state: any) => state.user.user.joinedRooms);
+  const roomInfo = useSelector((state: any) => state.user.user.joinedRooms);
+  console.log(roomInfo);
 
-  const roomInfo = [{
-        roomId:21,
-        title:"mockup_room",
-        roomImage:"default_image_letsgo",
-      },
-      {
-        roomId:25,
-        title:"mockup_room2",
-        roomImage:"default_image_letsgo",
-      },
-      {
-        roomId:38,
-        title:"mockup_room3",
-        roomImage:"default_image_letsgo",
-      } 
-      ];
+  // const roomInfo = [{
+  //       roomId:21,
+  //       title:"mockup_room",
+  //       roomImage:"default_image_letsgo",
+  //     },
+  //     {
+  //       roomId:25,
+  //       title:"mockup_room2",
+  //       roomImage:"default_image_letsgo",
+  //     },
+  //     {
+  //       roomId:38,
+  //       title:"mockup_room3",
+  //       roomImage:"default_image_letsgo",
+  //     }
+  //     ];
   //const roomInfo:any = [];
 
   return (
     <StyleDropdownMenu>
       <ServerContent>
-      {roomInfo.length !== 0 ? (
-        <>
-        {roomInfo.map((room: any) => (
-          <StyleImgTextBoth key={room.id}>
-              <StyleServerImg src={RoomDefault} alt="" />
-              <Link to={`/room/${room.id}`}>{room.title}</Link>
-            </StyleImgTextBoth>
-        ))}
-        <AddIconWrapper>
-          <Link to="/room-regist">
-            <PlusIcon className="w-4 h-4"/>
-          </Link>
-        </AddIconWrapper>
-        </>
-      ) : (
-        <>
-          <NoneText>가입한 방이 없습니다.</NoneText>
-          <StyleServerGo>
-            <Link to="/room-regist">
-              <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
-            </Link>
-          </StyleServerGo>
-        </>
-      )}
+        {roomInfo.length !== 0 ? (
+          <>
+            {roomInfo.map((room: any) => (
+              <StyleImgTextBoth key={room.id}>
+                <StyleServerImg src={RoomDefault} alt="" />
+                <Link to={`/room/${room.roomId}`}>{room.title}</Link>
+              </StyleImgTextBoth>
+            ))}
+            <AddIconWrapper>
+              <Link to="/room-regist">
+                <PlusIcon className="w-4 h-4" />
+              </Link>
+            </AddIconWrapper>
+          </>
+        ) : (
+          <>
+            <NoneText>가입한 방이 없습니다.</NoneText>
+            <StyleServerGo>
+              <Link to="/room-regist">
+                <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
+              </Link>
+            </StyleServerGo>
+          </>
+        )}
       </ServerContent>
     </StyleDropdownMenu>
   );
@@ -79,7 +80,7 @@ const StyleDropdownMenu = tw.div`
   text-white
   text-sm
   top-10
-  min-w-[180px]
+  min-w-[280px]
   rounded-lg
   space-y-4
 `;
@@ -102,7 +103,7 @@ const StyleImgTextBoth = tw.div`
 
 const ServerContent = tw.div`
   w-full
-`
+`;
 //StyleServerImg: 서버 이미지
 const StyleServerImg = tw.img`
     bg-white
@@ -117,7 +118,7 @@ flex
 justify-end
 w-full
 items-center
-`
+`;
 //StyleServerGo: 방 가입이나 방 생성하러 가는...
 const StyleServerGo = tw.div`
     flex

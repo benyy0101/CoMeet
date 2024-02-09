@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import Login from "../Auth/Login";
 import RoomConfirm from "../RoomConfirm";
@@ -10,6 +10,8 @@ import { IChannel } from "models/Channel.interface";
 import { ILounge } from "models/Lounge.interface";
 import FollowList from "components/Mypage/FollowList";
 import MessageList from "components/Message/MessageList";
+import MessageWrite from "components/Message/MessageWrite";
+import MessageRead from "components/Message/MessageRead";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -37,8 +39,15 @@ function Modal(props: ModalProps) {
     removeLounge,
   } = props;
 
+  const [noteState, setNoteState] = React.useState<string>("list");
+  const [noteNo, setNoteNo] = React.useState<number>(0);
   const modalToggleHandler = () => {
     toggleModal();
+  };
+
+  const setNoteStateHandler = (state: string, no: number) => {
+    setNoteState(state);
+    setNoteNo(no);
   };
 
   return (
@@ -65,9 +74,15 @@ function Modal(props: ModalProps) {
         {option === "following" ? (
           <FollowList option={option}></FollowList>
         ) : null}
-        {option === "message" ? (
-          <MessageList></MessageList>
-        ): null}
+        {option === "message" && noteState === "list" ? (
+          <MessageList swapState={setNoteStateHandler}></MessageList>
+        ) : null}
+        {option === "message" && noteState === "write" ? (
+          <MessageWrite />
+        ) : null}
+        {option === "message" && noteState === "read" ? (
+          <MessageRead noteNo={noteNo} />
+        ) : null}
       </ModalContainer>
     </Wrapper>
   );

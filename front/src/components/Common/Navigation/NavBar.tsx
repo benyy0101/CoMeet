@@ -34,62 +34,61 @@ export const NavBar = () => {
   };
   const messageModalHandler = () => {
     setMessageModal(!messageModal);
-  }
-
-  //const userInfo = useSelector((state: any) => state.user);
-  const userInfo:UserState = {
-    isLoggedIn: true,
-    user: {
-      memberId: "mockup_id",
-      nickname: "mockup",
-      profileImage: "default_image_letsgo",
-      unreadNoteCount: 12,
-      joinedRooms: [{
-        roomId:21,
-        title:"mockup_room",
-        roomImage:"default_image_letsgo",
-      },
-      {
-        roomId:25,
-        title:"mockup_room2",
-        roomImage:"default_image_letsgo",
-      },
-      {
-        roomId:38,
-        title:"mockup_room3",
-        roomImage:"default_image_letsgo",
-      } 
-      ],
-  }
-}
-
-  //const roomInfo = useSelector((state: any) => state.room);
-
-  const roomInfo:RoomStore = {
-    isRoomIn: false,
-  isMicMuted: false,
-  isVideoOn: false,
-  room: {
-    managerId: "",
-    managerNickname: "",
-    title: "",
-    description: "",
-    room_image: "",
-    notice: "",
-    mcount: 0,
-    link: "",
-    capacity: 0,
-    isLocked: false,
-    password: "",
-    constraints: "FREE",
-    type: "DISPOSABLE",
-    members: [],
-    lounges: [],
-    channels: [],
-    keywords: [],
-  },
   };
-  
+
+  const userInfo = useSelector((state: any) => state.user);
+  //   const userInfo:UserState = {
+  //     isLoggedIn: true,
+  //     user: {
+  //       memberId: "mockup_id",
+  //       nickname: "mockup",
+  //       profileImage: "default_image_letsgo",
+  //       unreadNoteCount: 12,
+  //       joinedRooms: [{
+  //         roomId:21,
+  //         title:"mockup_room",
+  //         roomImage:"default_image_letsgo",
+  //       },
+  //       {
+  //         roomId:25,
+  //         title:"mockup_room2",
+  //         roomImage:"default_image_letsgo",
+  //       },
+  //       {
+  //         roomId:38,
+  //         title:"mockup_room3",
+  //         roomImage:"default_image_letsgo",
+  //       }
+  //       ],
+  //   }
+  // }
+
+  const roomInfo = useSelector((state: any) => state.room);
+
+  // const roomInfo:RoomStore = {
+  //   isRoomIn: false,
+  // isMicMuted: false,
+  // isVideoOn: false,
+  // room: {
+  //   managerId: "",
+  //   managerNickname: "",
+  //   title: "",
+  //   description: "",
+  //   room_image: "",
+  //   notice: "",
+  //   mcount: 0,
+  //   link: "",
+  //   capacity: 0,
+  //   isLocked: false,
+  //   password: "",
+  //   constraints: "FREE",
+  //   type: "DISPOSABLE",
+  //   members: [],
+  //   lounges: [],
+  //   channels: [],
+  //   keywords: [],
+  // },
+  // };
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
@@ -124,18 +123,21 @@ export const NavBar = () => {
   return (
     <NavBarContainer>
       <LeftContainer>
-      <Logo>
-        <Link to="/">[코밋]</Link>
-      </Logo>
-      {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
-      {userInfo.isLoggedIn ? (
+        <Logo>
+          <Link to="/">[코밋]</Link>
+        </Logo>
+        {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
+        {userInfo.isLoggedIn ? (
           <LeftMenu>
             <RoomSearch>
               <Link to="/roomlist">방 찾기</Link>
             </RoomSearch>
-            <CommunityMenu onMouseEnter={showCommunityList} onMouseLeave={showCommunityList}>
+            <CommunityMenu
+              onMouseEnter={showCommunityList}
+              onMouseLeave={showCommunityList}
+            >
               <ul ref={communityRef}>
-                <button onMouseEnter={showCommunityList} >커뮤니티</button>
+                <button onMouseEnter={showCommunityList}>커뮤니티</button>
                 {isCommunityOpen && (
                   <DropDownCommunity>
                     <ComDropDownBUtton onClick={showCommunityList}>
@@ -149,10 +151,9 @@ export const NavBar = () => {
               </ul>
             </CommunityMenu>
           </LeftMenu>
-      ) : null}
-
+        ) : null}
       </LeftContainer>
-      
+
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
@@ -170,27 +171,28 @@ export const NavBar = () => {
               </InServer>
             ) : (
               <div>
-                <OutofServer>
-                접속중인 방이 없습니다.
-                </OutofServer>
+                <OutofServer>접속중인 방이 없습니다.</OutofServer>
               </div>
             )}
 
             <ServerMenu ref={serverRef}>
               <button onClick={showServerList}>
-                  <NavIcon src={IMac} alt="server" />
-                </button>
-                {isServerOpen && <ServerDropDownList />}
+                <NavIcon src={IMac} alt="server" />
+              </button>
+              {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
-              <EnvelopeIcon className="w-8 h-8"/>
-              {userInfo.user.unreadNoteCount !==0 ?
-                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>:null
-              }
+              <EnvelopeIcon className="w-8 h-8" />
+              {userInfo.user.unreadNoteCount !== 0 ? (
+                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>
+              ) : null}
               <ModalPortal>
                 {messageModal === true ? (
-                  <Modal toggleModal={messageModalHandler} option="message"></Modal>
-                ):null}
+                  <Modal
+                    toggleModal={messageModalHandler}
+                    option="message"
+                  ></Modal>
+                ) : null}
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
@@ -250,19 +252,19 @@ const LeftContainer = tw.div`
   justify-start
   items-end
   space-x-8
-`
+`;
 
 const RightContainer = tw.div`
   flex
   justify-start
   items-end
   space-x-6
-`
+`;
 
 const RoomSearch = tw.div`
   hover:text-purple-400
   transition-colors
-`
+`;
 //Logo: 로고 메뉴
 const Logo = tw.div`
 `;
@@ -282,11 +284,11 @@ const ServerMenu = tw.div`
   flex
   items-center
   justify-center
-`
+`;
 const NavIcon = tw.img`
 h-8
 w-8
-`
+`;
 
 //커뮤니티 드롭다운
 const DropDownCommunity = tw.div`
@@ -303,7 +305,7 @@ const DropDownCommunity = tw.div`
 `;
 
 const ProfileMenu = tw.div`
-`
+`;
 
 const EnvelopMenu = tw.div`
   relative
@@ -321,7 +323,7 @@ w-6
 flex
 items-center
 justify-center
-`
+`;
 
 //커뮤니티 드롭다운 버튼들
 const ComDropDownBUtton = tw.button`
@@ -333,7 +335,6 @@ cursor-pointer
 transition-colors
 hover:bg-[#282828]
 `;
-
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
@@ -354,7 +355,7 @@ const InServer = tw.div`
     text-[14px]
 `;
 
-const OutofServer= tw.div`
+const OutofServer = tw.div`
 min-w-40
 h-8
 flex
@@ -366,7 +367,7 @@ text-gray-400
 border-[1px]
 rounded-md
 text-[14px] 
-`
+`;
 
 //ServerImg: 서버 이미지
 const ServerImg = tw.img`
