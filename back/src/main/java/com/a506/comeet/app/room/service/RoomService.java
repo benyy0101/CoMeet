@@ -21,11 +21,12 @@ import com.a506.comeet.common.util.DateParser;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.image.service.S3UploadService;
 import com.a506.comeet.metadata.repository.CustomRedisRepository;
 import com.a506.comeet.metadata.repository.MemberRedisRepository;
 import com.a506.comeet.metadata.repository.RoomRedisRepository;
-import com.a506.comeet.metadata.service.dto.MetadataCreateDto;
 import com.a506.comeet.metadata.service.MetadataService;
+import com.a506.comeet.metadata.service.dto.MetadataCreateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,7 @@ public class RoomService {
     private final CustomRedisRepository customRedisRepository;
 
     private final MetadataService metadataService;
+    private final S3UploadService s3UploadService;
 
     private final String DEFAULT_CHANNEL_NAME = "기본 채널";
     private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
@@ -108,14 +110,22 @@ public class RoomService {
                 memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "변경 요청한 새로운 매니저 아이디가 서비스 내에 존재하지 않습니다"))
                 : null;
 
-        //        if (req.getRoomImage() != null){
-//            String originalRoomImage = room.getRoomImage();
-//            s3Uploader.delete(originalRoomImage);
+        S3ImageDelete(req, room);
 
         room.updateRoom(req, newManager);
         if (req.getKeywordIds() != null) updateRoomKeywords(req, room);
     }
 
+    private void S3ImageDelete(RoomUpdateRequestDto req, Room room) {
+        if (req.getRoomImage() != null) {
+            String imageUrl = room.getRoomImage();
+            if (!imageUrl.equals("default_room_image_letsgo")) {
+                s3UploadService.deleteImage(imageUrl, "roomImage/");
+            }
+        }
+    }
+
+    @Transactional
     public void delete(String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
@@ -124,6 +134,7 @@ public class RoomService {
         deleteRoom(room);
     }
 
+    @Transactional
     public void join(RoomJoinRequestDto req, String memberId, long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
@@ -239,7 +250,6 @@ public class RoomService {
         if (room.getMcount() == room.getCapacity()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "방 입장 인원이 가득찼습니다");
     }
 
-    @Transactional
     private void deleteRoom(Room room){
         // 방과 관련된 엔티티 전부 삭제
         room.delete();
@@ -253,7 +263,6 @@ public class RoomService {
     }
 
 
-    @Transactional
     private void joinMemberInnerLogic(Member member, Room room){
         RoomMember roomMember = new RoomMember(member, room);
         alreadyJoinedValidation(member, room);

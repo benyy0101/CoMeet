@@ -46,14 +46,20 @@ public class MemberService {
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-//        if (req.getProfileImage() != null) {
-//            String originalProfileImage = member.getProfileImage();
-//            s3UploadService.deleteImage(originalProfileImage, "profileImage");
-//        }
+        S3ImageDelete(req, member);
         member.updateMember(req);
     }
 
-    public boolean duplicationValid(MemberDuplicationRequestDto req){
+    private void S3ImageDelete(MemberUpdateRequestDto req, Member member) {
+        if (req.getProfileImage() != null) {
+            String imageUrl = member.getProfileImage();
+            if (!imageUrl.equals("default_profile_image_letsgo")) {
+                s3UploadService.deleteImage(imageUrl, "profileImage/");
+            }
+        }
+    }
+
+    public boolean duplicationValid(MemberDuplicationRequestDto req) {
         return memberRepository.getMemberDuplicationCount(req) == 0;
     }
 

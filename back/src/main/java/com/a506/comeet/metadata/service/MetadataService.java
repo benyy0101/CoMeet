@@ -55,8 +55,6 @@ public class MetadataService {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()), ZoneId.systemDefault());
-
         double dayInMinutes = 0.0;
         LocalDateTime todayStart = LocalDateTime.now().with(LocalTime.MIN);
         double weekInMinutes = 0.0;

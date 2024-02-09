@@ -1,12 +1,12 @@
 package com.a506.comeet.app.member.controller;
 
-import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.member.controller.dto.MemberDetailResponseDto;
 import com.a506.comeet.app.member.controller.dto.MemberDuplicationRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberSigninRequestDto;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.service.MemberService;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.image.service.S3UploadService;
@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -45,22 +44,25 @@ public class MemberController {
 
 
     @PostMapping("/image")
-    public ResponseEntity<?> getImageUrl(
+    public ResponseEntity<Void> updateImage(
             @RequestParam("profileImageFile") MultipartFile multipartFile) {
-        log.info("profileImageFile : {}", multipartFile);
-        try{
-            String url = s3UploadService.saveFile(multipartFile, "profileImage/");
-            log.info("url : {}", url);
-            return ResponseEntity.ok(url);
-        } catch (IOException e) {
-            throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR, "이미지 파일 업로드 중 에러가 발생하였습니다");
-        }
+        String memberId = MemberUtil.getMemberId();
+        String url = s3UploadService.saveFile(multipartFile, "profileImage/");
+        log.info("created url: {}", url);
+        memberService.update(MemberUpdateRequestDto
+                .builder()
+                .profileImage(url)
+                .build(), memberId);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/image")
-    public ResponseEntity<?> deleteImageUrl(
-            @RequestParam("profileImageUrl") String profileImageUrl) {
-        s3UploadService.deleteImage(profileImageUrl, "profileImage/");
+    public ResponseEntity<Void> deleteImage() {
+        String memberId = MemberUtil.getMemberId();
+        memberService.update(MemberUpdateRequestDto
+                .builder()
+                .profileImage("default_profile_image_letsgo")
+                .build(), memberId);
         return ResponseEntity.ok().build();
     }
 
