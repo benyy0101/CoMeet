@@ -110,7 +110,7 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.memberId; // nickname으로 해야하나? (중복 안되는 값이면 괜찮다고 함)
+        return this.memberId;
     }
 
     @Override
