@@ -11,28 +11,24 @@ import tw from "tailwind-styled-components";
 import { RecruitBoardListLink } from "components/BoardList/RecruitBoardListLink";
 import { KeywordSearchBox } from "components/BoardList/KeywordSearchBox";
 import { Pagination } from "components/BoardList/Pagination";
-import SearchBoardResponse, {
-  SearchBoardContent,
-  SearchBoardParams,
-} from "models/Board.interface";
+import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY } from "models/Enums.type";
 import WriteArticle from "./WriteArticle";
+import { Keyword } from "models/Util";
 
 export const RecruitBoardList = () => {
   //목록 리스트
   //const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
   const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
 
-  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
-    {
-      boardType: "RECRUIT",
-      sortBy: "LATEST",
-      page: 0,
-      size: 10,
-    }
-  );
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
+    boardType: "RECRUIT",
+    sortBy: "LATEST",
+    page: 0,
+    size: 10,
+  });
   const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
   const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
   const [currentPage, setCurrentPage] = useState<number>(0); // 초기 값을 얼마로지해야하지
@@ -41,8 +37,7 @@ export const RecruitBoardList = () => {
   const [searchWord, setSearchWord] = React.useState<string>("");
   //검색 기준
   type Condition = "제목+설명" | "작성자";
-  const [searchCondition, setSearchCondition] =
-    React.useState<Condition>("제목+설명");
+  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -54,9 +49,12 @@ export const RecruitBoardList = () => {
     RECRUIT: "모집률순",
   };
 
+  //최대인원 관련
   const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
-
   const [currentCount, setCurrentCount] = useState<number>(25);
+
+  //키워드 관련
+  const [currentKeywords, setCurrentKeywords] = useState<Keyword[]>([]);
 
   //왼쪽 사이드바 선택 메뉴
   type CurrentMenu = "전체" | "모집중" | "모집완료";
@@ -81,7 +79,14 @@ export const RecruitBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      console.log("condition", searchCondition);
+      // 키워드가 있을 때
+      console.log("enter", currentKeywords, currentKeywords.length);
+      if (currentKeywords.length !== 0) {
+        searchBoardParams.keywordIds = currentKeywords.map((data) => data.id);
+      } else {
+        delete searchBoardParams.keywordIds;
+      }
+      //검색어 들어갔을 때 로직
       if (searchCondition === "작성자") {
         delete searchBoardParams.searchKeyword;
         if (searchWord) {
@@ -117,6 +122,11 @@ export const RecruitBoardList = () => {
   //검색 기준 선택 시
   const handleSearchCondition = (event: any) => {
     setSearchCondition(event.target.value);
+  };
+
+  // 키워드 선택
+  const handleKeyword = (data: Keyword[]) => {
+    setCurrentKeywords(data);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -183,29 +193,21 @@ export const RecruitBoardList = () => {
       <Wrapper>
         <LeftContainer>
           {currentMenu === "전체" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>
-              전체
-            </SideButtonSelected>
+            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>전체</SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
           )}
           {currentMenu === "모집중" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>
-              모집중
-            </SideButtonSelected>
+            <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>모집중</SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("모집중")}>
-              모집중
-            </SideButton>
+            <SideButton onClick={() => setCurrentMenu("모집중")}>모집중</SideButton>
           )}
           {currentMenu === "모집완료" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("모집완료")}>
               모집완료
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("모집완료")}>
-              모집완료
-            </SideButton>
+            <SideButton onClick={() => setCurrentMenu("모집완료")}>모집완료</SideButton>
           )}
         </LeftContainer>
         <CenterTotalContainer>
@@ -344,7 +346,7 @@ export const RecruitBoardList = () => {
         </CenterTotalContainer>
 
         <RightContainer>
-          <KeywordSearchBox />
+          <KeywordSearchBox sendKeyword={handleKeyword} />
         </RightContainer>
       </Wrapper>
     </TotalContainer>

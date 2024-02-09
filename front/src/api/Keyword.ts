@@ -1,7 +1,11 @@
-import { SearchKeywordParams } from "models/Keyword.interface";
+import {
+  SearchKeywordParams,
+  // SearchKeywordResponse,
+} from "models/Keyword.interface";
 import { localAxios } from "./http-commons";
+import { Keyword } from "models/Util";
 
-export const searchKeyword = async (params: SearchKeywordParams) => {
+export const searchKeyword = async (params: SearchKeywordParams): Promise<Keyword[]> => {
   const url = `keyword`;
   const response = await localAxios.get(url, params);
 

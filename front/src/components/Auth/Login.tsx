@@ -8,6 +8,9 @@ import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginResponse } from "models/Login.interface";
 import { login, storeMemberId } from "store/reducers/userSlice";
+import { getKeywords } from "store/reducers/keywordSlice";
+import { searchKeyword } from "api/Keyword";
+// import { SearchKeywordResponse } from "models/Keyword.interface";
 function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
@@ -18,12 +21,24 @@ function Login() {
     data: userData,
     isError,
     isLoading,
-    refetch,
+    refetch: loginRefetch,
   } = useQuery<LoginResponse, Error>({
     queryKey: ["user"],
     queryFn: () => handleLogin(memberId, password),
     enabled: false,
   });
+
+  // const { data: keywordData, refetch: keywordFetch } = useQuery<SearchKeywordResponse, Error>({
+  //   queryKey: ["keyword"],
+  //   queryFn: () => searchKeyword({}),
+  //   enabled: false,
+  // });
+
+  // useEffect(() => {
+  //   if (keywordData) {
+  //     dispatch(getKeywords(keywordData));
+  //   }
+  // }, [keywordData]);
 
   useEffect(() => {
     if (isError) {
@@ -42,13 +57,25 @@ function Login() {
       const res = userData;
       dispatch(login(res));
       dispatch(storeMemberId(memberId));
+      // let keywords: SearchKeywordResponse = {
+      //   lst: [],
+      // };
+      searchKeyword({}).then((data) => {
+        console.log(data);
+        // keywords = data;
+        dispatch(getKeywords(data));
+        return data;
+      });
+      // console.log(keywords);
     }
   }, [userData]);
 
   const loginHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(false);
-    refetch();
+
+    loginRefetch();
+    // keywordFetch();
   };
 
   return (
