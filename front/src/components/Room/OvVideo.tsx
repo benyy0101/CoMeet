@@ -3,9 +3,13 @@ import tw from "tailwind-styled-components";
 
 interface IProps {
   streamManager: any;
+  isMain: boolean;
 }
 
-export default function OpenViduVideoComponent({ streamManager }: IProps) {
+export default function OpenViduVideoComponent({
+  streamManager,
+  isMain,
+}: IProps) {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -14,9 +18,10 @@ export default function OpenViduVideoComponent({ streamManager }: IProps) {
     }
   }, [streamManager]);
 
-  return <StreamVideo autoPlay={true} ref={videoRef} />;
+  return <StreamVideo $isMain={isMain} autoPlay={true} ref={videoRef} />;
 }
 
-const StreamVideo = tw.video`
-w-78
+const StreamVideo = tw.video<{ $isMain: boolean }>`
+flex-grow-[1]
+${(p) => (p.$isMain ? " object-cover h-20" : "")}
 `;

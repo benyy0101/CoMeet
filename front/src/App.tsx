@@ -19,7 +19,6 @@ import tw from "tailwind-styled-components";
 import RoomModify from "pages/RoomModify";
 import WriteArticle from "pages/WriteArticle";
 
-
 function App() {
   //임시
   const user = useSelector((state) => state);
@@ -42,7 +41,6 @@ function App() {
             <Route path="/room-regist" element={<RoomCreate />} />
             <Route path="/room-modify/:roomId" element={<RoomModify />} />
             <Route path="/roomlist" element={<RoomList />} />
-
 
             {/* 커뮤니티인데 곧 삭제 예정... */}
             <Route path="/community" element={<Community />} />
@@ -72,7 +70,7 @@ function App() {
             <Route path="/write-article" element={<WriteArticle />}></Route>
 
             {/* 마이페이지 */}
-            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/userpage/:memberId" element={<Mypage />} />
             <Route path="/profile-edit" element={<ProfileEdit />}></Route>
             <Route path="/room/:roomId/*" element={<Room />} />
             <Route path="/before-entrance" element={<ConditionCheck />} />

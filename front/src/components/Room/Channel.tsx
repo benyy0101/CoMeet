@@ -2,8 +2,20 @@ import tw from "tailwind-styled-components";
 import Chat from "./Chat";
 import ShareEditor from "./ShareEditor";
 import UserVideoComponent from "./UserVideoComponent";
-import { UserGroupIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { useRef, useState } from "react";
+import {
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  UserGroupIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChatBubbleBottomCenterIcon as ChatOutlineIcon,
+  Squares2X2Icon,
+} from "@heroicons/react/24/outline";
+import { ChatBubbleBottomCenterIcon as ChatSolidIcon } from "@heroicons/react/24/solid";
 
 interface IProps {
   session: any;
@@ -14,8 +26,11 @@ interface IProps {
   subscribers: any[];
   speakerIds: string[];
   leaveSession: () => void;
+  mainStreamManager: any;
   handleMainVideoStream: (sub: any) => void;
 }
+
+const sidePageSize = 2;
 
 export default function Channel({
   session,
@@ -26,10 +41,23 @@ export default function Channel({
   subscribers,
   speakerIds,
   leaveSession,
+  mainStreamManager,
   handleMainVideoStream,
 }: IProps) {
+  const [chatOpen, setChatOpen] = useState<boolean>(true);
+  const [sideOpen, setSideOpen] = useState<boolean>(true);
   const [inChat, setInChat] = useState<boolean>(true);
   const [message, setMessage] = useState<string>("");
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(6);
+
+  useEffect(() => {
+    setPageSize(mainStreamManager ? 2 : chatOpen ? 6 : 8);
+  }, [chatOpen, mainStreamManager]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [mainStreamManager]);
 
   const editorRef = useRef<any>(null);
   return (
@@ -42,8 +70,34 @@ export default function Channel({
               {mySessionName}
             </ChannelTitle>
             <ChannelHeaderButtonContainer>
+              {mainStreamManager !== null && (
+                <ChannelHeaderButton
+                  onClick={() => {
+                    handleMainVideoStream(null);
+                    if (!chatOpen) {
+                      setSideOpen(false);
+                    }
+                  }}
+                >
+                  <Squares2X2Icon className="w-6 h-6" />
+                </ChannelHeaderButton>
+              )}
+              <ChannelHeaderButton
+                onClick={() => {
+                  setChatOpen(!chatOpen);
+                  if (mainStreamManager == null) {
+                    setSideOpen(!sideOpen);
+                  }
+                }}
+              >
+                {chatOpen ? (
+                  <ChatSolidIcon className="w-6 h-6" />
+                ) : (
+                  <ChatOutlineIcon className="w-6 h-6" />
+                )}
+              </ChannelHeaderButton>
               <ChannelHeaderButton onClick={leaveSession}>
-                <XMarkIcon className="text-red-900 w-6 h-6" />
+                <XMarkIcon className="w-6 h-6" />
               </ChannelHeaderButton>
             </ChannelHeaderButtonContainer>
           </ChannelHeader>
@@ -51,67 +105,143 @@ export default function Channel({
         </>
       )}
       <VideoContainer>
-        {session !== undefined && (
-          <ChatContainer>
-            <ChatNavbar>
-              <ChatNavButton
-                key={"chat"}
-                disabled={inChat === true}
-                onClick={() => setInChat(true)}
-              >
-                채팅
-              </ChatNavButton>
-              <ChatNavButton
-                key={"share-editor"}
-                disabled={inChat === false}
-                onClick={() => setInChat(false)}
-              >
-                공유코드
-              </ChatNavButton>
-            </ChatNavbar>
-            {inChat ? (
-              <Chat
-                chatDomain={"channel"}
-                id={mySessionId}
-                username={myUserName}
-                setMessage={setMessage}
-                message={message}
-              />
+        {session !== undefined && sideOpen && (
+          <SideContainer>
+            {chatOpen ? (
+              <ChatContainer>
+                <ChatNavbar>
+                  <ChatNavButton
+                    key={"chat"}
+                    disabled={inChat === true}
+                    onClick={() => setInChat(true)}
+                  >
+                    채팅
+                  </ChatNavButton>
+                  <ChatNavButton
+                    key={"share-editor"}
+                    disabled={inChat === false}
+                    onClick={() => setInChat(false)}
+                  >
+                    공유코드
+                  </ChatNavButton>
+                </ChatNavbar>
+                {inChat ? (
+                  <Chat
+                    chatDomain={"channel"}
+                    id={mySessionId}
+                    username={myUserName}
+                    setMessage={setMessage}
+                    message={message}
+                  />
+                ) : (
+                  <ShareEditor
+                    session={session}
+                    username={myUserName}
+                    setMessage={setMessage}
+                    setInChat={setInChat}
+                    editorRef={editorRef}
+                  />
+                )}
+              </ChatContainer>
             ) : (
-              <ShareEditor
-                session={session}
-                username={myUserName}
-                setMessage={setMessage}
-                setInChat={setInChat}
-                editorRef={editorRef}
-              />
+              <SideVideoContainer>
+                {publisher &&
+                  [publisher, ...subscribers]
+                    .filter((sub) => sub !== mainStreamManager)
+                    .slice(page * sidePageSize, (page + 1) * sidePageSize)
+                    .map((sub, i) => (
+                      <StreamContainer
+                        key={sub.id}
+                        onClick={() => handleMainVideoStream(sub)}
+                      >
+                        <UserVideoComponent
+                          streamManager={sub}
+                          speaking={speakerIds.includes(
+                            sub.stream.connection.connectionId
+                          )}
+                          isMain={false}
+                        />
+                      </StreamContainer>
+                    ))}
+                {page > 0 && (
+                  <SidePaginationButton
+                    className="top-2"
+                    onClick={() => setPage((prev) => prev - 1)}
+                  >
+                    <UpIcon />
+                  </SidePaginationButton>
+                )}
+                {subscribers.length > (page + 1) * pageSize && (
+                  <SidePaginationButton
+                    className="bottom-2"
+                    onClick={() => setPage((prev) => prev + 1)}
+                  >
+                    <DownIcon />
+                  </SidePaginationButton>
+                )}
+              </SideVideoContainer>
             )}
-          </ChatContainer>
+          </SideContainer>
         )}
         {/* 클릭시 나오는 확대 영상 */}
+
         {/* {mainStreamManager !== undefined ? (
         <div id="main-video" className="col-md-6">
           <UserVideoComponent streamManager={mainStreamManager} />
         </div>
       ) : null} */}
-        <GridContainer>
-          {publisher !== undefined && (
-            <StreamContainer key={publisher.id} onClick={() => handleMainVideoStream(publisher)}>
+        {mainStreamManager !== null ? (
+          <DetailContainer>
+            <MainStreamContainer>
               <UserVideoComponent
-                streamManager={publisher}
-                speaking={speakerIds.includes(publisher.stream.connection.connectionId)}
+                streamManager={mainStreamManager}
+                speaking={false}
+                isMain={true}
               />
-            </StreamContainer>
-          )}
-          {subscribers.map((sub, i) => (
-            <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
-              <UserVideoComponent
-                streamManager={sub}
-                speaking={speakerIds.includes(sub.stream.connection.connectionId)}
-              />
-            </StreamContainer>
-          ))}
-        </GridContainer>
+            </MainStreamContainer>
+          </DetailContainer>
+        ) : (
+          <GridContainer>
+            <ViedoGrid $chatOpen={chatOpen}>
+              {publisher &&
+                [publisher, ...subscribers]
+                  .slice(page * pageSize, (page + 1) * pageSize)
+                  .map((sub, i) => (
+                    <StreamContainer
+                      key={sub.id}
+                      onClick={() => {
+                        handleMainVideoStream(sub);
+                        setSideOpen(true);
+                      }}
+                    >
+                      <UserVideoComponent
+                        streamManager={sub}
+                        speaking={speakerIds.includes(
+                          sub.stream.connection.connectionId
+                        )}
+                        isMain={false}
+                      />
+                    </StreamContainer>
+                  ))}
+            </ViedoGrid>
+            {page > 0 && (
+              <PaginationButton
+                className="left-1"
+                onClick={() => setPage((prev) => prev - 1)}
+              >
+                <LeftIcon />
+              </PaginationButton>
+            )}
+            {subscribers.length + 1 > (page + 1) * pageSize && (
+              <PaginationButton
+                className="right-1"
+                onClick={() => setPage((prev) => prev + 1)}
+              >
+                <RightIcon />
+              </PaginationButton>
+            )}
+          </GridContainer>
+        )}
       </VideoContainer>
     </ChannelContent>
   );
@@ -154,17 +284,20 @@ to-[#972da0]
 `;
 
 const ChannelHeaderButtonContainer = tw.div`
+flex
+space-x-4
+px-2
 `;
 
 const ChannelHeaderButton = tw.div`
-w-7
-h-7
+w-10
+h-10
 flex
 justify-center
 items-center
-bg-red-100
 rounded-full
 cursor-pointer
+text-slate-300
 `;
 
 const VideoContainer = tw.div`
@@ -175,9 +308,53 @@ flex-row-reverse
 `;
 
 const GridContainer = tw.div`
+w-full
+flex
+items-center
+pb-4
+px-4
+relative
+`;
+
+const PaginationButton = tw.div`
+absolute
+top-1/2
+-translate-y-full
+cursor-pointer
+`;
+
+const LeftIcon = tw(ChevronLeftIcon)`
+text-slate-400
+hover:text-slate-200
+w-8
+h-8
+`;
+
+const RightIcon = tw(ChevronRightIcon)`
+text-slate-400
+hover:text-slate-200
+w-8
+h-8
+`;
+
+const UpIcon = tw(ChevronUpIcon)`
+text-slate-400
+hover:text-slate-200
+w-8
+h-8
+`;
+
+const DownIcon = tw(ChevronDownIcon)`
+text-slate-400
+hover:text-slate-200
+w-8
+h-8
+`;
+
+const ViedoGrid = tw.div<{ $chatOpen: boolean }>`
 text-white
 grid
-grid-cols-3
+${(p) => (p.$chatOpen ? "grid-cols-3" : "grid-cols-4")}
 gap-4
 p-6
 `;
@@ -188,9 +365,15 @@ justify-center
 items-center
 `;
 
-const ChatContainer = tw.div`
+const SideContainer = tw.div`
 w-0
 xl:min-w-96
+h-full
+overflow-hidden
+`;
+
+const ChatContainer = tw.div`
+w-full
 h-full
 rounded-lg
 flex
@@ -215,4 +398,36 @@ bg-slate-50/5
 text-slate-500
 disabled:bg-transparent
 disabled:text-slate-200
+`;
+
+const DetailContainer = tw.div`
+flex
+h-full
+flex-grow-[1]
+flex-col
+relative
+p-4
+`;
+
+const MainStreamContainer = tw.div`
+w-full
+h-full
+`;
+
+const SideVideoContainer = tw.div`
+w-full
+h-full
+flex
+flex-col
+justify-center
+space-y-2
+p-2
+relative
+`;
+
+const SidePaginationButton = tw.div`
+absolute
+left-1/2
+-translate-x-1/2
+cursor-pointer
 `;
