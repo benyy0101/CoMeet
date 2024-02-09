@@ -9,7 +9,10 @@ export interface CreateNoteResponse {
   noteId: number;
 }
 
-export interface SearchNoteParams {}
+export interface SearchNoteParams {
+  page: number;
+  size: number;
+}
 
 export interface SearchNoteContent {
   id: number;

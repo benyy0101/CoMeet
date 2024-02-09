@@ -16,7 +16,7 @@ const initialState: RoomStore = {
   room: {
     managerId: "",
     managerNickname: "",
-    title: "",
+    title: "mocked room title",
     description: "",
     room_image: "",
     notice: "",
