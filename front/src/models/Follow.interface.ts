@@ -30,6 +30,9 @@ export interface FollowContent {
 export interface ListFollowingResponse {
   content: FollowContent[];
   pageable: Pageable;
+  size: number;
+  number: number;
+  last: boolean;
 }
 
 export interface ListFollowerParams {
@@ -40,4 +43,7 @@ export interface ListFollowerParams {
 export interface ListFollowerResponse {
   content: FollowContent[];
   pageable: Pageable;
+  size: number;
+  number: number;
+  last: boolean;
 }

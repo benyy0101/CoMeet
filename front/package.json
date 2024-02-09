@@ -29,6 +29,7 @@
     "redux-persist": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "sockjs-client": "^1.6.1",
+    "tailwind-scrollbar-hide": "^1.1.7",
     "typescript": "^4.9.5"
   },
   "scripts": {

@@ -44,15 +44,16 @@ z-20
 `;
 
 const LoungeButtonContainer = tw.div`
-relative
 flex
 items-center
 group
+pr-40
+-mr-40
 `;
 
 const TitleCotainer = tw.div`
 absolute
-left-14
+left-24
 z-10
 h-10
 bg-[#170f2a]

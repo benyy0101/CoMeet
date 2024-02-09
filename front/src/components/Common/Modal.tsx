@@ -8,6 +8,7 @@ import { set } from "react-hook-form";
 import CreateChannel from "components/Room/CreateChannel";
 import { IChannel } from "models/Channel.interface";
 import { ILounge } from "models/Lounge.interface";
+import FollowList from "components/Mypage/FollowList";
 
 type ModalProps = {
   toggleModal: () => void;
@@ -81,10 +82,12 @@ function Modal(props: ModalProps) {
   return (
     <Wrapper onClick={modalToggleHandler}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
-        {isLogin ? <Login></Login> : null}
-        {isRoomConfirm ? <RoomConfirm {...setting!}></RoomConfirm> : null}
-        {isSignup ? <Signup></Signup> : null}
-        {isChannelCreate ? (
+        {option === "login" ? <Login></Login> : null}
+        {option === "confirm" ? (
+          <RoomConfirm {...setting!}></RoomConfirm>
+        ) : null}
+        {option === "signup" ? <Signup></Signup> : null}
+        {option === "channelCreate" ? (
           <CreateChannel
             channels={channels}
             removeChannel={removeChannel}
@@ -94,17 +97,23 @@ function Modal(props: ModalProps) {
             removeLounge={removeLounge}
           />
         ) : null}
+        {option === "follower" ? (
+          <FollowList option={option}></FollowList>
+        ) : null}
+        {option === "following" ? (
+          <FollowList option={option}></FollowList>
+        ) : null}
       </ModalContainer>
     </Wrapper>
   );
 }
 
 const Wrapper = tw.div`
-fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center
+fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
 `;
 
 const ModalContainer = tw.div`
-rounded-md 
-shadow-md
+  rounded-md 
+  shadow-md
 `;
 export default Modal;
