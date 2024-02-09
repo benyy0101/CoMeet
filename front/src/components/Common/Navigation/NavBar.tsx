@@ -15,6 +15,9 @@ import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 
 export const NavBar = () => {
+  //memberId 가져오기
+  const memberId = useSelector((state: any) => state.user.user.memberId);
+
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const loginModalHandler = () => {
@@ -123,7 +126,7 @@ export const NavBar = () => {
               </ul>
             </Menu2>
             <Menu2>
-              <Link to="/mypage">
+              <Link to={`/userpage/${memberId}`}>
                 <img src={BasicProfile} width={30} alt="profile" />
               </Link>
             </Menu2>
