@@ -2,6 +2,7 @@ package com.a506.comeet.app.member.controller.dto;
 
 import com.a506.comeet.common.enums.MemberFeature;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class MemberUpdateRequestDto {
     private String password;
     private String nickname;
     private String link;
+    @Null
     private String profileImage;
     @Email
     private String email;
@@ -34,4 +36,5 @@ public class MemberUpdateRequestDto {
         this.description = description;
         this.feature = feature;
     }
+
 }

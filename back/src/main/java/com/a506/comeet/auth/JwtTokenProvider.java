@@ -89,6 +89,7 @@ public class JwtTokenProvider {
                 .build();
     }
 
+
     // Jwt 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내는 메서드
     public Authentication getAuthentication(String accessToken) {
         // Jwt 토큰 복호화 (Claim이 권한 정보)

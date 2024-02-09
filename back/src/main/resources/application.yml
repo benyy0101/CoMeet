@@ -31,6 +31,15 @@ spring:
     mongodb:
       uri:
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id:
+            client-secret:
+            password-salt:
+
 logging.level:
   org.hibernate.SQL:
 

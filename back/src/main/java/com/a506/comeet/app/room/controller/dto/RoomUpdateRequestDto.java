@@ -3,11 +3,11 @@ package com.a506.comeet.app.room.controller.dto;
 import com.a506.comeet.common.enums.RoomConstraints;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,13 +16,12 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomUpdateRequestDto {
 
-    @Setter
     private String mangerId;
     @Size(min = 2, max = 30, message = "이름은 2자 이상, 30자 이하여야 합니다.")
     private String title;
     @Size(max = 140, message = "설명은 140자 이하여야 합니다.")
     private String description;
-    @Setter
+    @Null
     private String roomImage;
     @Size(max = 1000, message = "공지는 1000자 이하여야 합니다.")
     private String notice;
