@@ -1,24 +1,19 @@
 package com.a506.comeet.app.room.controller;
 
-import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
-import com.a506.comeet.error.errorcode.CommonErrorCode;
-import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.common.util.MemberUtil;
 import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/room")
@@ -44,23 +39,26 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/image")
-    public ResponseEntity<?> getImageUrl(
-            @RequestParam("roomImageFile") MultipartFile multipartFile) {
-        log.info("roomImageFile : {}", multipartFile);
-        try{
-            String url = s3UploadService.saveFile(multipartFile, "roomImage/");
-            log.info("url : {}", url);
-            return ResponseEntity.ok(url);
-        } catch (IOException e) {
-            throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR, "이미지 파일 업로드 중 에러가 발생하였습니다");
-        }
+    @PostMapping("/image/{roomId}")
+    public ResponseEntity<Void> updateImage(
+            @RequestParam("roomImageFile") MultipartFile multipartFile, @PathVariable Long roomId) {
+        String memberId = MemberUtil.getMemberId();
+        String url = s3UploadService.saveFile(multipartFile, "roomImage/");
+        log.info("url : {}", url);
+        roomService.update(RoomUpdateRequestDto
+                .builder()
+                .roomImage(url)
+                .build(), memberId, roomId);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/image")
-    public ResponseEntity<?> deleteImageUrl(
-            @RequestParam("roomImageUrl") String roomImageUrl) {
-        s3UploadService.deleteImage(roomImageUrl, "roomImage/");
+    @DeleteMapping("/image/{roomId}")
+    public ResponseEntity<Void> deleteImage(@PathVariable Long roomId) {
+        String memberId = MemberUtil.getMemberId();
+        roomService.update(RoomUpdateRequestDto
+                .builder()
+                .roomImage("default_room_image_letsgo")
+                .build(), memberId, roomId);
         return ResponseEntity.ok().build();
     }
 

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Service
@@ -26,22 +28,27 @@ public class S3UploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String saveFile(MultipartFile multipartFile, String path) throws IOException {
-        String originalName = multipartFile.getOriginalFilename();
-        String pureFileName = originalName.split("\\.")[0];
-        String extension = "." + originalName.split("\\.")[1];
-        String filename = pureFileName+LocalDateTime.now() + extension;
+    public String saveFile(MultipartFile multipartFile, String path) {
+        try {
+            String originalName = multipartFile.getOriginalFilename();
+            String pureFileName = originalName.split("\\.")[0];
+            String extension = "." + originalName.split("\\.")[1];
+            String filename = pureFileName + LocalDateTime.now() + extension;
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multipartFile.getSize());
-        metadata.setContentType(multipartFile.getContentType());
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(multipartFile.getSize());
+            metadata.setContentType(multipartFile.getContentType());
 
-        amazonS3.putObject(bucket, path + filename, multipartFile.getInputStream(), metadata);
-        return amazonS3Client.getUrl(bucket, path + filename).toString();
+            amazonS3.putObject(bucket, path + filename, multipartFile.getInputStream(), metadata);
+            return amazonS3Client.getUrl(bucket, path + filename).toString();
+        } catch (IOException e){
+            throw new RestApiException(CommonErrorCode.INTERNAL_SERVER_ERROR, "이미지 파일 업로드 중 오류가 발생하였습니다");
+        }
     }
 
     public void deleteImage(String url, String path)  {
-        String key = path + url.split("/")[5];
+        String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
+        String key = path + decodedUrl.split("/")[5];
         log.info("{}", key);
         try{
             amazonS3.deleteObject(bucket, key);

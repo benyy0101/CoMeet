@@ -19,6 +19,9 @@ import { Room } from "pages/Room";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
 export const NavBar = () => {
+  //memberId 가져오기
+  const memberId = useSelector((state: any) => state.user.user.memberId);
+
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);

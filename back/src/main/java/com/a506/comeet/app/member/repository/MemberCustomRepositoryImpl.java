@@ -42,6 +42,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                         member.memberId,
                         member.name,
                         member.nickname,
+                        member.link,
                         member.profileImage,
                         member.email,
                         member.description,

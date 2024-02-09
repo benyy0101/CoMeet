@@ -44,15 +44,15 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @Column(nullable = false, unique = true)
     private String nickname;
     @Builder.Default
-    private String link = "default_link_letsgo";
+    private String link = "";
     @Column(name = "profile_image")
     @Builder.Default
-    private String profileImage = "default_profile_image_letsgo";
+    private String profileImage = "";
     @Column(nullable = false, unique = true)
     private String email;
 
     @Builder.Default
-    private String description = "default_description_letsgo";
+    private String description = "";
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
@@ -79,6 +79,7 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
         if (dto.getName() != null) this.name = dto.getName();
         if (dto.getPassword() != null) this.password = dto.getPassword();
         if (dto.getNickname() != null) this.nickname = dto.getNickname();
+        if (dto.getLink() != null) this.link = dto.getLink();
         if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
         if (dto.getEmail() != null) this.email = dto.getEmail();
         if (dto.getDescription() != null) this.description = dto.getDescription();
