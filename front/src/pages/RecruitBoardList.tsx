@@ -148,7 +148,7 @@ export const RecruitBoardList = () => {
   const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
     queryKey: ["boardList", JSON.stringify(searchBoardParams)],
     queryFn: () => {
-      console.log("execute query", searchBoardParams);
+      console.log("get data from back...", searchBoardParams);
       return searchBoard(searchBoardParams);
     },
   });
@@ -185,6 +185,8 @@ export const RecruitBoardList = () => {
     if (QDboardList?.content) {
       console.log(QDboardList);
       setBoardList(QDboardList.content);
+      setTotalPages(QDboardList.totalPages);
+      setTotalElements(QDboardList.totalElements);
     }
   }, [QDboardList]);
 
