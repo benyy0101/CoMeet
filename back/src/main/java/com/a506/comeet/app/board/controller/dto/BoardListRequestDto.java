@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.util.List;
 
+import static com.a506.comeet.common.enums.BoardSortBy.LATEST;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,8 +20,8 @@ public class BoardListRequestDto {
     private BoardType boardType;    //게시판 타입
 
     private String searchKeyword;   //제목 + 본문
-    private String writerNickname;          //작성자
-    private final BoardSortBy sortBy = BoardSortBy.LATEST;     //정렬 타입 (최신순, 좋아요순, 모집률순)
+    private String writerNickname;           //작성자
+    private BoardSortBy sortBy = LATEST;     //정렬 타입 (최신순, 좋아요순, 모집률순)
 
     private RecruitBoardCategory recruitBoardCategory;  //모집 게시판 카테고리 (모집중, 모집완료)
     private List<Long> keywordIds;  //모집 게시판 프로그래밍 키워드
