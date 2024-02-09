@@ -57,17 +57,18 @@ function MessageList(params: MessageListProps) {
         >
           {messageList?.content.map((message) => (
             <>
-              <MessageItem key={message.id}>
-                <ItemWrapper onClick={() => readNote(message.id)}>
-                  <MessageTitle>
-                    <p className="text-blue-400">{message.writerId}</p>님의 쪽지
-                  </MessageTitle>
-                  {message.isRead ? (
-                    <Status>읽음</Status>
-                  ) : (
-                    <Status>안읽음</Status>
-                  )}
-                </ItemWrapper>
+              <MessageItem
+                key={message.id}
+                onClick={() => readNote(message.id)}
+              >
+                <MessageTitle>
+                  <p className="text-blue-400">{message.writerId}</p>님의 쪽지
+                </MessageTitle>
+                {message.isRead ? (
+                  <Status>읽음</Status>
+                ) : (
+                  <Status>안읽음</Status>
+                )}
               </MessageItem>
             </>
           ))}
@@ -104,7 +105,8 @@ transition
 hover:text-indigo-400
 `;
 
-const MessageItem = tw.div`
+const MessageItem = tw.button`
+w-full
 flex
 justify-between
 items-end
@@ -114,8 +116,6 @@ shadow-lg
 rounded-md
 p-3
 `;
-
-const ItemWrapper = tw.button``;
 
 const MessageTitle = tw.div`
 flex

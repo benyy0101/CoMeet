@@ -47,7 +47,12 @@ function Modal(props: ModalProps) {
 
   const setNoteStateHandler = (state: string, no: number) => {
     setNoteState(state);
-    setNoteNo(no);
+    if (no) {
+      setNoteNo(no);
+    }
+  };
+  const setStateHandler = (state: string) => {
+    setNoteState(state);
   };
 
   return (
@@ -81,7 +86,7 @@ function Modal(props: ModalProps) {
           <MessageWrite />
         ) : null}
         {option === "message" && noteState === "read" ? (
-          <MessageRead noteNo={noteNo} />
+          <MessageRead noteNo={noteNo} swapState={setNoteStateHandler} />
         ) : null}
       </ModalContainer>
     </Wrapper>
