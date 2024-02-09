@@ -47,3 +47,8 @@ export interface ListFollowerResponse {
   number: number;
   last: boolean;
 }
+
+export interface FollowState {
+  following: FollowContent[];
+  followed: FollowContent[];
+}

@@ -1,12 +1,14 @@
+import { follow } from "api/Follow";
 import { FollowContent } from "models/Follow.interface";
 import React from "react";
 import tw from "tailwind-styled-components";
 
 interface FollowerItemProps {
   item: FollowContent;
+  option: string;
 }
 
-const FollowerItem: React.FC<FollowerItemProps> = ({ item }) => {
+const FollowerItem: React.FC<FollowerItemProps> = ({ item,option }) => {
   return (
     <Wrapper>
       <LeftContainer>

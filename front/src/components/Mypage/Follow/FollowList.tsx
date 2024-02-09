@@ -54,7 +54,7 @@ function FollowList(props: { option: string }) {
   return (
     <Wrapper>
       {list.map((item, index) => (
-        <FollowerItem key={index} item={item} />
+        <FollowerItem key={index} item={item} option={option}/>
       ))}
     </Wrapper>
   );
