@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import { UserState } from "models/Login.interface";
 import { RoomStore } from "store/reducers/roomSlice";
 import { Room } from "pages/Room";
+import { EnvelopeIcon } from "@heroicons/react/24/outline";
 
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
@@ -34,7 +35,7 @@ export const NavBar = () => {
       memberId: "mockup_id",
       nickname: "mockup",
       profileImage: "default_image_letsgo",
-      unreadNoteCount: 10,
+      unreadNoteCount: 12,
       joinedRooms: [{
         roomId:21,
         title:"mockup_room",
@@ -173,6 +174,13 @@ export const NavBar = () => {
                 </button>
                 {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
+            <EnvelopMenu>
+              <EnvelopeIcon className="w-8 h-8"/>
+              {userInfo.user.unreadNoteCount !==0 ?
+                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>:null
+              }
+              
+            </EnvelopMenu>
             <ProfileMenu>
               <Link to="/mypage">
                 <NavIcon src={BasicProfile} alt="profile" />
@@ -283,6 +291,24 @@ const DropDownCommunity = tw.div`
 `;
 
 const ProfileMenu = tw.div`
+`
+
+const EnvelopMenu = tw.div`
+  relative
+`;
+
+const UnreadCount = tw.div`
+absolute
+top-4
+left-5
+rounded-full
+bg-red-500
+text-sm
+h-6
+w-6
+flex
+items-center
+justify-center
 `
 
 //커뮤니티 드롭다운 버튼들
