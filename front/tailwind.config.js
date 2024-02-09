@@ -3,7 +3,11 @@ module.exports = {
   content: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {
+      aspectRatio: {
+        "4/3": "4 / 3",
+      },
+    },
   },
   variants: {
     extend: {},
