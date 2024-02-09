@@ -13,6 +13,9 @@ public enum CustomErrorCode implements ErrorCode{
     NO_MEMBER(HttpStatus.BAD_REQUEST, "ID에 해당하는 사용자가 존재하지 않습니다"),
     NO_BOARD(HttpStatus.BAD_REQUEST, "게시물이 존재하지 않습니다"),
     NO_ROOM(HttpStatus.BAD_REQUEST, "방이 존재하지 않습니다"),
+    YES_ROOM(HttpStatus.BAD_REQUEST, "방이 존재합니다."),  //자유 게시판은 방X
+    NO_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리가 존재하지 않습니다."), //자유 게시판은 카테고O
+    YES_CATEGORY(HttpStatus.BAD_REQUEST, "카테고리가 존재합니다."),  //모집 게시판은 카테고리X
     NO_COMMENT(HttpStatus.BAD_REQUEST, "댓글이 존재하지 않습니다"),
     NO_TIL(HttpStatus.BAD_REQUEST, "TIL이 존재하지 않습니다"),
     NO_KEYWORD(HttpStatus.BAD_REQUEST, "키워드가 존재하지 않습니다"),
