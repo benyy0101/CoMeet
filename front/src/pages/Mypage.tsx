@@ -5,6 +5,7 @@ import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
 import { MyTILCalendar } from "components/Mypage/MyTILCalendar";
 import { MySumTime } from "components/Mypage/MySumTime";
+import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,16 +19,15 @@ import axios from "axios";
 export const Mypage = () => {
   //id 리덕스에서 가져오고
   const memberId = useSelector((state: any) => state.user.user.memberId);
+
+  const params = useParams();
+
+  const userId = params.memberId;
+
+  //들어온 게 내 페이지인지 아닌지
+  const [isMe, setIsMe] = useState<boolean>(false);
   const [userData, setUserData] = useState<MemberQuery | null>(null);
   const [isChange, setisChange] = useState<boolean>(false);
-
-  // // 이건 리액트 쿼리
-  // const { data, isError, isLoading, refetch } = useQuery<MemberQuery, Error>({
-  //   queryKey: ["user"],
-  //   queryFn: () => handleMember(memberId),
-  // });
-
-  //
 
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
@@ -38,6 +38,10 @@ export const Mypage = () => {
   //시작할 때 데이터 다 들고와
   useEffect(() => {
     fetchData();
+
+    if (memberId === userId) {
+      setIsMe(!isMe);
+    }
   }, []);
 
   //프로필 이미지 바뀌면 새로 고침
@@ -178,7 +182,7 @@ bg-[#3C334D]
 
 // TIL 캘린더 컨테이너
 const TILCalendarContainer = tw.div`
-h-[62%]
+h-[57%]
 mb-5
 rounded-xl
 bg-[#3C334D]
@@ -186,7 +190,7 @@ bg-[#3C334D]
 
 // 공부 합계 시간 컨테이너
 const SumTimeContainer = tw.div`
-h-[35%]
+h-[40%]
 rounded-xl
 bg-[#3C334D]
 `;
