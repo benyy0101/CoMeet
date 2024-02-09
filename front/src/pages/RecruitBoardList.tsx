@@ -79,13 +79,6 @@ export const RecruitBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      // 키워드가 있을 때
-      console.log("enter", currentKeywords, currentKeywords.length);
-      if (currentKeywords.length !== 0) {
-        searchBoardParams.keywordIds = currentKeywords.map((data) => data.id);
-      } else {
-        delete searchBoardParams.keywordIds;
-      }
       //검색어 들어갔을 때 로직
       if (searchCondition === "작성자") {
         delete searchBoardParams.searchKeyword;
@@ -180,6 +173,17 @@ export const RecruitBoardList = () => {
     searchBoardParams.capacity = currentCount;
     setSearchBoardParams(searchBoardParams);
   }, [currentCount]);
+
+  useEffect(() => {
+    // 키워드가 있을 때
+    console.log("keyword check", currentKeywords, currentKeywords.length);
+    if (currentKeywords.length !== 0) {
+      searchBoardParams.keywordIds = currentKeywords.map((data) => data.id);
+    } else {
+      delete searchBoardParams.keywordIds;
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentKeywords]);
 
   useEffect(() => {
     if (QDboardList?.content) {
