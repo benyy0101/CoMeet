@@ -107,5 +107,10 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{roomId}")
+    public ResponseEntity<RoomResponseDto> getDetails(@PathVariable Long roomId){
+        RoomResponseDto res = roomService.getDetails(roomId);
+        return ResponseEntity.ok(res);
+    }
 
 }
