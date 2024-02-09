@@ -21,12 +21,17 @@ import { EnvelopeIcon } from "@heroicons/react/24/outline";
 export const NavBar = () => {
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
+  const [messageModal, setMessageModal] = React.useState<boolean>(false);
+
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
   };
   const signupModalHandler = () => {
     setSignupModal(!signupModal);
   };
+  const messageModalHandler = () => {
+    setMessageModal(!messageModal);
+  }
 
   //const userInfo = useSelector((state: any) => state.user);
   const userInfo:UserState = {
@@ -174,12 +179,16 @@ export const NavBar = () => {
                 </button>
                 {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
-            <EnvelopMenu>
+            <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8"/>
               {userInfo.user.unreadNoteCount !==0 ?
                 <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>:null
               }
-              
+              <ModalPortal>
+                {messageModal === true ? (
+                  <Modal toggleModal={messageModalHandler} option="message"></Modal>
+                ):null}
+              </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
               <Link to="/mypage">
