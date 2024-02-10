@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/room")
 @RequiredArgsConstructor
@@ -57,7 +59,7 @@ public class RoomController {
         String memberId = MemberUtil.getMemberId();
         roomService.update(RoomUpdateRequestDto
                 .builder()
-                .roomImage("default_room_image_letsgo")
+                .roomImage("")
                 .build(), memberId, roomId);
         return ResponseEntity.ok().build();
     }
@@ -111,6 +113,12 @@ public class RoomController {
     public ResponseEntity<RoomResponseDto> getDetails(@PathVariable Long roomId){
         RoomResponseDto res = roomService.getDetails(roomId);
         return ResponseEntity.ok(res);
+    }
+
+    @GetMapping("/managing")
+    public ResponseEntity<List<ManagingRoomResponseDto>> getMyManagerRoom(){
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(roomService.getManagingRoom(memberId));
     }
 
 }

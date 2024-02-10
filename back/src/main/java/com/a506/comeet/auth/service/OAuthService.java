@@ -15,20 +15,19 @@ import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.a506.comeet.error.errorcode.CustomErrorCode.LOGIN_FAIL;
+import static com.a506.comeet.auth.SocialLoginType.*;
 import static com.a506.comeet.error.errorcode.CustomErrorCode.NO_MEMBER;
 
 @Service
@@ -43,22 +42,29 @@ public class OAuthService {
     private final RoomMemberRepository roomMemberRepository;
     private final NoteRepository noteRepository;
     private final PasswordEncoder passwordEncoder;
-    private final OAuthClient oAuthClient;
+    private final OAuthClient githubOAuthClient;
+    private final OAuthClient googleOAuthClient;
 
-    @Value("spring.security.oauth2.client.registration.github.password-salt")
+    @Value("spring.security.oauth2.client.registration.password-salt")
     private String salt;
 
     @Transactional
-    public LoginResponseDto oAuthLogin(String code) {
-        OAuthMemberInfoResponse res = getUserInfo(code);
-        String memberId = res.getOauthId() + "GITHUB";
-
+    public LoginResponseDto githubOAuthLogin(String code) {
+        OAuthMemberInfoResponse res = getGithubUserInfo(code);
+        String memberId = res.getOauthId() + GITHUB;
         createIfNewMember(memberId, res);
-
         return login(memberId);
     }
 
-    public LoginResponseDto login(String memberId) {
+    @Transactional
+    public LoginResponseDto googleOAuthLogin(String code) {
+        OAuthMemberInfoResponse res = getGoogleUserInfo(code);
+        String memberId = res.getOauthId() + GOOGLE;
+        createIfNewMember(memberId, res);
+        return login(memberId);
+    }
+
+    private LoginResponseDto login(String memberId) {
         JwtToken jwtToken = makeJwtToken(memberId);
         List<RoomSimpleResponseDto> joinedRooms = roomMemberRepository.getJoinedRooms(memberId);
         int unreadNoteCount = noteRepository.getUnreadCount(memberId);
@@ -74,12 +80,21 @@ public class OAuthService {
                 .build();
     }
 
-    private OAuthMemberInfoResponse getUserInfo(String code) {
+    private OAuthMemberInfoResponse getGithubUserInfo(String code) {
         try {
-            OAuthAccessTokenResponse tokenResponse = oAuthClient.getAccessToken(code);
-            return oAuthClient.getMemberInfo(tokenResponse.getAccessToken());
+            OAuthAccessTokenResponse tokenResponse = githubOAuthClient.getAccessToken(code);
+            return githubOAuthClient.getMemberInfo(tokenResponse.getAccessToken());
         } catch (HttpClientErrorException e) {
             throw new RestApiException(CustomErrorCode.GITHUB_AUTHORIZATION_ERROR);
+        }
+    }
+
+    private OAuthMemberInfoResponse getGoogleUserInfo(String code) {
+        try {
+            OAuthAccessTokenResponse tokenResponse = googleOAuthClient.getAccessToken(code);
+            return googleOAuthClient.getMemberInfo(tokenResponse.getAccessToken());
+        } catch (HttpClientErrorException e) {
+            throw new RestApiException(CustomErrorCode.GOOGLE_AUTHORIZATION_ERROR);
         }
     }
 
@@ -94,15 +109,13 @@ public class OAuthService {
             Member member =
                     Member.builder()
                             .memberId(memberId)
-                            .password(passwordEncoder.encode(memberId + salt)) // 수정 필요
-                            .name(res.getName())
+                            .password(passwordEncoder.encode(memberId + salt))
+                            .name(res.getName()==null? "" : res.getName())
                             .profileImage(res.getProfileUrl())
-                            .email(res.getEmail())
-                            .nickname(res.getName())
-                            .roles(List.of("USER")).build();
+                            .nickname(res.getName()==null? "" : res.getName() + RandomStringUtils.randomAlphanumeric(8))
+                            .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }
     }
-
 
 }
