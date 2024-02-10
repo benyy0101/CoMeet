@@ -205,6 +205,10 @@ public class RoomService {
         return getRoomResponseDto(roomId);
     }
 
+    public List<ManagingRoomResponseDto> getManagingRoom(String memberId){
+        return roomRepository.getManagingRoom(memberId);
+    }
+
     private RoomResponseDto getRoomResponseDto(Long roomId) {
         RoomResponseDto res = roomRepository.getDetailRoomInfo(roomId);
         Set<String> currentMemberIds = roomRedisRepository.getMembers(roomId);
