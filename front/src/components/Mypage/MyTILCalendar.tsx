@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 import { searchTil } from "api/Til";
+import TilModal from "./TilModal";
 
 import tw from "tailwind-styled-components";
 import styled from "styled-components";
@@ -26,6 +27,9 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
   const [selectedDay, setSelectedDay] = useState<Value>(new Date());
   const [tilList, setTilLIst] = useState<til[]>();
 
+  //클릭한 날짜의 tilId
+  const [currentTilId, setCurrentTilId] = useState<number>(0);
+
   //선택한 날짜 포맷 바꾸기
   const activeDate =
     selectedDay instanceof Date ? moment(selectedDay).format("YYYY-MM-DD") : "";
@@ -42,9 +46,12 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
     setActiveMonth(newActiveMonth);
   };
 
-  // if (tils && tils.length > 0) {
-  //   console.log(tils![0]);
-  // }
+  //날짜 클릭했는가
+  const [isTilClick, setIsTilClick] = useState<boolean>(false);
+
+  const handleTilModal = () => {
+    setIsTilClick(!isTilClick);
+  };
 
   //TiL 있는 날짜에 컨텐츠 추가하기
   const addTilCheck = ({ date }: any) => {
@@ -56,7 +63,7 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
       ) {
         contents.push(
           <>
-            <img src={Star} alt="" className="w-5" />
+            <img key={date} src={Star} alt="" className="w-5" />
           </>
         );
       }
@@ -76,11 +83,16 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
     }).then((res) => {
       const convertedTils: til[] = res.content.map((item) => ({
         date: item.date,
-        id: item.tilid,
+        id: item.id,
       }));
 
       setTilLIst(convertedTils);
     });
+  };
+
+  //해당 날짜 클릭 할 때
+  const handleDayClick = () => {
+    setIsTilClick(true);
   };
 
   useEffect(() => {
@@ -100,7 +112,17 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
           getActiveMonth(activeStartDate)
         }
         tileContent={addTilCheck}
+        onClickDay={handleDayClick}
       />
+      {/* til 세부 모달 - 클릭한 날짜를 보내야 함 */}
+      {isTilClick === true ? (
+        <TilModal
+          toggleModal={handleTilModal}
+          activeDate={activeDate}
+          tilList={tilList}
+          refreshTils={getTils}
+        />
+      ) : null}
     </TotalContainer>
   );
 }
