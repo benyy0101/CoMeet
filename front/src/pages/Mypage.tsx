@@ -95,7 +95,7 @@ export const Mypage = () => {
       <FirstContainerRight>
         {/* TIL 캘린더 컨테이너 */}
         <TILCalendarContainer>
-          <MyTILCalendar tils={userData?.tils} />
+          <MyTILCalendar memberId={memberId} />
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
         <SumTimeContainer>
