@@ -1,10 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import RoomOption from "./RoomOption";
 import tw from "tailwind-styled-components";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
-import { TextEditProps } from "models/Board.interface";
+import { CreateBoardParams, CreateBoardResponse, TextEditProps } from "models/Board.interface";
 import "@toast-ui/editor/dist/i18n/ko-kr";
+import { useQuery } from "@tanstack/react-query";
+import { createBoard } from "api/Board";
 
 type SelectOption = {
   key: number;
@@ -13,7 +15,7 @@ type SelectOption = {
 };
 
 function TextEditor(props: TextEditProps) {
-  const editorRef = useRef();
+  const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
   const [selectOption, setSelectOption] = React.useState<SelectOption[]>([
     { key: 1, value: "question", label: "질문하기" },
@@ -26,9 +28,23 @@ function TextEditor(props: TextEditProps) {
     category: "카테고리",
   };
   //isEdit이 true면 수정하기, false면 새 글 작성하기
-  const [editedContent, setEditedContent] = React.useState<string>("");
-  const [selectedRoom, setSelectedRoom] = React.useState<string>("");
-  const [headerTitle, setHeaderTitle] = React.useState<string>("자유게시판");
+  const [editedContent, setEditedContent] = useState<string>("");
+  const [selectedRoom, setSelectedRoom] = useState<string>("");
+  const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
+  const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>({
+    context: "",
+    title: "",
+    type: "RECRUIT",
+  });
+  //쓰는 값
+  const titleRef = useRef<HTMLInputElement | null>(null);
+
+  const { data: dataCreateBoard } = useQuery<CreateBoardResponse, Error>({
+    queryKey: ["createboard", JSON.stringify(createBoardParams)],
+    queryFn: () => {
+      return createBoard(createBoardParams);
+    },
+  });
 
   useEffect(() => {
     if (isFree) {
@@ -40,6 +56,20 @@ function TextEditor(props: TextEditProps) {
 
   const handleRoom = (room: string) => {
     setSelectedRoom(room);
+  };
+
+  const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // 여기에서 조건대로 입력이 들어왔는지 체크하자.
+    // 제목과 내용이 필수로 들어가게 만들어야 함
+    // in recruit you have to give roomid too
+    if (editorRef.current && titleRef.current) {
+      // console.log(editorRef.current.getInstance().getMarkdown());
+      // console.log(titleRef.current.value);
+      createBoardParams.title = titleRef.current.value;
+      createBoardParams.context = editorRef.current.getInstance().getMarkdown();
+      console.log(createBoardParams);
+      setCreateBoardParams(createBoardParams);
+    }
   };
 
   return (
@@ -59,13 +89,12 @@ function TextEditor(props: TextEditProps) {
         ) : (
           <CatContainer>{dummy.category}</CatContainer>
         )}
-        <TitleInput type="text" placeholder="제목을 입력해 주세요"></TitleInput>
+        <TitleInput type="text" placeholder="제목을 입력해주세요" ref={titleRef}></TitleInput>
       </TitleWrapper>
-      {!isFree ? (
-        <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption>
-      ) : null}
+      {!isFree ? <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption> : null}
       <QuillContainer>
         <Editor
+          ref={editorRef}
           initialValue="게시판 성격에 맞는 글만 써주세요"
           previewStyle="vertical"
           height="600px"
@@ -75,8 +104,9 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
+        {/* <MyRoomBox></MyRoomBox> */}
         <CancelButton>취소하기</CancelButton>
-        <SubmitButton>작성하기</SubmitButton>
+        <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
   );
@@ -144,7 +174,7 @@ const TitleInput = tw.input`
     border-b
     border-0.1
     bg-grey-300
-    text-white
+    text-black
     text-3xl
     p-1
     w-1/2
