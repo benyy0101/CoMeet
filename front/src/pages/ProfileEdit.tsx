@@ -1,4 +1,4 @@
-import { NavBar } from "components/Common/Navigation/NavBar";
+
 import EditForm from "components/ProfileEdit/EditForm";
 import React from "react";
 import tw from "tailwind-styled-components";

@@ -38,11 +38,15 @@ function MessageList(params: MessageListProps) {
     swapState("read", no);
   };
 
+  const writeNote = ()=>{
+    swapState("write", 0);
+  }
+
   return (
     <Wrapper>
       <Header>
         <Title>쪽지함</Title>
-        <Writable>
+        <Writable onClick={()=>{writeNote()}}>
           <PencilSquareIcon className="h-6 w-6"></PencilSquareIcon>
         </Writable>
       </Header>

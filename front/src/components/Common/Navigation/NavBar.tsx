@@ -202,9 +202,9 @@ export const NavBar = () => {
             </ProfileMenu>
           </>
         ) : (
-          <>
+          <LoginContainer>
             <LoginSignup>
-              <button onClick={signupModalHandler}>회원가입</button>
+              <SignUpButton onClick={signupModalHandler}>회원가입</SignUpButton>
               <ModalPortal>
                 {signupModal === true ? (
                   <Modal
@@ -215,9 +215,8 @@ export const NavBar = () => {
                 ) : null}
               </ModalPortal>
             </LoginSignup>
-            |
             <LoginSignup>
-              <button onClick={loginModalHandler}>로그인</button>
+              <LoginButton onClick={loginModalHandler}>로그인</LoginButton>
               <ModalPortal>
                 {loginModal === true ? (
                   <Modal
@@ -228,7 +227,7 @@ export const NavBar = () => {
                 ) : null}
               </ModalPortal>
             </LoginSignup>
-          </>
+          </LoginContainer>
         )}
       </RightContainer>
     </NavBarContainer>
@@ -336,10 +335,31 @@ transition-colors
 hover:bg-[#282828]
 `;
 
+const LoginContainer = tw.div`
+flex
+space-x-4
+`
+const LoginButton = tw.button`
+p-1
+rounded-sm
+bg-transparent
+border-[1px]
+border-zinc-300
+text-zinc-300
+px-2
+`
+const SignUpButton = tw.button`
+p-1
+px-2
+rounded-sm
+bg-violet-500
+hover:bg-violet-600
+transition-colors
+`
+
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
-    ml-2
-    mr-3
+
     `;
 
 //InServer: 서버 표시하는 상태바
