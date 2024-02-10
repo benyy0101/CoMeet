@@ -7,6 +7,8 @@ import { CreateBoardParams, CreateBoardResponse, TextEditProps } from "models/Bo
 import "@toast-ui/editor/dist/i18n/ko-kr";
 import { useQuery } from "@tanstack/react-query";
 import { createBoard } from "api/Board";
+import { title } from "process";
+import { useNavigate } from "react-router-dom";
 
 type SelectOption = {
   key: number;
@@ -29,7 +31,7 @@ function TextEditor(props: TextEditProps) {
   };
   //isEdit이 true면 수정하기, false면 새 글 작성하기
   const [editedContent, setEditedContent] = useState<string>("");
-  const [selectedRoom, setSelectedRoom] = useState<string>("");
+  const [selectedRoom, setSelectedRoom] = useState<number>(0);
   const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
   const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>({
     context: "",
@@ -38,6 +40,9 @@ function TextEditor(props: TextEditProps) {
   });
   //쓰는 값
   const titleRef = useRef<HTMLInputElement | null>(null);
+
+  //move page
+  const navigate = useNavigate();
 
   const { data: dataCreateBoard } = useQuery<CreateBoardResponse, Error>({
     queryKey: ["createboard", JSON.stringify(createBoardParams)],
@@ -54,22 +59,38 @@ function TextEditor(props: TextEditProps) {
     }
   }, [isFree]);
 
-  const handleRoom = (room: string) => {
+  const handleRoom = (room: number) => {
     setSelectedRoom(room);
   };
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // 여기에서 조건대로 입력이 들어왔는지 체크하자.
-    // 제목과 내용이 필수로 들어가게 만들어야 함
-    // in recruit you have to give roomid too
-    if (editorRef.current && titleRef.current) {
-      // console.log(editorRef.current.getInstance().getMarkdown());
-      // console.log(titleRef.current.value);
-      createBoardParams.title = titleRef.current.value;
-      createBoardParams.context = editorRef.current.getInstance().getMarkdown();
-      console.log(createBoardParams);
-      setCreateBoardParams(createBoardParams);
+    // 조건대로 입력이 들어왔는지 체크
+    const title = titleRef.current ? titleRef.current.value : "";
+    const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
+    const roomId = selectedRoom ? selectedRoom : 0;
+    console.log("title", title, context);
+    if (title === "") {
+      alert("제목을 작성하세요");
+      return;
     }
+    if (context === "") {
+      alert("내용을 작성하세요");
+      return;
+    }
+    if (!isFree && !roomId) {
+      alert("모집 중인 방을 선택해주세요");
+      return;
+    }
+
+    createBoardParams.type = isFree ? "FREE" : "RECRUIT";
+    createBoardParams.title = title;
+    createBoardParams.context = context;
+    createBoardParams.roomId = selectedRoom;
+
+    console.log(createBoardParams);
+    // setCreateBoardParams(createBoardParams);
+    //완료되고 바깥으로 나가게 해야함
+    navigate("");
   };
 
   return (
@@ -104,7 +125,6 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
-        {/* <MyRoomBox></MyRoomBox> */}
         <CancelButton>취소하기</CancelButton>
         <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>

@@ -3,7 +3,7 @@ import tw from "tailwind-styled-components";
 
 type RoomOptionProps = {
   provoke: boolean;
-  selectRoom: (room: string) => void;
+  selectRoom: (room: number) => void;
 };
 
 type Room = {
@@ -18,18 +18,18 @@ type RoomButtonProps = {
 };
 function RoomOption(props: RoomOptionProps) {
   const [roomList, setRoomList] = React.useState<Room[]>([
-    { id: 1, name: "SSAFY 9기", isActive: true },
-    { id: 2, name: "SSAFY 10기", isActive: false },
-    { id: 3, name: "SSAFY 11기", isActive: true },
-    { id: 4, name: "SSAFY 12기", isActive: true },
-    { id: 5, name: "SSAFY 13기", isActive: true },
+    { id: 42, name: "SSAFY 9기", isActive: true },
+    // { id: 2, name: "SSAFY 10기", isActive: false },
+    // { id: 3, name: "SSAFY 11기", isActive: true },
+    // { id: 4, name: "SSAFY 12기", isActive: true },
+    // { id: 5, name: "SSAFY 13기", isActive: true },
   ]);
-  const [selected, setSelected] = React.useState<string>("");
+  const [selected, setSelected] = React.useState<number>(0);
 
   const selectedHandler = (room: Room) => {
     if (room.isActive === false) return;
-    setSelected(room.name);
-    props.selectRoom(room.name);
+    setSelected(room.id);
+    props.selectRoom(room.id);
   };
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function RoomOption(props: RoomOptionProps) {
           <RoomButton
             key={room.id}
             onClick={() => selectedHandler(room)}
-            selected={selected === room.name}
+            selected={selected === room.id}
             active={room.isActive}
           >
             {room.name}
