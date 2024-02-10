@@ -83,7 +83,7 @@ function Modal(props: ModalProps) {
           <MessageList swapState={setNoteStateHandler}></MessageList>
         ) : null}
         {option === "message" && noteState === "write" ? (
-          <MessageWrite />
+          <MessageWrite swapState={setNoteStateHandler} />
         ) : null}
         {option === "message" && noteState === "read" ? (
           <MessageRead noteNo={noteNo} swapState={setNoteStateHandler} />

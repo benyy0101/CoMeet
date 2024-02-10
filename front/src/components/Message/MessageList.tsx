@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "components/Common/Pagination";
-import { SearchNoteContent, SearchNoteParams } from "models/Note.interface";
+import {
+  SearchNoteContent,
+  SearchNoteParams,
+  SearchNoteResponse,
+} from "models/Note.interface";
 import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { searchNote } from "api/Note";
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ModalPortal from "utils/Portal";
+import { useDispatch } from "react-redux";
+import { decNoteNumber } from "store/reducers/userSlice";
+import { set } from "react-hook-form";
 
 interface MessageListProps {
   swapState: (state: string, no: number) => void;
@@ -14,65 +21,93 @@ interface MessageListProps {
 function MessageList(params: MessageListProps) {
   const { swapState } = params;
   const [page, setPage] = React.useState<number>(1);
+  const [messages, setMessages] = React.useState<SearchNoteResponse>();
+  const dispatch = useDispatch();
   const searchParams: SearchNoteParams = {
     page: page,
     size: 5,
   };
-
-  const {
-    data: messageList,
-    error,
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["messageList"],
-    queryFn: () => searchNote(searchParams),
-  });
+  const fetchData = async () => {
+    try {
+      const res = await searchNote(searchParams);
+      setMessages(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchMoreData = () => {
     setPage((prev) => prev + 1);
-    refetch();
+    fetchData();
   };
 
   const readNote = (no: number) => {
     swapState("read", no);
   };
 
-  const writeNote = ()=>{
+  const writeNote = () => {
     swapState("write", 0);
-  }
+  };
+
+  const deleteNote = async (no: number) => {
+    try {
+      await deleteNote(no);
+      setMessages((prev) => {
+        ...prev,
+        content: prev?.content.filter((message) => message.id !== no),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <Wrapper>
       <Header>
         <Title>쪽지함</Title>
-        <Writable onClick={()=>{writeNote()}}>
+        <Writable
+          onClick={() => {
+            writeNote();
+          }}
+        >
           <PencilSquareIcon className="h-6 w-6"></PencilSquareIcon>
         </Writable>
       </Header>
 
       <Content>
         <InfiniteScroll
-          dataLength={messageList?.content.length || 0}
+          dataLength={messages?.content.length || 0}
           next={fetchMoreData}
-          hasMore={!isLoading && !error}
           loader={<h4>Loading...</h4>}
+          hasMore={messages!.last}
           className="space-y-5"
         >
-          {messageList?.content.map((message) => (
+          {messages?.content.map((message) => (
             <>
-              <MessageItem
-                key={message.id}
-                onClick={() => readNote(message.id)}
-              >
-                <MessageTitle>
+              <MessageItem key={message.id}>
+                <MessageTitle
+                  onClick={() => {
+                    readNote(message.id);
+                    if (!message.isRead) {
+                      dispatch(decNoteNumber());
+                    }
+                  }}
+                >
                   <p className="text-blue-400">{message.writerId}</p>님의 쪽지
                 </MessageTitle>
-                {message.isRead ? (
-                  <Status>읽음</Status>
-                ) : (
-                  <Status>안읽음</Status>
-                )}
+                <RightBox>
+                  {message.isRead ? (
+                    <Status>읽음</Status>
+                  ) : (
+                    <Status>안읽음</Status>
+                  )}
+                  <TrashCan onClick={() => deleteNote(message.id)}>
+                    <TrashIcon className="w-6 h-6"></TrashIcon>
+                  </TrashCan>
+                </RightBox>
               </MessageItem>
             </>
           ))}
@@ -109,7 +144,7 @@ transition
 hover:text-indigo-400
 `;
 
-const MessageItem = tw.button`
+const MessageItem = tw.div`
 w-full
 flex
 justify-between
@@ -121,7 +156,14 @@ rounded-md
 p-3
 `;
 
-const MessageTitle = tw.div`
+const RightBox = tw.div`
+flex
+space-x-2
+justify-center
+items-center
+`;
+
+const MessageTitle = tw.button`
 flex
 space-x-3
 `;
@@ -133,6 +175,11 @@ font-bold
 const Status = tw.div`
 text-xs
 text-gray-400
+`;
+
+const TrashCan = tw.button`
+transition
+hover:text-red-500
 `;
 const Content = tw.div`
 w-full

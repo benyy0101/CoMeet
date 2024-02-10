@@ -44,14 +44,16 @@ const roomSlice = createSlice({
   initialState: loadRoomState(),
   reducers: {
     setEnterRoom: (state, action: PayloadAction<EnterRoomResponse>) => {
-      Object.assign(state, action.payload);
+      //console.log(action.payload);
+      Object.assign(state.room, action.payload);
+      state.test = "test";
     },
     setLeaveRoom: (state) => {
       return initialState;
     },
     setMicStatus: (state, action: PayloadAction<boolean>) => {
       state.isMicMuted = action.payload;
-      console.log(state.isMicMuted);
+      //console.log(state.isMicMuted);
     },
     setVideoStatus: (state, action: PayloadAction<boolean>) => {
       state.isVideoOn = action.payload;
