@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { createNote } from "api/Note";
 import { CreateNoteParams } from "models/Note.interface";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 function MessageWrite() {
@@ -9,6 +9,7 @@ function MessageWrite() {
   const [content,setContent] = useState<string>("");
   const [receiver,setReceiver] = useState<string>("");
   const [isSending,setIsSending] = useState<boolean>(false);
+  const [res,setRes] = useState<any>(null);
 
   const contentChangeHandler = (e: React.ChangeEvent<HTMLTextAreaElement>)=>{
     setContent(e.target.value);
@@ -19,11 +20,19 @@ function MessageWrite() {
 
   const sendNote = ()=>{
     const req: CreateNoteParams = {
-      content: content,
-      receiver: receiver
+      context: content,
+      receiverId: receiver
     }
     const res = createNote(req);
+    setRes(res);
   }
+
+  useEffect(()=>{
+    if(res){
+      setIsSending(false);
+    }
+  },[res]);
+
   return <Wrapper onClick={sendNote}>
     <Header>
       <LeaveButton>
@@ -35,7 +44,7 @@ function MessageWrite() {
       <Content value={content} onChange={contentChangeHandler}/>
     </Body>
     <Footer>
-      <SubmitButton></SubmitButton>
+      {isSending ? <SubmitButton>전송중</SubmitButton> : <SubmitButton>보내기</SubmitButton>}
     </Footer>
   </Wrapper>;
 }
