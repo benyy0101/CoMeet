@@ -1,29 +1,83 @@
 import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import moment from "moment";
 
 import tw from "tailwind-styled-components";
 import styled from "styled-components";
 
+import Star from "assets/img/star.png";
+
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-export const MyTILCalendar = () => {
-  const [today, setToday] = useState<Value>(new Date());
+interface til {
+  id: number;
+  date: string;
+}
+
+interface tilsProp {
+  tils: til[] | undefined;
+}
+
+export default function MyTILCalendar({ tils }: tilsProp) {
+  //현재 선택한 날짜
+  const [selectedDay, setSelectedDay] = useState<Value>(new Date());
+
+  //선택한 날짜 포맷 바꾸기
+  const activeDate =
+    selectedDay instanceof Date ? moment(selectedDay).format("YYYY-MM-DD") : "";
+  // 2024-02-09와 같은 포맷으로 바꾼 것
+
+  //보여주는 달 구하기
+  const monthOfActiveDate =
+    selectedDay instanceof Date ? moment(selectedDay).format("YYYY-MM") : "";
+  const [activeMonth, setActiveMonth] = useState<string>(monthOfActiveDate);
+
+  //바뀌면 activeMonth 값 바꾸기
+  const getActiveMonth = (activeStartDate: moment.MomentInput): void => {
+    const newActiveMonth = moment(activeStartDate).format("YYYY-MM");
+    setActiveMonth(newActiveMonth);
+  };
+
+  if (tils && tils.length > 0) {
+    console.log(tils![0]);
+  }
+
+  //TiL 있는 날짜에 컨텐츠 추가하기
+  const addTilCheck = ({ date }: any) => {
+    const contents = [];
+
+    if (tils && tils.length > 0) {
+      if (tils.find((til) => til.date === moment(date).format("YYYY-MM-DD"))) {
+        contents.push(
+          <>
+            <img src={Star} alt="" className="w-5" />
+          </>
+        );
+      }
+    }
+
+    return <div>{contents}</div>;
+  };
 
   return (
     <TotalContainer>
       <StyledCalendar
         locale="en-US"
-        onChange={setToday}
+        onChange={setSelectedDay}
         next2Label={null}
         prev2Label={null}
         showNeighboringMonth={false}
-        value={today}
+        value={selectedDay}
+        onActiveStartDateChange={({ activeStartDate }) =>
+          getActiveMonth(activeStartDate)
+        }
+        tileContent={addTilCheck}
       />
     </TotalContainer>
   );
-};
+}
 
 const TotalContainer = tw.div`
 flex
@@ -112,7 +166,7 @@ const StyledCalendar = styled(Calendar)`
   //일 (각 타일)
   .react-calendar__tile {
     text-align: center;
-    height: 40px;
+    height: 50px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
