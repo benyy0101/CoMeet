@@ -1,9 +1,7 @@
 package com.a506.comeet.auth;
 
-import com.a506.comeet.auth.controller.dto.GithubOAuthAccessTokenRequest;
-import com.a506.comeet.auth.controller.dto.OAuthAccessTokenResponse;
-import com.a506.comeet.auth.controller.dto.GithubOAuthMemberInfoResponse;
-import com.a506.comeet.auth.controller.dto.OAuthMemberInfoResponse;
+import com.a506.comeet.auth.controller.dto.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,38 +10,41 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class GithubOAuthClient implements OAuthClient{
+@Slf4j
+public class GoogleOAuthClient implements OAuthClient{
 
-    private static final String ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
-    private static final String MEMBER_INFO_URL = "https://api.github.com/user";
+    private static final String ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
+    private static final String MEMBER_INFO_URL = "https://www.googleapis.com/userinfo/v2/me";
     private static final RestTemplate restTemplate = new RestTemplate();
     private final String clientId;
     private final String clientSecret;
 
-    public GithubOAuthClient(@Value("${spring.security.oauth2.client.registration.github.client-id}") String clientId,
-                             @Value("${spring.security.oauth2.client.registration.github.client-secret}") String clientSecret) {
+    public GoogleOAuthClient(@Value("${spring.security.oauth2.client.registration.google.client-id}") String clientId,
+                             @Value("${spring.security.oauth2.client.registration.google.client-secret}") String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
     @Override
     public OAuthAccessTokenResponse getAccessToken(String code) {
+        log.info("{}", "토큰 가져오기");
         return restTemplate.postForObject(
                 ACCESS_TOKEN_URL,
-                new GithubOAuthAccessTokenRequest(clientId, clientSecret, code),
+                new GoogleOAuthAccessTokenRequest(clientId, clientSecret, code, "http://localhost:8080/auth/oauth2/login/google", "authorization_code"),
                 OAuthAccessTokenResponse.class
                 );
     }
 
     @Override
     public OAuthMemberInfoResponse getMemberInfo(String accessToken) {
+        log.info("{}", "정보 가져오기");
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         return restTemplate.exchange(
                 MEMBER_INFO_URL,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                GithubOAuthMemberInfoResponse.class
+                GoogleOAuthMemberInfoResponse.class
         ).getBody();
     }
 }

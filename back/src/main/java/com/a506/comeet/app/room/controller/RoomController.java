@@ -57,7 +57,7 @@ public class RoomController {
         String memberId = MemberUtil.getMemberId();
         roomService.update(RoomUpdateRequestDto
                 .builder()
-                .roomImage("default_room_image_letsgo")
+                .roomImage("")
                 .build(), memberId, roomId);
         return ResponseEntity.ok().build();
     }

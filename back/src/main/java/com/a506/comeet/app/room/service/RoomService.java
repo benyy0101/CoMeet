@@ -119,7 +119,7 @@ public class RoomService {
     private void S3ImageDelete(RoomUpdateRequestDto req, Room room) {
         if (req.getRoomImage() != null) {
             String imageUrl = room.getRoomImage();
-            if (!imageUrl.equals("default_room_image_letsgo")) {
+            if (!imageUrl.equals("")) {
                 s3UploadService.deleteImage(imageUrl, "roomImage/");
             }
         }
