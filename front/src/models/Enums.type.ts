@@ -19,12 +19,7 @@ export type BOARD_TYPE = "FREE" | "RECRUIT";
 /**
  * 자유게시판 카테고리. 잡담, 팁, 질문, 홍보, 인기
  */
-export type FREE_BOARD_CATEGORY =
-  | "CHAT"
-  | "TIP"
-  | "QUESTION"
-  | "PROMOTION"
-  | "POPULAR";
+export type FREE_BOARD_CATEGORY = "CHAT" | "TIP" | "QUESTION" | "PROMOTION" | "POPULAR" | null;
 
 /**
  * 모집글 완료됐는지.
@@ -45,10 +40,4 @@ export type BOARD_SORTBY = "LATEST" | "LIKES" | "RECRUIT";
  *MOON("달", "주도적이지는 않지만 뒤에서 꾸준하고 열심히 스터디에 참여해요"),
  *GALAXY("은하수", "새로운 사람들을 만나는데 거부감이 없어요");ee
  */
-export type MEMEBER_FEATURE =
-  | "EARTH"
-  | "PROBE"
-  | "BLACKHOLE"
-  | "SUN"
-  | "MOON"
-  | "GALAXY";
+export type MEMEBER_FEATURE = "EARTH" | "PROBE" | "BLACKHOLE" | "SUN" | "MOON" | "GALAXY";

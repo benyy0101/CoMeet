@@ -5,8 +5,23 @@ import tw from "tailwind-styled-components";
 import PoepleNumImg from "assets/img/people-num.svg";
 import RoomImg from "assets/img/room-default.png";
 
-export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
+type RoomInfoProps = {
+  roomTitle: string;
+  roomDescription: string;
+  roomMCount: number;
+  roomCapacity: number;
+  roomLink: string | null;
+};
+// export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
+export const BoardDetailRoomInfo: React.FC<{
+  roomTitle: string;
+  roomDescription: string;
+  roomMCount: number;
+  roomCapacity: number;
+  roomLink: string | null;
+}> = (props: RoomInfoProps) => {
   //방 ID로 방 조회해서 가져올 것들
+  console.log("gogo", props.roomCapacity);
   //방 제목
   const roomTitle = "서울 5반 알고리즘";
   //방 설명
@@ -26,15 +41,17 @@ export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
         <RoomImgContainer src={RoomImg} alt="" />
         <RoomInfo>
           <TitleAndNumContainer>
-            <RoomTitle>{roomTitle}</RoomTitle>
+            <RoomTitle>{props.roomTitle}asdasd</RoomTitle>
             <RoomPeople>
               <PeopleImg src={PoepleNumImg} alt="" />
-              <RoomPeopleNum>{roomPeopleNum}</RoomPeopleNum>
+              <RoomPeopleNum>
+                {props.roomMCount} / {props.roomCapacity}{" "}
+              </RoomPeopleNum>
             </RoomPeople>
           </TitleAndNumContainer>
-          <RoomEx>{roomDescription}</RoomEx>
+          <RoomEx>{props.roomDescription}</RoomEx>
 
-          <RoomHyperLink>{roomLink}</RoomHyperLink>
+          <RoomHyperLink>{props.roomLink}</RoomHyperLink>
         </RoomInfo>
       </TotalContainer>
     </RoomHyper>

@@ -68,7 +68,6 @@ function TextEditor(props: TextEditProps) {
     const title = titleRef.current ? titleRef.current.value : "";
     const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
     const roomId = selectedRoom ? selectedRoom : 0;
-    console.log("title", title, context);
     if (title === "") {
       alert("제목을 작성하세요");
       return;
