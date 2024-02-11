@@ -156,12 +156,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
         // default는 최신순으로 가져오기로 함
         if (req.getSortBy() == null) return room.createdAt.desc();
-        OrderSpecifier<?> path = switch (req.getSortBy()) {
-            case LATEST -> room.mcount.desc();
-            case OLDEST -> room.capacity.asc();
-            case CURRENT_PEOPLE -> null;
+        return switch (req.getSortBy()) {
+            case LATEST -> room.createdAt.desc();
+            case OLDEST -> room.createdAt.asc();
         };
-        return path;
     }
 
     private BooleanExpression eqKeyword(String keyword) {

@@ -5,10 +5,12 @@ import com.a506.comeet.common.enums.RoomSortBy;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class RoomSearchRequestDto {
     private String searchKeyword;
