@@ -113,15 +113,8 @@ export const NavBar = ({
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
-  //커뮤니티 클릭시
-  const [isCommunityOpen, setIsCommunityOpen] = useState<boolean>(false);
-
   const showServerList = () => {
     setIsServerOpen(!isServerOpen);
-  };
-
-  const showCommunityList = () => {
-    setIsCommunityOpen(!isCommunityOpen);
   };
 
   //외부 클릭시 서버 드롭다운 닫힘
@@ -129,14 +122,6 @@ export const NavBar = ({
   useOutsideClick<HTMLDivElement>(serverRef, () => {
     if (isServerOpen) {
       setIsServerOpen(false);
-    }
-  });
-
-  //외부 클릭시 커뮤니티 드롭다운 닫기
-  const communityRef = useRef(null);
-  useOutsideClick<HTMLDivElement>(communityRef, () => {
-    if (isCommunityOpen) {
-      setIsCommunityOpen(false);
     }
   });
 
@@ -152,23 +137,16 @@ export const NavBar = ({
             <RoomSearch>
               <Link to="/roomlist">방 찾기</Link>
             </RoomSearch>
-            <CommunityMenu
-              onMouseEnter={showCommunityList}
-              onMouseLeave={showCommunityList}
-            >
-              <ul ref={communityRef}>
-                <button onMouseEnter={showCommunityList}>커뮤니티</button>
-                {isCommunityOpen && (
-                  <DropDownCommunity>
-                    <ComDropDownBUtton onClick={showCommunityList}>
-                      <Link to="/recruit-board">모집 게시판</Link>
-                    </ComDropDownBUtton>
-                    <ComDropDownBUtton onClick={showCommunityList}>
-                      <Link to="/free-board">자유 게시판</Link>
-                    </ComDropDownBUtton>
-                  </DropDownCommunity>
-                )}
-              </ul>
+            <CommunityMenu>
+              <CommunityButton>커뮤니티</CommunityButton>
+              <DropDownCommunity>
+                <ComDropDownBUtton>
+                  <Link to="/recruit-board">모집 게시판</Link>
+                </ComDropDownBUtton>
+                <ComDropDownBUtton>
+                  <Link to="/free-board">자유 게시판</Link>
+                </ComDropDownBUtton>
+              </DropDownCommunity>
             </CommunityMenu>
           </LeftMenu>
         ) : null}
@@ -178,33 +156,39 @@ export const NavBar = ({
         {userInfo.isLoggedIn ? (
           <>
             {roomData ? (
-              <InServer>
+              <ServerContainer $active={true}>
                 <Link to={`/room/${roomInfo.roomId}`}>
-                  <ServerImg src={roomData.room_image} alt="room" />
-                  <ServerText>{roomData.title}</ServerText>
+                  <ServerTitleContainer>
+                    <RoomThumbnail
+                      style={{
+                        backgroundImage: "url(roomData.room_image)",
+                      }}
+                    />
+                    <ServerText>{roomData.title}</ServerText>
+                  </ServerTitleContainer>
                 </Link>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
                 <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
                   {isMuted ? (
-                    <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
+                    <SpeakerXMarkIcon className="w-6 h-6 text-red-400" />
                   ) : (
-                    <SpeakerWaveIcon className="w-8 h-8" />
+                    <SpeakerWaveIcon className="w-6 h-6" />
                   )}
                 </ControlPanelButton>
                 <ControlPanelButton
                   onClick={() => setIsVideoDisabled(!isVideoDisabled)}
                 >
                   {isVideoDisabled ? (
-                    <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
+                    <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                   ) : (
-                    <VideoCameraIcon className="w-8 h-8" />
+                    <VideoCameraIcon className="w-6 h-6" />
                   )}
                 </ControlPanelButton>
-              </InServer>
+              </ServerContainer>
             ) : (
-              <div>
-                <OutofServer>접속중인 방이 없습니다.</OutofServer>
-              </div>
+              <ServerContainer $active={false}>
+                접속중인 방이 없습니다.
+              </ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
@@ -279,8 +263,9 @@ text-lg
 const LeftContainer = tw.div`
 flex
 justify-start
-items-end
+items-center
 space-x-8
+h-full
 `;
 
 const RightContainer = tw.div`
@@ -302,10 +287,20 @@ const Logo = tw.div`
 const LeftMenu = tw.div`
 flex
 space-x-7
+h-full
+items-center
 `;
 const CommunityMenu = tw.div`
+h-full
+flex
+items-center
 hover:text-purple-400
 transition-colors
+group
+`;
+
+const CommunityButton = tw.button`
+cursor-default
 `;
 
 const ServerMenu = tw.div`
@@ -321,15 +316,18 @@ w-8
 
 //커뮤니티 드롭다운
 const DropDownCommunity = tw.div`
-flex
 flex-col
 absolute
+top-11
 bg-[#3B3B3B]
 text-white
 mt-1
 shadow-lg
 z-50
 rounded-md
+overflow-hidden
+hidden
+group-hover:flex
 `;
 
 const ProfileMenu = tw.div`
@@ -355,7 +353,6 @@ justify-center
 
 //커뮤니티 드롭다운 버튼들
 const ComDropDownBUtton = tw.button`
-rounded-md
 w-30
 px-4
 py-2
@@ -371,16 +368,18 @@ mr-3
 `;
 
 //InServer: 서버 표시하는 상태바
-const InServer = tw.div`
+const ServerContainer = tw.div<{ $active: boolean }>`
 h-9
 flex
 items-center
 justify-center
 p-1
-border-purple-400
-border-[1px]
+${(p) => (p.$active ? "border-purple-400" : "border-gray-400")}
+border
 rounded-md
-text-[14px]
+text-sm
+w-60
+text-gray-400
 `;
 
 const OutofServer = tw.div`
@@ -390,32 +389,41 @@ flex
 items-center
 justify-center
 p-2
-border-gray-400
-text-gray-400
+
+
 border-[1px]
 rounded-md
 text-[14px] 
 `;
 
-//ServerImg: 서버 이미지
-const ServerImg = tw.img`
-bg-white
+const ServerTitleContainer = tw.div`
+w-40
+h-full
+flex
+space-x-2
+items-center
+`;
+
+const RoomThumbnail = tw.div`
+w-6
+h-6
 rounded-full
-w-5
-mr-2
-ml-1
+bg-contain
+bg-no-repeat
+bg-center
+shadow-md
+bg-slate-200
 `;
 
 //ServerText: 서버 이름
-const ServerText = tw.p`
+const ServerText = tw.h1`
 mr-3
-`;
-
-//MicVideoImg: 마이크, 비디오 이미지 크기
-const MicVideoImg = tw.img`
-w-5
-ml-1
-mr-1
+w-28
+overflow-clip
+overflow-ellipsis
+break-words
+line-clamp-1
+text-slate-200
 `;
 
 const ControlPanelButton = tw.div`
