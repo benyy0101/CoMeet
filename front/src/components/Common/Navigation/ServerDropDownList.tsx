@@ -1,63 +1,43 @@
-import React, { useRef } from "react";
 import { Link } from "react-router-dom";
-
 import tw from "tailwind-styled-components";
-
 import RoomDefault from "assets/img/room-default.svg";
-import RightAroow from "assets/img/right-arrow.svg";
-
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 export const ServerDropDownList = () => {
-  //임시 룸 아이디
-  const roomId = 1;
-
+  const currentRoomId = useSelector((state: any) => state.room.roomId);
   const roomInfo = useSelector((state: any) => state.user.user.joinedRooms);
-  console.log(roomInfo);
-
-  // const roomInfo = [{
-  //       roomId:21,
-  //       title:"mockup_room",
-  //       roomImage:"default_image_letsgo",
-  //     },
-  //     {
-  //       roomId:25,
-  //       title:"mockup_room2",
-  //       roomImage:"default_image_letsgo",
-  //     },
-  //     {
-  //       roomId:38,
-  //       title:"mockup_room3",
-  //       roomImage:"default_image_letsgo",
-  //     }
-  //     ];
-  //const roomInfo:any = [];
 
   return (
     <StyleDropdownMenu>
-      {roomInfo.length !== 0 ? (
+      <StyleDropdownTitleContainer>
+        <StyleDropdownTitle>가입한 방 목록</StyleDropdownTitle>
+        <Link to="/room-regist">
+          <AddButton>+ 방 만들기</AddButton>
+        </Link>
+      </StyleDropdownTitleContainer>
+      {roomInfo.length > 0 ? (
         <ServerContent>
           {roomInfo.map((room: any) => (
-            <StyleImgTextBoth key={room.id}>
-              <StyleServerImg src={RoomDefault} alt="" />
-              <Link to={`/room/${room.roomId}`}>{room.title}</Link>
-            </StyleImgTextBoth>
-          ))}
-          <AddIconWrapper>
-            <Link to="/room-regist">
-              <PlusIcon className="w-4 h-4" />
+            <Link to={`/room/${room.roomId}`} replace>
+              <StyleImgTextBoth
+                key={room.roomId}
+                $disabled={room.roomId === +currentRoomId}
+              >
+                <StyleServerImg src={RoomDefault} alt="" />
+                <StyleServerText>{room.title}</StyleServerText>
+                <StyleServerDot $visible={room.roomId === +currentRoomId} />
+              </StyleImgTextBoth>
             </Link>
-          </AddIconWrapper>
+          ))}
         </ServerContent>
       ) : (
         <ServerContent>
-          <NoneText>가입한 방이 없습니다.</NoneText>
-          <StyleServerGo>
-            <Link to="/room-regist">
-              <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
-            </Link>
-          </StyleServerGo>
+          <NoneTextContainer>
+            <CustomXCircleIcon />
+            <NoneText>가입한 지속 스터디 방을 찾을 수 없습니다.</NoneText>
+          </NoneTextContainer>
         </ServerContent>
       )}
     </StyleDropdownMenu>
@@ -67,69 +47,104 @@ export const ServerDropDownList = () => {
 //StyleDropdownMenu: 서버의 드롭다운 메뉴 스타일
 // 너비(w)와 오른쪽(right)의 절대적인 숫자를 바꿔야 함
 const StyleDropdownMenu = tw.div`
-  flex
-  flex-col
-  items-center
-  justify-center
-  p-2
-  shadow-2xl
-  absolute
-  bg-gray-700
-  text-white
-  text-sm
-  top-10
-  min-w-[280px]
-  rounded-lg
-  space-y-4
+w-72
+flex
+flex-col
+items-center
+justify-center
+p-2
+shadow-2xl
+absolute
+bg-gray-700
+text-slate-200
+text-sm
+top-11
+left-0
+-translate-x-1/2
+rounded-lg
+`;
+
+const StyleDropdownTitleContainer = tw.div`
+w-full
+px-2
+mb-2
+flex
+justify-between
+items-center
 `;
 
 //StyleServerTitle: '가입한 내 방' 과 같은 타이틀
-const StyleServerTitle = tw.h1`
-    font-bold
-    text-lg
+const StyleDropdownTitle = tw.h1`
+font-semibold
+text-lg
+text-slate-100
+`;
+
+const AddButton = tw.button`
+font-light
+text-slate-300
+text-xs
 `;
 
 //StyleImgTextBoth: '서버 이미지, 서버 이름'
-const StyleImgTextBoth = tw.div`
-    flex
-    p-2
-    hover:bg-black 
-    hover:rounded-md
-    hover:bg-opacity-10 
-    transition-all
+const StyleImgTextBoth = tw.div<{ $disabled: boolean }>`
+flex
+items-center
+space-x-2
+p-2
+${(p) => (p.$disabled ? "bg-black bg-opacity-10 rounded-md" : "hover:bg-black hover:rounded-md hover:bg-opacity-10")}
+transition-all
 `;
 
 const ServerContent = tw.div`
-  w-full
+w-full
 `;
 //StyleServerImg: 서버 이미지
 const StyleServerImg = tw.img`
-    bg-white
-    rounded-full
-    w-7
-    mr-2
-    ml-1
+bg-white
+rounded-full
+w-7
+mr-2
+ml-1
 `;
 
-const AddIconWrapper = tw.div`
-flex
-justify-end
+const StyleServerText = tw.div`
 w-full
+overflow-clip
+overflow-ellipsis
+break-words
+line-clamp-1
+`;
+
+const StyleServerDot = tw.div<{ $visible: boolean }>`
+w-1.5
+h-1.5
+min-w-1.5
+min-h-1.5
+${(p) => (p.$visible ? "bg-green-400" : "bg-transparent")}
+rounded-full
+`;
+
+const NoneTextContainer = tw.div`
+w-full
+flex
+flex-col
+h-24
+space-y-1
+justify-center
 items-center
 `;
-//StyleServerGo: 방 가입이나 방 생성하러 가는...
-const StyleServerGo = tw.div`
-    flex
-    w-full
-    justify-center
-    hover:bg-black 
-    hover:rounded-lg
-    hover:bg-opacity-10 
-    transition-all
+
+const CustomXCircleIcon = tw(XCircleIcon)`
+w-6
+h-6
+text-slate-400
+m-1
 `;
 
 const NoneText = tw.p`
-text-opacity-50
+text-slate-400
 font-light
 text-sm
+text-center
 `;

@@ -1,5 +1,5 @@
 import { OpenVidu } from "openvidu-browser";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 import {
   ArrowRightStartOnRectangleIcon,
@@ -147,7 +147,7 @@ export const Room = ({
         });
       }
     }
-  }, []);
+  }, [roomId]);
 
   const enterRoomHandler = async () => {
     const res = await enterRoom({ roomId: parseInt(roomId!), password: "" });
@@ -167,7 +167,7 @@ export const Room = ({
 
   const leaveRoomHandler = () => {
     const data: LeaveRoomParams = {
-      roomId: parseInt(roomId!),
+      roomId: parseInt(roomInfo.roomId),
       keywords: undefined,
     };
     setRoomData(null);

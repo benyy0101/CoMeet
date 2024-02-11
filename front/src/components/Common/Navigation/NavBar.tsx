@@ -141,9 +141,9 @@ export const NavBar = ({
             )}
 
             <ServerMenu ref={serverRef}>
-              <button onClick={showServerList}>
+              <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
-              </button>
+              </CustomButton>
               {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
@@ -166,7 +166,7 @@ export const NavBar = ({
         ) : (
           <>
             <LoginSignup>
-              <button onClick={signupModalHandler}>회원가입</button>
+              <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
                   <Modal
@@ -179,7 +179,7 @@ export const NavBar = ({
             </LoginSignup>
             |
             <LoginSignup>
-              <button onClick={loginModalHandler}>로그인</button>
+              <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
                 {loginModal === true ? (
                   <Modal
@@ -205,7 +205,7 @@ text-white
 flex
 items-center
 justify-between
-px-24
+px-12
 text-lg
 `;
 
@@ -230,6 +230,10 @@ transition-colors
 `;
 //Logo: 로고 메뉴
 const Logo = tw.div`
+w-40
+flex
+justify-center
+bg-slate-500
 `;
 
 //Menu: 방 찾기, 커뮤니티 메뉴 그룹
@@ -250,6 +254,7 @@ group
 
 const CommunityButton = tw.button`
 cursor-default
+focus:outline-none
 `;
 
 const ServerMenu = tw.div`
@@ -284,6 +289,7 @@ const ProfileMenu = tw.div`
 
 const EnvelopMenu = tw.div`
 relative
+cursor-pointer
 `;
 
 const UnreadCount = tw.div`
@@ -308,6 +314,7 @@ py-2
 cursor-pointer
 transition-colors
 hover:bg-[#282828]
+focus:outline-none
 `;
 
 //LoginSignup: 로그인, 회원가입 메뉴
@@ -377,4 +384,8 @@ flex
 justify-center
 items-center
 relative
+`;
+
+const CustomButton = tw.button`
+focus:outline-none
 `;
