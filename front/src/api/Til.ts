@@ -7,6 +7,7 @@ import {
   ModifyTilResponse,
   SearchTilParams,
   SearchTilResponse,
+  DeletePrams,
 } from "models/Til.interface";
 import { localAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
@@ -45,4 +46,10 @@ export const enterTil = async (
   const url = `til/${tilId}`;
   const response = await localAxios.get(url);
   return response.data;
+};
+
+export const deleteTil = async (params: DeletePrams) => {
+  const { tilId } = params;
+  const url = `til/${tilId}`;
+  const response = await localAxios.delete(url);
 };
