@@ -11,6 +11,7 @@ type RoomInfoProps = {
   roomMCount: number;
   roomCapacity: number;
   roomLink: string | null;
+  roomId: number;
 };
 // export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
 export const BoardDetailRoomInfo: React.FC<{
@@ -19,13 +20,13 @@ export const BoardDetailRoomInfo: React.FC<{
   roomMCount: number;
   roomCapacity: number;
   roomLink: string | null;
+  roomId: number;
 }> = (props: RoomInfoProps) => {
   //방 ID로 방 조회해서 가져올 것들
-  console.log("gogo", props.roomCapacity);
   //방 제목
 
-  //방 링크
-  const roomLink = "http://localhost:3000/room/3";
+  //방 링크 이것도 제대로 만들어야 할 것 같다.
+  const roomLink = `${process.env.REACT_APP_API_SERVER_URL}/room/${props.roomId}`;
 
   //이미지도 가져오고
 
@@ -35,7 +36,7 @@ export const BoardDetailRoomInfo: React.FC<{
         <RoomImgContainer src={RoomImg} alt="" />
         <RoomInfo>
           <TitleAndNumContainer>
-            <RoomTitle>{props.roomTitle}asdasd</RoomTitle>
+            <RoomTitle>{props.roomTitle}</RoomTitle>
             <RoomPeople>
               <PeopleImg src={PoepleNumImg} alt="" />
               <RoomPeopleNum>
@@ -45,7 +46,7 @@ export const BoardDetailRoomInfo: React.FC<{
           </TitleAndNumContainer>
           <RoomEx>{props.roomDescription}</RoomEx>
 
-          <RoomHyperLink>{props.roomLink}</RoomHyperLink>
+          <RoomHyperLink>{roomLink}</RoomHyperLink>
         </RoomInfo>
       </TotalContainer>
     </RoomHyper>

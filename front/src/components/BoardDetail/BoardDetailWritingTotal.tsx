@@ -21,6 +21,8 @@ type BoardDetailProps = {
 
 export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   const { boardId } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
+  const navigate = useNavigate();
 
   const dummy: EnterBoardResponse = {
     id: 0,
@@ -73,6 +75,18 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     });
   };
 
+  const handleDelete = () => {
+    deleteBoard({ boardId: boardDetail.id })
+      .then((data) => {
+        console.log("success");
+        navigate("/recruit-board");
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+        return fail;
+      });
+  };
+
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
@@ -91,6 +105,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
           roomCapacity={boardDetail.roomCapacity}
+          roomId={boardDetail.id}
           roomLink={boardDetail.roomLink!}
         ></BoardDetailRoomInfo>
       ) : null}
