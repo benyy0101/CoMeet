@@ -125,7 +125,14 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       ) : null}
       {/* 버튼 태그 어케 만드는데 ㅠ */}
       {memberNickname === boardDetail.writerNickname ? (
-        <Link to={`/write-article?type=recruit&option=write`}>
+        <Link
+          to={`/write-article?type=recruit&option=edit`}
+          state={{
+            editId: boardDetail.id,
+            editTitle: boardDetail.title,
+            editContent: boardDetail.content,
+          }}
+        >
           <LikeText>수정</LikeText>
         </Link>
       ) : null}
