@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import ImageModifyModal from "./ImageModifyModal";
@@ -100,7 +101,9 @@ export default function MyProfile({
   return (
     <TotalContainer>
       <ProfileModButton>
-        <ProfileModImg src={ProifleModify} alt="" />
+        <Link to="/profile-edit">
+          <ProfileModImg src={ProifleModify} alt="" />
+        </Link>
       </ProfileModButton>
       <FullContainer>
         <LeftContainer>
