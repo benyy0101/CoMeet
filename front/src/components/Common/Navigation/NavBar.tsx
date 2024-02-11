@@ -1,21 +1,15 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
-import IMac from "assets/img/iMac.svg";
-import MicMute from "assets/img/mic-mute.svg";
-import VideoWhite from "assets/img/video-white.svg";
-import RoomDefault from "assets/img/room-default.svg";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
-import { UserState } from "models/Login.interface";
-import { Room } from "pages/Room";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
 import {
   SpeakerWaveIcon,
@@ -30,6 +24,7 @@ interface IProps {
   isMuted: boolean;
   setIsVideoDisabled: React.Dispatch<React.SetStateAction<boolean>>;
   isVideoDisabled: boolean;
+  publisher: any;
 }
 
 export const NavBar = ({
@@ -38,6 +33,7 @@ export const NavBar = ({
   isMuted,
   setIsVideoDisabled,
   isVideoDisabled,
+  publisher,
 }: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
@@ -57,58 +53,7 @@ export const NavBar = ({
   };
 
   const userInfo = useSelector((state: any) => state.user);
-  //   const userInfo:UserState = {
-  //     isLoggedIn: true,
-  //     user: {
-  //       memberId: "mockup_id",
-  //       nickname: "mockup",
-  //       profileImage: "default_image_letsgo",
-  //       unreadNoteCount: 12,
-  //       joinedRooms: [{
-  //         roomId:21,
-  //         title:"mockup_room",
-  //         roomImage:"default_image_letsgo",
-  //       },
-  //       {
-  //         roomId:25,
-  //         title:"mockup_room2",
-  //         roomImage:"default_image_letsgo",
-  //       },
-  //       {
-  //         roomId:38,
-  //         title:"mockup_room3",
-  //         roomImage:"default_image_letsgo",
-  //       }
-  //       ],
-  //   }
-  // }
-
   const roomInfo = useSelector((state: any) => state.room);
-
-  // const roomInfo:RoomStore = {
-  //   isRoomIn: false,
-  // isMicMuted: false,
-  // isVideoOn: false,
-  // room: {
-  //   managerId: "",
-  //   managerNickname: "",
-  //   title: "",
-  //   description: "",
-  //   room_image: "",
-  //   notice: "",
-  //   mcount: 0,
-  //   link: "",
-  //   capacity: 0,
-  //   isLocked: false,
-  //   password: "",
-  //   constraints: "FREE",
-  //   type: "DISPOSABLE",
-  //   members: [],
-  //   lounges: [],
-  //   channels: [],
-  //   keywords: [],
-  // },
-  // };
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
@@ -157,7 +102,7 @@ export const NavBar = ({
           <>
             {roomData ? (
               <ServerContainer $active={true}>
-                <Link to={`/room/${roomInfo.roomId}`}>
+                <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
@@ -168,22 +113,26 @@ export const NavBar = ({
                   </ServerTitleContainer>
                 </Link>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
-                  {isMuted ? (
-                    <SpeakerXMarkIcon className="w-6 h-6 text-red-400" />
-                  ) : (
-                    <SpeakerWaveIcon className="w-6 h-6" />
-                  )}
-                </ControlPanelButton>
-                <ControlPanelButton
-                  onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-                >
-                  {isVideoDisabled ? (
-                    <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
-                  ) : (
-                    <VideoCameraIcon className="w-6 h-6" />
-                  )}
-                </ControlPanelButton>
+                {publisher && (
+                  <ControlPanelContainer>
+                    <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+                      {isMuted ? (
+                        <SpeakerXMarkIcon className="w-6 h-6 text-red-400" />
+                      ) : (
+                        <SpeakerWaveIcon className="w-6 h-6" />
+                      )}
+                    </ControlPanelButton>
+                    <ControlPanelButton
+                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                    >
+                      {isVideoDisabled ? (
+                        <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
+                      ) : (
+                        <VideoCameraIcon className="w-6 h-6" />
+                      )}
+                    </ControlPanelButton>
+                  </ControlPanelContainer>
+                )}
               </ServerContainer>
             ) : (
               <ServerContainer $active={false}>
@@ -193,7 +142,7 @@ export const NavBar = ({
 
             <ServerMenu ref={serverRef}>
               <button onClick={showServerList}>
-                <NavIcon src={IMac} alt="server" />
+                <ComputerDesktopIcon className="w-8 h-8" />
               </button>
               {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
@@ -382,31 +331,20 @@ w-60
 text-gray-400
 `;
 
-const OutofServer = tw.div`
-min-w-40
-h-8
-flex
-items-center
-justify-center
-p-2
-
-
-border-[1px]
-rounded-md
-text-[14px] 
-`;
-
 const ServerTitleContainer = tw.div`
-w-40
+w-full
 h-full
+px-2
 flex
-space-x-2
+space-x-4
 items-center
 `;
 
 const RoomThumbnail = tw.div`
 w-6
 h-6
+min-h-6
+min-w-6
 rounded-full
 bg-contain
 bg-no-repeat
@@ -418,12 +356,17 @@ bg-slate-200
 //ServerText: 서버 이름
 const ServerText = tw.h1`
 mr-3
-w-28
+w-full
 overflow-clip
 overflow-ellipsis
 break-words
 line-clamp-1
 text-slate-200
+`;
+
+const ControlPanelContainer = tw.div`
+flex
+items-center
 `;
 
 const ControlPanelButton = tw.div`
