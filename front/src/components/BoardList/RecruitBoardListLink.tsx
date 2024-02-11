@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
@@ -13,7 +13,6 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
   // let keywordArr: string[] = [];
   // for (let index = 0; index < array.length; index++) {
   //   const element = array[index];
-
   // }
 
   const keywordArr: Keyword[] = props.roomKeywords;
@@ -22,9 +21,10 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
   //   props.roomKeywords.
   //   return key.name;
   // });
+  const boardId = props.id;
 
   return (
-    <Link to="/recruit-board/1">
+    <Link to={`/recruit-board/${boardId}`}>
       <TotalContainer>
         <LeftContainer>
           <RoomImg src={props.roomImage} alt="roomImg" />
@@ -32,11 +32,7 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
         <CenterContainer>
           <TitleAndValidContainer>
             <RecruitValid>
-              {props.isValid ? (
-                <ValidTrue>모집중</ValidTrue>
-              ) : (
-                <ValidFalse>모집완료</ValidFalse>
-              )}
+              {props.isValid ? <ValidTrue>모집중</ValidTrue> : <ValidFalse>모집완료</ValidFalse>}
             </RecruitValid>
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
