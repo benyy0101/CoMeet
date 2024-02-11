@@ -43,7 +43,7 @@ export const BoardDetailHeader: React.FC<{
         {props.category === null ? (
           <>
             {props.valid ? (
-              <RecruitTrue>모ww집중</RecruitTrue>
+              <RecruitTrue>모집중</RecruitTrue>
             ) : (
               <RecruitFalse>모집완료</RecruitFalse>
             )}

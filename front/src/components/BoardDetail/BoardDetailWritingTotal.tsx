@@ -29,7 +29,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     isValid: true,
     roomKeywords: [],
     roomTitle: "이건 테스d트",
-    roomDescription: "요요",
+    roomDescription: "요ㄴㄴ요",
     roomMcount: 1,
     roomCapacity: 10,
     roomImage: "default_room_image_letsgo",
@@ -59,21 +59,9 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     }
   }, [boardDetailData]);
 
-  //여기까지가 방 조회시 받아오는 데이터들
-  //키워드 가져와야 함 -
-  // let roomKeyword: number[] = [];
-
-  //방 번호 있으면
-  // if (roomId.length != 0) {
-  //   //키워드는 키워드 인덱스로 받아오나
-  //   roomKeyword = [123, 123123];
-  // }
-
-  // const keywordList = roomKeyword.map((keyword) => <KeywordComponent keyword={keyword} />);
-
-  //쁠마만 하고, 매번 api 날리는 걸로 하자
   const handleLike = () => {
     const likeValue = !boardDetail.isLike ? 1 : -1;
+    // api 매번 누를때마다 날리게 돼있음
     !boardDetail.isLike ? likeBoard({ boardId }) : unlikeBoard({ boardId });
     setBoardDetail({
       ...boardDetail,
