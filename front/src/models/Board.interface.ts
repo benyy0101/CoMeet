@@ -60,7 +60,7 @@ export interface ModifyBoardParams {
   title: string;
   content: string;
   category?: FREE_BOARD_CATEGORY;
-  valid?: boolean;
+  isValid?: boolean;
 }
 
 export interface ModifyBoardResponse {}
@@ -117,4 +117,7 @@ export interface UnlikeBoardResponse {}
 export interface TextEditProps {
   isFree: boolean;
   isEdit: boolean;
+  editId?: number;
+  editTitle?: string;
+  editContent?: string;
 }

@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 type BoardDetailProps = {
   boardId: number;
@@ -121,6 +122,19 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
             <LikeText>삭제</LikeText>
           </LikeButton>
         </LikeButtonContainer>
+      ) : null}
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <Link
+          to={`/write-article?type=recruit&option=edit`}
+          state={{
+            editId: boardDetail.id,
+            editTitle: boardDetail.title,
+            editContent: boardDetail.content,
+          }}
+        >
+          <LikeText>수정</LikeText>
+        </Link>
       ) : null}
 
       <LikeButtonContainer>

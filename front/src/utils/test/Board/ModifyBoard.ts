@@ -31,7 +31,6 @@ const data2: ModifyBoardParams = {
   boardId: 7,
   title: "recruit modify",
   content: "modoifyt",
-  valid: true,
 };
 
 //무빙건으로 테스트 시 이건 FAIL이 떠야 정상
