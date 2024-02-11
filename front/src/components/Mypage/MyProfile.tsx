@@ -109,7 +109,7 @@ export default function MyProfile({
               <StyleProfileImgHover
                 style={{
                   backgroundImage: `url(${
-                    profileImage === "default_profile_image_letsgo"
+                    profileImage === ""
                       ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
                       : `${profileImage}`
                   })`,
@@ -125,7 +125,7 @@ export default function MyProfile({
               <StyleProfileImg
                 style={{
                   backgroundImage: `url(${
-                    profileImage === "default_profile_image_letsgo"
+                    profileImage === ""
                       ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
                       : `${profileImage}`
                   })`,
@@ -180,21 +180,22 @@ export default function MyProfile({
           </FollowContainer>
           <div className="flex">
             <StyleNickName>{nickname}</StyleNickName>
-            <button>
-              <StyleEdit src={EditPencil} />
-            </button>
           </div>
-
           <div className="flex">
-            <StyleMessage>{description}</StyleMessage>
-            <button>
-              <StyleEdit src={EditPencil} />
-            </button>
+            {description === "" ? (
+              <NoneText>한 줄 소개가 없습니다.</NoneText>
+            ) : (
+              <StyleMessage>{description}</StyleMessage>
+            )}
           </div>
           <SytleUrl>
             <StyleA href={link} target="_blank" rel="noopener noreferrer">
               {link}
             </StyleA>
+            {/* {link === "" ? (
+              <NoneText>ㅤ</NoneText>
+            ) : (
+            )} */}
           </SytleUrl>
         </RightContainer>
       </FullContainer>
@@ -212,16 +213,19 @@ h-full
 text-white
 flex
 flex-col
+relative
 `;
 
 //수정 버튼
 const ProfileModButton = tw.button`
-self-end
+absolute
+right-0
 mb-auto
 `;
 
 //수정 버튼 이미지
 const ProfileModImg = tw.img`
+border
 w-7
 h-7
 mr-2
@@ -237,7 +241,6 @@ const FullContainer = tw.div`
 flex
 flex-grow
 items-center
-pb-10
 
 `;
 
@@ -319,7 +322,6 @@ justify-center
 const FollowContainer = tw.div`
 flex
 space-x-4
-mb-2
 `;
 
 //팔로잉
@@ -385,11 +387,17 @@ hover:text-blue-500
 hover:border-blue-500
 `;
 
-//최근 접속 시간
-const RecentIn = tw.div`
-self-end
+const NoneText = tw.div`
 text-sm
-pb-3
-pr-3
-text-[#9E9E9E]
+mb-1
+text-gray-400
 `;
+
+//최근 접속 시간
+// const RecentIn = tw.div`
+// self-end
+// text-sm
+// pb-3
+// pr-3
+// text-[#9E9E9E]
+// `;
