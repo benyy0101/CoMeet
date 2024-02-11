@@ -140,6 +140,12 @@ export const Room = ({
   useEffect(() => {
     if (!roomInfo.isRoomIn) {
       enterRoomHandler();
+    } else {
+      if (roomInfo.roomId !== roomId) {
+        leaveRoomHandler().then((_) => {
+          enterRoomHandler();
+        });
+      }
     }
   }, []);
 
@@ -152,39 +158,39 @@ export const Room = ({
     dispatch(setEnterRoom(roomId!));
   };
 
-  const leaveRoomHandler = async () => {
+  const onClickLeaveRoom = () => {
+    leaveRoomHandler().then((_) => {
+      dispatch(setLeaveRoom());
+      navigate("/");
+    });
+  };
+
+  const leaveRoomHandler = () => {
     const data: LeaveRoomParams = {
       roomId: parseInt(roomId!),
       keywords: undefined,
     };
-    try {
-      dispatch(setLeaveRoom());
-      setRoomData(null);
-      setChannels([]);
-      setLounges([]);
-      setSideToggle(true);
-      setInLounge(true);
-      setCurrentLounge(null);
-      setMySessionId("");
-      setMySessionName("");
-      setSession(null);
-      setMainStreamManager(null);
-      setPublisher(null);
-      setSubscribers([]);
-      setCurrentVideoDevice(null);
-      setSpeakerIds([]);
-      setIsMuted(true);
-      setIsVideoDisabled(true);
-      setIsScreenShared(false);
-      setFilter(null);
-      stompClient.current = null;
-      OV.current = new OpenVidu();
-
-      const res = await leaveRoom(data);
-      navigate("/");
-    } catch (e) {
-      console.error(e);
-    }
+    setRoomData(null);
+    setChannels([]);
+    setLounges([]);
+    setSideToggle(true);
+    setInLounge(true);
+    setCurrentLounge(null);
+    setMySessionId("");
+    setMySessionName("");
+    setSession(null);
+    setMainStreamManager(null);
+    setPublisher(null);
+    setSubscribers([]);
+    setCurrentVideoDevice(null);
+    setSpeakerIds([]);
+    setIsMuted(true);
+    setIsVideoDisabled(true);
+    setIsScreenShared(false);
+    setFilter(null);
+    stompClient.current = null;
+    OV.current = new OpenVidu();
+    return leaveRoom(data);
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
@@ -532,7 +538,7 @@ export const Room = ({
               <Cog6ToothIcon className="w-8 h-8" />
             </RoomButton>
           </Link>
-          <RoomButton onClick={leaveRoomHandler}>
+          <RoomButton onClick={onClickLeaveRoom}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
         </RoomButtonContainer>

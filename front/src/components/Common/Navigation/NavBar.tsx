@@ -17,6 +17,12 @@ import { UserState } from "models/Login.interface";
 import { Room } from "pages/Room";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
+import {
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  VideoCameraIcon,
+  VideoCameraSlashIcon,
+} from "@heroicons/react/24/solid";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -178,10 +184,22 @@ export const NavBar = ({
                   <ServerText>{roomData.title}</ServerText>
                 </Link>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                {isMuted ? <MicVideoImg src={MicMute} alt="mic" /> : null}
-                {isVideoDisabled ? (
-                  <MicVideoImg src={VideoWhite} alt="video" />
-                ) : null}
+                <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+                  {isMuted ? (
+                    <SpeakerXMarkIcon className="w-8 h-8 text-red-400" />
+                  ) : (
+                    <SpeakerWaveIcon className="w-8 h-8" />
+                  )}
+                </ControlPanelButton>
+                <ControlPanelButton
+                  onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                >
+                  {isVideoDisabled ? (
+                    <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
+                  ) : (
+                    <VideoCameraIcon className="w-8 h-8" />
+                  )}
+                </ControlPanelButton>
               </InServer>
             ) : (
               <div>
@@ -248,33 +266,33 @@ export const NavBar = ({
 
 //NavBarContainer: 네비게이션바 전체 틀
 const NavBarContainer = tw.div`
-    bg-[#282828]
-    h-14
-    text-white
-    flex
-    items-center
-    justify-between
-    px-24
-    text-lg
+bg-[#282828]
+h-14
+text-white
+flex
+items-center
+justify-between
+px-24
+text-lg
 `;
 
 const LeftContainer = tw.div`
-  flex
-  justify-start
-  items-end
-  space-x-8
+flex
+justify-start
+items-end
+space-x-8
 `;
 
 const RightContainer = tw.div`
-  flex
-  justify-start
-  items-end
-  space-x-6
+flex
+justify-start
+items-end
+space-x-6
 `;
 
 const RoomSearch = tw.div`
-  hover:text-purple-400
-  transition-colors
+hover:text-purple-400
+transition-colors
 `;
 //Logo: 로고 메뉴
 const Logo = tw.div`
@@ -282,19 +300,19 @@ const Logo = tw.div`
 
 //Menu: 방 찾기, 커뮤니티 메뉴 그룹
 const LeftMenu = tw.div`
-    flex
-    space-x-7
+flex
+space-x-7
 `;
 const CommunityMenu = tw.div`
-  hover:text-purple-400
-  transition-colors
+hover:text-purple-400
+transition-colors
 `;
 
 const ServerMenu = tw.div`
-  relative
-  flex
-  items-center
-  justify-center
+relative
+flex
+items-center
+justify-center
 `;
 const NavIcon = tw.img`
 h-8
@@ -303,23 +321,22 @@ w-8
 
 //커뮤니티 드롭다운
 const DropDownCommunity = tw.div`
-    flex
-    flex-col
-    absolute
-    bg-[#3B3B3B]
-    text-white
-    mt-1
-    shadow-lg
-    z-50
-    rounded-md
-
+flex
+flex-col
+absolute
+bg-[#3B3B3B]
+text-white
+mt-1
+shadow-lg
+z-50
+rounded-md
 `;
 
 const ProfileMenu = tw.div`
 `;
 
 const EnvelopMenu = tw.div`
-  relative
+relative
 `;
 
 const UnreadCount = tw.div`
@@ -349,21 +366,21 @@ hover:bg-[#282828]
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
-    ml-2
-    mr-3
-    `;
+ml-2
+mr-3
+`;
 
 //InServer: 서버 표시하는 상태바
 const InServer = tw.div`
-    h-9
-    flex
-    items-center
-    justify-center
-    p-1
-    border-purple-400
-    border-[1px]
-    rounded-md
-    text-[14px]
+h-9
+flex
+items-center
+justify-center
+p-1
+border-purple-400
+border-[1px]
+rounded-md
+text-[14px]
 `;
 
 const OutofServer = tw.div`
@@ -382,21 +399,31 @@ text-[14px]
 
 //ServerImg: 서버 이미지
 const ServerImg = tw.img`
-    bg-white
-    rounded-full
-    w-5
-    mr-2
-    ml-1
+bg-white
+rounded-full
+w-5
+mr-2
+ml-1
 `;
 
 //ServerText: 서버 이름
 const ServerText = tw.p`
-    mr-3
+mr-3
 `;
 
 //MicVideoImg: 마이크, 비디오 이미지 크기
 const MicVideoImg = tw.img`
-    w-5
-    ml-1
-    mr-1
+w-5
+ml-1
+mr-1
+`;
+
+const ControlPanelButton = tw.div`
+w-10
+text-slate-100
+cursor-pointer
+flex
+justify-center
+items-center
+relative
 `;
