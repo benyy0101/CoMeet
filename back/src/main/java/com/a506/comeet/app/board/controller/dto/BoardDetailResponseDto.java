@@ -47,7 +47,7 @@ public class BoardDetailResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt; //수정 날짜
 
-    public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, Member writer, List<KeywordResponseDto> keywords, Boolean isLike) {
+    public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, List<KeywordResponseDto> keywords, Boolean isLike) {
 
         return BoardDetailResponseDto.builder()
                 .id(board.getId())
@@ -67,8 +67,8 @@ public class BoardDetailResponseDto {
                 .roomImage(room != null ? room.getRoomImage() : null)
                 .isLocked(room != null ? room.getIsLocked() : null)
 
-                .writerNickname(writer.getNickname())
-                .writerImage(writer.getProfileImage())
+                .writerNickname(board.getWriter().getNickname())
+                .writerImage(board.getWriter().getProfileImage())
                 .isLike(isLike)
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())

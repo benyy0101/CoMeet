@@ -75,6 +75,7 @@ public class Board extends BaseEntity {
     }
 
     public void delete() {
+        this.room = null;
         deleteSoftly();
     }
 }
