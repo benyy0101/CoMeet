@@ -91,10 +91,8 @@ public class BoardService {
     public BoardDetailResponseDto getById(Long boardId, String memberId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-
         boolean isLike = checkLikeStatus(boardId, memberId);
-        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), member, getKeywords(board.getRoom()), isLike);
+        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), getKeywords(board.getRoom()), isLike);
     }
 
     @Transactional

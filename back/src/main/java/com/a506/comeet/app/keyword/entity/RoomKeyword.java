@@ -2,7 +2,7 @@ package com.a506.comeet.app.keyword.entity;
 
 
 import com.a506.comeet.app.room.entity.Room;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @RequiredArgsConstructor
 @SQLRestriction("is_deleted = 0")
-public class RoomKeyword extends BaseEntityWithSoftDelete {
+public class RoomKeyword extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

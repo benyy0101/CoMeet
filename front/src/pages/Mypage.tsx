@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import MyProfile from "components/Mypage/MyProfile";
-import { MyKeyword } from "components/Mypage/MyKeyword";
+import MyKeyword from "components/Mypage/MyKeyword";
 import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
-import { MyTILCalendar } from "components/Mypage/MyTILCalendar";
+import MyTILCalendar from "components/Mypage/MyTILCalendar";
 import { MySumTime } from "components/Mypage/MySumTime";
 import { useParams } from "react-router-dom";
 
@@ -18,11 +18,11 @@ import axios from "axios";
 
 export const Mypage = () => {
   //id 리덕스에서 가져오고
-  const memberId = useSelector((state: any) => state.user.user.memberId);
+  const userId = useSelector((state: any) => state.user.user.memberId);
 
   const params = useParams();
 
-  const userId = params.memberId;
+  const memberId: string = params.memberId || "";
 
   //들어온 게 내 페이지인지 아닌지
   const [isMe, setIsMe] = useState<boolean>(false);
@@ -76,7 +76,7 @@ export const Mypage = () => {
         <SecondContainer>
           {/* 키워드 컨테이너 */}
           <KeywordContainer>
-            <MyKeyword />
+            <MyKeyword keywords={userData?.keywords} />
           </KeywordContainer>
           {/* 키워드 오른쪽 컨테이너 - 공부타입, 공부타임 */}
           <ThirdContainer>
@@ -95,7 +95,7 @@ export const Mypage = () => {
       <FirstContainerRight>
         {/* TIL 캘린더 컨테이너 */}
         <TILCalendarContainer>
-          <MyTILCalendar />
+          <MyTILCalendar memberId={memberId} />
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
         <SumTimeContainer>
@@ -138,7 +138,7 @@ my-5
 
 // 프로필 컨테이너
 const ProfileContainer = tw.div`
-h-[33%]
+h-[30%]
 mb-5
 rounded-xl
 bg-[#3C334D]
@@ -147,7 +147,7 @@ bg-[#3C334D]
 // 키워드, 공부타입, 공부시간 들어 있는 컨테이너
 const SecondContainer = tw.div`
 flex
-h-[64%]
+h-[67%]
 `;
 
 // 키워드 컨테이너
@@ -182,7 +182,7 @@ bg-[#3C334D]
 
 // TIL 캘린더 컨테이너
 const TILCalendarContainer = tw.div`
-h-[57%]
+h-[65%]
 mb-5
 rounded-xl
 bg-[#3C334D]
@@ -190,7 +190,7 @@ bg-[#3C334D]
 
 // 공부 합계 시간 컨테이너
 const SumTimeContainer = tw.div`
-h-[40%]
+h-[32%]
 rounded-xl
 bg-[#3C334D]
 `;

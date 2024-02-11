@@ -8,14 +8,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class OAuthMemberInfoResponse {
+public class GoogleOAuthMemberInfoResponse extends OAuthMemberInfoResponse{
 
+    @JsonProperty("id")
     private String oauthId;
 
+    @JsonProperty("name")
     private String name;
 
+    @JsonProperty("picture")
     private String profileUrl;
 
+    @JsonProperty("email")
     private String email;
 
 }

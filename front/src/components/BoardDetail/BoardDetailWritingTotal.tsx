@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import tw from "tailwind-styled-components";
 
 import { BoardDetailHeader } from "./BoardDetailHeader";
@@ -7,88 +7,139 @@ import { BoardDetailRoomInfo } from "./BoardDetailRoomInfo";
 import StarFill from "assets/img/star-fill.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { KeywordComponent } from "./KeywordComponent";
+import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
+import { EnterBoardResponse } from "models/Board.interface";
+import { useQuery } from "@tanstack/react-query";
+import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
-export const BoardDetailWritingTotal = () => {
-  //임시
-  //방 조회시 받아오는 데이터들
-  //작성자 닉네임
-  const nickname: string = "마스터";
-  //제목
-  const title: string = "알고리즘 스터디 ";
-  //본문
-  const context: string = "서울 5반 알고리즘 스터디 들어오세여";
-  //좋아요 수
-  const likecount: number = 20;
+type BoardDetailProps = {
+  boardId: number;
+};
 
-  //게시글 타입 - 모집/자유
-  const boardType: string = "recruit";
+export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
+  const { boardId } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
+  const navigate = useNavigate();
 
-  //자유게시판의 카테고리 - CHAT/TIP/QUESTION/PROMOTION
-  const cateogory: string = "";
+  const dummy: EnterBoardResponse = {
+    id: 0,
+    title: "title",
+    content: "내용",
+    likeCount: 0,
+    type: "RECRUIT",
+    category: null,
+    isValid: true,
+    roomKeywords: [],
+    roomTitle: "이건 테스d트",
+    roomDescription: "요ㄴㄴ요",
+    roomMcount: 1,
+    roomCapacity: 10,
+    roomImage: "default_room_image_letsgo",
+    isLocked: false,
+    writerNickname: "nickname2",
+    writerImage: "",
+    isLike: false,
+    createdAt: "2024-02-10 03:42",
+    updatedAt: "2024-02-10 03:42",
+  };
+  const [boardDetail, setBoardDetail] = useState<EnterBoardResponse>(dummy);
+  //키워드는 이름만 있어도 된다
+  const [keywordArr, setKeywordArr] = useState<string[]>([]);
 
-  //방 Id
-  const roomId: string = "10";
-  //모집중 여부
-  const valid: boolean = true;
-  //작성 날짜
-  const createdAt: string = "2024-01-26";
-  //글을 보는 유저가 해당 글을 좋아요 했는지 유무
-  const like: boolean = false;
-  //여기까지가 방 조회시 받아오는 데이터들
+  const { data: boardDetailData } = useQuery<EnterBoardResponse, Error>({
+    queryKey: ["boardDetail", JSON.stringify(props.boardId)],
+    queryFn: () => {
+      return enterBoard({ boardId });
+    },
+  });
 
-  //키워드 가져와야 함 -
-  let roomKeyword: number[] = [];
-
-  //방 번호 있으면
-  if (roomId.length != 0) {
-    //키워드는 키워드 인덱스로 받아오나
-    roomKeyword = [123, 123123];
-  }
-
-  const keywordList = roomKeyword.map((keyword) => (
-    <KeywordComponent keyword={keyword} />
-  ));
-
-  //좋아요 했는지
-  const [isLiked, setIsLiked] = useState<boolean>(like);
-
-  //좋아요 누르면 +1 해서 렌더링 되게 (임시)
-  const [likecountPlus, setLikecountPlus] = useState<number>(likecount);
+  useEffect(() => {
+    if (boardDetailData) {
+      console.log("if query ended", boardDetailData);
+      setBoardDetail(boardDetailData);
+      setKeywordArr(boardDetailData.roomKeywords.map((data) => data.name));
+    }
+  }, [boardDetailData]);
 
   const handleLike = () => {
-    if (isLiked == true) {
-      console.log("좋아요");
-      setLikecountPlus((current) => current - 1);
-    } else {
-      setLikecountPlus((current) => current + 1);
-    }
-    setIsLiked(!isLiked);
+    const likeValue = !boardDetail.isLike ? 1 : -1;
+    // api 매번 누를때마다 날리게 돼있음
+    !boardDetail.isLike ? likeBoard({ boardId }) : unlikeBoard({ boardId });
+    setBoardDetail({
+      ...boardDetail,
+      isLike: !boardDetail.isLike,
+      likeCount: boardDetail.likeCount + likeValue,
+    });
+  };
+
+  const handleDelete = () => {
+    deleteBoard({ boardId: boardDetail.id })
+      .then((data) => {
+        console.log("success");
+        navigate("/recruit-board");
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+        return fail;
+      });
   };
 
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
-        nickname={nickname}
-        title={title}
-        likecount={likecountPlus}
-        category={cateogory}
-        valid={valid}
-        createdAt={createdAt}
-        isLiked={isLiked}
+        nickname={boardDetail.writerNickname}
+        title={boardDetail.title}
+        likecount={boardDetail.likeCount}
+        category={boardDetail.category}
+        valid={boardDetail.isValid}
+        createdAt={boardDetail.createdAt}
+        isLiked={boardDetail.isLike}
       />
       {/* 게시글 타입이 모집게시판일 경우에만 방 정보 보여줌 */}
-      {boardType === "recruit" ? <BoardDetailRoomInfo roomId={roomId} /> : null}
+      {boardDetail.type === "RECRUIT" ? (
+        <BoardDetailRoomInfo
+          roomTitle={boardDetail.roomTitle}
+          roomDescription={boardDetail.roomDescription}
+          roomMCount={boardDetail.roomMcount!}
+          roomCapacity={boardDetail.roomCapacity}
+          roomId={boardDetail.id}
+          roomLink={boardDetail.roomLink!}
+        ></BoardDetailRoomInfo>
+      ) : null}
 
-      <ContentContainer>{context}</ContentContainer>
+      <ContentContainer>{boardDetail.content}</ContentContainer>
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
-      {boardType === "recruit" ? (
-        <KeywordContainer>{keywordList}</KeywordContainer>
+      {boardDetail.type === "RECRUIT" ? <KeywordContainer>{keywordArr}</KeywordContainer> : null}
+
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <LikeButtonContainer>
+          <LikeButton onClick={handleDelete}>
+            <LikeText>삭제</LikeText>
+          </LikeButton>
+        </LikeButtonContainer>
+      ) : null}
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <Link
+          to={`/write-article?type=recruit&option=edit`}
+          state={{
+            editId: boardDetail.id,
+            editTitle: boardDetail.title,
+            editContent: boardDetail.content,
+          }}
+        >
+          <LikeText>수정</LikeText>
+        </Link>
       ) : null}
 
       <LikeButtonContainer>
         <LikeButton onClick={handleLike}>
-          {isLiked ? (
+          {boardDetail.isLike ? (
             <LikeImg src={StarFill} alt="" />
           ) : (
             <LikeImg src={StarEmpty} alt="" />

@@ -91,14 +91,14 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
     }
 
     private void setFollowCount(MemberDetailResponseDto res, String memberId) {
-        Optional<Long> followerCount = Optional.ofNullable(jpaQueryFactory.select(follow.from.count())
-                .from(follow)
-                .where(follow.from.memberId.eq(memberId))
-                .fetchOne());
-
-        Optional<Long> followingCount = Optional.ofNullable(jpaQueryFactory.select(follow.to.count())
+        Optional<Long> followerCount = Optional.ofNullable(jpaQueryFactory.select(follow.to.count())
                 .from(follow)
                 .where(follow.to.memberId.eq(memberId))
+                .fetchOne());
+
+        Optional<Long> followingCount = Optional.ofNullable(jpaQueryFactory.select(follow.from.count())
+                .from(follow)
+                .where(follow.from.memberId.eq(memberId))
                 .fetchOne());
 
         followerCount.ifPresent(count -> res.setFollowerCount(count.intValue()));

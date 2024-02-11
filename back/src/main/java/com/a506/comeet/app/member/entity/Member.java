@@ -3,7 +3,7 @@ package com.a506.comeet.app.member.entity;
 import com.a506.comeet.app.etc.entity.Til;
 import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.room.entity.RoomMember;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import com.a506.comeet.common.enums.MemberFeature;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @Builder
 @SQLRestriction("is_deleted = 0")
-public class Member extends BaseEntityWithSoftDelete implements UserDetails {
+public class Member extends BaseEntity implements UserDetails {
 
     @Id
     @Column(name="member_id", updatable = false, unique = true, nullable = false)
@@ -48,7 +48,7 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @Column(name = "profile_image")
     @Builder.Default
     private String profileImage = "";
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @Builder.Default

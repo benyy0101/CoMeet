@@ -1,7 +1,8 @@
-package com.a506.comeet.auth;
+package com.a506.comeet.auth.service;
 
-import com.a506.comeet.auth.controller.dto.OAuthAccessTokenRequest;
+import com.a506.comeet.auth.controller.dto.GithubOAuthAccessTokenRequest;
 import com.a506.comeet.auth.controller.dto.OAuthAccessTokenResponse;
+import com.a506.comeet.auth.controller.dto.GithubOAuthMemberInfoResponse;
 import com.a506.comeet.auth.controller.dto.OAuthMemberInfoResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,10 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Component
-public class GithubOAuthClient implements OAuthClient{
+public class GithubOAuthClient implements OAuthClient {
 
     private static final String ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private static final String MEMBER_INFO_URL = "https://api.github.com/user";
@@ -31,7 +30,7 @@ public class GithubOAuthClient implements OAuthClient{
     public OAuthAccessTokenResponse getAccessToken(String code) {
         return restTemplate.postForObject(
                 ACCESS_TOKEN_URL,
-                new OAuthAccessTokenRequest(clientId, clientSecret, code),
+                new GithubOAuthAccessTokenRequest(clientId, clientSecret, code),
                 OAuthAccessTokenResponse.class
                 );
     }
@@ -44,7 +43,7 @@ public class GithubOAuthClient implements OAuthClient{
                 MEMBER_INFO_URL,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                OAuthMemberInfoResponse.class
+                GithubOAuthMemberInfoResponse.class
         ).getBody();
     }
 }

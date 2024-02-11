@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface NoteCustomRepository {
     Page<NoteSimpleResponseDto> getNoteList(String memberId, Pageable pageable);
-    Integer getUnreadCount(String memberId);
+    int getUnreadCount(String memberId);
 }

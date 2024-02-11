@@ -1,7 +1,7 @@
 package com.a506.comeet.app.room.entity;
 
 import com.a506.comeet.app.room.controller.dto.LoungeUpdateRequestDto;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @SQLRestriction("is_deleted = 0")
-public class Lounge extends BaseEntityWithSoftDelete {
+public class Lounge extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

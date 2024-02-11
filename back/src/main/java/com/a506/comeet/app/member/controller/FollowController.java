@@ -40,4 +40,10 @@ public class FollowController {
         return ResponseEntity.ok(followService.getFollowings(req, memberId));
     }
 
+    @GetMapping("/follow/{memberId}")
+    public ResponseEntity<Boolean> getFollowings(@PathVariable(value = "memberId") String toId){
+        String fromId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(followService.isFollowing(fromId, toId));
+    }
+
 }

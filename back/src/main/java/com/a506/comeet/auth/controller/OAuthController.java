@@ -1,8 +1,6 @@
 package com.a506.comeet.auth.controller;
 
-import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
-import com.a506.comeet.auth.service.AuthService;
 import com.a506.comeet.auth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,14 @@ public class OAuthController {
 
     @GetMapping("login/github")
     public ResponseEntity<LoginResponseDto> gitHubLogin(@RequestParam String code){
-        LoginResponseDto res = oAuthService.oAuthLogin(code);
+        LoginResponseDto res = oAuthService.githubOAuthLogin(code);
+        HttpHeaders headers = getHeadersWithCookie(res);
+        return new ResponseEntity<>(res, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("login/google")
+    public ResponseEntity<LoginResponseDto> googleLogin(@RequestParam String code){
+        LoginResponseDto res = oAuthService.googleOAuthLogin(code);
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
     }

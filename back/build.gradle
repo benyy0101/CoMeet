@@ -80,6 +80,9 @@ dependencies {
 	implementation("com.querydsl:querydsl-mongodb:5.0.0") {
 		exclude group: "org.mongodb", module: "mongo-java-driver"
 	}
+
+	// Apache Commons Lang for RandomUtil
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
 }
 
 

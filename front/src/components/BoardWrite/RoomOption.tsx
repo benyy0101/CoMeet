@@ -1,15 +1,12 @@
-import React, { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { searchManagingRoom } from "api/Room";
+import { SearchManagingResponses } from "models/Room.interface";
+import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 type RoomOptionProps = {
   provoke: boolean;
-  selectRoom: (room: string) => void;
-};
-
-type Room = {
-  id: number;
-  name: string;
-  isActive: boolean;
+  selectRoom: (room: number) => void;
 };
 
 type RoomButtonProps = {
@@ -17,19 +14,24 @@ type RoomButtonProps = {
   active: boolean;
 };
 function RoomOption(props: RoomOptionProps) {
-  const [roomList, setRoomList] = React.useState<Room[]>([
-    { id: 1, name: "SSAFY 9기", isActive: true },
-    { id: 2, name: "SSAFY 10기", isActive: false },
-    { id: 3, name: "SSAFY 11기", isActive: true },
-    { id: 4, name: "SSAFY 12기", isActive: true },
-    { id: 5, name: "SSAFY 13기", isActive: true },
-  ]);
-  const [selected, setSelected] = React.useState<string>("");
+  const dummy = [{ roomId: 42, title: "SSAFY 9기", full: true }];
+  const [roomList, setRoomList] = useState<SearchManagingResponses[]>(dummy);
 
-  const selectedHandler = (room: Room) => {
-    if (room.isActive === false) return;
-    setSelected(room.name);
-    props.selectRoom(room.name);
+  const { data: ManagedRoomData } = useQuery<SearchManagingResponses[], Error>({
+    queryKey: ["managedRoomData"],
+    queryFn: () => searchManagingRoom({}),
+  });
+
+  useEffect(() => {
+    setRoomList(ManagedRoomData!);
+  }, [ManagedRoomData]);
+
+  const [selected, setSelected] = React.useState<number>(0);
+
+  const selectedHandler = (room: SearchManagingResponses) => {
+    if (room.full) return;
+    setSelected(room.roomId);
+    props.selectRoom(room.roomId);
   };
 
   useEffect(() => {
@@ -44,12 +46,12 @@ function RoomOption(props: RoomOptionProps) {
       {roomList ? (
         roomList.map((room) => (
           <RoomButton
-            key={room.id}
+            key={room.roomId}
             onClick={() => selectedHandler(room)}
-            selected={selected === room.name}
-            active={room.isActive}
+            selected={selected === room.roomId}
+            active={!room.full}
           >
-            {room.name}
+            {room.title}
           </RoomButton>
         ))
       ) : (
