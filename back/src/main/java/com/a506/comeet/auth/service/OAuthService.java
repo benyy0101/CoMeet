@@ -65,9 +65,7 @@ public class OAuthService {
 
     private LoginResponseDto login(String memberId) {
         JwtToken jwtToken = makeJwtToken(memberId);
-
         List<RoomSimpleResponseDto> joinedRooms = roomMemberRepository.getJoinedRooms(memberId);
-
         int unreadNoteCount = noteRepository.getUnreadCount(memberId);
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(NO_MEMBER));
