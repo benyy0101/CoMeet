@@ -29,6 +29,7 @@
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-textarea-autosize": "^8.5.3",
+    "react-wordcloud": "^1.2.7",
     "redux-persist": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "sockjs-client": "^1.6.1",

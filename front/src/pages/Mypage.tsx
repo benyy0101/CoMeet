@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MyProfile from "components/Mypage/MyProfile";
-import { MyKeyword } from "components/Mypage/MyKeyword";
+import MyKeyword from "components/Mypage/MyKeyword";
 import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
 import MyTILCalendar from "components/Mypage/MyTILCalendar";
@@ -76,7 +76,7 @@ export const Mypage = () => {
         <SecondContainer>
           {/* 키워드 컨테이너 */}
           <KeywordContainer>
-            <MyKeyword />
+            <MyKeyword keywords={userData?.keywords} />
           </KeywordContainer>
           {/* 키워드 오른쪽 컨테이너 - 공부타입, 공부타임 */}
           <ThirdContainer>
@@ -138,7 +138,7 @@ my-5
 
 // 프로필 컨테이너
 const ProfileContainer = tw.div`
-h-[33%]
+h-[30%]
 mb-5
 rounded-xl
 bg-[#3C334D]
@@ -147,7 +147,7 @@ bg-[#3C334D]
 // 키워드, 공부타입, 공부시간 들어 있는 컨테이너
 const SecondContainer = tw.div`
 flex
-h-[64%]
+h-[67%]
 `;
 
 // 키워드 컨테이너

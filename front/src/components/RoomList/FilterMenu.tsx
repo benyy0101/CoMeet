@@ -1,23 +1,38 @@
 import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
-import Video from "../assets/img/video.png";
-import Audio from "../assets/img/audio.png";
-import Lock from "../assets/img/lock.png";
-import { ChevronDoubleUpIcon } from "@heroicons/react/24/solid";
+import Video from "../../assets/img/video.png";
+import Audio from "../../assets/img/audio.png";
+import Lock from "../../assets/img/lock.png";
+import {
+  LockClosedIcon,
+  SpeakerWaveIcon,
+  VideoCameraIcon,
+} from "@heroicons/react/24/solid";
 
-export default function FilterMenu() {
-  const [sortByLatest, setSortByLatest] = useState<boolean>(true);
+interface IProps {
+  setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
+  sortByLatest: boolean;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+}
 
+export default function FilterMenu({
+  setSortByLatest,
+  sortByLatest,
+  setPage,
+}: IProps) {
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isVideoOff, setIsVideoOff] = useState<boolean>(false);
   const [maxcount, setMaxcount] = useState<number>(0);
+
+  useEffect(() => {
+    setPage(0);
+  }, [isLocked, isMuted, isVideoOff, maxcount]);
+
   const maxcountHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMaxcount(Number(e.target.value));
   };
-  useEffect(() => {
-    console.log(maxcount);
-  }, [maxcount]);
+
   return (
     <Wrapper>
       <SortButton onClick={() => setSortByLatest(!sortByLatest)}>
@@ -29,15 +44,23 @@ export default function FilterMenu() {
           {/* TODO: 체크박스 커스텀하기 */}
           <CheckBoxOption>
             <CheckBox>
-              <Img src={Lock} alt="" />
-              <input type="checkbox" checked={isLocked} onChange={() => setIsLocked(!isLocked)} />
+              <LockClosedIcon className="w-5 h-5" />
+              <input
+                type="checkbox"
+                checked={isLocked}
+                onChange={() => setIsLocked(!isLocked)}
+              />
             </CheckBox>
             <CheckBox>
-              <Img src={Audio} alt="" />
-              <input type="checkbox" checked={isMuted} onChange={() => setIsMuted(!isMuted)} />
+              <SpeakerWaveIcon className="w-5 h-5" />
+              <input
+                type="checkbox"
+                checked={isMuted}
+                onChange={() => setIsMuted(!isMuted)}
+              />
             </CheckBox>
             <CheckBox>
-              <Img src={Video} alt="" />
+              <VideoCameraIcon className="w-5 h-5" />
               <input
                 type="checkbox"
                 checked={isVideoOff}
@@ -65,9 +88,11 @@ flex-col
 items-center
 fixed
 space-y-10
+w-52
 `;
 
 const SearchOptionContainer = tw.div`
+w-full
 bg-gray-50
 border-[1px]
 border-slate-200
@@ -75,6 +100,7 @@ rounded-md
 shadow-sm
 flex
 flex-col
+items-center
 divide-y
 divide-slate-200
 overflow-hidden
@@ -86,11 +112,13 @@ w-5
 
 const CheckBox = tw.div`
 flex
-gap-1
+items-center
+space-x-2
 `;
 
 const CheckBoxContainer = tw.div`
-p-5
+p-6
+w-full
 flex
 flex-col
 gap-3
@@ -99,6 +127,7 @@ gap-3
 const RangeContainer = tw.div`
 flex
 gap-2
+w-full
 `;
 const CheckBoxOption = tw.div`
 flex
@@ -109,7 +138,8 @@ font-bold
 `;
 
 const RangeWrapper = tw.div`
-p-5
+w-full
+p-6
 `;
 
 const SortButton = tw.button`

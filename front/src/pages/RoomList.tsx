@@ -2,9 +2,13 @@ import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomItem";
 import { RoomItemProps } from "../types";
 import { useEffect, useState } from "react";
-import FilterMenu from "components/FilterMenu";
+import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
-import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronDoubleUpIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
@@ -15,30 +19,46 @@ import {
 } from "models/Room.interface";
 import { searchRoom } from "api/Room";
 
+const size = 10;
+
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
+  const [page, setPage] = useState<number>(0);
+  const [sortByLatest, setSortByLatest] = useState<boolean>(true);
 
-  const params: SearchRoomParams = {
-    // constraints: "FREE",
-    page: 0,
-    size: 10,
-    sortBy: "LATEST",
-  };
-  const { data, isLoading, isError } = useQuery<SearchRoomResponse, Error>({
-    queryKey: ["roomList"],
-    queryFn: () => searchRoom(params),
+  const { data, isLoading, isError, refetch } = useQuery<
+    SearchRoomResponse,
+    Error
+  >({
+    queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", page, size],
+    queryFn: () =>
+      searchRoom({
+        page,
+        size,
+        sortBy: sortByLatest ? "LATEST" : "OLDEST",
+      }),
   });
 
   useEffect(() => {
+    refetch();
+  }, [page, sortByLatest]);
+
+  useEffect(() => {
+    console.log(data);
     if (data?.content) {
       setRoomList(data.content);
     }
   }, [data]);
+
   return (
     <Wrapper>
       <MainContainer>
         <LeftContainer>
-          <FilterMenu />
+          <FilterMenu
+            setSortByLatest={setSortByLatest}
+            sortByLatest={sortByLatest}
+            setPage={setPage}
+          />
         </LeftContainer>
         <ListContainer>
           <SearchBarContainer>

@@ -12,9 +12,13 @@ import com.a506.comeet.auth.controller.dto.OAuthAccessTokenResponse;
 import com.a506.comeet.auth.controller.dto.OAuthMemberInfoResponse;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,7 +35,6 @@ import static com.a506.comeet.error.errorcode.CustomErrorCode.NO_MEMBER;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 @Slf4j
 public class OAuthService {
 
@@ -46,6 +49,17 @@ public class OAuthService {
 
     @Value("spring.security.oauth2.client.registration.password-salt")
     private String salt;
+
+    public OAuthService(JwtTokenProvider jwtTokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, MemberRepository memberRepository, RoomMemberRepository roomMemberRepository, NoteRepository noteRepository, PasswordEncoder passwordEncoder, @Qualifier("githubOAuthClient") OAuthClient githubOAuthClient, @Qualifier("googleOAuthClient") OAuthClient googleOAuthClient) {
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.memberRepository = memberRepository;
+        this.roomMemberRepository = roomMemberRepository;
+        this.noteRepository = noteRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.githubOAuthClient = githubOAuthClient;
+        this.googleOAuthClient = googleOAuthClient;
+    }
 
     @Transactional
     public LoginResponseDto githubOAuthLogin(String code) {
