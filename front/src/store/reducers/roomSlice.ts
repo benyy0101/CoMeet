@@ -1,37 +1,15 @@
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
 import { stat } from "fs";
-import { EnterRoomResponse } from "models/Room.interface";
+import { RoomResponse } from "models/Room.interface";
 
-export interface RoomStore {
+export interface RoomState {
+  roomId: string;
   isRoomIn: boolean;
-  room: EnterRoomResponse;
-  isMicMuted: boolean;
-  isVideoOn: boolean;
 }
 
-const initialState: RoomStore = {
+const initialState: RoomState = {
+  roomId: "",
   isRoomIn: false,
-  isMicMuted: false,
-  isVideoOn: false,
-  room: {
-    managerId: "",
-    managerNickname: "",
-    title: "mocked room title",
-    description: "",
-    room_image: "",
-    notice: "",
-    mcount: 0,
-    link: "",
-    capacity: 0,
-    isLocked: false,
-    password: "",
-    constraints: "FREE",
-    type: "DISPOSABLE",
-    members: [],
-    lounges: [],
-    channels: [],
-    keywords: [],
-  },
 };
 
 const loadRoomState = () => {
@@ -43,27 +21,18 @@ const roomSlice = createSlice({
   name: "room",
   initialState: loadRoomState(),
   reducers: {
-    setEnterRoom: (state, action: PayloadAction<EnterRoomResponse>) => {
-      Object.assign(state, action.payload);
+    setEnterRoom: (state, action: PayloadAction<string>) => {
+      state.roomId = action.payload;
+      state.isRoomIn = true;
     },
     setLeaveRoom: (state) => {
-      return initialState;
-    },
-    setMicStatus: (state, action: PayloadAction<boolean>) => {
-      state.isMicMuted = action.payload;
-      console.log(state.isMicMuted);
-    },
-    setVideoStatus: (state, action: PayloadAction<boolean>) => {
-      state.isVideoOn = action.payload;
-      console.log(state.isVideoOn);
-    },
-    setIsRoomIn: (state, action: PayloadAction<boolean>) => {
-      state.isRoomIn = action.payload;
+      state.roomId = initialState.roomId;
+      state.isRoomIn = false;
     },
   },
 });
 
-const saveRoomState = (state: EnterRoomResponse) => {
+const saveRoomState = (state: RoomState) => {
   sessionStorage.setItem("roomState", JSON.stringify(state));
 };
 
@@ -74,12 +43,6 @@ export const setupRoomStatePersistence = (store: Store) => {
   });
 };
 
-export const {
-  setEnterRoom,
-  setLeaveRoom,
-  setIsRoomIn,
-  setMicStatus,
-  setVideoStatus,
-} = roomSlice.actions;
+export const { setEnterRoom, setLeaveRoom } = roomSlice.actions;
 
 export default roomSlice.reducer;
