@@ -1,5 +1,6 @@
 package com.a506.comeet.auth.controller;
 
+import com.a506.comeet.auth.SocialLoginType;
 import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
 import com.a506.comeet.auth.service.AuthService;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static com.a506.comeet.auth.SocialLoginType.*;
 
 @RestController
 @RequestMapping("/auth/oauth2")
@@ -26,7 +29,14 @@ public class OAuthController {
 
     @GetMapping("login/github")
     public ResponseEntity<LoginResponseDto> gitHubLogin(@RequestParam String code){
-        LoginResponseDto res = oAuthService.oAuthLogin(code);
+        LoginResponseDto res = oAuthService.githubOAuthLogin(code);
+        HttpHeaders headers = getHeadersWithCookie(res);
+        return new ResponseEntity<>(res, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("login/google")
+    public ResponseEntity<LoginResponseDto> googleLogin(@RequestParam String code){
+        LoginResponseDto res = oAuthService.googleOAuthLogin(code);
         HttpHeaders headers = getHeadersWithCookie(res);
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
     }

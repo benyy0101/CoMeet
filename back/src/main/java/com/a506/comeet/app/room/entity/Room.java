@@ -47,7 +47,7 @@ public class Room extends BaseEntityWithSoftDelete {
     private String title;
     private String description;
     @Column(name = "room_image")
-    private String roomImage = "default_room_image_letsgo";
+    private String roomImage = "";
     private String notice;
 
     private int mcount;

@@ -119,7 +119,7 @@ public class RoomService {
     private void S3ImageDelete(RoomUpdateRequestDto req, Room room) {
         if (req.getRoomImage() != null) {
             String imageUrl = room.getRoomImage();
-            if (!imageUrl.equals("default_room_image_letsgo")) {
+            if (!imageUrl.equals("")) {
                 s3UploadService.deleteImage(imageUrl, "roomImage/");
             }
         }
@@ -203,6 +203,10 @@ public class RoomService {
 
     public RoomResponseDto getDetails(Long roomId) {
         return getRoomResponseDto(roomId);
+    }
+
+    public List<ManagingRoomResponseDto> getManagingRoom(String memberId){
+        return roomRepository.getManagingRoom(memberId);
     }
 
     private RoomResponseDto getRoomResponseDto(Long roomId) {

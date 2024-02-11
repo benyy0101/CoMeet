@@ -96,6 +96,17 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
         return res;
     }
 
+    @Override
+    public List<ManagingRoomResponseDto> getManagingRoom(String memberId) {
+        List<Room> rooms = jpaQueryFactory
+                .selectFrom(room)
+                .where(room.manager.memberId.eq(memberId)
+                        .and(room.type.eq(RoomType.PERMANENT)))
+                .fetch();
+        List<ManagingRoomResponseDto> res = rooms.stream().map(ManagingRoomResponseDto::toDto).toList();
+        return res;
+    }
+
 
     private List<RoomMemberResponseDto> getMembers(Long roomId) {
         return jpaQueryFactory.select(

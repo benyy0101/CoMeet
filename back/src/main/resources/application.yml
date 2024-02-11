@@ -38,7 +38,10 @@ spring:
           github:
             client-id:
             client-secret:
-            password-salt:
+          google:
+            client-id:
+            client-secret:
+          password-salt:
 
 logging.level:
   org.hibernate.SQL:

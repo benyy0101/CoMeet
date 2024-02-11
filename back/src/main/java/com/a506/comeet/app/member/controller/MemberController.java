@@ -61,7 +61,7 @@ public class MemberController {
         String memberId = MemberUtil.getMemberId();
         memberService.update(MemberUpdateRequestDto
                 .builder()
-                .profileImage("default_profile_image_letsgo")
+                .profileImage("")
                 .build(), memberId);
         return ResponseEntity.ok().build();
     }
