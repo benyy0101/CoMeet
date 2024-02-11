@@ -46,7 +46,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
     }
 
     @Override
-    public Integer getUnreadCount(String memberId) {
+    public int getUnreadCount(String memberId) {
         return Objects.requireNonNull(jpaQueryFactory.select(note.count())
                 .from(note)
                 .where(note.isRead.isFalse()

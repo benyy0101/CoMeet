@@ -2,7 +2,7 @@ package com.a506.comeet.app.room.entity;
 
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.controller.dto.RoomUpdateRequestDto;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.app.keyword.entity.RoomKeyword;
@@ -23,7 +23,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SQLRestriction("is_deleted = 0")
 
-public class Room extends BaseEntityWithSoftDelete {
+public class Room extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

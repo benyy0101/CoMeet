@@ -4,7 +4,7 @@ import com.a506.comeet.app.board.controller.dto.BoardUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Like;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = PROTECTED)
-public class Board extends BaseEntityWithSoftDelete {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

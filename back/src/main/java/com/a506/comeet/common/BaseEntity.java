@@ -1,11 +1,7 @@
 package com.a506.comeet.common;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.DialectOverride;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,4 +21,15 @@ public class BaseEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = Boolean.FALSE;
+
+    public void deleteSoftly() {
+        this.isDeleted = Boolean.TRUE;
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void undoDeletion() {
+        this.isDeleted = Boolean.FALSE;
+    }
 }

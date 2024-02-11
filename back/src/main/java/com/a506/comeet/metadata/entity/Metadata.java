@@ -1,6 +1,6 @@
 package com.a506.comeet.metadata.entity;
 
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SQLRestriction("is_deleted = 0")
 @Document(collection = "metadata")
-public class Metadata extends BaseEntityWithSoftDelete {
+public class Metadata extends BaseEntity {
 
     @Id
     private String id;

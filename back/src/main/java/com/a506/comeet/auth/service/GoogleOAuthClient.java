@@ -1,4 +1,4 @@
-package com.a506.comeet.auth;
+package com.a506.comeet.auth.service;
 
 import com.a506.comeet.auth.controller.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @Slf4j
-public class GoogleOAuthClient implements OAuthClient{
+public class GoogleOAuthClient implements OAuthClient {
 
     private static final String ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private static final String MEMBER_INFO_URL = "https://www.googleapis.com/userinfo/v2/me";
