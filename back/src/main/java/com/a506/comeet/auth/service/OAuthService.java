@@ -111,7 +111,7 @@ public class OAuthService {
                             .password(passwordEncoder.encode(memberId + salt))
                             .name(res.getName()==null? "" : res.getName())
                             .profileImage(res.getProfileUrl())
-                            .nickname(res.getName()==null? "" : res.getName() + RandomStringUtils.randomAlphanumeric(8))
+                            .nickname("User" + RandomStringUtils.randomAlphanumeric(8))
                             .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }
