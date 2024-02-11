@@ -2,7 +2,7 @@ package com.a506.comeet.app.board.entity;
 
 import com.a506.comeet.app.board.controller.dto.CommentUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @AllArgsConstructor
 @SQLRestriction("is_deleted = 0")
 @NoArgsConstructor(access = PROTECTED)
-public class Comment extends BaseEntityWithSoftDelete {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RoomRepository extends JpaRepository<Room, Long>, RoomRepositoryCustom {
 
     Room findByTitle(String title);
-    Boolean existsByTitle(String title);
+    boolean existsByTitle(String title);
 }

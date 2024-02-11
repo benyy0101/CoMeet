@@ -19,15 +19,12 @@ public class RoomKeywordCustomRepositoryImpl implements RoomKeywordCustomReposit
 
     @Override
     public String getRoomKeywordValuesInString(Long roomId) {
-        List<String> res = jpaQueryFactory.select(keyword.name)
+        List<String> keywordIds = jpaQueryFactory.select(keyword.name)
                 .from(roomKeyword)
                 .innerJoin(roomKeyword.keyword)
                 .where(roomKeyword.room.id.eq(roomId))
                 .fetch();
 
-        String res2 = String.join(" ", res);
-        log.info("keyword values of {} : {}", roomId, res2);
-
-        return res2;
+        return String.join(" ", keywordIds);
     }
 }

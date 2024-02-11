@@ -1,4 +1,4 @@
-package com.a506.comeet.auth;
+package com.a506.comeet.auth.service;
 
 import com.a506.comeet.auth.controller.dto.OAuthAccessTokenResponse;
 import com.a506.comeet.auth.controller.dto.GithubOAuthMemberInfoResponse;

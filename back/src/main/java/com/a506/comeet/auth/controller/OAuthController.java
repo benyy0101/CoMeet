@@ -1,9 +1,6 @@
 package com.a506.comeet.auth.controller;
 
-import com.a506.comeet.auth.SocialLoginType;
-import com.a506.comeet.auth.controller.dto.LoginReqeustDto;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
-import com.a506.comeet.auth.service.AuthService;
 import com.a506.comeet.auth.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import static com.a506.comeet.auth.SocialLoginType.*;
 
 @RestController
 @RequestMapping("/auth/oauth2")
