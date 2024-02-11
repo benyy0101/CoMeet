@@ -36,32 +36,30 @@ export const ServerDropDownList = () => {
 
   return (
     <StyleDropdownMenu>
-      <ServerContent>
-        {roomInfo.length !== 0 ? (
-          <>
-            {roomInfo.map((room: any) => (
-              <StyleImgTextBoth key={room.id}>
-                <StyleServerImg src={RoomDefault} alt="" />
-                <Link to={`/room/${room.roomId}`}>{room.title}</Link>
-              </StyleImgTextBoth>
-            ))}
-            <AddIconWrapper>
-              <Link to="/room-regist">
-                <PlusIcon className="w-4 h-4" />
-              </Link>
-            </AddIconWrapper>
-          </>
-        ) : (
-          <>
-            <NoneText>가입한 방이 없습니다.</NoneText>
-            <StyleServerGo>
-              <Link to="/room-regist">
-                <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
-              </Link>
-            </StyleServerGo>
-          </>
-        )}
-      </ServerContent>
+      {roomInfo.length !== 0 ? (
+        <ServerContent>
+          {roomInfo.map((room: any) => (
+            <StyleImgTextBoth key={room.id}>
+              <StyleServerImg src={RoomDefault} alt="" />
+              <Link to={`/room/${room.roomId}`}>{room.title}</Link>
+            </StyleImgTextBoth>
+          ))}
+          <AddIconWrapper>
+            <Link to="/room-regist">
+              <PlusIcon className="w-4 h-4" />
+            </Link>
+          </AddIconWrapper>
+        </ServerContent>
+      ) : (
+        <ServerContent>
+          <NoneText>가입한 방이 없습니다.</NoneText>
+          <StyleServerGo>
+            <Link to="/room-regist">
+              <PlusIcon className="w-14 h-14 m-6 text-white text-opacity-40" />
+            </Link>
+          </StyleServerGo>
+        </ServerContent>
+      )}
     </StyleDropdownMenu>
   );
 };
