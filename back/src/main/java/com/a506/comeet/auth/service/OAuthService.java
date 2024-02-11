@@ -69,6 +69,7 @@ public class OAuthService {
         int unreadNoteCount = noteRepository.getUnreadCount(memberId);
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(NO_MEMBER));
+
         return LoginResponseDto.builder()
                 .memberId(memberId)
                 .nickname(member.getNickname())
