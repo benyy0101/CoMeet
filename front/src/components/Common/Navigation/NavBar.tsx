@@ -207,7 +207,7 @@ export const NavBar = ({
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
-              <Link to="/mypage">
+              <Link to={`/userpage/${memberId}`}>
                 <NavIcon src={BasicProfile} alt="profile" />
               </Link>
             </ProfileMenu>
