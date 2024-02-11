@@ -8,7 +8,7 @@ import { set } from "react-hook-form";
 import CreateChannel from "components/Room/CreateChannel";
 import { IChannel } from "models/Channel.interface";
 import { ILounge } from "models/Lounge.interface";
-import FollowList from "components/Mypage/FollowList";
+import FollowList from "components/Mypage/Follow/FollowList";
 import MessageList from "components/Message/MessageList";
 import MessageWrite from "components/Message/MessageWrite";
 import MessageRead from "components/Message/MessageRead";
