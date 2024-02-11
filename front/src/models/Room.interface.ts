@@ -94,6 +94,9 @@ export interface WithdrawRoomResponse {}
  * roomId: number; //필수
  * password: string | null; //필수. 없으면 null이라도 넣어야함
  */
+export interface GetRoomParams {
+  roomId: number; //필수
+}
 export interface EnterRoomParams {
   roomId: number; //필수
   password: string | null; //필수. 없으면 null이라도 넣어야함
@@ -119,7 +122,7 @@ export interface EnterRoomKeyword {
   name: string;
 }
 
-export interface EnterRoomResponse {
+export interface RoomResponse {
   managerId: string;
   managerNickname: string;
   title: string;

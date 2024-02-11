@@ -4,7 +4,8 @@ import {
   DeleteRoomParams,
   DeleteRoomResponse,
   EnterRoomParams,
-  EnterRoomResponse,
+  RoomResponse,
+  GetRoomParams,
   LeaveRoomParams,
   LeaveRoomResponse,
   ModifyRoomParams,
@@ -69,7 +70,17 @@ export const withdrawRoom = async (params: WithdrawRoomParams): Promise<Withdraw
   return response.data;
 };
 
-export const enterRoom = async (params: EnterRoomParams): Promise<EnterRoomResponse> => {
+export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
+  const { roomId } = params;
+  const url = `room/${roomId}`;
+  const response = await localAxios.get(url);
+
+  return response.data;
+};
+
+export const enterRoom = async (
+  params: EnterRoomParams
+): Promise<RoomResponse> => {
   const { roomId } = params;
   const url = `room/${roomId}/enter`;
   const response = await localAxios.post(url, params);
