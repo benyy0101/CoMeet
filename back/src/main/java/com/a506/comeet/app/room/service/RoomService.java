@@ -21,11 +21,12 @@ import com.a506.comeet.common.util.DateParser;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
+import com.a506.comeet.image.service.S3UploadService;
 import com.a506.comeet.metadata.repository.CustomRedisRepository;
 import com.a506.comeet.metadata.repository.MemberRedisRepository;
 import com.a506.comeet.metadata.repository.RoomRedisRepository;
-import com.a506.comeet.metadata.service.dto.MetadataCreateDto;
 import com.a506.comeet.metadata.service.MetadataService;
+import com.a506.comeet.metadata.service.dto.MetadataCreateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,7 @@ public class RoomService {
     private final CustomRedisRepository customRedisRepository;
 
     private final MetadataService metadataService;
+    private final S3UploadService s3UploadService;
 
     private final String DEFAULT_CHANNEL_NAME = "기본 채널";
     private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
@@ -108,14 +110,22 @@ public class RoomService {
                 memberRepository.findById(req.getMangerId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "변경 요청한 새로운 매니저 아이디가 서비스 내에 존재하지 않습니다"))
                 : null;
 
-        //        if (req.getRoomImage() != null){
-//            String originalRoomImage = room.getRoomImage();
-//            s3Uploader.delete(originalRoomImage);
+        S3ImageDelete(req, room);
 
         room.updateRoom(req, newManager);
         if (req.getKeywordIds() != null) updateRoomKeywords(req, room);
     }
 
+    private void S3ImageDelete(RoomUpdateRequestDto req, Room room) {
+        if (req.getRoomImage() != null) {
+            String imageUrl = room.getRoomImage();
+            if (!imageUrl.equals("")) {
+                s3UploadService.deleteImage(imageUrl, "roomImage/");
+            }
+        }
+    }
+
+    @Transactional
     public void delete(String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
@@ -124,6 +134,7 @@ public class RoomService {
         deleteRoom(room);
     }
 
+    @Transactional
     public void join(RoomJoinRequestDto req, String memberId, long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
@@ -162,36 +173,10 @@ public class RoomService {
         passwordValidation(req, room);
         doubleEnterValidation(memberId);
 
-        RoomResponseDto res = roomRepository.getDetailRoomInfo(roomId);
         customRedisRepository.enterMember(memberId, roomId, LocalDateTime.now());
-        List<MemberSimpleResponseDto> currentMembers =
-                memberRepository.getCurrentMembers(roomRedisRepository.getMembers(roomId));
-        res.setCurrentMembers(currentMembers);
-        res.setCurrentMcount(currentMembers.size());
-
-        return res;
+        return getRoomResponseDto(roomId);
     }
 
-
-    private void doubleEnterValidation(String memberId) {
-        if (memberRedisRepository.alreadyInRoom(memberId)){
-            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 방에 들어있는 유저입니다");
-        }
-    }
-
-    private void passwordValidation(RoomEnterRequestDto req, Room room) {
-        if (room.getIsLocked()){
-            if (req.getPassword() == null || !req.getPassword().equals(room.getPassword()))
-                throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "방 잠금에 대한 비밀번호가 틀렸습니다");
-        }
-    }
-
-    private void memberJoinValidation(Room room, Member member) {
-        if (room.getType().equals(RoomType.PERMANENT)){
-            roomMemberRepository.findByRoomAndMember(room, member)
-                    .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "가입된 멤버가 아닙니다"));
-        }
-    }
 
     public String leave(Long roomId, String memberId){
         // redis 로직
@@ -214,6 +199,25 @@ public class RoomService {
 
         log.info("{} 멤버가 {} 방을 나갔습니다", memberId, roomId);
         return metadataService.create(dto);
+    }
+
+    public RoomResponseDto getDetails(Long roomId) {
+        return getRoomResponseDto(roomId);
+    }
+
+    public List<ManagingRoomResponseDto> getManagingRoom(String memberId){
+        return roomRepository.getManagingRoom(memberId);
+    }
+
+    private RoomResponseDto getRoomResponseDto(Long roomId) {
+        RoomResponseDto res = roomRepository.getDetailRoomInfo(roomId);
+        Set<String> currentMemberIds = roomRedisRepository.getMembers(roomId);
+        List<MemberSimpleResponseDto> currentMembers = currentMemberIds.isEmpty()? List.of() :
+                memberRepository.getCurrentMembers(currentMemberIds);
+
+        res.setCurrentMembers(currentMembers);
+        res.setCurrentMcount(currentMembers.size());
+        return res;
     }
 
     private static void noEnteranceValidation(String enterTimeString) {
@@ -239,7 +243,6 @@ public class RoomService {
         if (room.getMcount() == room.getCapacity()) throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "방 입장 인원이 가득찼습니다");
     }
 
-    @Transactional
     private void deleteRoom(Room room){
         // 방과 관련된 엔티티 전부 삭제
         room.delete();
@@ -253,7 +256,6 @@ public class RoomService {
     }
 
 
-    @Transactional
     private void joinMemberInnerLogic(Member member, Room room){
         RoomMember roomMember = new RoomMember(member, room);
         alreadyJoinedValidation(member, room);
@@ -289,4 +291,23 @@ public class RoomService {
         }
     }
 
+    private void doubleEnterValidation(String memberId) {
+        if (memberRedisRepository.alreadyInRoom(memberId)){
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 방에 들어있는 유저입니다");
+        }
+    }
+
+    private void passwordValidation(RoomEnterRequestDto req, Room room) {
+        if (room.getIsLocked()){
+            if (req.getPassword() == null || !req.getPassword().equals(room.getPassword()))
+                throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "방 잠금에 대한 비밀번호가 틀렸습니다");
+        }
+    }
+
+    private void memberJoinValidation(Room room, Member member) {
+        if (room.getType().equals(RoomType.PERMANENT)){
+            roomMemberRepository.findByRoomAndMember(room, member)
+                    .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "가입된 멤버가 아닙니다"));
+        }
+    }
 }

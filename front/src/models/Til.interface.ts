@@ -14,7 +14,7 @@ export interface SearchTilParams {
 }
 
 export interface SearchTilContent {
-  tilid: number;
+  id: number;
   date: string;
 }
 
@@ -38,4 +38,8 @@ export interface EnterTilResponse {
   memberId: string;
   context: string;
   date: string;
+}
+
+export interface DeletePrams {
+  tilId: number;
 }

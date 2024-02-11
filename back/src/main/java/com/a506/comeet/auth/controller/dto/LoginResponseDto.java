@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class LoginResponseDto {
 
+    private String memberId;
     private String nickname;
     private String profileImage;
     private JwtToken jwtToken;
