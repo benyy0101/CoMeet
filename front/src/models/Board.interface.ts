@@ -87,7 +87,7 @@ export interface EnterBoardResponse {
   type: BOARD_TYPE;
   category: FREE_BOARD_CATEGORY | null;
   isValid: boolean; // 모집완료인지
-  roomKeywords: number[];
+  roomKeywords: Keyword[];
   roomTitle: string;
   roomDescription: string;
   roomMcount: number;

@@ -10,7 +10,7 @@ export const BoardDetail = () => {
   return (
     <TotalContainer>
       <WritingContainer>
-        <BoardDetailWritingTotal boardId={boardId!} />
+        <BoardDetailWritingTotal boardId={parseInt(boardId!)} />
       </WritingContainer>
       <CommentContainer>
         <BoardDetailComment />
