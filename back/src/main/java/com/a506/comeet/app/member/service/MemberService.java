@@ -39,7 +39,6 @@ public class MemberService {
                 .nickname(req.getNickname())
                 .roles(req.roles)
                 .build();
-
         return memberRepository.save(member);
     }
 
@@ -53,7 +52,7 @@ public class MemberService {
     private void S3ImageDelete(MemberUpdateRequestDto req, Member member) {
         if (req.getProfileImage() != null) {
             String imageUrl = member.getProfileImage();
-            if (!imageUrl.equals("default_profile_image_letsgo")) {
+            if (!imageUrl.equals("")) {
                 s3UploadService.deleteImage(imageUrl, "profileImage/");
             }
         }

@@ -18,7 +18,7 @@ import AskBlackBoardIcon from "assets/img/ask-black-board.svg";
 import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
-import { Pagination } from "components/BoardList/Pagination";
+import { Pagination } from "components/Common/Pagination";
 
 type BoardListProps = {
   id: number;

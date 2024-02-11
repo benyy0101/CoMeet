@@ -48,7 +48,7 @@ public class Member extends BaseEntityWithSoftDelete implements UserDetails {
     @Column(name = "profile_image")
     @Builder.Default
     private String profileImage = "";
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
     @Builder.Default
