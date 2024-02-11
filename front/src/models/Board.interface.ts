@@ -117,4 +117,6 @@ export interface UnlikeBoardResponse {}
 export interface TextEditProps {
   isFree: boolean;
   isEdit: boolean;
+  editTitle?: string;
+  editContetn?: string;
 }

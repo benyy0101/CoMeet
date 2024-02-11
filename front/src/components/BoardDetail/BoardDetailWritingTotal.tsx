@@ -10,7 +10,10 @@ import { KeywordComponent } from "./KeywordComponent";
 import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
-import { enterBoard, likeBoard, unlikeBoard } from "api/Board";
+import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 type BoardDetailProps = {
   boardId: number;
@@ -96,6 +99,21 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
       {boardDetail.type === "RECRUIT" ? <KeywordContainer>{keywordArr}</KeywordContainer> : null}
+
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <LikeButtonContainer>
+          <LikeButton onClick={handleDelete}>
+            <LikeText>삭제</LikeText>
+          </LikeButton>
+        </LikeButtonContainer>
+      ) : null}
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <Link to={`/write-article?type=recruit&option=write`}>
+          <LikeText>수정</LikeText>
+        </Link>
+      ) : null}
 
       <LikeButtonContainer>
         <LikeButton onClick={handleLike}>
