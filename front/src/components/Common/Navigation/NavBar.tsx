@@ -164,7 +164,7 @@ export const NavBar = ({
             </ProfileMenu>
           </>
         ) : (
-          <>
+          <LoginContainer>
             <LoginSignup>
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
@@ -177,7 +177,6 @@ export const NavBar = ({
                 ) : null}
               </ModalPortal>
             </LoginSignup>
-            |
             <LoginSignup>
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
@@ -190,7 +189,7 @@ export const NavBar = ({
                 ) : null}
               </ModalPortal>
             </LoginSignup>
-          </>
+          </LoginContainer>
         )}
       </RightContainer>
     </NavBarContainer>
@@ -316,6 +315,28 @@ transition-colors
 hover:bg-[#282828]
 focus:outline-none
 `;
+
+const LoginContainer = tw.div`
+flex
+space-x-4
+`
+const LoginButton = tw.button`
+p-1
+rounded-sm
+bg-transparent
+border-[1px]
+border-zinc-300
+text-zinc-300
+px-2
+`
+const SignUpButton = tw.button`
+p-1
+px-2
+rounded-sm
+bg-violet-500
+hover:bg-violet-600
+transition-colors
+`
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`

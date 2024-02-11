@@ -8,8 +8,9 @@ import { set } from "lodash";
 function MessageRead(params: {
   noteNo: number;
   swapState: (state: string, no: number) => void;
+  setWriter: (writerId: string) => void;
 }) {
-  const { noteNo, swapState } = params;
+  const { noteNo, swapState, setWriter } = params;
   const [noteInfo, setNoteInfo] = React.useState<EnterNoteResponse>();
   const [dateInfo, setDateInfo] = React.useState<string>("");
   useEffect(() => {
@@ -29,6 +30,11 @@ function MessageRead(params: {
     }
   }, [noteInfo]);
 
+  const setStateHandler = () => {
+    swapState("write", noteNo);
+    setWriter(noteInfo?.writerId!);
+  };
+
   return (
     <Wrapper>
       <LeaveButton onClick={() => swapState("list", 0)}>
@@ -44,7 +50,7 @@ function MessageRead(params: {
 
       <Content>{noteInfo?.context}</Content>
       <Footer>
-        <ReplyButton>답장하기</ReplyButton>
+        <ReplyButton onClick={setStateHandler}>답장하기</ReplyButton>
       </Footer>
     </Wrapper>
   );
