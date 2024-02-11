@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import RoomOption from "./RoomOption";
 import tw from "tailwind-styled-components";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
-import { TextEditProps } from "models/Board.interface";
+import { CreateBoardParams, CreateBoardResponse, TextEditProps } from "models/Board.interface";
 import "@toast-ui/editor/dist/i18n/ko-kr";
+import { useQuery } from "@tanstack/react-query";
+import { createBoard } from "api/Board";
+import { title } from "process";
+import { useNavigate } from "react-router-dom";
 
 type SelectOption = {
   key: number;
@@ -13,7 +17,7 @@ type SelectOption = {
 };
 
 function TextEditor(props: TextEditProps) {
-  const editorRef = useRef();
+  const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
   const [selectOption, setSelectOption] = React.useState<SelectOption[]>([
     { key: 1, value: "question", label: "질문하기" },
@@ -26,9 +30,28 @@ function TextEditor(props: TextEditProps) {
     category: "카테고리",
   };
   //isEdit이 true면 수정하기, false면 새 글 작성하기
-  const [editedContent, setEditedContent] = React.useState<string>("");
-  const [selectedRoom, setSelectedRoom] = React.useState<string>("");
-  const [headerTitle, setHeaderTitle] = React.useState<string>("자유게시판");
+  const [editedContent, setEditedContent] = useState<string>("");
+  const [selectedRoom, setSelectedRoom] = useState<number>(0);
+  const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
+  const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>({
+    context: "",
+    title: "",
+    type: "RECRUIT",
+  });
+  //쓰는 값
+  const titleRef = useRef<HTMLInputElement | null>(null);
+
+  //move page
+  const navigate = useNavigate();
+
+  // 원래는 리액트쿼리로 하려 했는데, 페이지 들어가는 것만으로도 계속 요청이 날아가서 에러남
+  // 이 이슈를 제대로 해결하지 못해서 그냥 포기
+  // const { data: dataCreateBoard } = useQuery<CreateBoardResponse, Error>({
+  //   queryKey: ["createboard", JSON.stringify(createBoardParams)],
+  //   queryFn: () => {
+  //     return createBoard(createBoardParams);
+  //   },
+  // });
 
   useEffect(() => {
     if (isFree) {
@@ -38,8 +61,46 @@ function TextEditor(props: TextEditProps) {
     }
   }, [isFree]);
 
-  const handleRoom = (room: string) => {
+  const handleRoom = (room: number) => {
     setSelectedRoom(room);
+  };
+
+  const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // 조건대로 입력이 들어왔는지 체크
+    const title = titleRef.current ? titleRef.current.value : "";
+    const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
+    const roomId = selectedRoom ? selectedRoom : 0;
+    if (title === "") {
+      alert("제목을 작성하세요");
+      return;
+    }
+    if (context === "") {
+      alert("내용을 작성하세요");
+      return;
+    }
+    if (!isFree && !roomId) {
+      alert("모집 중인 방을 선택해주세요");
+      return;
+    }
+
+    createBoardParams.type = isFree ? "FREE" : "RECRUIT";
+    createBoardParams.title = title;
+    createBoardParams.context = context;
+    createBoardParams.roomId = selectedRoom;
+
+    console.log(createBoardParams);
+    setCreateBoardParams(createBoardParams);
+    //react query so hard..
+    createBoard(createBoardParams)
+      .then((data) => {
+        console.log("success", data);
+        navigate(`/recruit-board/${data}`);
+        return data;
+      })
+      .catch((fail) => {
+        console.log("failed", fail.response.data);
+        return fail;
+      });
   };
 
   return (
@@ -59,13 +120,12 @@ function TextEditor(props: TextEditProps) {
         ) : (
           <CatContainer>{dummy.category}</CatContainer>
         )}
-        <TitleInput type="text" placeholder="제목을 입력해 주세요"></TitleInput>
+        <TitleInput type="text" placeholder="제목을 입력해주세요" ref={titleRef}></TitleInput>
       </TitleWrapper>
-      {!isFree ? (
-        <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption>
-      ) : null}
+      {!isFree ? <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption> : null}
       <QuillContainer>
         <Editor
+          ref={editorRef}
           initialValue="게시판 성격에 맞는 글만 써주세요"
           previewStyle="vertical"
           height="600px"
@@ -76,7 +136,7 @@ function TextEditor(props: TextEditProps) {
       </QuillContainer>
       <ButtonWrapper>
         <CancelButton>취소하기</CancelButton>
-        <SubmitButton>작성하기</SubmitButton>
+        <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
   );
@@ -144,7 +204,7 @@ const TitleInput = tw.input`
     border-b
     border-0.1
     bg-grey-300
-    text-white
+    text-black
     text-3xl
     p-1
     w-1/2

@@ -7,7 +7,7 @@ import {
 import { Keyword, Pageable } from "./Util";
 
 export interface CreateBoardParams {
-  writerId: String; //필수
+  //writerId?: String; //필수
   title: string; // 필수
   context: String; //필수
   type: BOARD_TYPE; //필수
@@ -86,8 +86,8 @@ export interface EnterBoardResponse {
   likeCount: number;
   type: BOARD_TYPE;
   category: FREE_BOARD_CATEGORY | null;
-  isValid: boolean;
-  roomKeywords: string;
+  isValid: boolean; // 모집완료인지
+  roomKeywords: Keyword[];
   roomTitle: string;
   roomDescription: string;
   roomMcount: number;
@@ -99,7 +99,7 @@ export interface EnterBoardResponse {
   isLike: boolean;
   createdAt: string;
   updatedAt: string;
-  roomLink: string;
+  roomLink?: string;
 }
 
 export interface LikeBoardParams {

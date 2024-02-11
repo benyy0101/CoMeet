@@ -7,6 +7,7 @@ import tw from "tailwind-styled-components";
 
 import StarFill from "assets/img/star-fill.svg";
 import StarEmpty from "assets/img/star-empty.svg";
+import { FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const BoardDetailHeader: React.FC<{
   nickname: string;
@@ -14,7 +15,7 @@ export const BoardDetailHeader: React.FC<{
   likecount: number;
   valid: boolean;
   createdAt: string;
-  category: string;
+  category: FREE_BOARD_CATEGORY;
   isLiked: boolean;
 }> = (props) => {
   let categoryTitle: string = "";
@@ -38,7 +39,8 @@ export const BoardDetailHeader: React.FC<{
     <HeaderTotalContainer>
       <TitleTotalContainer>
         <Title>{props.title}</Title>
-        {props.category === "" ? (
+        {/* 널 인식되나 */}
+        {props.category === null ? (
           <>
             {props.valid ? (
               <RecruitTrue>모집중</RecruitTrue>

@@ -147,3 +147,11 @@ export interface LeaveRoomParams {
 }
 
 export interface LeaveRoomResponse {}
+
+export interface SearchManagingParams {}
+
+export interface SearchManagingResponses {
+  roomId: number;
+  title: string;
+  full: boolean; // 꽉 찼는지
+}
