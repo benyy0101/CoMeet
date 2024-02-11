@@ -281,6 +281,7 @@ function App() {
             isMuted={isMuted}
             setIsVideoDisabled={setIsVideoDisabled}
             isVideoDisabled={isVideoDisabled}
+            publisher={publisher}
           />
         </NavBarContainer>
         <RoutesContainer>

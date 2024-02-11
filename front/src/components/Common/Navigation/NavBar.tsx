@@ -1,22 +1,22 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
-import IMac from "assets/img/iMac.svg";
-import MicMute from "assets/img/mic-mute.svg";
-import VideoWhite from "assets/img/video-white.svg";
-import RoomDefault from "assets/img/room-default.svg";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
-import { UserState } from "models/Login.interface";
-import { Room } from "pages/Room";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
+import {
+  SpeakerWaveIcon,
+  SpeakerXMarkIcon,
+  VideoCameraIcon,
+  VideoCameraSlashIcon,
+} from "@heroicons/react/24/solid";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -24,6 +24,7 @@ interface IProps {
   isMuted: boolean;
   setIsVideoDisabled: React.Dispatch<React.SetStateAction<boolean>>;
   isVideoDisabled: boolean;
+  publisher: any;
 }
 
 export const NavBar = ({
@@ -32,6 +33,7 @@ export const NavBar = ({
   isMuted,
   setIsVideoDisabled,
   isVideoDisabled,
+  publisher,
 }: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
@@ -51,71 +53,13 @@ export const NavBar = ({
   };
 
   const userInfo = useSelector((state: any) => state.user);
-  //   const userInfo:UserState = {
-  //     isLoggedIn: true,
-  //     user: {
-  //       memberId: "mockup_id",
-  //       nickname: "mockup",
-  //       profileImage: "default_image_letsgo",
-  //       unreadNoteCount: 12,
-  //       joinedRooms: [{
-  //         roomId:21,
-  //         title:"mockup_room",
-  //         roomImage:"default_image_letsgo",
-  //       },
-  //       {
-  //         roomId:25,
-  //         title:"mockup_room2",
-  //         roomImage:"default_image_letsgo",
-  //       },
-  //       {
-  //         roomId:38,
-  //         title:"mockup_room3",
-  //         roomImage:"default_image_letsgo",
-  //       }
-  //       ],
-  //   }
-  // }
-
   const roomInfo = useSelector((state: any) => state.room);
-
-  // const roomInfo:RoomStore = {
-  //   isRoomIn: false,
-  // isMicMuted: false,
-  // isVideoOn: false,
-  // room: {
-  //   managerId: "",
-  //   managerNickname: "",
-  //   title: "",
-  //   description: "",
-  //   room_image: "",
-  //   notice: "",
-  //   mcount: 0,
-  //   link: "",
-  //   capacity: 0,
-  //   isLocked: false,
-  //   password: "",
-  //   constraints: "FREE",
-  //   type: "DISPOSABLE",
-  //   members: [],
-  //   lounges: [],
-  //   channels: [],
-  //   keywords: [],
-  // },
-  // };
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
-  //커뮤니티 클릭시
-  const [isCommunityOpen, setIsCommunityOpen] = useState<boolean>(false);
-
   const showServerList = () => {
     setIsServerOpen(!isServerOpen);
-  };
-
-  const showCommunityList = () => {
-    setIsCommunityOpen(!isCommunityOpen);
   };
 
   //외부 클릭시 서버 드롭다운 닫힘
@@ -123,14 +67,6 @@ export const NavBar = ({
   useOutsideClick<HTMLDivElement>(serverRef, () => {
     if (isServerOpen) {
       setIsServerOpen(false);
-    }
-  });
-
-  //외부 클릭시 커뮤니티 드롭다운 닫기
-  const communityRef = useRef(null);
-  useOutsideClick<HTMLDivElement>(communityRef, () => {
-    if (isCommunityOpen) {
-      setIsCommunityOpen(false);
     }
   });
 
@@ -146,23 +82,16 @@ export const NavBar = ({
             <RoomSearch>
               <Link to="/roomlist">방 찾기</Link>
             </RoomSearch>
-            <CommunityMenu
-              onMouseEnter={showCommunityList}
-              onMouseLeave={showCommunityList}
-            >
-              <ul ref={communityRef}>
-                <button onMouseEnter={showCommunityList}>커뮤니티</button>
-                {isCommunityOpen && (
-                  <DropDownCommunity>
-                    <ComDropDownBUtton onClick={showCommunityList}>
-                      <Link to="/recruit-board">모집 게시판</Link>
-                    </ComDropDownBUtton>
-                    <ComDropDownBUtton onClick={showCommunityList}>
-                      <Link to="/free-board">자유 게시판</Link>
-                    </ComDropDownBUtton>
-                  </DropDownCommunity>
-                )}
-              </ul>
+            <CommunityMenu>
+              <CommunityButton>커뮤니티</CommunityButton>
+              <DropDownCommunity>
+                <ComDropDownBUtton>
+                  <Link to="/recruit-board">모집 게시판</Link>
+                </ComDropDownBUtton>
+                <ComDropDownBUtton>
+                  <Link to="/free-board">자유 게시판</Link>
+                </ComDropDownBUtton>
+              </DropDownCommunity>
             </CommunityMenu>
           </LeftMenu>
         ) : null}
@@ -172,27 +101,49 @@ export const NavBar = ({
         {userInfo.isLoggedIn ? (
           <>
             {roomData ? (
-              <InServer>
-                <Link to={`/room/${roomInfo.roomId}`}>
-                  <ServerImg src={roomData.room_image} alt="room" />
-                  <ServerText>{roomData.title}</ServerText>
+              <ServerContainer $active={true}>
+                <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
+                  <ServerTitleContainer>
+                    <RoomThumbnail
+                      style={{
+                        backgroundImage: "url(roomData.room_image)",
+                      }}
+                    />
+                    <ServerText>{roomData.title}</ServerText>
+                  </ServerTitleContainer>
                 </Link>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                {isMuted ? <MicVideoImg src={MicMute} alt="mic" /> : null}
-                {isVideoDisabled ? (
-                  <MicVideoImg src={VideoWhite} alt="video" />
-                ) : null}
-              </InServer>
+                {publisher && (
+                  <ControlPanelContainer>
+                    <ControlPanelButton onClick={() => setIsMuted(!isMuted)}>
+                      {isMuted ? (
+                        <SpeakerXMarkIcon className="w-6 h-6 text-red-400" />
+                      ) : (
+                        <SpeakerWaveIcon className="w-6 h-6" />
+                      )}
+                    </ControlPanelButton>
+                    <ControlPanelButton
+                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                    >
+                      {isVideoDisabled ? (
+                        <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
+                      ) : (
+                        <VideoCameraIcon className="w-6 h-6" />
+                      )}
+                    </ControlPanelButton>
+                  </ControlPanelContainer>
+                )}
+              </ServerContainer>
             ) : (
-              <div>
-                <OutofServer>접속중인 방이 없습니다.</OutofServer>
-              </div>
+              <ServerContainer $active={false}>
+                접속중인 방이 없습니다.
+              </ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
-              <button onClick={showServerList}>
-                <NavIcon src={IMac} alt="server" />
-              </button>
+              <CustomButton onClick={showServerList}>
+                <ComputerDesktopIcon className="w-8 h-8" />
+              </CustomButton>
               {isServerOpen && <ServerDropDownList />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
@@ -215,7 +166,7 @@ export const NavBar = ({
         ) : (
           <>
             <LoginSignup>
-              <button onClick={signupModalHandler}>회원가입</button>
+              <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
                   <Modal
@@ -228,7 +179,7 @@ export const NavBar = ({
             </LoginSignup>
             |
             <LoginSignup>
-              <button onClick={loginModalHandler}>로그인</button>
+              <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
                 {loginModal === true ? (
                   <Modal
@@ -248,53 +199,69 @@ export const NavBar = ({
 
 //NavBarContainer: 네비게이션바 전체 틀
 const NavBarContainer = tw.div`
-    bg-[#282828]
-    h-14
-    text-white
-    flex
-    items-center
-    justify-between
-    px-24
-    text-lg
+bg-[#282828]
+h-14
+text-white
+flex
+items-center
+justify-between
+px-12
+text-lg
 `;
 
 const LeftContainer = tw.div`
-  flex
-  justify-start
-  items-end
-  space-x-8
+flex
+justify-start
+items-center
+space-x-8
+h-full
 `;
 
 const RightContainer = tw.div`
-  flex
-  justify-start
-  items-end
-  space-x-6
+flex
+justify-start
+items-end
+space-x-6
 `;
 
 const RoomSearch = tw.div`
-  hover:text-purple-400
-  transition-colors
+hover:text-purple-400
+transition-colors
 `;
 //Logo: 로고 메뉴
 const Logo = tw.div`
+w-40
+flex
+justify-center
+bg-slate-500
 `;
 
 //Menu: 방 찾기, 커뮤니티 메뉴 그룹
 const LeftMenu = tw.div`
-    flex
-    space-x-7
+flex
+space-x-7
+h-full
+items-center
 `;
 const CommunityMenu = tw.div`
-  hover:text-purple-400
-  transition-colors
+h-full
+flex
+items-center
+hover:text-purple-400
+transition-colors
+group
+`;
+
+const CommunityButton = tw.button`
+cursor-default
+focus:outline-none
 `;
 
 const ServerMenu = tw.div`
-  relative
-  flex
-  items-center
-  justify-center
+relative
+flex
+items-center
+justify-center
 `;
 const NavIcon = tw.img`
 h-8
@@ -303,23 +270,26 @@ w-8
 
 //커뮤니티 드롭다운
 const DropDownCommunity = tw.div`
-    flex
-    flex-col
-    absolute
-    bg-[#3B3B3B]
-    text-white
-    mt-1
-    shadow-lg
-    z-50
-    rounded-md
-
+flex-col
+absolute
+top-11
+bg-[#3B3B3B]
+text-white
+mt-1
+shadow-lg
+z-50
+rounded-md
+overflow-hidden
+hidden
+group-hover:flex
 `;
 
 const ProfileMenu = tw.div`
 `;
 
 const EnvelopMenu = tw.div`
-  relative
+relative
+cursor-pointer
 `;
 
 const UnreadCount = tw.div`
@@ -338,65 +308,84 @@ justify-center
 
 //커뮤니티 드롭다운 버튼들
 const ComDropDownBUtton = tw.button`
-rounded-md
 w-30
 px-4
 py-2
 cursor-pointer
 transition-colors
 hover:bg-[#282828]
+focus:outline-none
 `;
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
-    ml-2
-    mr-3
-    `;
-
-//InServer: 서버 표시하는 상태바
-const InServer = tw.div`
-    h-9
-    flex
-    items-center
-    justify-center
-    p-1
-    border-purple-400
-    border-[1px]
-    rounded-md
-    text-[14px]
+ml-2
+mr-3
 `;
 
-const OutofServer = tw.div`
-min-w-40
-h-8
+//InServer: 서버 표시하는 상태바
+const ServerContainer = tw.div<{ $active: boolean }>`
+h-9
 flex
 items-center
 justify-center
-p-2
-border-gray-400
-text-gray-400
-border-[1px]
+p-1
+${(p) => (p.$active ? "border-purple-400" : "border-gray-400")}
+border
 rounded-md
-text-[14px] 
+text-sm
+w-60
+text-gray-400
 `;
 
-//ServerImg: 서버 이미지
-const ServerImg = tw.img`
-    bg-white
-    rounded-full
-    w-5
-    mr-2
-    ml-1
+const ServerTitleContainer = tw.div`
+w-full
+h-full
+px-2
+flex
+space-x-4
+items-center
+`;
+
+const RoomThumbnail = tw.div`
+w-6
+h-6
+min-h-6
+min-w-6
+rounded-full
+bg-contain
+bg-no-repeat
+bg-center
+shadow-md
+bg-slate-200
 `;
 
 //ServerText: 서버 이름
-const ServerText = tw.p`
-    mr-3
+const ServerText = tw.h1`
+mr-3
+w-full
+overflow-clip
+overflow-ellipsis
+break-words
+line-clamp-1
+text-slate-200
 `;
 
-//MicVideoImg: 마이크, 비디오 이미지 크기
-const MicVideoImg = tw.img`
-    w-5
-    ml-1
-    mr-1
+const ControlPanelContainer = tw.div`
+flex
+items-center
+`;
+
+const ControlPanelButton = tw.div`
+w-10
+text-slate-100
+cursor-pointer
+flex
+justify-center
+items-center
+relative
+`;
+
+const CustomButton = tw.button`
+focus:outline-none
 `;
