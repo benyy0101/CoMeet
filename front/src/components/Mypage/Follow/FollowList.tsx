@@ -14,48 +14,58 @@ import { useSelector } from "react-redux";
 function FollowList(props: { option: string }) {
   const { option } = props;
   const [pageNo, setPageNo] = useState<number>(1);
-  const [isFetching, setIsFetching] = useState<boolean>(false);
-  const [hasNext, setHasNext] = useState<boolean>(true);
-  const [list, setList] = useState<FollowContent[]>([]);
+  const [followingList, setFollowingList] = useState<FollowContent[]>([]);
+  const [followerList, setFollowerList] = useState<FollowContent[]>([]);
+
   const memberId = useSelector((state: any) => state.user.user.memberId);
 
   const fetchData = useCallback(async () => {
-    let res: ListFollowerResponse | ListFollowingResponse;
-    if (option === "follower") {
-      res = await searchFollower({ memberId, pageNo, pageSize: 10 });
-    } else {
-      res = await searchFollowing({ memberId, pageNo, pageSize: 10 });
+    if (followerList.length === 0) {
+      const res = await searchFollower({ memberId, pageNo, pageSize: 10 });
+      setFollowerList((prev) => [...prev, ...res.content]);
     }
-    setList((prev) => [...prev, ...res.content]);
-    setPageNo((prev) => prev + 1);
-    setHasNext(!res.last);
-    setIsFetching(false);
+
+    if (followingList.length === 0) {
+      const res2 = await searchFollowing({ memberId, pageNo, pageSize: 10 });
+      setFollowingList((prev) => [...prev, ...res2.content]);
+    }
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const { scrollTop, offsetHeight } = document.documentElement;
-      if (window.innerHeight + scrollTop >= offsetHeight) {
-        setIsFetching(true);
-      }
-    };
-    setIsFetching(false);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // const handleScroll = () => {
+    //   const { scrollTop, offsetHeight } = document.documentElement;
+    //   if (window.innerHeight + scrollTop >= offsetHeight) {
+    //     setIsFetching(true);
+    //   }
+    // };
+    // setIsFetching(false);
+    // window.addEventListener("scroll", handleScroll);
+    // return () => window.removeEventListener("scroll", handleScroll);
+    fetchData();
+    console.log(option);
   }, []);
-
-  useEffect(() => {
-    if (isFetching && hasNext) fetchData();
-    else if (!hasNext) setIsFetching(false);
-  }, [isFetching]);
 
   //fetchData();
 
   return (
     <Wrapper>
-      {list.map((item, index) => (
-        <FollowerItem key={index} item={item} option={option}/>
-      ))}
+      {option === "follower" &&
+        followerList.map((item, index) => (
+          <FollowerItem
+            key={index}
+            item={item}
+            option={option}
+            option2={
+              followingList.some((followItem) => followItem === item)
+                ? "true"
+                : "false"
+            }
+          />
+        ))}
+      {option === "following" &&
+        followingList.map((item, index) => (
+          <FollowerItem key={index} item={item} option={option} />
+        ))}
     </Wrapper>
   );
 }

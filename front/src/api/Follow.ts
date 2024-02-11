@@ -30,7 +30,6 @@ export const searchFollower = async (
 ): Promise<ListFollowerResponse> => {
   const { memberId, pageNo, pageSize } = params;
   const url = `member/follower/${memberId}${makeQuerystring({ pageNo, pageSize })}`;
-  console.log(url);
   const response = await localAxios.get(url);
   return response.data;
 };

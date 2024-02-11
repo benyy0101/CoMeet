@@ -1,23 +1,34 @@
 import { follow } from "api/Follow";
 import { FollowContent } from "models/Follow.interface";
-import React from "react";
+import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 
 interface FollowerItemProps {
   item: FollowContent;
   option: string;
+  option2?: string;
 }
 
-const FollowerItem: React.FC<FollowerItemProps> = ({ item,option }) => {
+const FollowerItem = (props: FollowerItemProps) => {
+  const { item, option, option2 } = props;
   return (
     <Wrapper>
       <LeftContainer>
         <ProfileImage src={item.profileImage} />
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
-      <RightContainer>
-        <FollowButton>팔로우</FollowButton>
-      </RightContainer>
+      {/* 내가 팔로잉을 하고 있다면 팔로우 버튼이 뜨면 안되겠지.. */}
+      {option === "follower" && option2 === "false" && (
+        <RightContainer>
+          <FollowButton>팔로우</FollowButton>
+        </RightContainer>
+      )}
+
+      {option === "following" && (
+        <RightContainer>
+          <FollowButton>언팔로우</FollowButton>
+        </RightContainer>
+      )}
     </Wrapper>
   );
 };
