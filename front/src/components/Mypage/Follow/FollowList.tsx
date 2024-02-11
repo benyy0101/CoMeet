@@ -32,33 +32,21 @@ function FollowList(props: { option: string }) {
   }, []);
 
   useEffect(() => {
-    // const handleScroll = () => {
-    //   const { scrollTop, offsetHeight } = document.documentElement;
-    //   if (window.innerHeight + scrollTop >= offsetHeight) {
-    //     setIsFetching(true);
-    //   }
-    // };
-    // setIsFetching(false);
-    // window.addEventListener("scroll", handleScroll);
-    // return () => window.removeEventListener("scroll", handleScroll);
     fetchData();
-    console.log(option);
   }, []);
-
-  //fetchData();
 
   return (
     <Wrapper>
       {option === "follower" &&
         followerList.map((item, index) => (
           <FollowerItem
-            key={index}
+            key={item.memberId}
             item={item}
             option={option}
             option2={
-              followingList.some((followItem) => followItem === item)
-                ? "true"
-                : "false"
+              followingList.some((followItem) => followItem.memberId === item.memberId)
+                ? true
+                : false
             }
           />
         ))}
@@ -71,9 +59,11 @@ function FollowList(props: { option: string }) {
 }
 
 const Wrapper = tw.div`
-    bg-gray-300
+    bg-gradient-to-b
+    from-cyan-950
+    to-indigo-950
     rounded-md
-    w-full
+    min-w-96
     h-full
     p-5
     text-black

@@ -6,7 +6,7 @@ import tw from "tailwind-styled-components";
 interface FollowerItemProps {
   item: FollowContent;
   option: string;
-  option2?: string;
+  option2?: boolean;
 }
 
 const FollowerItem = (props: FollowerItemProps) => {
@@ -17,8 +17,7 @@ const FollowerItem = (props: FollowerItemProps) => {
         <ProfileImage src={item.profileImage} />
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
-      {/* 내가 팔로잉을 하고 있다면 팔로우 버튼이 뜨면 안되겠지.. */}
-      {option === "follower" && option2 === "false" && (
+      {option === "follower" && option2 === false && (
         <RightContainer>
           <FollowButton>팔로우</FollowButton>
         </RightContainer>
@@ -45,6 +44,7 @@ const Wrapper = tw.div`
     text-black
     rounded-md
     shadow-md
+    text-white
 `;
 
 const LeftContainer = tw.div`
