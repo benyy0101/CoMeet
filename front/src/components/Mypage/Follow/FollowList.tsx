@@ -37,6 +37,9 @@ function FollowList(props: { option: string }) {
 
   return (
     <Wrapper>
+      {option === "follower" && (<Title>팔로워</Title>)}
+      {option === "following" && (<Title>팔로잉</Title>)}
+      <ItemContainer>
       {option === "follower" &&
         followerList.map((item, index) => (
           <FollowerItem
@@ -54,20 +57,37 @@ function FollowList(props: { option: string }) {
         followingList.map((item, index) => (
           <FollowerItem key={index} item={item} option={option} />
         ))}
+      </ItemContainer>
     </Wrapper>
   );
 }
 
 const Wrapper = tw.div`
-    bg-gradient-to-b
-    from-cyan-950
-    to-indigo-950
-    rounded-md
-    min-w-96
-    h-full
-    p-5
-    text-black
-    space-y-3
-    overflow-hidden
+h-96
+min-w-96
+bg-gradient-to-b
+from-sky-950
+to-indigo-950
+rounded-md
+p-5
+text-indigo-50
+flex
+flex-col
+space-y-5
 `;
+
+const Title = tw.div`
+text-3xl
+text-bold
+text-sky-100
+`
+
+const ItemContainer = tw.div`
+w-full
+flex
+flex-col
+space-y-5
+bg-white
+bg-opacity-10
+`
 export default FollowList;

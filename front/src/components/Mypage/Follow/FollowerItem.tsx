@@ -1,6 +1,6 @@
-import { follow } from "api/Follow";
+import { follow, unfollow } from "api/Follow";
 import { FollowContent } from "models/Follow.interface";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 
 interface FollowerItemProps {
@@ -11,21 +11,70 @@ interface FollowerItemProps {
 
 const FollowerItem = (props: FollowerItemProps) => {
   const { item, option, option2 } = props;
+  const [isFollowing, setIsFollowing] = useState<boolean>(option2 === false ? true : false);
+  const isInitialRender = useRef(true);
+
+  const unfollowHandler = async (id:string) => {
+    try{
+      const res = await unfollow({memberId: id});
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  const followHandler = async (id:string) => {
+    try{
+      const res = await follow({memberId: id});
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
+  const isFollowingHandler = () => {
+    setIsFollowing(!isFollowing);
+  }
+
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    if(isFollowing){
+      unfollowHandler(item.memberId);
+    }
+    else if (isFollowing === false){
+      followHandler(item.memberId);
+    }
+  },[isFollowing]);
+
   return (
     <Wrapper>
       <LeftContainer>
         <ProfileImage src={item.profileImage} />
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
-      {option === "follower" && option2 === false && (
+      {option === "follower" && option2 === false && isFollowing && (
         <RightContainer>
-          <FollowButton>팔로우</FollowButton>
+          <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
+        </RightContainer>
+      )}
+      {option === "follower" && option2 === false  && !isFollowing && (
+        <RightContainer>
+          <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
         </RightContainer>
       )}
 
-      {option === "following" && (
+      {option === "following"  && !isFollowing && (
         <RightContainer>
-          <FollowButton>언팔로우</FollowButton>
+          <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
+        </RightContainer>
+      )}
+
+      {option === "following"  && isFollowing && (
+        <RightContainer>
+          <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
         </RightContainer>
       )}
     </Wrapper>
@@ -36,14 +85,15 @@ const Wrapper = tw.div`
     flex
     items-center
     justify-between
-    w-96
+    w-full
     h-12
-    bg-black
-    bg-opacity-20
+    bg-white
+    bg-opacity-10
     p-5
+    px-2
     text-black
     rounded-md
-    shadow-md
+    shadow-lg
     text-white
 `;
 
@@ -70,10 +120,11 @@ const RightContainer = tw.div`
 `;
 
 const FollowButton = tw.button`s
-    text-purple-500
+    text-indigo-200
     w-20
     h-10
     rounded-md
+    text-sm
 `;
 
 export default FollowerItem;
