@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -33,123 +33,157 @@ import LoungeButton from "components/Room/LoungeButton";
 import Channel from "components/Room/Channel";
 import Lounge from "components/Room/Lounge";
 import { enterRoom, leaveRoom } from "api/Room";
-import { EnterRoomResponse, LeaveRoomParams } from "models/Room.interface";
+import { RoomResponse, LeaveRoomParams } from "models/Room.interface";
 import { IFilter } from "models/Filter.interface";
 import { filterType } from "constants/Filter";
 import { useDispatch } from "react-redux";
-import {
-  setEnterRoom,
-  setIsRoomIn,
-  setLeaveRoom,
-  setMicStatus,
-  setVideoStatus,
-} from "store/reducers/roomSlice";
+import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
-export const Room = () => {
+interface IProps {
+  setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;
+  roomData: RoomResponse | null;
+  setChannels: React.Dispatch<React.SetStateAction<IChannel[]>>;
+  channels: IChannel[];
+  setLounges: React.Dispatch<React.SetStateAction<ILounge[]>>;
+  lounges: ILounge[];
+  setSideToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  sideToggle: boolean;
+  setFilterMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  filterMenuOpen: boolean;
+  setInLounge: React.Dispatch<React.SetStateAction<boolean>>;
+  inLounge: boolean;
+  setCurrentLounge: React.Dispatch<React.SetStateAction<ILounge | null>>;
+  currentLounge: ILounge | null;
+  setMySessionId: React.Dispatch<React.SetStateAction<string>>;
+  mySessionId: string;
+  setMySessionName: React.Dispatch<React.SetStateAction<string>>;
+  mySessionName: string;
+  setSession: React.Dispatch<React.SetStateAction<any>>;
+  session: any;
+  setMainStreamManager: React.Dispatch<React.SetStateAction<any | null>>;
+  mainStreamManager: any | null;
+  setPublisher: React.Dispatch<React.SetStateAction<any | null>>;
+  publisher: any | null;
+  setSubscribers: React.Dispatch<React.SetStateAction<any[]>>;
+  subscribers: any[];
+  setCurrentVideoDevice: React.Dispatch<React.SetStateAction<any>>;
+  currentVideoDevice: any;
+  setSpeakerIds: React.Dispatch<React.SetStateAction<string[]>>;
+  speakerIds: string[];
+  setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
+  isMuted: boolean;
+  setIsVideoDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isVideoDisabled: boolean;
+  setIsScreenShared: React.Dispatch<React.SetStateAction<boolean>>;
+  isScreenShared: boolean;
+  setFilter: React.Dispatch<React.SetStateAction<IFilter | null>>;
+  filter: IFilter | null;
+  stompClient: any;
+  OV: React.MutableRefObject<OpenVidu>;
+}
+
+export const Room = ({
+  setRoomData,
+  roomData,
+  setChannels,
+  channels,
+  setLounges,
+  lounges,
+  setSideToggle,
+  sideToggle,
+  setFilterMenuOpen,
+  filterMenuOpen,
+  setInLounge,
+  inLounge,
+  setCurrentLounge,
+  currentLounge,
+  setMySessionId,
+  mySessionId,
+  setMySessionName,
+  mySessionName,
+  setSession,
+  session,
+  setMainStreamManager,
+  mainStreamManager,
+  setPublisher,
+  publisher,
+  setSubscribers,
+  subscribers,
+  setCurrentVideoDevice,
+  currentVideoDevice,
+  setSpeakerIds,
+  speakerIds,
+  setIsMuted,
+  isMuted,
+  setIsVideoDisabled,
+  isVideoDisabled,
+  setIsScreenShared,
+  isScreenShared,
+  setFilter,
+  filter,
+  stompClient,
+  OV,
+}: IProps) => {
   const { roomId } = useParams();
+  const navigate = useNavigate();
 
   const userInfo = useSelector((state: any) => state.user);
+  const roomInfo = useSelector((state: any) => state.room);
+
   const [noticeClicked, setNoticeClicked] = useState<boolean>(false);
-  const [sideToggle, setSideToggle] = useState<boolean>(true);
   const [modal, setModal] = useState<boolean>(false);
-  const [roomData, setRoomData] = useState<EnterRoomResponse | null>(null);
-  const [channels, setChannels] = useState<IChannel[]>([]);
-  const [lounges, setLounges] = useState<ILounge[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Lounge
-  const [inLounge, setInLounge] = useState<boolean>(true);
-  const [currentLounge, setCurrentLounge] = useState<ILounge | null>(null);
-
-  // Openvidu states
-  const [mySessionId, setMySessionId] = useState<string>("");
-  const [mySessionName, setMySessionName] = useState<string>("");
-  const [session, setSession] = useState<any>(undefined);
-  const [mainStreamManager, setMainStreamManager] = useState<any | null>(null);
-  const [publisher, setPublisher] = useState<any>(undefined);
-  const [subscribers, setSubscribers] = useState<any[]>([]);
-  const [currentVideoDevice, setCurrentVideoDevice] = useState<any>(null);
-  const [speakerIds, setSpeakerIds] = useState<string[]>([]);
-
-  // Control Panel
-  const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [isVideoDisabled, setIsVideoDisabled] = useState<boolean>(true);
-  const [isScreenShared, setIsScreenShared] = useState<boolean>(false);
-  const [filterApplied, setFilterApplied] = useState<boolean>(false);
-  const [filter, setFilter] = useState<IFilter | null>(null);
-  const [filterMenuOpen, setFilterMenuOpen] = useState<boolean>(false);
-
-  const stompClient = useRef<any>(null);
-
-  const OV = useRef(new OpenVidu());
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    enterRoomHandler();
-    if (stompClient.current === null) {
-      stompClient.current = Stomp.over(() => {
-        const sock = new SockJS(
-          `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
-        );
-        return sock;
-      });
-
-      stompClient.current.connect(
-        {},
-        () => {
-          stompClient.current.subscribe(`/room/info/${roomId}`, (e: any) =>
-            handleUpdateInfo(JSON.parse(e.body))
-          );
-        },
-        (e: any) => alert("에러발생!!!!!!")
-      );
+    if (!roomInfo.isRoomIn) {
+      enterRoomHandler();
     }
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
-        stompClient.current = null;
-        leaveRoomHandler();
-      }
-    };
   }, []);
 
-  const handleUpdateInfo = (event: any) => {
-    console.log("받은 동시성 이벤트", event);
+  const enterRoomHandler = async () => {
+    const res = await enterRoom({ roomId: parseInt(roomId!), password: "" });
+    setRoomData(res);
+    setLounges(res.lounges);
+    setChannels(res.channels);
+    setCurrentLounge(res.lounges[0]);
+    dispatch(setEnterRoom(roomId!));
+  };
 
-    switch (event.eventType) {
-      case "ROOM_CREATE":
-        break;
-      case "ROOM_DELETE":
-        break;
-      case "ROOM_JOIN":
-        break;
-      case "ROOM_WITHDRAW":
-        break;
-      case "CHANNEL_CREATE":
-        setChannels((prev) => [...prev, event.data]);
-        break;
-      case "CHANNEL_UPDATE":
-        break;
-      case "CHANNEL_DELETE":
-        setChannels((prev) =>
-          prev.filter((channel) => channel.channelId !== event.data.channelId)
-        );
-        break;
-      case "LOUNGE_CREATE":
-        setLounges((prev) => [...prev, event.data]);
-        break;
-      case "LOUNGE_UPDATE":
-        break;
-      case "LOUNGE_DELETE":
-        setLounges((prev) =>
-          prev.filter((lounge) => lounge.loungeId !== event.data.loungeId)
-        );
-        break;
+  const leaveRoomHandler = async () => {
+    const data: LeaveRoomParams = {
+      roomId: parseInt(roomId!),
+      keywords: undefined,
+    };
+    try {
+      dispatch(setLeaveRoom());
+      setRoomData(null);
+      setChannels([]);
+      setLounges([]);
+      setSideToggle(true);
+      setInLounge(true);
+      setCurrentLounge(null);
+      setMySessionId("");
+      setMySessionName("");
+      setSession(null);
+      setMainStreamManager(null);
+      setPublisher(null);
+      setSubscribers([]);
+      setCurrentVideoDevice(null);
+      setSpeakerIds([]);
+      setIsMuted(true);
+      setIsVideoDisabled(true);
+      setIsScreenShared(false);
+      setFilter(null);
+      stompClient.current = null;
+      OV.current = new OpenVidu();
+
+      const res = await leaveRoom(data);
+      navigate("/");
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -233,7 +267,8 @@ export const Room = () => {
   }, []);
 
   useEffect(() => {
-    if (session) {
+    if (session !== null && publisher === null) {
+      console.error("토큰 가져오기!");
       // Get a token from the OpenVidu deployment
       getToken().then(async (token) => {
         try {
@@ -286,11 +321,11 @@ export const Room = () => {
 
     // Reset all states and OpenVidu object
     OV.current = new OpenVidu();
-    setSession(undefined);
+    setSession(null);
     setSubscribers([]);
     setMySessionId("");
     setMainStreamManager(null);
-    setPublisher(undefined);
+    setPublisher(null);
   }, [session]);
 
   const switchCamera = useCallback(async () => {
@@ -359,107 +394,6 @@ export const Room = () => {
       createToken(sessionId)
     );
   }, [mySessionId]);
-
-  useEffect(() => {
-    if (publisher) {
-      publisher.publishAudio(!isMuted);
-      dispatch(setMicStatus(isMuted));
-    } else {
-    }
-  }, [isMuted]);
-
-  useEffect(() => {
-    if (publisher) {
-      publisher.publishVideo(!isVideoDisabled);
-
-      dispatch(setVideoStatus(!isVideoDisabled));
-    }
-  }, [isVideoDisabled]);
-
-  useEffect(() => {
-    if (session) {
-      if (isScreenShared) {
-        startScreenShare();
-      } else {
-        stopScreenShare();
-      }
-    }
-  }, [isScreenShared]);
-
-  useEffect(() => {
-    if (publisher) {
-      if (filterApplied && filter) {
-        publisher.stream.applyFilter("GStreamerFilter", {
-          command: filter.command,
-        });
-      } else {
-        publisher.stream.removeFilter();
-        setFilter(null);
-      }
-    }
-  }, [filterApplied]);
-
-  useEffect(() => {
-    if (filter) {
-      setFilterMenuOpen(false);
-      setFilterApplied(true);
-    }
-  }, [filter]);
-
-  const startScreenShare = async () => {
-    let publisherScreen = await OV.current.initPublisherAsync(undefined, {
-      videoSource: "screen",
-    });
-
-    publisherScreen.once("accessAllowed", (event) => {
-      publisherScreen.stream
-        .getMediaStream()
-        .getVideoTracks()[0]
-        .addEventListener("ended", () => {
-          console.log("사용자가 공유 중지 버튼을 눌렀습니다.");
-          setIsScreenShared(false);
-        });
-    });
-
-    publisherScreen.on("videoElementCreated", (event) => {
-      setIsMuted(true);
-    });
-
-    publisherScreen.once("accessDenied", (event) => {
-      console.error("화면공유가 거절되었습니다.");
-    });
-
-    if (session) {
-      if (mainStreamManager === publisher) {
-        setMainStreamManager(publisherScreen);
-      }
-      await session.unpublish(publisher);
-      await session.publish(publisherScreen);
-      setPublisher(publisherScreen);
-    }
-  };
-
-  const stopScreenShare = async () => {
-    let publisherCam = await OV.current.initPublisherAsync(undefined, {
-      audioSource: undefined,
-      videoSource: undefined,
-      publishAudio: !isMuted,
-      publishVideo: !isVideoDisabled,
-      resolution: "640x480",
-      frameRate: 30,
-      insertMode: "APPEND",
-      mirror: true,
-    });
-
-    if (session) {
-      if (mainStreamManager === publisher) {
-        setMainStreamManager(publisherCam);
-      }
-      await session.unpublish(publisher);
-      await session.publish(publisherCam);
-      setPublisher(publisherCam);
-    }
-  };
 
   const toggleNotice = () => {
     setNoticeClicked(!noticeClicked);
@@ -574,43 +508,6 @@ export const Room = () => {
     leaveSession();
   };
 
-  const enterRoomHandler = async () => {
-    const res = await enterRoom({ roomId: parseInt(roomId!), password: "" });
-    setRoomData(res);
-    setChannels(res.channels);
-    setLounges(res.lounges);
-    dispatch(setEnterRoom(res));
-    dispatch(setIsRoomIn(true));
-  };
-
-  const leaveRoomHandler = () => {
-    const data: LeaveRoomParams = {
-      roomId: parseInt(roomId!),
-      keywords: undefined,
-    };
-    try {
-      console.log("나갈게~");
-      const res = leaveRoom(data);
-      dispatch(setIsRoomIn(false));
-      dispatch(setLeaveRoom());
-      console.log(res);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useEffect(() => {
-    if (roomData) {
-      if (roomData!.channels.length > 0) {
-        setChannels(roomData!.channels);
-      }
-      if (roomData!.lounges.length > 0) {
-        setLounges(roomData!.lounges);
-        setCurrentLounge(roomData!.lounges[0]);
-      }
-    }
-  }, [roomData]);
-
   return (
     <RoomContainer>
       <RoomHeader>
@@ -635,7 +532,7 @@ export const Room = () => {
               <Cog6ToothIcon className="w-8 h-8" />
             </RoomButton>
           </Link>
-          <RoomButton onClick={leaveSessionHandler}>
+          <RoomButton onClick={leaveRoomHandler}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
         </RoomButtonContainer>
@@ -711,25 +608,26 @@ export const Room = () => {
             </ModalPortal>
           </RoomAddButton>
         </RoomSidebar>
-
-        <ChannelBorder>
-          {inLounge && currentLounge ? (
-            <Lounge lounge={currentLounge} />
-          ) : (
-            <Channel
-              session={session}
-              mySessionName={mySessionName}
-              mySessionId={mySessionId}
-              myUserName={userInfo.user.nickname}
-              publisher={publisher}
-              subscribers={subscribers}
-              speakerIds={speakerIds}
-              leaveSession={leaveSession}
-              mainStreamManager={mainStreamManager}
-              handleMainVideoStream={handleMainVideoStream}
-            />
-          )}
-        </ChannelBorder>
+        {currentLounge && (
+          <ChannelBorder>
+            {inLounge ? (
+              <Lounge lounge={currentLounge} />
+            ) : (
+              <Channel
+                session={session}
+                mySessionName={mySessionName}
+                mySessionId={mySessionId}
+                myUserName={userInfo.user.nickname}
+                publisher={publisher}
+                subscribers={subscribers}
+                speakerIds={speakerIds}
+                leaveSession={leaveSession}
+                mainStreamManager={mainStreamManager}
+                handleMainVideoStream={handleMainVideoStream}
+              />
+            )}
+          </ChannelBorder>
+        )}
       </RoomContent>
       {session !== undefined && inLounge === false && (
         <ControlPanel>
@@ -759,10 +657,10 @@ export const Room = () => {
             )}
           </ControlPanelButton>
           <ControlPanelButton>
-            {filterApplied ? (
+            {filter ? (
               <SparklesIcon
                 className="w-8 h-8 text-yellow-400"
-                onClick={() => setFilterApplied(false)}
+                onClick={() => setFilter(null)}
               />
             ) : (
               <SparklesIcon
