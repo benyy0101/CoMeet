@@ -74,7 +74,7 @@ public class NoteService {
 
 
     private void readerAuthorityValidation(String memberId, Note note) {
-        if (!note.getWriter().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아니어서 읽을 수 없습니다");
+        if (!note.getReceiver().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아니어서 읽을 수 없습니다");
     }
 
     public Page<NoteSimpleResponseDto> findList(String memberId, Pageable pageable) {
