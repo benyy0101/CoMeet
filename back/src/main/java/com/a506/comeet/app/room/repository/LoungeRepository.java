@@ -5,6 +5,6 @@ import com.a506.comeet.app.room.entity.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LoungeRepository extends JpaRepository<Lounge, Long> {
-    Boolean existsByRoomAndName(Room room, String name);
+    boolean existsByRoomAndName(Room room, String name);
     int countByRoom(Room room);
 }

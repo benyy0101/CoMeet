@@ -14,11 +14,25 @@ import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 import { UserState } from "models/Login.interface";
-import { RoomStore } from "store/reducers/roomSlice";
 import { Room } from "pages/Room";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { RoomResponse } from "models/Room.interface";
 
-export const NavBar = () => {
+interface IProps {
+  roomData: RoomResponse | null;
+  setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
+  isMuted: boolean;
+  setIsVideoDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isVideoDisabled: boolean;
+}
+
+export const NavBar = ({
+  roomData,
+  setIsMuted,
+  isMuted,
+  setIsVideoDisabled,
+  isVideoDisabled,
+}: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
 
@@ -157,15 +171,15 @@ export const NavBar = () => {
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
-            {roomInfo.isRoomIn ? (
+            {roomData ? (
               <InServer>
-                <ServerImg src={RoomDefault} alt="room" />
-                <ServerText>{roomInfo.room.title}</ServerText>
+                <Link to={`/room/${roomInfo.roomId}`}>
+                  <ServerImg src={roomData.room_image} alt="room" />
+                  <ServerText>{roomData.title}</ServerText>
+                </Link>
                 {/* 마이크 상태, 비디오 상태에 따라 화면에 표시되는 이미지 다르게 해야 함 */}
-                {roomInfo.isMicMuted ? (
-                  <MicVideoImg src={MicMute} alt="mic" />
-                ) : null}
-                {roomInfo.isVideoOn ? (
+                {isMuted ? <MicVideoImg src={MicMute} alt="mic" /> : null}
+                {isVideoDisabled ? (
                   <MicVideoImg src={VideoWhite} alt="video" />
                 ) : null}
               </InServer>
@@ -188,10 +202,7 @@ export const NavBar = () => {
               ) : null}
               <ModalPortal>
                 {messageModal === true ? (
-                  <Modal
-                    toggleModal={messageModalHandler}
-                    option="message"
-                  ></Modal>
+                  <Modal toggleModal={messageModalHandler} option="message" />
                 ) : null}
               </ModalPortal>
             </EnvelopMenu>

@@ -208,7 +208,7 @@ export default function Channel({
                   .slice(page * pageSize, (page + 1) * pageSize)
                   .map((sub, i) => (
                     <StreamContainer
-                      key={sub.id}
+                      key={sub.stream.connection.connectionId}
                       onClick={() => {
                         handleMainVideoStream(sub);
                         setSideOpen(true);

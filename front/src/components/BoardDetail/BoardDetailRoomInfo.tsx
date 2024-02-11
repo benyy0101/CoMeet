@@ -5,18 +5,28 @@ import tw from "tailwind-styled-components";
 import PoepleNumImg from "assets/img/people-num.svg";
 import RoomImg from "assets/img/room-default.png";
 
-export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
+type RoomInfoProps = {
+  roomTitle: string;
+  roomDescription: string;
+  roomMCount: number;
+  roomCapacity: number;
+  roomLink: string | null;
+  roomId: number;
+};
+// export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
+export const BoardDetailRoomInfo: React.FC<{
+  roomTitle: string;
+  roomDescription: string;
+  roomMCount: number;
+  roomCapacity: number;
+  roomLink: string | null;
+  roomId: number;
+}> = (props: RoomInfoProps) => {
   //방 ID로 방 조회해서 가져올 것들
   //방 제목
-  const roomTitle = "서울 5반 알고리즘";
-  //방 설명
-  const roomDescription =
-    "B형을 위한 알고리즘 스터디방입니다 .이것 저것 필수 저것도 필수 이것도 필수 이것도 필수 저건 선택입니다";
 
-  const roomPeopleNum = "30 / 45";
-
-  //방 링크
-  const roomLink = "http://localhost:3000/room/3";
+  //방 링크 이것도 제대로 만들어야 할 것 같다.
+  const roomLink = `${process.env.REACT_APP_API_SERVER_URL}/room/${props.roomId}`;
 
   //이미지도 가져오고
 
@@ -26,13 +36,15 @@ export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
         <RoomImgContainer src={RoomImg} alt="" />
         <RoomInfo>
           <TitleAndNumContainer>
-            <RoomTitle>{roomTitle}</RoomTitle>
+            <RoomTitle>{props.roomTitle}</RoomTitle>
             <RoomPeople>
               <PeopleImg src={PoepleNumImg} alt="" />
-              <RoomPeopleNum>{roomPeopleNum}</RoomPeopleNum>
+              <RoomPeopleNum>
+                {props.roomMCount} / {props.roomCapacity}{" "}
+              </RoomPeopleNum>
             </RoomPeople>
           </TitleAndNumContainer>
-          <RoomEx>{roomDescription}</RoomEx>
+          <RoomEx>{props.roomDescription}</RoomEx>
 
           <RoomHyperLink>{roomLink}</RoomHyperLink>
         </RoomInfo>

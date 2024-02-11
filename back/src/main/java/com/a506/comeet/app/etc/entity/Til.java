@@ -2,7 +2,7 @@ package com.a506.comeet.app.etc.entity;
 
 import com.a506.comeet.app.etc.controller.dto.TilUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @SQLRestriction("is_deleted = 0")
-public class Til extends BaseEntityWithSoftDelete {
+public class Til extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

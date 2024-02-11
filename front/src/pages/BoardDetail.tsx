@@ -1,14 +1,16 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 import tw from "tailwind-styled-components";
 import { BoardDetailWritingTotal } from "components/BoardDetail/BoardDetailWritingTotal";
 import { BoardDetailComment } from "components/BoardDetail/BoardDetailComment";
 
 export const BoardDetail = () => {
+  const { boardId } = useParams();
   return (
     <TotalContainer>
       <WritingContainer>
-        <BoardDetailWritingTotal />
+        <BoardDetailWritingTotal boardId={parseInt(boardId!)} />
       </WritingContainer>
       <CommentContainer>
         <BoardDetailComment />

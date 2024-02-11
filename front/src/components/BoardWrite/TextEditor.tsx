@@ -1,10 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import RoomOption from "./RoomOption";
 import tw from "tailwind-styled-components";
 import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/react-editor";
-import { TextEditProps } from "models/Board.interface";
+import {
+  CreateBoardParams,
+  CreateBoardResponse,
+  ModifyBoardParams,
+  TextEditProps,
+} from "models/Board.interface";
 import "@toast-ui/editor/dist/i18n/ko-kr";
+import { useQuery } from "@tanstack/react-query";
+import { createBoard, modifyBoard } from "api/Board";
+import { title } from "process";
+import { useNavigate } from "react-router-dom";
+import { FREE_BOARD_CATEGORY } from "models/Enums.type";
+import { useLocation, useParams } from "react-router-dom";
 
 type SelectOption = {
   key: number;
@@ -13,23 +24,45 @@ type SelectOption = {
 };
 
 function TextEditor(props: TextEditProps) {
-  const editorRef = useRef();
-  const { isFree, isEdit } = props;
-  const [selectOption, setSelectOption] = React.useState<SelectOption[]>([
+  const location = useLocation();
+
+  const editorRef = useRef<Editor | null>(null);
+  const { isFree, isEdit, editId, editTitle, editContent } = props;
+  const [selectOption, setSelectOption] = useState<SelectOption[]>([
     { key: 1, value: "question", label: "질문하기" },
     { key: 2, value: "recruit", label: "구인구직" },
     { key: 3, value: "tips", label: "팁/정보" },
   ]);
-  const dummy = {
-    title: "제목",
-    content: "내용",
-    category: "카테고리",
-  };
-  //isEdit이 true면 수정하기, false면 새 글 작성하기
-  const [editedContent, setEditedContent] = React.useState<string>("");
-  const [selectedRoom, setSelectedRoom] = React.useState<string>("");
-  const [headerTitle, setHeaderTitle] = React.useState<string>("자유게시판");
 
+  //isEdit이 true면 수정하기, false면 새 글 작성하기
+  const [selectedRoom, setSelectedRoom] = useState<number>(0);
+  const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
+  const dummy1: CreateBoardParams = {
+    context: "",
+    title: "",
+    type: "RECRUIT",
+  };
+  const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>(dummy1);
+  const dummy2: ModifyBoardParams = {
+    boardId: 0,
+    content: "",
+    title: "",
+  };
+  const [modifyBoardParams, setModifyBoardParams] = useState<ModifyBoardParams>(dummy2);
+  const [content, setContent] = useState<string>("");
+  const [isValid, setIsValid] = useState<boolean>(true);
+  const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
+
+  //쓰는 값
+  const titleRef = useRef<HTMLInputElement | null>(null);
+
+  //move page
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("내용 ", editContent);
+    console.log(location.state.editContent);
+  }, []);
   useEffect(() => {
     if (isFree) {
       setHeaderTitle("자유게시판");
@@ -38,8 +71,72 @@ function TextEditor(props: TextEditProps) {
     }
   }, [isFree]);
 
-  const handleRoom = (room: string) => {
+  const handleRoom = (room: number) => {
     setSelectedRoom(room);
+  };
+  const handleTest = () => {
+    titleRef.current!.value = "xptmxld";
+  };
+
+  const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
+    // 조건대로 입력이 들어왔는지 체크
+    const title = titleRef.current ? titleRef.current.value : "";
+    const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
+    const roomId = selectedRoom ? selectedRoom : 0;
+    if (title === "") {
+      alert("제목을 작성하세요");
+      return;
+    }
+    if (context === "") {
+      alert("내용을 작성하세요");
+      return;
+    }
+    if (!isFree && !roomId) {
+      alert("모집 중인 방을 선택해주세요");
+      return;
+    }
+
+    //글쓰는 상황 분기
+    if (isEdit) {
+      modifyBoardParams.title = title;
+      modifyBoardParams.content = context;
+      modifyBoardParams.boardId = editId!;
+      if (isFree) {
+        modifyBoardParams.category = category;
+      } else {
+        modifyBoardParams.isValid = isValid;
+      }
+      setModifyBoardParams(modifyBoardParams);
+      modifyBoard(modifyBoardParams)
+        .then((data) => {
+          console.log("success");
+          navigate(`/recruit-board/${editId}`);
+          return data;
+        })
+        .catch((fail) => {
+          console.log("failed", fail.response.data);
+          return fail;
+        });
+    } else {
+      createBoardParams.type = isFree ? "FREE" : "RECRUIT";
+      createBoardParams.title = title;
+      createBoardParams.context = context;
+      createBoardParams.roomId = selectedRoom;
+
+      console.log(createBoardParams);
+      setCreateBoardParams(createBoardParams);
+      //react query so hard..
+      createBoard(createBoardParams)
+        .then((data) => {
+          console.log("success", data);
+          navigate(`/recruit-board/${data}`);
+          return data;
+        })
+        .catch((fail) => {
+          console.log("failed", fail.response.data);
+          return fail;
+        });
+    }
   };
 
   return (
@@ -48,6 +145,7 @@ function TextEditor(props: TextEditProps) {
         <HeaderTitle> {headerTitle}</HeaderTitle>
       </Header>
       <TitleWrapper>
+        {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
         {isFree ? (
           <SelectForm>
             {selectOption.map((option) => (
@@ -56,17 +154,19 @@ function TextEditor(props: TextEditProps) {
               </option>
             ))}
           </SelectForm>
-        ) : (
-          <CatContainer>{dummy.category}</CatContainer>
-        )}
-        <TitleInput type="text" placeholder="제목을 입력해 주세요"></TitleInput>
+        ) : null}
+        <TitleInput
+          type="text"
+          placeholder="제목을 입력해주세요"
+          value={editTitle}
+          ref={titleRef}
+        ></TitleInput>
       </TitleWrapper>
-      {!isFree ? (
-        <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption>
-      ) : null}
+      {!isFree ? <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption> : null}
       <QuillContainer>
         <Editor
-          initialValue="게시판 성격에 맞는 글만 써주세요"
+          ref={editorRef}
+          initialValue={location.state.editContent}
           previewStyle="vertical"
           height="600px"
           initialEditType="markdown"
@@ -75,8 +175,8 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
-        <CancelButton>취소하기</CancelButton>
-        <SubmitButton>작성하기</SubmitButton>
+        <CancelButton onClick={handleTest}>취소하기</CancelButton>
+        <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
   );
@@ -144,7 +244,7 @@ const TitleInput = tw.input`
     border-b
     border-0.1
     bg-grey-300
-    text-white
+    text-black
     text-3xl
     p-1
     w-1/2

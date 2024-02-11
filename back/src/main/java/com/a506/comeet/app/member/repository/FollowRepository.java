@@ -10,5 +10,5 @@ public interface FollowRepository extends JpaRepository<Follow, Long>, FollowCus
 
     Optional<Follow> findByFromAndTo(Member from, Member to);
 
-    Boolean existsByFromMemberIdAndToMemberId(String memberId, String fromId);
+    boolean existsByFromMemberIdAndToMemberId(String memberId, String fromId);
 }

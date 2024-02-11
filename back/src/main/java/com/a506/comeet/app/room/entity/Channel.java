@@ -1,7 +1,7 @@
 package com.a506.comeet.app.room.entity;
 
 import com.a506.comeet.app.room.controller.dto.ChannelUpdateRequestDto;
-import com.a506.comeet.common.BaseEntityWithSoftDelete;
+import com.a506.comeet.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor
 @SQLRestriction("is_deleted = 0")
-public class Channel extends BaseEntityWithSoftDelete {
+public class Channel extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

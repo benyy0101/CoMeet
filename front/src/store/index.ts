@@ -3,11 +3,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-
+import followReducer,{setupfollowStatePersistence} from "./reducers/followSlice";
 import userReducer, { setupUserStatePersistence } from "./reducers/userSlice";
-import roomReducer from "./reducers/roomSlice"; //
-import keywordReducer from "./reducers/keywordSlice";
-import followReducer from "./reducers/followSlice";
+import roomReducer, { setupRoomStatePersistence } from "./reducers/roomSlice"; //
+import keywordReducer, {
+  setupKeywordStatePersistence,
+} from "./reducers/keywordSlice";
 
 const persistConfig = {
   key: "root",
@@ -32,6 +33,8 @@ const store = configureStore({
 });
 
 setupUserStatePersistence(store);
+setupRoomStatePersistence(store);
+setupKeywordStatePersistence(store);
 
 export const persistor = persistStore(store);
 

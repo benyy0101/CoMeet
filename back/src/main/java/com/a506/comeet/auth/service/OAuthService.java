@@ -7,7 +7,6 @@ import com.a506.comeet.app.room.controller.dto.RoomSimpleResponseDto;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
 import com.a506.comeet.auth.JwtToken;
 import com.a506.comeet.auth.JwtTokenProvider;
-import com.a506.comeet.auth.OAuthClient;
 import com.a506.comeet.auth.controller.dto.LoginResponseDto;
 import com.a506.comeet.auth.controller.dto.OAuthAccessTokenResponse;
 import com.a506.comeet.auth.controller.dto.OAuthMemberInfoResponse;
@@ -27,7 +26,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
-import static com.a506.comeet.auth.SocialLoginType.*;
+import static com.a506.comeet.common.enums.SocialLoginType.*;
 import static com.a506.comeet.error.errorcode.CustomErrorCode.NO_MEMBER;
 
 @Service
@@ -70,6 +69,7 @@ public class OAuthService {
         int unreadNoteCount = noteRepository.getUnreadCount(memberId);
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(NO_MEMBER));
+
         return LoginResponseDto.builder()
                 .memberId(memberId)
                 .nickname(member.getNickname())
@@ -112,7 +112,7 @@ public class OAuthService {
                             .password(passwordEncoder.encode(memberId + salt))
                             .name(res.getName()==null? "" : res.getName())
                             .profileImage(res.getProfileUrl())
-                            .nickname(res.getName()==null? "" : res.getName() + RandomStringUtils.randomAlphanumeric(8))
+                            .nickname("User" + RandomStringUtils.randomAlphanumeric(8))
                             .roles(List.of("SOCIAL")).build();
             memberRepository.save(member);
         }
