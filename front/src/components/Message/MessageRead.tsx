@@ -44,7 +44,9 @@ function MessageRead(params: {
 
       <Content>{noteInfo?.context}</Content>
       <Footer>
-        <ReplyButton>답장하기</ReplyButton>
+        <ReplyButton onClick={() => swapState("write", noteNo)}>
+          답장하기
+        </ReplyButton>
       </Footer>
     </Wrapper>
   );

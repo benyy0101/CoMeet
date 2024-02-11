@@ -59,11 +59,13 @@ function MessageWrite(props: {
           value={receiver}
           onChange={receiverChangeHandler}
           disabled={status === "success" ? true : false}
+          required
         />
         <Content
           value={content}
           onChange={contentChangeHandler}
           disabled={status === "success"}
+          required
         />
       </Body>
       <Footer>
@@ -128,13 +130,31 @@ bg-transparent
 border-b-[1px]
 border-zinc-100
 `;
-const Footer = tw.div``;
+const Footer = tw.div`
+flex
+flex-col
+`;
 
 const ResponseText = tw.div`
 text-white
 text-3xl
 `;
 
-const SubmitButton = tw.button``;
+const SubmitButton = tw.button`
+w-20
+h-10
+bg-gradient-to-r
+from-indigo-400
+to-indigo-500
+rounded-md
+p-2
+self-end
+font-bold
+hover:from-indigo-500
+hover:to-indigo-600
+transition-all
+shadow-lg
+text-cyan-50
+`;
 
 export default MessageWrite;

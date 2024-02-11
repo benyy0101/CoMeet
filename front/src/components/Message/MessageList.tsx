@@ -8,7 +8,7 @@ import {
 import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { searchNote } from "api/Note";
+import { deleteNote, searchNote } from "api/Note";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ModalPortal from "utils/Portal";
 import { useDispatch } from "react-redux";
@@ -21,7 +21,9 @@ interface MessageListProps {
 function MessageList(params: MessageListProps) {
   const { swapState } = params;
   const [page, setPage] = React.useState<number>(1);
-  const [messages, setMessages] = React.useState<SearchNoteResponse>();
+  const [messages, setMessages] = React.useState<
+    SearchNoteResponse | undefined
+  >();
   const dispatch = useDispatch();
   const searchParams: SearchNoteParams = {
     page: page,
@@ -52,12 +54,17 @@ function MessageList(params: MessageListProps) {
     swapState("write", 0);
   };
 
-  const deleteNote = async (no: number) => {
+  const deleteNoteHandler = async (no: number) => {
     try {
-      await deleteNote(no);
-      setMessages((prev) => {
-        ...prev,
-        content: prev?.content.filter((message) => message.id !== no),
+      await deleteNote({ noteId: no });
+      setMessages((prevMessages) => {
+        if (!prevMessages) {
+          return prevMessages;
+        }
+
+        const newContent =
+          prevMessages?.content?.filter((message) => message.id !== no) || [];
+        return { ...prevMessages, content: newContent };
       });
     } catch (e) {
       console.error(e);
@@ -78,40 +85,32 @@ function MessageList(params: MessageListProps) {
       </Header>
 
       <Content>
-        <InfiniteScroll
-          dataLength={messages?.content.length || 0}
-          next={fetchMoreData}
-          loader={<h4>Loading...</h4>}
-          hasMore={messages!.last}
-          className="space-y-5"
-        >
-          {messages?.content.map((message) => (
-            <>
-              <MessageItem key={message.id}>
-                <MessageTitle
-                  onClick={() => {
-                    readNote(message.id);
-                    if (!message.isRead) {
-                      dispatch(decNoteNumber());
-                    }
-                  }}
-                >
-                  <p className="text-blue-400">{message.writerId}</p>님의 쪽지
-                </MessageTitle>
-                <RightBox>
-                  {message.isRead ? (
-                    <Status>읽음</Status>
-                  ) : (
-                    <Status>안읽음</Status>
-                  )}
-                  <TrashCan onClick={() => deleteNote(message.id)}>
-                    <TrashIcon className="w-6 h-6"></TrashIcon>
-                  </TrashCan>
-                </RightBox>
-              </MessageItem>
-            </>
-          ))}
-        </InfiniteScroll>
+        {messages?.content.map((message) => (
+          <>
+            <MessageItem key={message.id}>
+              <MessageTitle
+                onClick={() => {
+                  readNote(message.id);
+                  if (!message.isRead) {
+                    dispatch(decNoteNumber());
+                  }
+                }}
+              >
+                <p className="text-blue-400">{message.writerId}</p>님의 쪽지
+              </MessageTitle>
+              <RightBox>
+                {message.isRead ? (
+                  <Status>읽음</Status>
+                ) : (
+                  <Status>안읽음</Status>
+                )}
+                <TrashCan onClick={() => deleteNoteHandler(message.id)}>
+                  <TrashIcon className="w-6 h-6"></TrashIcon>
+                </TrashCan>
+              </RightBox>
+            </MessageItem>
+          </>
+        ))}
       </Content>
     </Wrapper>
   );
@@ -190,5 +189,6 @@ bg-opacity-10
 p-4
 overflow-y-auto
 scrollbar-hide
+space-y-3
 `;
 export default MessageList;
