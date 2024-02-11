@@ -10,7 +10,9 @@ import { KeywordComponent } from "./KeywordComponent";
 import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
-import { enterBoard, likeBoard, unlikeBoard } from "api/Board";
+import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 type BoardDetailProps = {
   boardId: number;
@@ -18,6 +20,8 @@ type BoardDetailProps = {
 
 export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   const { boardId } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
+  const navigate = useNavigate();
 
   const dummy: EnterBoardResponse = {
     id: 0,
@@ -70,6 +74,18 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     });
   };
 
+  const handleDelete = () => {
+    deleteBoard({ boardId: boardDetail.id })
+      .then((data) => {
+        console.log("success");
+        navigate("/recruit-board");
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+        return fail;
+      });
+  };
+
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
@@ -88,6 +104,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
           roomCapacity={boardDetail.roomCapacity}
+          roomId={boardDetail.id}
           roomLink={boardDetail.roomLink!}
         ></BoardDetailRoomInfo>
       ) : null}
@@ -96,6 +113,15 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
       {boardDetail.type === "RECRUIT" ? <KeywordContainer>{keywordArr}</KeywordContainer> : null}
+
+      {/* 버튼 태그 어케 만드는데 ㅠ */}
+      {memberNickname === boardDetail.writerNickname ? (
+        <LikeButtonContainer>
+          <LikeButton onClick={handleDelete}>
+            <LikeText>삭제</LikeText>
+          </LikeButton>
+        </LikeButtonContainer>
+      ) : null}
 
       <LikeButtonContainer>
         <LikeButton onClick={handleLike}>
