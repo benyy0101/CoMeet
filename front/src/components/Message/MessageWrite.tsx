@@ -7,8 +7,10 @@ import tw from "tailwind-styled-components";
 
 function MessageWrite(props: {
   swapState: (state: string, no: number) => void;
+  writer: string;
+  setWriter: (writerId: string) => void;
 }) {
-  const { swapState } = props;
+  const { swapState, writer, setWriter } = props;
   const [content, setContent] = useState<string>("");
   const [receiver, setReceiver] = useState<string>("");
   const [isSending, setIsSending] = useState<boolean>(false);
@@ -26,7 +28,7 @@ function MessageWrite(props: {
     e.preventDefault();
     const req: CreateNoteParams = {
       context: content,
-      receiverId: receiver,
+      receiverId: receiver || writer,
     };
     try {
       const response = createNote(req);
@@ -46,19 +48,24 @@ function MessageWrite(props: {
     }
   }, [res]);
 
+  const leaveHandler = () => {
+    swapState("list", 0);
+    setWriter("");
+  };
+
   return (
     <Wrapper onSubmit={sendNote}>
       <Header>
-        <LeaveButton onClick={() => swapState("list", 0)}>
+        <LeaveButton onClick={leaveHandler}>
           <ArrowLeftIcon className="w-6 h-6" />
         </LeaveButton>
       </Header>
       <Body>
         <ReceiverInput
           placeholder="받는 사람"
-          value={receiver}
+          value={receiver || writer}
           onChange={receiverChangeHandler}
-          disabled={status === "success" ? true : false}
+          disabled={status === "success" || writer !== "" ? true : false}
           required
         />
         <Content
@@ -75,9 +82,15 @@ function MessageWrite(props: {
           <SubmitButton disabled={status === "success"}>보내기</SubmitButton>
         )}
         {!isSending && status === "success" ? (
-          <ResponseText>전송 완료</ResponseText>
+          <ResponseText className="text-emerald-700 font-bold">
+            전송 완료!
+          </ResponseText>
         ) : (
-          status === "fail" && <ResponseText>전송 실패</ResponseText>
+          status === "fail" && (
+            <ResponseText className="text-red-700 font-bold">
+              전송 실패
+            </ResponseText>
+          )
         )}
       </Footer>
     </Wrapper>
@@ -132,12 +145,12 @@ border-zinc-100
 `;
 const Footer = tw.div`
 flex
-flex-col
+flex-row-reverse
+justify-between
+items-end
 `;
 
 const ResponseText = tw.div`
-text-white
-text-3xl
 `;
 
 const SubmitButton = tw.button`
