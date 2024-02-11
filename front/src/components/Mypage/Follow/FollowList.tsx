@@ -89,5 +89,10 @@ flex-col
 space-y-5
 bg-white
 bg-opacity-10
+p-3
+rounded-md
+max-h-96
+overflow-scroll
+scrollbar-hide
 `
 export default FollowList;
