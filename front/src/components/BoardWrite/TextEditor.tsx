@@ -44,12 +44,14 @@ function TextEditor(props: TextEditProps) {
   //move page
   const navigate = useNavigate();
 
-  const { data: dataCreateBoard } = useQuery<CreateBoardResponse, Error>({
-    queryKey: ["createboard", JSON.stringify(createBoardParams)],
-    queryFn: () => {
-      return createBoard(createBoardParams);
-    },
-  });
+  // 원래는 리액트쿼리로 하려 했는데, 페이지 들어가는 것만으로도 계속 요청이 날아가서 에러남
+  // 이 이슈를 제대로 해결하지 못해서 그냥 포기
+  // const { data: dataCreateBoard } = useQuery<CreateBoardResponse, Error>({
+  //   queryKey: ["createboard", JSON.stringify(createBoardParams)],
+  //   queryFn: () => {
+  //     return createBoard(createBoardParams);
+  //   },
+  // });
 
   useEffect(() => {
     if (isFree) {
@@ -87,9 +89,18 @@ function TextEditor(props: TextEditProps) {
     createBoardParams.roomId = selectedRoom;
 
     console.log(createBoardParams);
-    // setCreateBoardParams(createBoardParams);
-    //완료되고 바깥으로 나가게 해야함
-    navigate("");
+    setCreateBoardParams(createBoardParams);
+    //react query so hard..
+    createBoard(createBoardParams)
+      .then((data) => {
+        console.log("success", data);
+        navigate(`/recruit-board/${data}`);
+        return data;
+      })
+      .catch((fail) => {
+        console.log("failed", fail.response.data);
+        return fail;
+      });
   };
 
   return (

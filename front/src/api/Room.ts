@@ -90,7 +90,7 @@ export const leaveRoom = async (params: LeaveRoomParams) => {
 
 export const searchManagingRoom = async (
   params: SearchManagingParams
-): Promise<SearchManagingResponses> => {
+): Promise<SearchManagingResponses[]> => {
   const url = `room/managing`;
   const response = await localAxios.get(url);
   return response.data;

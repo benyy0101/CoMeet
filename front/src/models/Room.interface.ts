@@ -151,7 +151,7 @@ export interface LeaveRoomResponse {}
 export interface SearchManagingParams {}
 
 export interface SearchManagingResponses {
-  roodId: number;
+  roomId: number;
   title: string;
   full: boolean; // 꽉 찼는지
 }
