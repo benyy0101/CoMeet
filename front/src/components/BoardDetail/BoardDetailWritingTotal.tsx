@@ -10,14 +10,15 @@ import { KeywordComponent } from "./KeywordComponent";
 import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
-import { enterBoard } from "api/Board";
+import { enterBoard, likeBoard, unlikeBoard } from "api/Board";
 
 type BoardDetailProps = {
   boardId: number;
 };
 
 export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
-  const [likecount, setLikecount] = useState<number>(0);
+  const { boardId } = props;
+
   const dummy: EnterBoardResponse = {
     id: 0,
     title: "title",
@@ -46,7 +47,6 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   const { data: boardDetailData } = useQuery<EnterBoardResponse, Error>({
     queryKey: ["boardDetail", JSON.stringify(props.boardId)],
     queryFn: () => {
-      const { boardId } = props;
       return enterBoard({ boardId });
     },
   });
@@ -71,22 +71,15 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
   // const keywordList = roomKeyword.map((keyword) => <KeywordComponent keyword={keyword} />);
 
-  //좋아요 했는지
-  // const [isLiked, setIsLiked] = useState<boolean>(like);
-
-  //좋아요 누르면 +1 해서 렌더링 되게 (임시)
-  const [likecountPlus, setLikecountPlus] = useState<number>(likecount);
-
   //쁠마만 하고, 매번 api 날리는 걸로 하자
   const handleLike = () => {
-    if (boardDetail.isLike) {
-      setLikecountPlus((current) => current - 1);
-    } else {
-      setLikecountPlus((current) => current + 1);
-    }
-    boardDetail.isLike = !boardDetail.isLike;
-
-    // setIsLiked(!boardDetail.isLike);
+    const likeValue = !boardDetail.isLike ? 1 : -1;
+    !boardDetail.isLike ? likeBoard({ boardId }) : unlikeBoard({ boardId });
+    setBoardDetail({
+      ...boardDetail,
+      isLike: !boardDetail.isLike,
+      likeCount: boardDetail.likeCount + likeValue,
+    });
   };
 
   return (
@@ -94,7 +87,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       <BoardDetailHeader
         nickname={boardDetail.writerNickname}
         title={boardDetail.title}
-        likecount={likecountPlus}
+        likecount={boardDetail.likeCount}
         category={boardDetail.category}
         valid={boardDetail.isValid}
         createdAt={boardDetail.createdAt}
