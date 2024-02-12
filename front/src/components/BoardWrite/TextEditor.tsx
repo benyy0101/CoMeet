@@ -27,7 +27,7 @@ function TextEditor(props: TextEditProps) {
   const location = useLocation();
 
   const editorRef = useRef<Editor | null>(null);
-  const { isFree, isEdit, editId, editTitle, editContent } = props;
+  const { isFree, isEdit } = props;
   const [selectOption, setSelectOption] = useState<SelectOption[]>([
     { key: 1, value: "question", label: "질문하기" },
     { key: 2, value: "recruit", label: "구인구직" },
@@ -37,19 +37,21 @@ function TextEditor(props: TextEditProps) {
   //isEdit이 true면 수정하기, false면 새 글 작성하기
   const [selectedRoom, setSelectedRoom] = useState<number>(0);
   const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
+
   const dummy1: CreateBoardParams = {
     context: "",
     title: "",
     type: "RECRUIT",
   };
   const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>(dummy1);
+
   const dummy2: ModifyBoardParams = {
     boardId: 0,
     content: "",
     title: "",
   };
   const [modifyBoardParams, setModifyBoardParams] = useState<ModifyBoardParams>(dummy2);
-  const [content, setContent] = useState<string>("");
+
   const [isValid, setIsValid] = useState<boolean>(true);
   const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
@@ -59,10 +61,6 @@ function TextEditor(props: TextEditProps) {
   //move page
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("내용 ", editContent);
-    console.log(location.state.editContent);
-  }, []);
   useEffect(() => {
     if (isFree) {
       setHeaderTitle("자유게시판");
@@ -91,21 +89,24 @@ function TextEditor(props: TextEditProps) {
       alert("내용을 작성하세요");
       return;
     }
-    if (!isFree && !roomId) {
+    // 모집이면서 생성이면서 방아뒤가 없으면
+    if (!isFree && !isEdit && !roomId) {
       alert("모집 중인 방을 선택해주세요");
       return;
     }
 
     //글쓰는 상황 분기
     if (isEdit) {
+      const { editId } = location.state;
       modifyBoardParams.title = title;
       modifyBoardParams.content = context;
-      modifyBoardParams.boardId = editId!;
+      modifyBoardParams.boardId = editId;
       if (isFree) {
         modifyBoardParams.category = category;
       } else {
         modifyBoardParams.isValid = isValid;
       }
+      // api를 위한 파라미터 변수가 꼭 state로 관리되어야만 하는가??
       setModifyBoardParams(modifyBoardParams);
       modifyBoard(modifyBoardParams)
         .then((data) => {
@@ -158,7 +159,7 @@ function TextEditor(props: TextEditProps) {
         <TitleInput
           type="text"
           placeholder="제목을 입력해주세요"
-          value={editTitle}
+          value={location.state.editTitle}
           ref={titleRef}
         ></TitleInput>
       </TitleWrapper>
