@@ -4,7 +4,7 @@ import MyKeyword from "components/Mypage/MyKeyword";
 import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
 import MyTILCalendar from "components/Mypage/MyTILCalendar";
-import { MySumTime } from "components/Mypage/MySumTime";
+import MySumTime from "components/Mypage/MySumTime";
 import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -99,7 +99,11 @@ export const Mypage = () => {
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
         <SumTimeContainer>
-          <MySumTime />
+          <MySumTime
+            dayStudyHour={userData?.dayStudyHour}
+            weekStudyHour={userData?.weekStudyHour}
+            monthStudyHour={userData?.monthStudyHour}
+          />
         </SumTimeContainer>
       </FirstContainerRight>
     </AllContainer>
