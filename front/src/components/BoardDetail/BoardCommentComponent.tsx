@@ -1,8 +1,6 @@
-import { deleteComment } from "api/Comment";
 import { ModifyCommentParams, SearchCommentContent } from "models/Comments.interface";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { irBlack } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 import tw from "tailwind-styled-components";
 

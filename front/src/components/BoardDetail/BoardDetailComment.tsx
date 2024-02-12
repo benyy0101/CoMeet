@@ -118,8 +118,10 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
     modifyComment(params)
       .then((data) => {
         console.log("success");
-        commentList.map((each) =>
-          each.id === params.commentId ? { ...each, content: params.content } : each
+        setCommentList(
+          commentList.map((each) =>
+            each.id === params.commentId ? { ...each, content: params.content } : each
+          )
         );
       })
       .catch((fail) => {
