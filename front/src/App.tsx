@@ -76,10 +76,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.warn(currentLounge);
-  }, [currentLounge]);
-
-  useEffect(() => {
     console.error("룸아이디 변경!", roomInfo);
     if (roomInfo.isRoomIn) {
       if (roomData === null) {
