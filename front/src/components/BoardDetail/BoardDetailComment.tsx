@@ -3,12 +3,13 @@ import tw from "tailwind-styled-components";
 import { BoardCommentComponent } from "./BoardCommentComponent";
 import {
   CreateCommentParams,
+  ModifyCommentParams,
   SearchCommentContent,
   SearchCommentParams,
   SearchCommentResponse,
 } from "models/Comments.interface";
 import { useQuery } from "@tanstack/react-query";
-import { createComment, deleteComment, searchComment } from "api/Comment";
+import { createComment, deleteComment, modifyComment, searchComment } from "api/Comment";
 import { useSelector } from "react-redux";
 
 type TotalCommentProps = {
@@ -113,6 +114,19 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
       });
   };
 
+  const handleModify = (params: ModifyCommentParams) => {
+    modifyComment(params)
+      .then((data) => {
+        console.log("success");
+        commentList.map((each) =>
+          each.id === params.commentId ? { ...each, content: params.content } : each
+        );
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+      });
+  };
+
   return (
     <CommentTotalContainer>
       <WriteCommentContainer>
@@ -134,7 +148,12 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
       </WriteCommentContainer>
       {/* 댓글 부분들 - array로 받아와서 map 돌릴 부분 */}
       {commentList.map((comment) => (
-        <BoardCommentComponent key={comment.id} comment={comment} handleDelete={handleDelete} />
+        <BoardCommentComponent
+          key={comment.id}
+          comment={comment}
+          handleDelete={handleDelete}
+          handleModify={handleModify}
+        />
       ))}
       <div id="observer" style={{ height: "10px" }}>
         333
