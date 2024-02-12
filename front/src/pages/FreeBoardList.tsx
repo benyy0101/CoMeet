@@ -158,6 +158,17 @@ export const FreeBoardList = () => {
               <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButton>
           )}
+          {currentMenu === "CHAT" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("CHAT")}>
+              <SideIconImg src={HotBlackBoardIcon} alt="" />
+              <SidebuttonTitle>잡담</SidebuttonTitle>
+            </SideButtonSelected>
+          ) : (
+            <SideButton onClick={() => setCurrentMenu("CHAT")}>
+              <SideIconImg src={HotBoardIcon} alt="" />
+              <SidebuttonTitle>잡담</SidebuttonTitle>
+            </SideButton>
+          )}
           {currentMenu === "TIP" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("TIP")}>
               <SideIconImg src={TipBlackBoardIcon} alt="" />
