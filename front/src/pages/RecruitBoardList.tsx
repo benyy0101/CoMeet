@@ -69,6 +69,10 @@ export const RecruitBoardList = () => {
   const page = searchParams.get("page");
 
   useEffect(() => {
+    if (page) {
+      searchBoardParams.page = parseInt(page) - 1;
+      setSearchBoardParams(searchBoardParams);
+    }
     window.scrollTo(0, 0); // 페이지 이동 시 스크롤 위치 맨 위로 초기화
     /* api 호출 및 데이터(totalItems, books) 저장 */
   }, [page]);
@@ -145,13 +149,6 @@ export const RecruitBoardList = () => {
       return searchBoard(searchBoardParams);
     },
   });
-
-  useEffect(() => {
-    if (page) {
-      searchBoardParams.page = parseInt(page) - 1;
-      setSearchBoardParams(searchBoardParams);
-    }
-  }, [page]);
 
   useEffect(() => {
     if (currentMenu === "전체") {

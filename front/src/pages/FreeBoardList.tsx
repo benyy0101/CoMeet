@@ -22,6 +22,7 @@ import { Pagination } from "components/Common/Pagination";
 import { useQuery } from "@tanstack/react-query";
 import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
 import { searchBoard } from "api/Board";
+import { BOARD_SORTBY } from "models/Enums.type";
 
 export const FreeBoardList = () => {
   //목록 리스트
@@ -39,11 +40,9 @@ export const FreeBoardList = () => {
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
 
-  const [currentSort, setCurrentSort] = useState<string>("최신순");
+  const [currentSort, setCurrentSort] = useState<BOARD_SORTBY>("LATEST");
 
   const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
-
-  const [currentCount, setCurrentCount] = useState<number>(25);
 
   //왼쪽 사이드바 선택 메뉴
   const [currentMenu, setCurrentMenu] = useState<string>("전체");
@@ -51,10 +50,6 @@ export const FreeBoardList = () => {
   //아래는 모두 페이지네이션 임시
   const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
   const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
-  // const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
-  // const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
-  // const totalPages = 10; //totalPages: 전체 페이지 수
-  // const totalElements = 100; //totalElements: 전체 항목 수
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
 
@@ -67,8 +62,11 @@ export const FreeBoardList = () => {
   });
 
   useEffect(() => {
+    if (page) {
+      searchBoardParams.page = parseInt(page) - 1;
+      setSearchBoardParams(searchBoardParams);
+    }
     window.scrollTo(0, 0); // 페이지 이동 시 스크롤 위치 맨 위로 초기화
-    /* api 호출 및 데이터(totalItems, books) 저장 */
   }, [page]);
 
   useEffect(() => {
@@ -80,68 +78,10 @@ export const FreeBoardList = () => {
     }
   }, [QDboardList]);
 
-  //임시
-  // useEffect(() => {
-  //   const tmpdatas: BoardListProps[] = [
-  //     {
-  //       id: 1,
-  //       title: "알고리즘 스터디",
-  //       writerNicname: "무빙건",
-  //       writerImage: "https://picsum.photos/id/64/100",
-  //       createdAt: "2024-01-01",
-  //       likeCount: 22,
-  //       category: "",
-  //       type: "recruit",
-  //       roomKeywords: "PYTHON-JAVA",
-  //       roomImage: "https://picsum.photos/id/1/300",
-  //       isValid: true,
-  //       roomCapacity: 30,
-  //     },
-  //     {
-  //       id: 2,
-  //       title: "CS 스터디",
-  //       writerNicname: "다른 사람",
-  //       writerImage: "https://picsum.photos/id/65/100",
-  //       createdAt: "2024-01-12",
-  //       likeCount: 1,
-  //       category: "질문하기",
-  //       type: "free",
-  //       roomKeywords: "",
-  //       roomImage: "https://picsum.photos/id/20/300",
-  //       isValid: true,
-  //       roomCapacity: 25,
-  //     },
-  //     {
-  //       id: 3,
-  //       title: "전세계 개발자들을 위한 모각코 모임",
-  //       writerNicname: "외국인임",
-  //       writerImage: "https://picsum.photos/100",
-  //       createdAt: "2023-12-31",
-  //       likeCount: 22,
-  //       category: "",
-  //       type: "recruit",
-  //       roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-  //       roomImage: "https://picsum.photos//300",
-  //       isValid: true,
-  //       roomCapacity: 50,
-  //     },
-  //     {
-  //       id: 3,
-  //       title: "전세계 개발자들을 위한 모각코 모임",
-  //       writerNicname: "외국인임",
-  //       writerImage: "https://picsum.photos/100",
-  //       createdAt: "2023-12-31",
-  //       likeCount: 31,
-  //       category: "구인구직",
-  //       type: "free",
-  //       roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-  //       roomImage: "https://picsum.photos//300",
-  //       isValid: true,
-  //       roomCapacity: 50,
-  //     },
-  //   ];
-  //   setBoardList(tmpdatas);
-  // }, []);
+  useEffect(() => {
+    searchBoardParams.sortBy = currentSort;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentSort]);
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -157,14 +97,6 @@ export const FreeBoardList = () => {
     setIsSortOpen(!isSortOpen);
   };
 
-  const handleCountOpen = () => {
-    setIsCountOpen(!isCountOpen);
-  };
-
-  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentCount(Number(e.target.value));
-  };
-
   const TmphandleWordCheck = function () {
     console.log("검색 단어: " + searchWord);
   };
@@ -174,14 +106,6 @@ export const FreeBoardList = () => {
   useOutsideClick<HTMLDivElement>(sortOpenRef, () => {
     if (isSortOpen) {
       setIsSortOpen(false);
-    }
-  });
-
-  //방 최대 인원 드롭다운 외부 클릭시 닫기
-  const countOpenRef = useRef(null);
-  useOutsideClick<HTMLDivElement>(countOpenRef, () => {
-    if (isCountOpen) {
-      setIsCountOpen(false);
     }
   });
 
@@ -298,7 +222,7 @@ export const FreeBoardList = () => {
                       <SortDropDown>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("최신순");
+                            setCurrentSort("LATEST");
                             setIsSortOpen(false);
                           }}
                         >
@@ -306,7 +230,7 @@ export const FreeBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("좋아요순");
+                            setCurrentSort("LIKES");
                             setIsSortOpen(false);
                           }}
                         >
