@@ -25,7 +25,7 @@ type SelectOption = {
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
-  const {editId, editTitle, editContent} = location.state;
+  const {editId, editTitle, editContent, isValid} = location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
@@ -53,7 +53,7 @@ function TextEditor(props: TextEditProps) {
   };
   const [modifyBoardParams, setModifyBoardParams] = useState<ModifyBoardParams>(dummy2);
 
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [isRoomValid, setIsRoomValid] = useState<boolean>(isValid);
   const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
   //쓰는 값
@@ -73,6 +73,10 @@ function TextEditor(props: TextEditProps) {
   const handleRoom = (room: number) => {
     setSelectedRoom(room);
   };
+
+  const isValidHandler = () =>{
+    setIsRoomValid(!isRoomValid);
+  }
   
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -102,7 +106,7 @@ function TextEditor(props: TextEditProps) {
       if (isFree) {
         modifyBoardParams.category = category;
       } else {
-        modifyBoardParams.isValid = isValid;
+        modifyBoardParams.isValid = isRoomValid;
       }
       // api를 위한 파라미터 변수가 꼭 state로 관리되어야만 하는가??
       setModifyBoardParams(modifyBoardParams);
@@ -145,6 +149,7 @@ function TextEditor(props: TextEditProps) {
       </Header>
       <TitleWrapper>
         {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
+        
         {isFree && (
           <SelectForm>
             {selectOption.map((option) => (
@@ -161,7 +166,20 @@ function TextEditor(props: TextEditProps) {
           onChange={(e) => setTitle(e.target.value)}
         ></TitleInput>
       </TitleWrapper>
+      <OptionContainer>
       {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
+      <ValidButtonContainer>
+        {
+          !isFree && <>
+          <ValidButton isOn={isRoomValid} onClick={isValidHandler}>모집중</ValidButton>
+      <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>모집완료</ValidButton>
+          </>
+        }
+      
+      </ValidButtonContainer>
+      
+      </OptionContainer>
+      
       <QuillContainer>
         <Editor
           ref={editorRef}
@@ -250,6 +268,24 @@ const TitleInput = tw.input`
     bg-transparent
     focus:outline-none
 `;
+const OptionContainer = tw.div`
+flex
+justify-between
+`
+
+const ValidButtonContainer = tw.div`
+flex
+space-x-3
+`
+
+const ValidButton = tw.div<{isOn: boolean}>`
+p-1
+text-black
+
+${(props) => (
+  props.isOn ? "text-purple-700 border-purple-700 border-b-2" : "text-violet-100"
+)}
+`
 const QuillContainer = tw.div`
     w-full
     min-h-[300px]  

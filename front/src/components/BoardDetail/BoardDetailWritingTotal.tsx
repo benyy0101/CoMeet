@@ -113,7 +113,12 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       <ContentContainer>{boardDetail.content}</ContentContainer>
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
-      {boardDetail.type === "RECRUIT" ? <KeywordContainer>{keywordArr}</KeywordContainer> : null}
+      <KeywordContainer>
+        {boardDetail.type === "RECRUIT" ? keywordArr.map((words) => (
+        <Keyword key={words}>{words}</Keyword>
+        )) : null}
+      </KeywordContainer>
+      
         <ButtonsContainer>
 {/* 버튼 태그 어케 만드는데 ㅠ */}
 {memberNickname === boardDetail.writerNickname ? (
@@ -133,6 +138,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
             editId: boardDetail.id,
             editTitle: boardDetail.title,
             editContent: boardDetail.content,
+            isValid: boardDetail.isValid
           }}
         >
           <LikeText className="text-lime-400">수정</LikeText>
@@ -181,7 +187,19 @@ space-x-5
 const KeywordContainer = tw.div`
 flex
 ml-10
+space-x-3
 `;
+
+const Keyword = tw.div`
+bg-gradient-to-br
+from-cyan-950
+to-blue-950
+p-2
+px-3
+rounded-md
+shadow-lg
+text-white
+`
 
 //좋아요 버튼 컨테이너
 const LikeButtonContainer = tw.div`
