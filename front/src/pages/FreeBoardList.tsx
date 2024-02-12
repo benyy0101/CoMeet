@@ -19,25 +19,19 @@ import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 import { Pagination } from "components/Common/Pagination";
-
-type BoardListProps = {
-  id: number;
-  title: string;
-  writerNicname: string;
-  writerImage: string;
-  createdAt: string;
-  likeCount: number;
-  category: string;
-  type: string;
-  roomKeywords: string;
-  roomImage: string;
-  isValid: boolean;
-  roomCapacity: number;
-};
+import { useQuery } from "@tanstack/react-query";
+import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
+import { searchBoard } from "api/Board";
 
 export const FreeBoardList = () => {
   //목록 리스트
-  const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
+    boardType: "FREE",
+    sortBy: "LATEST",
+    page: 0,
+    size: 10,
+  });
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
@@ -55,17 +49,99 @@ export const FreeBoardList = () => {
   const [currentMenu, setCurrentMenu] = useState<string>("전체");
 
   //아래는 모두 페이지네이션 임시
-  const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
-  const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
-  const totalPages = 10; //totalPages: 전체 페이지 수
-  const totalElements = 100; //totalElements: 전체 항목 수
+  const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
+  const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
+  // const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
+  // const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
+  // const totalPages = 10; //totalPages: 전체 페이지 수
+  // const totalElements = 100; //totalElements: 전체 항목 수
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
+
+  const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
+    queryKey: ["freeBoardList", JSON.stringify(searchBoardParams)],
+    queryFn: () => {
+      console.log("get data from back...", searchBoardParams);
+      return searchBoard(searchBoardParams);
+    },
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0); // 페이지 이동 시 스크롤 위치 맨 위로 초기화
     /* api 호출 및 데이터(totalItems, books) 저장 */
   }, [page]);
+
+  useEffect(() => {
+    if (QDboardList?.content) {
+      console.log(QDboardList);
+      setBoardList(QDboardList.content);
+      setTotalPages(QDboardList.totalPages);
+      setTotalElements(QDboardList.totalElements);
+    }
+  }, [QDboardList]);
+
+  //임시
+  // useEffect(() => {
+  //   const tmpdatas: BoardListProps[] = [
+  //     {
+  //       id: 1,
+  //       title: "알고리즘 스터디",
+  //       writerNicname: "무빙건",
+  //       writerImage: "https://picsum.photos/id/64/100",
+  //       createdAt: "2024-01-01",
+  //       likeCount: 22,
+  //       category: "",
+  //       type: "recruit",
+  //       roomKeywords: "PYTHON-JAVA",
+  //       roomImage: "https://picsum.photos/id/1/300",
+  //       isValid: true,
+  //       roomCapacity: 30,
+  //     },
+  //     {
+  //       id: 2,
+  //       title: "CS 스터디",
+  //       writerNicname: "다른 사람",
+  //       writerImage: "https://picsum.photos/id/65/100",
+  //       createdAt: "2024-01-12",
+  //       likeCount: 1,
+  //       category: "질문하기",
+  //       type: "free",
+  //       roomKeywords: "",
+  //       roomImage: "https://picsum.photos/id/20/300",
+  //       isValid: true,
+  //       roomCapacity: 25,
+  //     },
+  //     {
+  //       id: 3,
+  //       title: "전세계 개발자들을 위한 모각코 모임",
+  //       writerNicname: "외국인임",
+  //       writerImage: "https://picsum.photos/100",
+  //       createdAt: "2023-12-31",
+  //       likeCount: 22,
+  //       category: "",
+  //       type: "recruit",
+  //       roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+  //       roomImage: "https://picsum.photos//300",
+  //       isValid: true,
+  //       roomCapacity: 50,
+  //     },
+  //     {
+  //       id: 3,
+  //       title: "전세계 개발자들을 위한 모각코 모임",
+  //       writerNicname: "외국인임",
+  //       writerImage: "https://picsum.photos/100",
+  //       createdAt: "2023-12-31",
+  //       likeCount: 31,
+  //       category: "구인구직",
+  //       type: "free",
+  //       roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
+  //       roomImage: "https://picsum.photos//300",
+  //       isValid: true,
+  //       roomCapacity: 50,
+  //     },
+  //   ];
+  //   setBoardList(tmpdatas);
+  // }, []);
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -109,77 +185,12 @@ export const FreeBoardList = () => {
     }
   });
 
-  //임시
-  React.useEffect(() => {
-    const tmpdatas: BoardListProps[] = [
-      {
-        id: 1,
-        title: "알고리즘 스터디",
-        writerNicname: "무빙건",
-        writerImage: "https://picsum.photos/id/64/100",
-        createdAt: "2024-01-01",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "PYTHON-JAVA",
-        roomImage: "https://picsum.photos/id/1/300",
-        isValid: true,
-        roomCapacity: 30,
-      },
-      {
-        id: 2,
-        title: "CS 스터디",
-        writerNicname: "다른 사람",
-        writerImage: "https://picsum.photos/id/65/100",
-        createdAt: "2024-01-12",
-        likeCount: 1,
-        category: "질문하기",
-        type: "free",
-        roomKeywords: "",
-        roomImage: "https://picsum.photos/id/20/300",
-        isValid: true,
-        roomCapacity: 25,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: true,
-        roomCapacity: 50,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 31,
-        category: "구인구직",
-        type: "free",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: true,
-        roomCapacity: 50,
-      },
-    ];
-    setBoardList(tmpdatas);
-  }, []);
-
   return (
     <TotalContainer>
       <Wrapper>
         <LeftContainer>
           {currentMenu === "전체" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>
-              전체
-            </SideButtonSelected>
+            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>전체</SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
           )}
@@ -312,7 +323,7 @@ export const FreeBoardList = () => {
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => {
-                if (tmp.type === "free")
+                if (tmp.type === "FREE")
                   return (
                     <ReadButton>
                       <FreeBoardListLink key={tmp.id} {...tmp} />
