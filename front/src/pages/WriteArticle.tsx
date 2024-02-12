@@ -13,7 +13,7 @@ function WriteArticle() {
   });
 
   useEffect(() => {
-    setIsFree(queryData!.type === "recruit" ? false : true);
+    setIsFree(queryData!.type === "RECRUIT" ? false : true);
     setIsEdit(queryData!.option === "edit" ? true : false);
   }, [queryData]);
 

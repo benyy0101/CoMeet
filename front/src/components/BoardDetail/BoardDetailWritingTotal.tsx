@@ -59,8 +59,9 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   useEffect(() => {
     if (boardDetailData) {
       console.log("if query ended", boardDetailData);
-      setBoardDetail(boardDetailData);
-      setKeywordArr(boardDetailData.roomKeywords.map((data) => data.name));
+      setBoardDetail(boardDetailData!);
+      if (boardDetailData.type === "RECRUIT")
+        setKeywordArr(boardDetailData.roomKeywords.map((data) => data.name));
     }
   }, [boardDetailData]);
 
@@ -126,7 +127,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       {/* 버튼 태그 어케 만드는데 ㅠ */}
       {memberNickname === boardDetail.writerNickname ? (
         <Link
-          to={`/write-article?type=recruit&option=edit`}
+          to={`/write-article?type=${boardDetail.type}&option=edit`}
           state={{
             editId: boardDetail.id,
             editTitle: boardDetail.title,
