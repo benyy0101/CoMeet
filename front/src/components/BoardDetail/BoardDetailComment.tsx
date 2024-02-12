@@ -9,6 +9,7 @@ import {
 } from "models/Comments.interface";
 import { useQuery } from "@tanstack/react-query";
 import { createComment, searchComment } from "api/Comment";
+import { useSelector } from "react-redux";
 
 type TotalCommentProps = {
   boardId: number;
@@ -23,6 +24,7 @@ type TotalCommentProps = {
 
 export const BoardDetailComment = (props: TotalCommentProps) => {
   const { boardId } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
 
   //댓글 달기 관련
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -76,14 +78,27 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
 
   const handleWrite = (e: React.FormEvent) => {
     e.preventDefault();
-    if (contentRef.current?.value === "") {
+    const content = contentRef.current!.value;
+    if (content === "") {
       alert("글을 써주세요");
       return;
     }
-    createComment({ boardId: boardId, content: contentRef.current!.value })
-      .then((data) => console.log("success", data))
-      .catch(() => console.log("failed"));
-    contentRef.current!.value = "";
+    createComment({ boardId, content })
+      .then((data) => {
+        contentRef.current!.value = "";
+        console.log("success", data);
+        const date = new Date();
+        const currentComment = {
+          boardId,
+          content,
+          createdAt: date.toDateString(),
+          updatedAt: date.toDateString(),
+          id: data.commentId,
+          writerNickname: memberNickname,
+        };
+        setCommentList([...commentList, currentComment]);
+      })
+      .catch(() => alert("failed"));
   };
 
   return (

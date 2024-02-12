@@ -1,10 +1,25 @@
+import { deleteComment } from "api/Comment";
 import { SearchCommentContent } from "models/Comments.interface";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 import tw from "tailwind-styled-components";
 
 export const BoardCommentComponent = (props: SearchCommentContent) => {
   const { writerNickname, updatedAt, content, id } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
+
+  const handleModify = () => {};
+  const handleDelete = () => {
+    deleteComment({ commentId: id })
+      .then((data) => {
+        console.log("success");
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+        return fail;
+      });
+  };
 
   return (
     <TotalContainer>
@@ -14,6 +29,12 @@ export const BoardCommentComponent = (props: SearchCommentContent) => {
           <Date>{updatedAt}</Date>
         </NicAndDate>
         <Context>{content}</Context>
+        {memberNickname === writerNickname ? (
+          <NicAndDate>
+            <button onClick={handleModify}>수정 -----</button>
+            <button onClick={handleDelete}>삭제</button>
+          </NicAndDate>
+        ) : null}
       </Comment>
     </TotalContainer>
   );
