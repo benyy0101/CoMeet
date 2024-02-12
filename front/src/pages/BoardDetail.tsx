@@ -13,7 +13,7 @@ export const BoardDetail = () => {
         <BoardDetailWritingTotal boardId={parseInt(boardId!)} />
       </WritingContainer>
       <CommentContainer>
-        <BoardDetailComment />
+        <BoardDetailComment boardId={parseInt(boardId!)} />
       </CommentContainer>
     </TotalContainer>
   );

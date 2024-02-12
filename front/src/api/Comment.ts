@@ -21,8 +21,8 @@ export const createComment = async (
 export const searchComment = async (
   params: SearchCommentParams
 ): Promise<SearchCommentResponse> => {
-  const { boardId } = params;
-  const url = `comment/${boardId}`;
+  const { boardId, page } = params;
+  const url = `comment/${boardId}?page=${page}`;
   const response = await localAxios.get(url);
   return response.data;
 };
