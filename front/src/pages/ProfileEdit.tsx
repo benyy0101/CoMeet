@@ -17,16 +17,18 @@ w-full
 h-[calc(100vh-48px)]
 flex
 flex-col
-justify-center
+
 items-center
 relative
-bg-gradient-to-b
-from-[#0A031C]
-from-80%
-to-[#100530]
+bg-[#180E2C]
+pt-5
 `;
 
 const Title = tw.div`
-text-[#FDFD96]
+
+mb-5
+text-white
+text-xl
+font-bold
 `;
 export default ProfileEdit;
