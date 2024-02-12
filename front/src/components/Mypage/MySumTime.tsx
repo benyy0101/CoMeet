@@ -16,17 +16,17 @@ export default function MySumTime(props: Props) {
     <TotalContainer>
       <TodaySum>
         <TitleTWM>오늘</TitleTWM>
-        <TimeTWM>{dayStudyHour}</TimeTWM>
+        <TimeTWM>{dayStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </TodaySum>
       <WeekSum>
         <TitleTWM>이번주</TitleTWM>
-        <TimeTWM>{weekStudyHour}</TimeTWM>
+        <TimeTWM>{weekStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </WeekSum>
       <MonthSum>
         <TitleTWM>이번달</TitleTWM>
-        <TimeTWM>{monthStudyHour}</TimeTWM>
+        <TimeTWM>{monthStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </MonthSum>
     </TotalContainer>

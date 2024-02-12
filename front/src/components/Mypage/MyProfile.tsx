@@ -44,6 +44,9 @@ export default function MyProfile({
   const [followerModal, setFollowerModal] = useState<boolean>(false);
   const [followingModal, setFollowingModal] = useState<boolean>(false);
 
+  //현재 보고 있는 사람을 팔로우 했는지
+  const [isFollow, setIsFollow] = useState<boolean>();
+
   const followerModalHandler = () => {
     setFollowerModal(!followerModal);
   };
@@ -180,10 +183,21 @@ export default function MyProfile({
               <FollowNumber>{followerCount}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
-          <div className="flex">
+          <div className="flex mb-2">
             <StyleNickName>{nickname}</StyleNickName>
+
+            {/* isFollow: 내가 A의 페이지를 갔고, 내가 A를 팔로잉 하고 있을 때 팔로잉 버튼 활성화 / 팔로잉 안 하고 있으면 팔로우 버튼 활성화*/}
+            {isMe ? null : (
+              <>
+                {isFollow ? (
+                  <FollowingButton>팔로잉</FollowingButton>
+                ) : (
+                  <FollowButton>팔로우</FollowButton>
+                )}
+              </>
+            )}
           </div>
-          <div className="flex">
+          <div className="flex ">
             {description === "" ? (
               <NoneText>한 줄 소개가 없습니다.</NoneText>
             ) : (
@@ -223,6 +237,32 @@ const ProfileModButton = tw.button`
 absolute
 right-0
 mb-auto
+`;
+
+//팔로잉 버튼
+const FollowingButton = tw.button`
+text-sm
+bg-white
+text-black
+font-semibold
+px-5
+py-1
+my-auto
+rounded-md
+ml-3
+`;
+
+//팔로우 버튼
+const FollowButton = tw.button`
+text-sm
+bg-black
+text-white
+font-semibold
+px-5
+py-1
+my-auto
+rounded-md
+ml-3
 `;
 
 //수정 버튼 이미지
@@ -357,7 +397,7 @@ text-base
 const StyleNickName = tw.div`
 font-extrabold
 text-3xl
-mb-2
+
 `;
 
 const StyleEdit = tw.img`

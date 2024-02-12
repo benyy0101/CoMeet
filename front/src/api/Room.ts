@@ -20,15 +20,20 @@ import {
   WithdrawRoomResponse,
 } from "models/Room.interface";
 import { localAxios } from "./http-commons";
+import { imageAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
 
-export const createRoom = async (params: CreateRoomParams): Promise<CreateRoomResponse> => {
+export const createRoom = async (
+  params: CreateRoomParams
+): Promise<CreateRoomResponse> => {
   const url = `room`;
   const response = await localAxios.post(url, params);
   return response.data;
 };
 
-export const modifyRoom = async (params: ModifyRoomParams): Promise<ModifyRoomResponse> => {
+export const modifyRoom = async (
+  params: ModifyRoomParams
+): Promise<ModifyRoomResponse> => {
   const { roomId } = params;
   const url = `room/${roomId}`;
   //roomId가 같이 바디에 들어가도 문제가 안 생긴다
@@ -37,13 +42,17 @@ export const modifyRoom = async (params: ModifyRoomParams): Promise<ModifyRoomRe
   return response.data;
 };
 
-export const searchRoom = async (params: SearchRoomParams): Promise<SearchRoomResponse> => {
+export const searchRoom = async (
+  params: SearchRoomParams
+): Promise<SearchRoomResponse> => {
   const url = `room${makeQuerystring(params)}`;
   const response = await localAxios.get(url);
   return response.data;
 };
 
-export const deleteRoom = async (params: DeleteRoomParams): Promise<DeleteRoomResponse> => {
+export const deleteRoom = async (
+  params: DeleteRoomParams
+): Promise<DeleteRoomResponse> => {
   const { roomId } = params;
   const url = `room/${roomId}`;
   const response = await localAxios.delete(url);
@@ -62,7 +71,9 @@ export const permitJoinRoom = async (
   return response.data;
 };
 
-export const withdrawRoom = async (params: WithdrawRoomParams): Promise<WithdrawRoomResponse> => {
+export const withdrawRoom = async (
+  params: WithdrawRoomParams
+): Promise<WithdrawRoomResponse> => {
   const { roomId } = params;
   const url = `room/join/${roomId}`;
   const response = await localAxios.delete(url);
@@ -105,4 +116,15 @@ export const searchManagingRoom = async (
   const url = `room/managing`;
   const response = await localAxios.get(url);
   return response.data;
+};
+
+//방 이미지 수정
+export const uploadRoomImage = async (roomId: number) => {
+  const url = `room/image/${roomId}`;
+  const response = await imageAxios.post(url);
+};
+
+export const deleteRoomImage = async (roomId: number) => {
+  const url = `room/image/${roomId}`;
+  const response = await imageAxios.delete(url);
 };
