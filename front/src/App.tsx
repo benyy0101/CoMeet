@@ -367,7 +367,7 @@ function App() {
             <Route path="/write-article" element={<WriteArticle />}></Route>
 
             {/* 마이페이지 */}
-            <Route path="/mypage" element={<Mypage />} />
+            <Route path="/userpage/:memberId" element={<Mypage />} />
             <Route path="/profile-edit" element={<ProfileEdit />}></Route>
             <Route path="/before-entrance" element={<ConditionCheck />} />
           </Routes>
