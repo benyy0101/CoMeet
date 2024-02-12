@@ -40,7 +40,7 @@ export const Mypage = () => {
     fetchData();
 
     if (memberId === userId) {
-      setIsMe(!isMe);
+      setIsMe(true);
     }
   }, []);
 
@@ -63,6 +63,7 @@ export const Mypage = () => {
         {/* 프로필 컨테이너 */}
         <ProfileContainer>
           <MyProfile
+            isMe={isMe}
             profileImage={userData?.profileImage}
             followingCount={userData?.followingCount}
             followerCount={userData?.followerCount}
@@ -95,7 +96,7 @@ export const Mypage = () => {
       <FirstContainerRight>
         {/* TIL 캘린더 컨테이너 */}
         <TILCalendarContainer>
-          <MyTILCalendar memberId={memberId} />
+          <MyTILCalendar isMe={isMe} memberId={memberId} />
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
         <SumTimeContainer>

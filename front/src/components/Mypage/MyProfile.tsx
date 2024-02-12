@@ -14,6 +14,7 @@ import Modal from "components/Common/Modal";
 import { profileImageDelete, profileModifyImage } from "api/image";
 
 interface myProps {
+  isMe: boolean;
   profileImage: string | undefined;
   followingCount: number | undefined;
   followerCount: number | undefined;
@@ -24,6 +25,8 @@ interface myProps {
 }
 
 export default function MyProfile({
+  // isMe: 내 마이페이지면 true, 남의 페이지면 false
+  isMe,
   profileImage,
   followingCount,
   followerCount,
@@ -70,12 +73,12 @@ export default function MyProfile({
 
   //이미지 삭제
   const handleDelteImg = async function () {
-    if (profileImage != "default_profile_image_letsgo") {
+    if (profileImage != "") {
       //s3에서 이미지 삭제
       profileImageDelete(profileImage);
 
       //DB에서 삭제
-      const updateData = { profileImage: `default_profile_image_letsgo` };
+      const updateData = { profileImage: "" };
       await profileModifyImage(updateData);
     }
     //수정
@@ -100,15 +103,17 @@ export default function MyProfile({
 
   return (
     <TotalContainer>
-      <ProfileModButton>
-        <Link to="/profile-edit">
-          <ProfileModImg src={ProifleModify} alt="" />
-        </Link>
-      </ProfileModButton>
+      {isMe ? (
+        <ProfileModButton>
+          <Link to="/profile-edit">
+            <ProfileModImg src={ProifleModify} alt="" />
+          </Link>
+        </ProfileModButton>
+      ) : null}
       <FullContainer>
         <LeftContainer>
           <ul ref={modifyImgRef}>
-            {isHovering ? (
+            {isMe && isHovering ? (
               <StyleProfileImgHover
                 style={{
                   backgroundImage: `url(${
@@ -293,7 +298,7 @@ h-8
 const ProfileDropdown = tw.div`
 absolute
 text-black
-top-[29%]
+top-[65%]
 
 shadow-lg
 z-50
