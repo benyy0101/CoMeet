@@ -22,7 +22,7 @@ import { Pagination } from "components/Common/Pagination";
 import { useQuery } from "@tanstack/react-query";
 import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
 import { searchBoard } from "api/Board";
-import { BOARD_SORTBY } from "models/Enums.type";
+import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const FreeBoardList = () => {
   //목록 리스트
@@ -42,10 +42,8 @@ export const FreeBoardList = () => {
 
   const [currentSort, setCurrentSort] = useState<BOARD_SORTBY>("LATEST");
 
-  const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
-
   //왼쪽 사이드바 선택 메뉴
-  const [currentMenu, setCurrentMenu] = useState<string>("전체");
+  const [currentMenu, setCurrentMenu] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
   //아래는 모두 페이지네이션 임시
   const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
@@ -83,6 +81,15 @@ export const FreeBoardList = () => {
     setSearchBoardParams(searchBoardParams);
   }, [currentSort]);
 
+  useEffect(() => {
+    if (currentMenu === "ALL") {
+      delete searchBoardParams.freeBoardCategory;
+    } else {
+      searchBoardParams.freeBoardCategory = currentMenu;
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentMenu]);
+
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
   };
@@ -113,51 +120,51 @@ export const FreeBoardList = () => {
     <TotalContainer>
       <Wrapper>
         <LeftContainer>
-          {currentMenu === "전체" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>전체</SideButtonSelected>
+          {currentMenu === "ALL" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>전체</SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
+            <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
           )}
-          {currentMenu === "인기글" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("인기글")}>
+          {currentMenu === "POPULAR" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("POPULAR")}>
               <SideIconImg src={HotBlackBoardIcon} alt="" />
               <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("인기글")}>
+            <SideButton onClick={() => setCurrentMenu("POPULAR")}>
               <SideIconImg src={HotBoardIcon} alt="" />
               <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "팁/정보" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("팁/정보")}>
+          {currentMenu === "TIP" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("TIP")}>
               <SideIconImg src={TipBlackBoardIcon} alt="" />
               <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("팁/정보")}>
+            <SideButton onClick={() => setCurrentMenu("TIP")}>
               <SideIconImg src={TipBoardIcon} alt="" />
               <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "구인구직" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("구인구직")}>
+          {currentMenu === "PROMOTION" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("PROMOTION")}>
               <SideIconImg src={PromBlackBoardIcon} alt="" />
               <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("구인구직")}>
+            <SideButton onClick={() => setCurrentMenu("PROMOTION")}>
               <SideIconImg src={PromBoardIcon} alt="" />
               <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "질문하기" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("질문하기")}>
+          {currentMenu === "QUESTION" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("QUESTION")}>
               <SideIconImg src={AskBlackBoardIcon} alt="" />
               <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("질문하기")}>
+            <SideButton onClick={() => setCurrentMenu("QUESTION")}>
               <SideIconImg src={AskBoardIcon} alt="" />
               <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButton>
