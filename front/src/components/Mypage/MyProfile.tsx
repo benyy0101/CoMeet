@@ -11,7 +11,7 @@ import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
 import Modal from "components/Common/Modal";
-import { profileImageDelete, profileModifyImage } from "api/image";
+import { profileImageDelete } from "api/image";
 
 interface myProps {
   isMe: boolean;
@@ -73,14 +73,8 @@ export default function MyProfile({
 
   //이미지 삭제
   const handleDelteImg = async function () {
-    if (profileImage != "") {
-      //s3에서 이미지 삭제
-      profileImageDelete(profileImage);
+    await profileImageDelete();
 
-      //DB에서 삭제
-      const updateData = { profileImage: "" };
-      await profileModifyImage(updateData);
-    }
     //수정
     setIsModifyImg(false);
 
@@ -255,15 +249,15 @@ items-center
 //프로필 이미지 보여주는 왼쪽 컨테이너
 const LeftContainer = tw.div`
     ml-16
-    mr-10
+    mr-14
 `;
 
 //프로필 이미지
 const StyleProfileImg = tw.div`
 bg-white
 rounded-full
-w-36
-h-36
+w-32
+h-32
 relative
 bg-cover
 bg-center
@@ -273,8 +267,8 @@ bg-center
 const StyleProfileImgHover = tw.div`
 bg-white
 rounded-full
-w-36
-h-36
+w-32
+h-32
 bg-cover
 bg-center
 opacity-80
