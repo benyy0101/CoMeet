@@ -33,7 +33,7 @@ export const FreeBoardListLink = (props: SearchBoardContent) => {
   }
 
   return (
-    <Link to="/free-board/1">
+    <Link to={`/free-board/${props.id}`}>
       <TotalContainer>
         <CenterContainer>
           <TitleAndCategoryContainer>

@@ -1,19 +1,103 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
 import { BoardCommentComponent } from "./BoardCommentComponent";
+import {
+  CreateCommentParams,
+  SearchCommentContent,
+  SearchCommentParams,
+  SearchCommentResponse,
+} from "models/Comments.interface";
+import { useQuery } from "@tanstack/react-query";
+import { createComment, searchComment } from "api/Comment";
 
-export const BoardDetailComment = () => {
+type TotalCommentProps = {
+  boardId: number;
+};
+
+// id: number;
+// boardId: number;
+// content: string;
+// createdAt: string;
+// updatedAt: string;
+// writerNickname: string;
+
+export const BoardDetailComment = (props: TotalCommentProps) => {
+  const { boardId } = props;
+
+  //댓글 달기 관련
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+  //댓글 리스트 관련
+  const [commentList, setCommentList] = useState<SearchCommentContent[]>([]);
+  const [searchCommentParams, setSearchCommentParams] = useState<SearchCommentParams>({
+    boardId: boardId,
+    page: 0,
+  });
+
+  //무한스크롤 구현
+  const pagesize = 10;
+  //이 친구로 페이지가 바뀌었는지 판단함
+  const numberOfElements = useRef<number>(0);
+
+  const { data: QDcommentList } = useQuery<SearchCommentResponse, Error>({
+    queryKey: ["commentList", JSON.stringify(searchCommentParams)],
+    queryFn: () => searchComment(searchCommentParams),
+  });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0,
+    });
+    const observerTarget = document.getElementById("observer");
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (QDcommentList) {
+      const newCommentList: SearchCommentContent[] = commentList.concat(
+        QDcommentList.content.filter((item) => !commentList.includes(item))
+      );
+      numberOfElements.current = QDcommentList.numberOfElements;
+      setCommentList(newCommentList);
+    }
+  }, [QDcommentList]);
+
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      if (numberOfElements.current === pagesize) {
+        searchCommentParams.page++;
+      }
+      setSearchCommentParams(searchCommentParams);
+    }
+  };
+
+  const handleWrite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (contentRef.current?.value === "") {
+      alert("글을 써주세요");
+      return;
+    }
+    createComment({ boardId: boardId, content: contentRef.current!.value })
+      .then((data) => console.log("success", data))
+      .catch(() => console.log("failed"));
+    contentRef.current!.value = "";
+  };
+
   return (
     <CommentTotalContainer>
       <WriteCommentContainer>
         <CommentTitle>댓글</CommentTitle>
-        <form>
+        <form onSubmit={handleWrite}>
           <CommentInputContainer>
             <CommentInput
               id="comment"
               rows={4}
               placeholder="댓글을 작성해주세요"
               required
+              ref={contentRef}
             />
           </CommentInputContainer>
           <ButtonContainer>
@@ -22,8 +106,12 @@ export const BoardDetailComment = () => {
         </form>
       </WriteCommentContainer>
       {/* 댓글 부분들 - array로 받아와서 map 돌릴 부분 */}
-      <BoardCommentComponent />
-      <BoardCommentComponent />
+      {commentList.map((comment) => (
+        <BoardCommentComponent key={comment.id} {...comment} />
+      ))}
+      <div id="observer" style={{ height: "10px" }}>
+        333
+      </div>
     </CommentTotalContainer>
   );
 };
