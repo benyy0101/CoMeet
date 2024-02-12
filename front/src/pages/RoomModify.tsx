@@ -1,10 +1,12 @@
 import { modifyRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
-import { RoomResponse } from "models/Room.interface";
+import { ModifyRoomParams, RoomResponse } from "models/Room.interface";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { CameraIcon } from "@heroicons/react/24/outline";
+import { CameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { searchKeyword } from "api/Keyword";
+import { Keyword } from "models/Util";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -13,6 +15,8 @@ export default function RoomModify() {
 
   const roomData: RoomResponse | null = location.state.data;
 
+  const [keywords, setKeywords] = React.useState<Keyword[]>([]);
+  const [selected, setSelected] = React.useState<number[]>([]);
   const [title, setTitle] = React.useState<string>(roomData?.title || "");
   const [description, setDescription] = React.useState<string>(
     roomData?.description || ""
@@ -24,14 +28,27 @@ export default function RoomModify() {
     roomData?.constraints || "FREE"
   );
 
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const res = await searchKeyword({});
+        setKeywords(res);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchKeywords();
+  }, []);
+
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data: any = {
-      roomId,
-      title,
-      description,
+      roomId: parseInt(roomId!),
+      title: title,
+      description: description,
       capacity: maxPeople,
       constraints: option,
+      keywordIds: selected,
     };
 
     await modifyRoom(data);
@@ -55,6 +72,24 @@ export default function RoomModify() {
     setOption(e.target.value as ROOM_CONSTRAINTS);
   };
 
+  const selectedHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const keyword = parseInt(e.target.value);
+    if (selected.includes(keyword)) return;
+    setSelected((prev) => [...prev, keyword]);
+  };
+
+  const getKeyword = (id: number) => {
+    return keywords.find((keyword) => keyword.id === id)!;
+  };
+
+  const tokenRemoveHandler = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: number
+  ) => {
+    e.preventDefault();
+    const newSelected = selected.filter((keywordId) => keywordId !== id);
+    setSelected(newSelected);
+  };
   return (
     <Wrapper>
       <CreateRoomContainer>
@@ -108,8 +143,28 @@ export default function RoomModify() {
           </InputUnit>
           <InputUnit>
             <Label>키워드</Label>
-            <TextInput />
+            <SelectOption
+              className="w-1/4"
+              name="keyword"
+              id="keyword"
+              onChange={selectedHandler}
+            >
+              {keywords &&
+                keywords.map((keyword) => (
+                  <option value={keyword.id}>{keyword.name}</option>
+                ))}
+            </SelectOption>
           </InputUnit>
+          <KeywordContainer>
+            {selected.map((keywordId) => (
+              <KeywordToken>
+                <TokenTitle>{getKeyword(keywordId).name}</TokenTitle>
+                <TokenButton onClick={(e) => tokenRemoveHandler(e, keywordId)}>
+                  <XMarkIcon className="w-4 h-4"></XMarkIcon>
+                </TokenButton>
+              </KeywordToken>
+            ))}
+          </KeywordContainer>
           <Block />
           <SubTitle>방 설정:</SubTitle>
           <OptionContainer>
@@ -320,4 +375,27 @@ rounded-lg
 text-white
 font-semibold
 shadow-md
+`;
+
+const KeywordContainer = tw.div`
+flex
+space-x-4
+`;
+
+const KeywordToken = tw.div`
+font-semibold
+text-md
+p-2
+rounded-full
+min-w-20
+bg-slate-100
+flex
+items-center
+space-x-3
+shadow-md
+`;
+
+const TokenTitle = tw.div``;
+
+const TokenButton = tw.button`
 `;

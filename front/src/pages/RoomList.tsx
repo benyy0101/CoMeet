@@ -18,6 +18,7 @@ import {
   SearchRoomResponse,
 } from "models/Room.interface";
 import { searchRoom } from "api/Room";
+import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
 const size = 10;
 
@@ -25,7 +26,10 @@ export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [page, setPage] = useState<number>(0);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
-
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [searchType, setSearchType] = useState<string>("");
+  const [size, setSize] = useState<number>(10);
+  const [RoomOpt, setRoomOpt] = useState<ROOM_CONSTRAINTS>();
   const { data, isLoading, isError, refetch } = useQuery<
     SearchRoomResponse,
     Error
@@ -36,6 +40,9 @@ export const RoomList = () => {
         page,
         size,
         sortBy: sortByLatest ? "LATEST" : "OLDEST",
+        constraints: RoomOpt,
+        searchKeyword: searchKeyword,
+        managerNickname: searchType,
       }),
   });
 
@@ -50,6 +57,27 @@ export const RoomList = () => {
     }
   }, [data]);
 
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(searchKeyword, searchType);
+  };
+
+  const searchTypeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSearchType(e.target.value);
+  };
+
+  const searchKeywordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchKeyword(e.target.value);
+  };
+
+  const maxCountHandler = (count: number) => {
+    setSize(count);
+  };
+
+  const setRoomOption = (option: ROOM_CONSTRAINTS) => {
+    setRoomOpt(option);
+  };
+
   return (
     <Wrapper>
       <MainContainer>
@@ -58,17 +86,23 @@ export const RoomList = () => {
             setSortByLatest={setSortByLatest}
             sortByLatest={sortByLatest}
             setPage={setPage}
+            maxCountHandler={maxCountHandler}
+            setRoomOption={setRoomOption}
           />
         </LeftContainer>
         <ListContainer>
           <SearchBarContainer>
-            <SearchForm>
-              <DropDowns>
+            <SearchForm onSubmit={submitHandler}>
+              <DropDowns onChange={searchTypeHandler}>
                 <option value="제목+설명">제목+설명</option>
                 <option value="방장명">방장명</option>
               </DropDowns>
               <SearchInputContainer>
-                <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
+                <SearchBar
+                  placeholder="검색어를 입력하세요"
+                  value={searchKeyword}
+                  onChange={searchKeywordHandler}
+                ></SearchBar>
                 <CustomMagnifyingGlassIcon />
               </SearchInputContainer>
             </SearchForm>

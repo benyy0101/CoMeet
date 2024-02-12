@@ -8,26 +8,53 @@ import {
   SpeakerWaveIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/solid";
+import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
 interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  maxCountHandler: (maxcount: number) => void;
+  setRoomOption: (option: ROOM_CONSTRAINTS) => void;
 }
 
 export default function FilterMenu({
   setSortByLatest,
   sortByLatest,
   setPage,
+  maxCountHandler,
+  setRoomOption,
 }: IProps) {
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isVideoOff, setIsVideoOff] = useState<boolean>(false);
   const [maxcount, setMaxcount] = useState<number>(0);
-
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>("FREE");
   useEffect(() => {
     setPage(0);
+    if (isMuted && !isVideoOff) {
+      setOption("VIDEOONMICOFF");
+      return;
+    }
+    if (isMuted) {
+      setOption("MICOFF");
+      return;
+    } else if (!isVideoOff) {
+      setOption("VIDEOON");
+      return;
+    } else {
+      setOption("FREE");
+      return;
+    }
   }, [isLocked, isMuted, isVideoOff, maxcount]);
+
+  useEffect(() => {
+    maxCountHandler(maxcount);
+  }, [maxcount]);
+
+  useEffect(() => {
+    setRoomOption(option);
+  }, [option]);
 
   const maxcountHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMaxcount(Number(e.target.value));
@@ -73,7 +100,7 @@ export default function FilterMenu({
         <RangeWrapper>
           <Title>최대인원 설정</Title>
           <RangeContainer>
-            <input type="range" onChange={maxcountHandler} />
+            <input type="range" onChange={maxcountHandler} value={maxcount} />
             {maxcount}
           </RangeContainer>
         </RangeWrapper>

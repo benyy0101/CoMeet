@@ -9,6 +9,7 @@ import TipBoardIcon from "assets/img/tip-board.svg";
 import PromBoardIcon from "assets/img/promotion-board.svg";
 import AskBoardIcon from "assets/img/ask-board.svg";
 import { SearchBoardContent } from "models/Board.interface";
+import MemberImage from "components/Common/MemberImage";
 
 export const FreeBoardListLink = (props: SearchBoardContent) => {
   let category = "";
@@ -43,7 +44,7 @@ export const FreeBoardListLink = (props: SearchBoardContent) => {
           </TitleAndCategoryContainer>
           <div className="flex">
             <WriterContainer>
-              <WriterImg src={props.writerImage} alt="wrtierImg" />
+              <MemberImage src={props.writerImage} memberId={""} />
               <WriterNicname>{props.writerNickname}</WriterNicname>
             </WriterContainer>
             <WriteDate>{props.createdAt}</WriteDate>
@@ -108,6 +109,7 @@ mr-2
 const WriterContainer = tw.div`
 flex
 items-center
+ml-2
 `;
 
 // 작성자 프로필 이미지
