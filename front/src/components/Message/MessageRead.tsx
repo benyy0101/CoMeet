@@ -4,6 +4,8 @@ import tw from "tailwind-styled-components";
 import React, { useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { set } from "lodash";
+import { ToastContainer } from "react-toastify";
+import { permitJoinRoom } from "api/Room";
 
 function MessageRead(params: {
   noteNo: number;
@@ -35,6 +37,20 @@ function MessageRead(params: {
     setWriter(noteInfo?.writerId!);
   };
 
+  const permitHandler = async () =>{
+    try{
+      await permitJoinRoom({
+        memberId: noteInfo?.writerId || "",
+        //여기 뭔가 특별한게 필요해
+        roomId: 99999
+      });
+    }
+    catch (e){
+      console.error(e);
+    }
+
+  }
+
   return (
     <Wrapper>
       <LeaveButton onClick={() => swapState("list", 0)}>
@@ -50,8 +66,10 @@ function MessageRead(params: {
 
       <Content>{noteInfo?.context}</Content>
       <Footer>
+        <AcceptButton>승인하기</AcceptButton>
         <ReplyButton onClick={setStateHandler}>답장하기</ReplyButton>
       </Footer>
+      <ToastContainer/>
     </Wrapper>
   );
 }
@@ -110,6 +128,7 @@ h-12
 flex
 justify-end
 items-end
+space-x-5
 `;
 const ReplyButton = tw.button`
 w-20
@@ -127,5 +146,22 @@ transition
 shadow-lg
 text-cyan-50
 `;
+
+const AcceptButton = tw.button`
+w-20
+h-10
+bg-gradient-to-r
+from-green-400
+to-lime-500
+rounded-md
+p-2
+self-end
+font-bold
+hover:from-green-500
+hover:to-lime-600
+transition
+shadow-lg
+text-emerald-900
+`
 
 export default MessageRead;

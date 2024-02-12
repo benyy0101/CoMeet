@@ -25,6 +25,7 @@ type SelectOption = {
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
+  const {editId, editTitle, editContent, isValid} = location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
@@ -52,11 +53,11 @@ function TextEditor(props: TextEditProps) {
   };
   const [modifyBoardParams, setModifyBoardParams] = useState<ModifyBoardParams>(dummy2);
 
-  const [isValid, setIsValid] = useState<boolean>(true);
+  const [isRoomValid, setIsRoomValid] = useState<boolean>(isValid);
   const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
   //쓰는 값
-  const titleRef = useRef<HTMLInputElement | null>(null);
+  const [title, setTitle] = useState<string>(editTitle || "");
 
   //move page
   const navigate = useNavigate();
@@ -72,13 +73,14 @@ function TextEditor(props: TextEditProps) {
   const handleRoom = (room: number) => {
     setSelectedRoom(room);
   };
-  const handleTest = () => {
-    titleRef.current!.value = "xptmxld";
-  };
+
+  const isValidHandler = () =>{
+    setIsRoomValid(!isRoomValid);
+  }
+  
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 조건대로 입력이 들어왔는지 체크
-    const title = titleRef.current ? titleRef.current.value : "";
     const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
     const roomId = selectedRoom ? selectedRoom : 0;
     if (title === "") {
@@ -104,7 +106,7 @@ function TextEditor(props: TextEditProps) {
       if (isFree) {
         modifyBoardParams.category = category;
       } else {
-        modifyBoardParams.isValid = isValid;
+        modifyBoardParams.isValid = isRoomValid;
       }
       // api를 위한 파라미터 변수가 꼭 state로 관리되어야만 하는가??
       setModifyBoardParams(modifyBoardParams);
@@ -147,7 +149,8 @@ function TextEditor(props: TextEditProps) {
       </Header>
       <TitleWrapper>
         {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
-        {isFree ? (
+        
+        {isFree && (
           <SelectForm>
             {selectOption.map((option) => (
               <option value={option.value} key={option.key}>
@@ -155,15 +158,28 @@ function TextEditor(props: TextEditProps) {
               </option>
             ))}
           </SelectForm>
-        ) : null}
+        )}
         <TitleInput
           type="text"
           placeholder="제목을 입력해주세요"
-          value={location.state.editTitle}
-          ref={titleRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         ></TitleInput>
       </TitleWrapper>
-      {!isFree ? <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption> : null}
+      <OptionContainer>
+      {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
+      <ValidButtonContainer>
+        {
+          !isFree && <>
+          <ValidButton isOn={isRoomValid} onClick={isValidHandler}>모집중</ValidButton>
+      <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>모집완료</ValidButton>
+          </>
+        }
+      
+      </ValidButtonContainer>
+      
+      </OptionContainer>
+      
       <QuillContainer>
         <Editor
           ref={editorRef}
@@ -176,7 +192,7 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
-        <CancelButton onClick={handleTest}>취소하기</CancelButton>
+        <CancelButton >취소하기</CancelButton>
         <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
@@ -252,6 +268,24 @@ const TitleInput = tw.input`
     bg-transparent
     focus:outline-none
 `;
+const OptionContainer = tw.div`
+flex
+justify-between
+`
+
+const ValidButtonContainer = tw.div`
+flex
+space-x-3
+`
+
+const ValidButton = tw.div<{isOn: boolean}>`
+p-1
+text-black
+
+${(props) => (
+  props.isOn ? "text-purple-700 border-purple-700 border-b-2" : "text-violet-100"
+)}
+`
 const QuillContainer = tw.div`
     w-full
     min-h-[300px]  

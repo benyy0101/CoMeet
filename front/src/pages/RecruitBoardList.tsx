@@ -256,18 +256,9 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <Link
-                to={`/write-article?type=recruit&option=write`}
-                state={{
-                  editId: 0,
-                  editTitle: "",
-                  editContent: "",
-                }}
-              >
-                <WriteButton>글쓰기</WriteButton>
-              </Link>
             </BoardListHeader>
             <SortCountBothContainer>
+              <SortLeftContainer>
               <SortCountContainer>
                 <SortCountButton onClick={handleSortOpen}>
                   <SortCountImg src={SortingIcon} alt="" />
@@ -332,6 +323,18 @@ export const RecruitBoardList = () => {
                   <SortCountText>{currentCount}명</SortCountText>
                 </SortCountButton>
               </SortCountContainer>
+              </SortLeftContainer>
+              
+              <Link
+                to={`/write-article?type=recruit&option=write`}
+                state={{
+                  editId: 0,
+                  editTitle: "",
+                  editContent: "",
+                }}
+              >
+                <WriteButton>글쓰기</WriteButton>
+              </Link>
             </SortCountBothContainer>
 
             <ListContainer>
@@ -437,10 +440,14 @@ border-b
 
 const SortCountBothContainer = tw.div`
 flex
-ml-2
-my-4
+justify-between
 w-full
 `;
+
+const SortLeftContainer = tw.div`
+flex
+space-x-5
+`
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`
@@ -523,8 +530,7 @@ text-xs
 const SearchContainer = tw.div`
 relative
 flex
-flex-grow
-justify-center
+justify-start
 items-center
 
 `;
@@ -606,6 +612,7 @@ w-[800px]
 h-full
 mb-5
 p-5
+space-y-5
 `;
 
 //키워드 검색 가능한 오른쪽 사이드 바

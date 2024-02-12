@@ -114,28 +114,39 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       <ContentContainer>{boardDetail.content}</ContentContainer>
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
-      {boardDetail.type === "RECRUIT" ? <KeywordContainer>{keywordArr}</KeywordContainer> : null}
-
-      {/* 버튼 태그 어케 만드는데 ㅠ */}
-      {memberNickname === boardDetail.writerNickname ? (
+      <KeywordContainer>
+        {boardDetail.type === "RECRUIT" ? keywordArr.map((words) => (
+        <Keyword key={words}>{words}</Keyword>
+        )) : null}
+      </KeywordContainer>
+      
+        <ButtonsContainer>
+{/* 버튼 태그 어케 만드는데 ㅠ */}
+{memberNickname === boardDetail.writerNickname ? (
         <LikeButtonContainer>
           <LikeButton onClick={handleDelete}>
-            <LikeText>삭제</LikeText>
+            <LikeText className="text-red-400">삭제</LikeText>
           </LikeButton>
         </LikeButtonContainer>
       ) : null}
       {/* 버튼 태그 어케 만드는데 ㅠ */}
       {memberNickname === boardDetail.writerNickname ? (
-        <Link
+        <LikeButtonContainer>
+          <LikeButton>
+          <Link
           to={`/write-article?type=${boardDetail.type}&option=edit`}
           state={{
             editId: boardDetail.id,
             editTitle: boardDetail.title,
             editContent: boardDetail.content,
+            isValid: boardDetail.isValid
           }}
         >
-          <LikeText>수정</LikeText>
+          <LikeText className="text-lime-400">수정</LikeText>
         </Link>
+          </LikeButton>
+        </LikeButtonContainer>
+        
       ) : null}
 
       <LikeButtonContainer>
@@ -148,6 +159,8 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
           <LikeText>좋아요</LikeText>
         </LikeButton>
       </LikeButtonContainer>
+        </ButtonsContainer>
+      
     </WritingTotalContainer>
   );
 };
@@ -155,7 +168,8 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 //작성 글 전체
 const WritingTotalContainer = tw.div`
 text-white
-
+w-full
+h-full
 `;
 
 //내용 부분
@@ -164,22 +178,38 @@ m-10
 break-words
 `;
 
+const ButtonsContainer = tw.div`
+flex
+items-end
+justify-end
+space-x-5
+`
+
 const KeywordContainer = tw.div`
 flex
 ml-10
+space-x-3
 `;
+
+const Keyword = tw.div`
+bg-gradient-to-br
+from-cyan-950
+to-blue-950
+p-2
+px-3
+rounded-md
+shadow-lg
+text-white
+`
 
 //좋아요 버튼 컨테이너
 const LikeButtonContainer = tw.div`
 flex
-justify-end
-mr-5
-mb-5
 `;
 
 const LikeButton = tw.button`
 flex
-p-1
+p-2
 rounded-md
 focus:bg-[#1F1C29]
 hover:bg-[#282436]
@@ -193,6 +223,5 @@ h-5
 `;
 
 const LikeText = tw.div`
-ml-1
 text-sm
 `;
