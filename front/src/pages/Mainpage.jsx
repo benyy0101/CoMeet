@@ -2,10 +2,10 @@ import GUI from "lil-gui";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import particleMask from "assets/main/particleMask.png";
+import particleMask from "assets/texture/particleMask.png";
+import SmokeTexture from "assets/texture/smoke.png";
 
 const DEBUG = true;
-const PARTICLE_COUNT = 2000;
 
 const perlin3d = `
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -103,20 +103,6 @@ export const Mainpage = () => {
         height: window.innerHeight,
       };
 
-      window.addEventListener("resize", () => {
-        // Update sizes
-        sizes.width = window.innerWidth;
-        sizes.height = window.innerHeight;
-
-        // Update camera
-        camera.aspect = sizes.width / sizes.height;
-        camera.updateProjectionMatrix();
-
-        // Update renderer
-        renderer.setSize(sizes.width, sizes.height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      });
-
       const camera = new THREE.PerspectiveCamera(
         55,
         sizes.width / sizes.height,
@@ -147,26 +133,36 @@ export const Mainpage = () => {
         gradientDebugFolder = gui.addFolder("Gradient");
       }
 
-      const gradientColors = {};
-      gradientColors.end = {};
-      gradientColors.end.value = "#303548";
-      gradientColors.end.instance = new THREE.Color(gradientColors.end.value);
+      const gradientColor = {};
+      gradientColor.end = {};
+      gradientColor.end.value = "#1a2036";
+      gradientColor.end.instance = new THREE.Color(gradientColor.end.value);
+
+      gradientColor.start = {};
+      gradientColor.start.saturation = 32;
+      gradientColor.start.lightness = 38;
+      gradientColor.start.value = `hsl(0, ${gradientColor.start.saturation}%, ${gradientColor.start.lightness}%)`;
+      gradientColor.start.instance = new THREE.Color(gradientColor.start.value);
       const gradientGeometry = new THREE.PlaneGeometry(2, 2);
 
       if (DEBUG) {
         gradientDebugFolder
-          .addColor(gradientColors.end, "value", { view: "color" })
+          .addColor(gradientColor.end, "value", { view: "color" })
           .name("색상")
           .onChange(() => {
-            gradientColors.end.instance.set(gradientColors.end.value);
+            gradientColor.end.instance.set(gradientColor.end.value);
           });
+        gradientDebugFolder.add(gradientColor.start, "saturation", 0, 100);
+        gradientDebugFolder.add(gradientColor.start, "lightness", 0, 100);
       }
 
       const gradientMaterial = new THREE.ShaderMaterial({
         depthWrite: false,
+        transparent: true,
         uniforms: {
           uTime: { value: 0 },
-          uEndColor: { value: gradientColors.end.instance },
+          uEndColor: { value: gradientColor.end.instance },
+          uStartColor: { value: gradientColor.start.instance },
           uSaturation: { value: 0.32 },
           uLightness: { value: 0.38 },
         },
@@ -182,18 +178,10 @@ export const Mainpage = () => {
         `,
         fragmentShader: `
         uniform float uTime;
+        uniform vec3 uStartColor;
         uniform vec3 uEndColor;
-        uniform float uSaturation;
-        uniform float uLightness;
         
         varying vec2 vUv;
-        
-        vec3 hslToRgb(vec3 c)
-        {
-          vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-          vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-          return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-        }
         
         float random2d(vec2 n)
         {
@@ -202,11 +190,8 @@ export const Mainpage = () => {
         
         void main()
         {
-          vec3 startColor = hslToRgb(vec3(uTime * 0.02, uSaturation, uLightness));
           vec3 endColor = uEndColor;
-          vec3 finalColor = mix(startColor, endColor, vUv.y);
-        
-          // finalColor += random2d(vUv) * 0.05;
+          vec3 finalColor = mix(uStartColor, endColor, vUv.y);
         
           gl_FragColor = vec4(finalColor, 1.0);
         }
@@ -230,43 +215,52 @@ export const Mainpage = () => {
        * Particles
        */
 
+      const particleCount = { value: 2000 };
+
       let particleDebugFolder;
       if (DEBUG) {
         particleDebugFolder = gui.addFolder("Particle");
       }
+      let particleGeometry;
+      function setParticleGeometry() {
+        if (particleGeometry) {
+          particleGeometry.dispose();
+        }
+        particleGeometry = new THREE.BufferGeometry();
+        const particlePositionArray = new Float32Array(particleCount.value * 3);
+        const particleProgressArray = new Float32Array(particleCount.value);
+        const particleSizeArray = new Float32Array(particleCount.value);
+        const particleAlphaArray = new Float32Array(particleCount.value);
 
-      const particleGeometry = new THREE.BufferGeometry();
-      const particlePositionArray = new Float32Array(PARTICLE_COUNT * 3);
-      const particleProgressArray = new Float32Array(PARTICLE_COUNT);
-      const particleSizeArray = new Float32Array(PARTICLE_COUNT);
-      const particleAlphaArray = new Float32Array(PARTICLE_COUNT);
+        for (let i = 0; i < particleCount.value; i++) {
+          particlePositionArray[i * 3] = (Math.random() - 0.5) * 20;
+          particlePositionArray[i * 3 + 1] = 0;
+          particlePositionArray[i * 3 + 2] = (Math.random() - 0.5) * 10;
 
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particlePositionArray[i * 3] = (Math.random() - 0.5) * 20;
-        particlePositionArray[i * 3 + 1] = 0;
-        particlePositionArray[i * 3 + 2] = (Math.random() - 0.5) * 10;
+          particleProgressArray[i] = Math.random();
+          particleSizeArray[i] = Math.random();
+          particleAlphaArray[i] = Math.random();
+        }
 
-        particleProgressArray[i] = Math.random();
-        particleSizeArray[i] = Math.random();
-        particleAlphaArray[i] = Math.random();
+        particleGeometry.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(particlePositionArray, 3)
+        );
+        particleGeometry.setAttribute(
+          "aProgress",
+          new THREE.Float32BufferAttribute(particleProgressArray, 1)
+        );
+        particleGeometry.setAttribute(
+          "aSize",
+          new THREE.Float32BufferAttribute(particleSizeArray, 1)
+        );
+        particleGeometry.setAttribute(
+          "aAlpha",
+          new THREE.Float32BufferAttribute(particleAlphaArray, 1)
+        );
+        particleGeometry.needsUpdate = true;
       }
-
-      particleGeometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(particlePositionArray, 3)
-      );
-      particleGeometry.setAttribute(
-        "aProgress",
-        new THREE.Float32BufferAttribute(particleProgressArray, 1)
-      );
-      particleGeometry.setAttribute(
-        "aSize",
-        new THREE.Float32BufferAttribute(particleSizeArray, 1)
-      );
-      particleGeometry.setAttribute(
-        "aAlpha",
-        new THREE.Float32BufferAttribute(particleAlphaArray, 1)
-      );
+      setParticleGeometry();
 
       const particleMaterial = new THREE.ShaderMaterial({
         transparent: true,
@@ -275,9 +269,9 @@ export const Mainpage = () => {
         uniforms: {
           uSize: { value: 25 },
           uTime: { value: 0 },
-          uProgressSpeed: { value: 0.05 },
-          uPerlinFrequency: { value: 0.14 },
-          uPerlinMultiplier: { value: 5 },
+          uProgressSpeed: { value: 0.015 },
+          uPerlinFrequency: { value: 0.17 },
+          uPerlinMultiplier: { value: 1 },
           uMask: {
             value: new THREE.TextureLoader().load(particleMask),
           },
@@ -328,21 +322,6 @@ export const Mainpage = () => {
       });
       particleMaterial.needsUpdate = true;
 
-      if (DEBUG) {
-        particleDebugFolder
-          .add(particleMaterial.uniforms.uSize, "value", 0, 200, 0.1)
-          .name("사이즈");
-        particleDebugFolder
-          .add(particleMaterial.uniforms.uProgressSpeed, "value", 0, 0.2, 0.001)
-          .name("진행속도");
-        particleDebugFolder
-          .add(particleMaterial.uniforms.uPerlinFrequency, "value", 0, 1, 0.01)
-          .name("Perlin 주기");
-        particleDebugFolder
-          .add(particleMaterial.uniforms.uPerlinMultiplier, "value", 0, 20, 0.1)
-          .name("Perlin 배율");
-      }
-
       const particlePoints = new THREE.Points(
         particleGeometry,
         particleMaterial
@@ -350,21 +329,130 @@ export const Mainpage = () => {
       particlePoints.position.y = -5;
       scene.add(particlePoints);
 
+      if (DEBUG) {
+        particleDebugFolder
+          .add(particleCount, "value", 100, 500000, 1)
+          .name("갯수")
+          .onChange(() => {
+            setParticleGeometry();
+            particlePoints.geometry = particleGeometry;
+          });
+        particleDebugFolder
+          .add(particleMaterial.uniforms.uSize, "value", 0, 200, 0.1)
+          .name("사이즈");
+        particleDebugFolder
+          .add(
+            particleMaterial.uniforms.uProgressSpeed,
+            "value",
+            0,
+            0.05,
+            0.001
+          )
+          .name("진행속도");
+        particleDebugFolder
+          .add(
+            particleMaterial.uniforms.uPerlinFrequency,
+            "value",
+            0,
+            0.5,
+            0.01
+          )
+          .name("Perlin 주기");
+        particleDebugFolder
+          .add(particleMaterial.uniforms.uPerlinMultiplier, "value", 0, 2, 0.1)
+          .name("Perlin 배율");
+      }
+
       /**
        * Smoke
        */
+
+      const smokeCount = { value: 10 };
+      const smokeGroup = new THREE.Group();
+      smokeGroup.position.y = -2;
+      scene.add(smokeGroup);
+
       let smokeDebugFolder;
       if (DEBUG) {
         smokeDebugFolder = gui.addFolder("Smoke");
       }
 
-      const smokeGeometry = new THREE.PlaneGeometry(2, 2);
+      const smokeColor = {};
+      smokeColor.value = "#1a2036";
+      smokeColor.instance = new THREE.Color(smokeColor.value);
 
-      const smokeMaterial = new THREE.ShaderMaterial({
+      if (DEBUG) {
+        smokeDebugFolder
+          .addColor(smokeColor, "value", { view: "color" })
+          .name("색상")
+          .onChange(() => {
+            smokeColor.instance.set(smokeColor.value);
+          });
+      }
+
+      const smokeGeometry = new THREE.PlaneGeometry(1, 1);
+      let smokeMaterial;
+
+      if (DEBUG) {
+        // to do
+      }
+
+      const smokeItems = [];
+      for (let i = 0; i < smokeCount.value; i++) {
+        const item = {};
+
+        item.floatingSpeed = Math.random() * 0.1;
+        item.rotationSpeed = (Math.random() - 0.5) * Math.random() * 0.3;
+
+        smokeMaterial = new THREE.MeshBasicMaterial({
+          depthWrite: false,
+          transparent: true,
+          alphaMap: new THREE.TextureLoader().load(SmokeTexture),
+          opacity: 0.05 + Math.random() * 0.2,
+        });
+
+        smokeMaterial.color = smokeColor.instance;
+
+        item.mesh = new THREE.Mesh(smokeGeometry, smokeMaterial);
+
+        const scale = 3 + Math.random() * 3;
+        item.mesh.scale.set(scale, scale, scale);
+        item.mesh.position.x = (Math.random() - 0.5) * 10;
+        smokeGroup.add(item.mesh);
+
+        smokeItems.push(item);
+      }
+
+      /**
+       * Vignette
+       */
+      let vignetteDebugFolder;
+      if (DEBUG) {
+        vignetteDebugFolder = gui.addFolder("Vignette");
+      }
+
+      const vignetteColor = {};
+      vignetteColor.value = "#1a2036";
+      vignetteColor.instance = new THREE.Color(vignetteColor.value);
+      const vignetteGeometry = new THREE.PlaneGeometry(2, 2);
+
+      if (DEBUG) {
+        vignetteDebugFolder
+          .addColor(vignetteColor, "value", { view: "color" })
+          .name("색상")
+          .onChange(() => {
+            vignetteColor.instance.set(vignetteColor.value);
+          });
+      }
+
+      const vignetteMaterial = new THREE.ShaderMaterial({
         depthWrite: false,
+        depthTest: false,
         transparent: true,
         uniforms: {
-          uTime: { value: 0 },
+          uColor: { value: vignetteColor.instance },
+          uOffset: { value: 0 },
+          uMultiplier: { value: 1 },
         },
         vertexShader: `
         varying vec2 vUv;
@@ -377,27 +465,31 @@ export const Mainpage = () => {
         }
         `,
         fragmentShader: `
-        varying vec2 vUv;
+        uniform vec3 uColor;
 
-        ${perlin3d}
+        varying vec2 vUv;
         
         void main()
         {
-          vec2 smokeUv = vUv * 10.0;
-          float smokeStrength = perlin3d(vec3(smokeUv, 0.0));
+          float alpha = length(vUv - 0.5);
 
-          gl_FragColor = vec4(1.0, 1.0, 1.0, smokeStrength);
+          gl_FragColor = vec4(uColor, alpha);
         }
         `,
       });
-      smokeMaterial.needsUpdate = true;
+      vignetteMaterial.needsUpdate = true;
+
+      const vignetteMesh = new THREE.Mesh(vignetteGeometry, vignetteMaterial);
+      scene.add(vignetteMesh);
 
       if (DEBUG) {
-        // to do
+        vignetteDebugFolder
+          .add(vignetteMaterial.uniforms.uOffset, "value", -1, 1, 0.001)
+          .name("offset");
+        vignetteDebugFolder
+          .add(vignetteMaterial.uniforms.uMultiplier, "value", 0, 2, 0.001)
+          .name("배율");
       }
-
-      const smokeMesh = new THREE.Mesh(smokeGeometry, smokeMaterial);
-      // scene.add(smokeMesh);
 
       /**
        * 업데이트 함수
@@ -410,14 +502,50 @@ export const Mainpage = () => {
         const deltaTime = elapsedTime - previousTime;
         previousTime = elapsedTime;
 
-        // 로직
+        /**
+         * Logic
+         */
+
+        // Gradient
+        gradientColor.start.value = `hsl(${elapsedTime * 10}, ${gradientColor.start.saturation}%, ${gradientColor.start.lightness}%)`;
+        gradientColor.start.instance.set(gradientColor.start.value);
         gradientMaterial.uniforms.uTime.value = elapsedTime;
+
+        // Particles
         particleMaterial.uniforms.uTime.value = elapsedTime;
+
+        // Smokes
+        const smokeTime = elapsedTime + 123456789.123;
+        smokeColor.instance.copy(gradientColor.start.instance.clone());
+        smokeColor.instance.lerp(new THREE.Color("#ffffff"), 0.1);
+        for (const item of smokeItems) {
+          item.mesh.rotation.z = smokeTime * item.rotationSpeed;
+          item.mesh.position.y = Math.sin(smokeTime * item.floatingSpeed);
+        }
+
+        // Vignette
 
         renderer.render(scene, camera);
         requestAnimationFrame(tick);
       }
       tick();
+
+      /**
+       * resize eventlistener
+       */
+      window.addEventListener("resize", () => {
+        // Update sizes
+        sizes.width = window.innerWidth;
+        sizes.height = window.innerHeight;
+
+        // Update camera
+        camera.aspect = sizes.width / sizes.height;
+        camera.updateProjectionMatrix();
+
+        // Update renderer
+        renderer.setSize(sizes.width, sizes.height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      });
     }
 
     render();
