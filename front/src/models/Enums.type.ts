@@ -19,7 +19,14 @@ export type BOARD_TYPE = "FREE" | "RECRUIT";
 /**
  * 자유게시판 카테고리. 잡담, 팁, 질문, 홍보, 인기
  */
-export type FREE_BOARD_CATEGORY = "CHAT" | "TIP" | "QUESTION" | "PROMOTION" | "POPULAR" | null;
+export type FREE_BOARD_CATEGORY =
+  | "CHAT"
+  | "TIP"
+  | "QUESTION"
+  | "PROMOTION"
+  | "POPULAR"
+  | "ALL"
+  | null;
 
 /**
  * 모집글 완료됐는지.

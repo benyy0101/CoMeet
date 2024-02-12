@@ -19,53 +19,78 @@ import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 import { Pagination } from "components/Common/Pagination";
-
-type BoardListProps = {
-  id: number;
-  title: string;
-  writerNicname: string;
-  writerImage: string;
-  createdAt: string;
-  likeCount: number;
-  category: string;
-  type: string;
-  roomKeywords: string;
-  roomImage: string;
-  isValid: boolean;
-  roomCapacity: number;
-};
+import { useQuery } from "@tanstack/react-query";
+import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
+import { searchBoard } from "api/Board";
+import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const FreeBoardList = () => {
   //목록 리스트
-  const [boardList, setBoardList] = React.useState<BoardListProps[]>([]);
+  const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
+    boardType: "FREE",
+    sortBy: "LATEST",
+    page: 0,
+    size: 10,
+  });
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+  type Condition = "제목+설명" | "작성자";
+  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
 
-  const [currentSort, setCurrentSort] = useState<string>("최신순");
-
-  const [isCountOpen, setIsCountOpen] = useState<boolean>(false);
-
-  const [currentCount, setCurrentCount] = useState<number>(25);
+  const [currentSort, setCurrentSort] = useState<BOARD_SORTBY>("LATEST");
 
   //왼쪽 사이드바 선택 메뉴
-  const [currentMenu, setCurrentMenu] = useState<string>("전체");
+  const [currentMenu, setCurrentMenu] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
   //아래는 모두 페이지네이션 임시
-  const [pageNumber, setPageNumber] = useState<number>(0); //pageNumber: 현재 페이지 번호 (0부터 시작)
-  const pageSize = 10; // pageSize: 페이지 당 항목 수 (페이지 크기) / 고정
-  const totalPages = 10; //totalPages: 전체 페이지 수
-  const totalElements = 100; //totalElements: 전체 항목 수
+  const [totalElements, setTotalElements] = useState<number>(100); // 초기 값을 얼마로지해야하지
+  const [totalPages, setTotalPages] = useState<number>(10); // 초기 값을 얼마로지해야하지
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
 
+  const { data: QDboardList } = useQuery<SearchBoardResponse, Error>({
+    queryKey: ["freeBoardList", JSON.stringify(searchBoardParams)],
+    queryFn: () => {
+      console.log("get data from back...", searchBoardParams);
+      return searchBoard(searchBoardParams);
+    },
+  });
+
   useEffect(() => {
+    if (page) {
+      searchBoardParams.page = parseInt(page) - 1;
+      setSearchBoardParams(searchBoardParams);
+    }
     window.scrollTo(0, 0); // 페이지 이동 시 스크롤 위치 맨 위로 초기화
-    /* api 호출 및 데이터(totalItems, books) 저장 */
   }, [page]);
+
+  useEffect(() => {
+    if (QDboardList?.content) {
+      console.log(QDboardList);
+      setBoardList(QDboardList.content);
+      setTotalPages(QDboardList.totalPages);
+      setTotalElements(QDboardList.totalElements);
+    }
+  }, [QDboardList]);
+
+  useEffect(() => {
+    searchBoardParams.sortBy = currentSort;
+    setSearchBoardParams(searchBoardParams);
+  }, [currentSort]);
+
+  useEffect(() => {
+    if (currentMenu === "ALL") {
+      delete searchBoardParams.freeBoardCategory;
+    } else {
+      searchBoardParams.freeBoardCategory = currentMenu;
+    }
+    setSearchBoardParams(searchBoardParams);
+  }, [currentMenu]);
 
   const handleWord = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchWord(e.target.value);
@@ -73,7 +98,23 @@ export const FreeBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      TmphandleWordCheck(); // Enter 입력이 되면 클릭 이벤트 실행
+      //검색어 들어갔을 때 로직
+      if (searchCondition === "작성자") {
+        delete searchBoardParams.searchKeyword;
+        if (searchWord) {
+          searchBoardParams.writerNickname = searchWord;
+        } else {
+          delete searchBoardParams.writerNickname;
+        }
+      } else {
+        delete searchBoardParams.writerNickname;
+        if (searchWord) {
+          searchBoardParams.searchKeyword = searchWord;
+        } else {
+          delete searchBoardParams.searchKeyword;
+        }
+      }
+      setSearchBoardParams(searchBoardParams);
     }
   };
 
@@ -81,16 +122,12 @@ export const FreeBoardList = () => {
     setIsSortOpen(!isSortOpen);
   };
 
-  const handleCountOpen = () => {
-    setIsCountOpen(!isCountOpen);
-  };
-
-  const handleMaxCount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentCount(Number(e.target.value));
-  };
-
   const TmphandleWordCheck = function () {
     console.log("검색 단어: " + searchWord);
+  };
+  //검색 기준 선택 시
+  const handleSearchCondition = (event: any) => {
+    setSearchCondition(event.target.value);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -101,128 +138,55 @@ export const FreeBoardList = () => {
     }
   });
 
-  //방 최대 인원 드롭다운 외부 클릭시 닫기
-  const countOpenRef = useRef(null);
-  useOutsideClick<HTMLDivElement>(countOpenRef, () => {
-    if (isCountOpen) {
-      setIsCountOpen(false);
-    }
-  });
-
-  //임시
-  React.useEffect(() => {
-    const tmpdatas: BoardListProps[] = [
-      {
-        id: 1,
-        title: "알고리즘 스터디",
-        writerNicname: "무빙건",
-        writerImage: "https://picsum.photos/id/64/100",
-        createdAt: "2024-01-01",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "PYTHON-JAVA",
-        roomImage: "https://picsum.photos/id/1/300",
-        isValid: true,
-        roomCapacity: 30,
-      },
-      {
-        id: 2,
-        title: "CS 스터디",
-        writerNicname: "다른 사람",
-        writerImage: "https://picsum.photos/id/65/100",
-        createdAt: "2024-01-12",
-        likeCount: 1,
-        category: "질문하기",
-        type: "free",
-        roomKeywords: "",
-        roomImage: "https://picsum.photos/id/20/300",
-        isValid: true,
-        roomCapacity: 25,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 22,
-        category: "",
-        type: "recruit",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: true,
-        roomCapacity: 50,
-      },
-      {
-        id: 3,
-        title: "전세계 개발자들을 위한 모각코 모임",
-        writerNicname: "외국인임",
-        writerImage: "https://picsum.photos/100",
-        createdAt: "2023-12-31",
-        likeCount: 31,
-        category: "구인구직",
-        type: "free",
-        roomKeywords: "FRONT-BACK-JAVA-JAVASCRIPT-REACT",
-        roomImage: "https://picsum.photos//300",
-        isValid: true,
-        roomCapacity: 50,
-      },
-    ];
-    setBoardList(tmpdatas);
-  }, []);
-
   return (
     <TotalContainer>
       <Wrapper>
         <LeftContainer>
-          {currentMenu === "전체" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>
-              전체
-            </SideButtonSelected>
+          {currentMenu === "ALL" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>전체</SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
+            <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
           )}
-          {currentMenu === "인기글" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("인기글")}>
+          {currentMenu === "POPULAR" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("POPULAR")}>
               <SideIconImg src={HotBlackBoardIcon} alt="" />
               <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("인기글")}>
+            <SideButton onClick={() => setCurrentMenu("POPULAR")}>
               <SideIconImg src={HotBoardIcon} alt="" />
               <SidebuttonTitle>인기글</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "팁/정보" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("팁/정보")}>
+          {currentMenu === "TIP" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("TIP")}>
               <SideIconImg src={TipBlackBoardIcon} alt="" />
               <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("팁/정보")}>
+            <SideButton onClick={() => setCurrentMenu("TIP")}>
               <SideIconImg src={TipBoardIcon} alt="" />
               <SidebuttonTitle>팁/정보</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "구인구직" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("구인구직")}>
+          {currentMenu === "PROMOTION" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("PROMOTION")}>
               <SideIconImg src={PromBlackBoardIcon} alt="" />
               <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("구인구직")}>
+            <SideButton onClick={() => setCurrentMenu("PROMOTION")}>
               <SideIconImg src={PromBoardIcon} alt="" />
               <SidebuttonTitle>구인구직</SidebuttonTitle>
             </SideButton>
           )}
-          {currentMenu === "질문하기" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("질문하기")}>
+          {currentMenu === "QUESTION" ? (
+            <SideButtonSelected onClick={() => setCurrentMenu("QUESTION")}>
               <SideIconImg src={AskBlackBoardIcon} alt="" />
               <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
-            <SideButton onClick={() => setCurrentMenu("질문하기")}>
+            <SideButton onClick={() => setCurrentMenu("QUESTION")}>
               <SideIconImg src={AskBoardIcon} alt="" />
               <SidebuttonTitle>질문하기</SidebuttonTitle>
             </SideButton>
@@ -234,7 +198,7 @@ export const FreeBoardList = () => {
             <BoardListHeader>
               <SearchContainer>
                 <SearchWrapper>
-                  <SearchDropDowns>
+                  <SearchDropDowns onChange={handleSearchCondition}>
                     <option selected value="제목+설명">
                       제목+본문
                     </option>
@@ -273,7 +237,14 @@ export const FreeBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <Link to={`/write-article`}>
+              <Link
+                to={`/write-article?type=free&option=write`}
+                state={{
+                  editId: 0,
+                  editTitle: "",
+                  editContent: "",
+                }}
+              >
                 <WriteButton>글쓰기</WriteButton>
               </Link>
             </BoardListHeader>
@@ -287,7 +258,7 @@ export const FreeBoardList = () => {
                       <SortDropDown>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("최신순");
+                            setCurrentSort("LATEST");
                             setIsSortOpen(false);
                           }}
                         >
@@ -295,7 +266,7 @@ export const FreeBoardList = () => {
                         </Sortbutton>
                         <Sortbutton
                           onClick={() => {
-                            setCurrentSort("좋아요순");
+                            setCurrentSort("LIKES");
                             setIsSortOpen(false);
                           }}
                         >
@@ -312,7 +283,7 @@ export const FreeBoardList = () => {
             <ListContainer>
               {/* ReadButton은 임시! */}
               {boardList.map((tmp) => {
-                if (tmp.type === "free")
+                if (tmp.type === "FREE")
                   return (
                     <ReadButton>
                       <FreeBoardListLink key={tmp.id} {...tmp} />

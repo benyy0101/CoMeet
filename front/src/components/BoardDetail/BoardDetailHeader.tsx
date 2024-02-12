@@ -15,7 +15,7 @@ export const BoardDetailHeader: React.FC<{
   likecount: number;
   valid: boolean;
   createdAt: string;
-  category: FREE_BOARD_CATEGORY;
+  category?: FREE_BOARD_CATEGORY;
   isLiked: boolean;
 }> = (props) => {
   let categoryTitle: string = "";

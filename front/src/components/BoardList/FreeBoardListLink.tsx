@@ -8,28 +8,32 @@ import HotBoardIcon from "assets/img/hot-board.svg";
 import TipBoardIcon from "assets/img/tip-board.svg";
 import PromBoardIcon from "assets/img/promotion-board.svg";
 import AskBoardIcon from "assets/img/ask-board.svg";
+import { SearchBoardContent } from "models/Board.interface";
 
-export const FreeBoardListLink = (props: BoardListProps) => {
+export const FreeBoardListLink = (props: SearchBoardContent) => {
   let category = "";
   let icon = "";
-
   switch (props.category) {
-    case "팁/정보":
-      category = "팁/정보";
+    case "CHAT":
+      category = "잡담";
       icon = TipBoardIcon;
       break;
-    case "구인구직":
+    case "TIP":
+      category = "팁";
+      icon = TipBoardIcon;
+      break;
+    case "PROMOTION":
       category = "구인구직";
       icon = PromBoardIcon;
       break;
-    case "질문하기":
+    case "QUESTION":
       category = "질문하기";
       icon = AskBoardIcon;
       break;
   }
 
   return (
-    <Link to="/recruit-board/1">
+    <Link to="/free-board/1">
       <TotalContainer>
         <CenterContainer>
           <TitleAndCategoryContainer>
@@ -40,7 +44,7 @@ export const FreeBoardListLink = (props: BoardListProps) => {
           <div className="flex">
             <WriterContainer>
               <WriterImg src={props.writerImage} alt="wrtierImg" />
-              <WriterNicname>{props.writerNicname}</WriterNicname>
+              <WriterNicname>{props.writerNickname}</WriterNicname>
             </WriterContainer>
             <WriteDate>{props.createdAt}</WriteDate>
             <LikeContatiner>
