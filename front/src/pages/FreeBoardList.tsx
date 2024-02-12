@@ -36,6 +36,8 @@ export const FreeBoardList = () => {
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
+  type Condition = "제목+설명" | "작성자";
+  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -96,7 +98,23 @@ export const FreeBoardList = () => {
 
   const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      TmphandleWordCheck(); // Enter 입력이 되면 클릭 이벤트 실행
+      //검색어 들어갔을 때 로직
+      if (searchCondition === "작성자") {
+        delete searchBoardParams.searchKeyword;
+        if (searchWord) {
+          searchBoardParams.writerNickname = searchWord;
+        } else {
+          delete searchBoardParams.writerNickname;
+        }
+      } else {
+        delete searchBoardParams.writerNickname;
+        if (searchWord) {
+          searchBoardParams.searchKeyword = searchWord;
+        } else {
+          delete searchBoardParams.searchKeyword;
+        }
+      }
+      setSearchBoardParams(searchBoardParams);
     }
   };
 
@@ -106,6 +124,10 @@ export const FreeBoardList = () => {
 
   const TmphandleWordCheck = function () {
     console.log("검색 단어: " + searchWord);
+  };
+  //검색 기준 선택 시
+  const handleSearchCondition = (event: any) => {
+    setSearchCondition(event.target.value);
   };
 
   //정렬 드롭다운 외부 클릭시 닫기
@@ -176,7 +198,7 @@ export const FreeBoardList = () => {
             <BoardListHeader>
               <SearchContainer>
                 <SearchWrapper>
-                  <SearchDropDowns>
+                  <SearchDropDowns onChange={handleSearchCondition}>
                     <option selected value="제목+설명">
                       제목+본문
                     </option>
@@ -215,7 +237,14 @@ export const FreeBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <Link to={`/write-article`}>
+              <Link
+                to={`/write-article?type=free&option=write`}
+                state={{
+                  editId: 0,
+                  editTitle: "",
+                  editContent: "",
+                }}
+              >
                 <WriteButton>글쓰기</WriteButton>
               </Link>
             </BoardListHeader>

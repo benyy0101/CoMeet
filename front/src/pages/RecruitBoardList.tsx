@@ -256,7 +256,14 @@ export const RecruitBoardList = () => {
                   />
                 </SearchWrapper>
               </SearchContainer>
-              <Link to={`/write-article?type=recruit&option=write`}>
+              <Link
+                to={`/write-article?type=recruit&option=write`}
+                state={{
+                  editId: 0,
+                  editTitle: "",
+                  editContent: "",
+                }}
+              >
                 <WriteButton>글쓰기</WriteButton>
               </Link>
             </BoardListHeader>
