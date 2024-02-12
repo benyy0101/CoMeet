@@ -9,7 +9,6 @@ import {
 } from "models/Comments.interface";
 import { useQuery } from "@tanstack/react-query";
 import { createComment, searchComment } from "api/Comment";
-import ChannelButton from "components/Room/ChannelButton";
 
 type TotalCommentProps = {
   boardId: number;
@@ -30,19 +29,50 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
 
   //댓글 리스트 관련
   const [commentList, setCommentList] = useState<SearchCommentContent[]>([]);
+  const [searchCommentParams, setSearchCommentParams] = useState<SearchCommentParams>({
+    boardId: boardId,
+    page: 0,
+  });
+
+  //무한스크롤 구현
+  const pagesize = 10;
+  //이 친구로 페이지가 바뀌었는지 판단함
+  const numberOfElements = useRef<number>(0);
 
   const { data: QDcommentList } = useQuery<SearchCommentResponse, Error>({
-    queryKey: ["commentList", JSON.stringify(boardId)],
-    queryFn: () => searchComment({ boardId }),
+    queryKey: ["commentList", JSON.stringify(searchCommentParams)],
+    queryFn: () => searchComment(searchCommentParams),
   });
 
   useEffect(() => {
-    if (QDcommentList?.content) {
-      setCommentList(QDcommentList.content);
-      // setTotalPages(QDboardList.totalPages);
-      // setTotalElements(QDboardList.totalElements);
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0,
+    });
+    const observerTarget = document.getElementById("observer");
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (QDcommentList) {
+      const newCommentList: SearchCommentContent[] = commentList.concat(
+        QDcommentList.content.filter((item) => !commentList.includes(item))
+      );
+      numberOfElements.current = QDcommentList.numberOfElements;
+      setCommentList(newCommentList);
     }
   }, [QDcommentList]);
+
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      if (numberOfElements.current === pagesize) {
+        searchCommentParams.page++;
+      }
+      setSearchCommentParams(searchCommentParams);
+    }
+  };
 
   const handleWrite = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +83,7 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
     createComment({ boardId: boardId, content: contentRef.current!.value })
       .then((data) => console.log("success", data))
       .catch(() => console.log("failed"));
+    contentRef.current!.value = "";
   };
 
   return (
@@ -78,6 +109,9 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
       {commentList.map((comment) => (
         <BoardCommentComponent key={comment.id} {...comment} />
       ))}
+      <div id="observer" style={{ height: "10px" }}>
+        333
+      </div>
     </CommentTotalContainer>
   );
 };
