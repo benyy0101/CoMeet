@@ -1,19 +1,72 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import tw from "tailwind-styled-components";
 import { BoardCommentComponent } from "./BoardCommentComponent";
+import {
+  CreateCommentParams,
+  SearchCommentContent,
+  SearchCommentParams,
+  SearchCommentResponse,
+} from "models/Comments.interface";
+import { useQuery } from "@tanstack/react-query";
+import { createComment, searchComment } from "api/Comment";
+import ChannelButton from "components/Room/ChannelButton";
 
-export const BoardDetailComment = () => {
+type TotalCommentProps = {
+  boardId: number;
+};
+
+// id: number;
+// boardId: number;
+// content: string;
+// createdAt: string;
+// updatedAt: string;
+// writerNickname: string;
+
+export const BoardDetailComment = (props: TotalCommentProps) => {
+  const { boardId } = props;
+
+  //댓글 달기 관련
+  const contentRef = useRef<HTMLTextAreaElement | null>(null);
+
+  //댓글 리스트 관련
+  const [commentList, setCommentList] = useState<SearchCommentContent[]>([]);
+
+  const { data: QDcommentList } = useQuery<SearchCommentResponse, Error>({
+    queryKey: ["commentList", JSON.stringify(boardId)],
+    queryFn: () => searchComment({ boardId }),
+  });
+
+  useEffect(() => {
+    if (QDcommentList?.content) {
+      setCommentList(QDcommentList.content);
+      // setTotalPages(QDboardList.totalPages);
+      // setTotalElements(QDboardList.totalElements);
+    }
+  }, [QDcommentList]);
+
+  const handleWrite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (contentRef.current?.value === "") {
+      alert("글을 써주세요");
+      return;
+    }
+    createComment({ boardId: boardId, content: contentRef.current!.value })
+      .then((data) => console.log("success", data))
+      .catch(() => console.log("failed"));
+  };
+
   return (
     <CommentTotalContainer>
       <WriteCommentContainer>
         <CommentTitle>댓글</CommentTitle>
-        <form>
+        <form onSubmit={handleWrite}>
           <CommentInputContainer>
             <CommentInput
               id="comment"
               rows={4}
               placeholder="댓글을 작성해주세요"
               required
+              ref={contentRef}
             />
           </CommentInputContainer>
           <ButtonContainer>
@@ -22,8 +75,9 @@ export const BoardDetailComment = () => {
         </form>
       </WriteCommentContainer>
       {/* 댓글 부분들 - array로 받아와서 map 돌릴 부분 */}
-      <BoardCommentComponent />
-      <BoardCommentComponent />
+      {commentList.map((comment) => (
+        <BoardCommentComponent key={comment.id} {...comment} />
+      ))}
     </CommentTotalContainer>
   );
 };
