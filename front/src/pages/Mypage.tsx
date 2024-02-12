@@ -42,7 +42,7 @@ export const Mypage = () => {
     if (memberId === userId) {
       setIsMe(true);
     }
-  }, []);
+  }, [memberId]);
 
   //프로필 이미지 바뀌면 새로 고침
   useEffect(() => {
