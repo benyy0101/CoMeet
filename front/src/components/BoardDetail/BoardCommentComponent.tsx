@@ -1,21 +1,19 @@
+import { SearchCommentContent } from "models/Comments.interface";
 import React from "react";
 
 import tw from "tailwind-styled-components";
 
-export const BoardCommentComponent = () => {
-  const nicName = "닉네임입니다";
-  const date = "2024-01-29";
-  const context =
-    "리액트 나와! 스프링 나와! 노드 들어가! 리액트 나와! 스프링 나와! 노드 들어가! 리액트 나와! 스프링 나와! 노드 들어가! 리액트 나와! 스프링 나와! 노드 들어가! 리액트 나와! 스프링 나와! 노드 들어가! 리액트 나와! 스프링 나와! 노드 들어가! ";
+export const BoardCommentComponent = (props: SearchCommentContent) => {
+  const { writerNickname, updatedAt, content, id } = props;
 
   return (
     <TotalContainer>
       <Comment>
         <NicAndDate>
-          <Nicname>{nicName}</Nicname>
-          <Date>{date}</Date>
+          <Nicname>{writerNickname}</Nicname>
+          <Date>{updatedAt}</Date>
         </NicAndDate>
-        <Context>{context}</Context>
+        <Context>{content}</Context>
       </Comment>
     </TotalContainer>
   );
