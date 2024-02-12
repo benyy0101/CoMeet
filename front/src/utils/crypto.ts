@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-const secretKey = process.env.REACT_APP_CRYPTO_SECRET_KEY || "";
+const secretKey = "ILIKEMONDAYS";
 
 //암호화
 export const encrypt = (value: string) => {

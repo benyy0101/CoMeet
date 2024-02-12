@@ -4,7 +4,7 @@ import tw from "tailwind-styled-components";
 
 import PoepleNumImg from "assets/img/people-num.svg";
 import RoomImg from "assets/img/room-default.png";
-import { encrypt } from "utils/crypto";
+import { encrypt } from "utils/Crypto";
 import { useSelector } from "react-redux";
 import { smallRoomdata } from "models/Login.interface";
 import {joinNote} from "api/Note";
