@@ -26,6 +26,7 @@ public class Til extends BaseEntity {
     @JoinColumn(name="member_id")
     private Member member;
 
+    @Column(length = 5000)
     private String context;
 
     private LocalDate date;
