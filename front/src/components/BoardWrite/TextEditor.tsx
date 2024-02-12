@@ -25,7 +25,7 @@ type SelectOption = {
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
-  const { editId, editTitle, editContent, isValid } = location.state;
+  const { editId, editTitle, editContent, isValid, editCategory } = location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
@@ -104,6 +104,7 @@ function TextEditor(props: TextEditProps) {
       modifyBoardParams.content = context;
       modifyBoardParams.boardId = editId;
       if (isFree) {
+        console.log("categroy", category);
         modifyBoardParams.category = category;
       } else {
         modifyBoardParams.isValid = isRoomValid;
@@ -155,13 +156,14 @@ function TextEditor(props: TextEditProps) {
         {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
 
         {isFree && (
-          <SelectForm>
+          <SelectForm
+            onChange={(data) => {
+              //@ts-ignore
+              setCategory(data.target.selectedOptions[0].value);
+            }}
+          >
             {selectOption.map((option) => (
-              <option
-                value={option.value?.toString()}
-                key={option.key}
-                onClick={() => setCategory(option.value)}
-              >
+              <option value={option.value?.toString()} key={option.key}>
                 {option.label}
               </option>
             ))}
