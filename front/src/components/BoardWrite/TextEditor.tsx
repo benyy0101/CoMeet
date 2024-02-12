@@ -41,7 +41,7 @@ function TextEditor(props: TextEditProps) {
   const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
 
   const dummy1: CreateBoardParams = {
-    context: "",
+    content: "",
     title: "",
     type: "RECRUIT",
   };
@@ -129,7 +129,7 @@ function TextEditor(props: TextEditProps) {
         createBoardParams.roomId = selectedRoom;
       }
       createBoardParams.title = title;
-      createBoardParams.context = context;
+      createBoardParams.content = context;
 
       console.log(createBoardParams);
       setCreateBoardParams(createBoardParams);
