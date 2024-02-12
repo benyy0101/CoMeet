@@ -16,6 +16,7 @@
     "@types/sockjs-client": "^1.5.4",
     "axios": "^1.6.5",
     "heroicons": "^2.1.1",
+    "lil-gui": "^0.19.1",
     "moment": "^2.30.1",
     "openvidu-browser": "^2.29.1",
     "qs": "^6.11.2",
@@ -35,6 +36,7 @@
     "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.8",
     "tailwind-scrollbar-hide": "^1.1.7",
+    "three": "^0.161.0",
     "typescript": "^4.9.5"
   },
   "scripts": {
