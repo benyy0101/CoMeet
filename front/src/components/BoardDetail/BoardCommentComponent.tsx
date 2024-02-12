@@ -5,21 +5,18 @@ import { useSelector } from "react-redux";
 
 import tw from "tailwind-styled-components";
 
-export const BoardCommentComponent = (props: SearchCommentContent) => {
-  const { writerNickname, updatedAt, content, id } = props;
+type CommentProps = {
+  comment: SearchCommentContent;
+  handleDelete: (id: number) => void;
+};
+
+export const BoardCommentComponent = (props: CommentProps) => {
+  const { writerNickname, updatedAt, content, id } = props.comment;
   const memberNickname = useSelector((state: any) => state.user.user.nickname);
 
   const handleModify = () => {};
-  const handleDelete = () => {
-    deleteComment({ commentId: id })
-      .then((data) => {
-        console.log("success");
-      })
-      .catch((fail) => {
-        console.log("failure", fail.response.data);
-        return fail;
-      });
-  };
+  // const handleDeleteSub = () => {
+  // };
 
   return (
     <TotalContainer>
@@ -32,7 +29,7 @@ export const BoardCommentComponent = (props: SearchCommentContent) => {
         {memberNickname === writerNickname ? (
           <NicAndDate>
             <button onClick={handleModify}>수정 -----</button>
-            <button onClick={handleDelete}>삭제</button>
+            <button onClick={() => props.handleDelete(id)}>삭제</button>
           </NicAndDate>
         ) : null}
       </Comment>

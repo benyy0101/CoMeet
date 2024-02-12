@@ -5,9 +5,7 @@ export interface CreateCommentParams {
   content: string;
 }
 
-export interface CreateCommentResponse {
-  commentId: number;
-}
+export type CreateCommentResponse = number;
 
 export interface SearchCommentParams {
   boardId: number;
