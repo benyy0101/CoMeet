@@ -31,7 +31,7 @@ export const BoardDetailRoomInfo: React.FC<{
   //이미지도 가져오고
 
   return (
-    <RoomHyper href={roomLink} target="_blank" rel="noopener noreferrer">
+    <RoomHyper>
       <TotalContainer>
         <RoomImgContainer src={RoomImg} alt="" />
         <RoomInfo>
@@ -54,7 +54,7 @@ export const BoardDetailRoomInfo: React.FC<{
 };
 
 //전체를 링크로 구성
-const RoomHyper = tw.a`
+const RoomHyper = tw.div`
 `;
 
 //전체 컨테이너
@@ -73,7 +73,7 @@ bg-[#1F1C29]
 const RoomImgContainer = tw.img`
 rounded-l-lg
 w-40
-h-70
+min-h-70
 object-cover
 `;
 
@@ -83,13 +83,13 @@ flex
 flex-col
 w-full
 p-7
+space-y-5
 `;
 
 //제목과 인원수 컨테이너
 const TitleAndNumContainer = tw.div`
 flex
 w-full
-mb-3
 
 `;
 
@@ -122,7 +122,6 @@ items-end
 //방 설명
 const RoomEx = tw.div`
 text-gray-400
-mb-3
 `;
 
 //진짜 링크 부분

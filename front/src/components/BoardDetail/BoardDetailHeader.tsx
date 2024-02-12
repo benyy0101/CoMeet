@@ -52,6 +52,7 @@ export const BoardDetailHeader: React.FC<{
           <FreeCategory>{categoryTitle}</FreeCategory>
         )}
       </TitleTotalContainer>
+      <Boarder></Boarder>
       <EtcContainer>
         <NicnameContainer>{props.nickname}</NicnameContainer>
         <DateContainer>{props.createdAt}</DateContainer>
@@ -73,9 +74,8 @@ export const BoardDetailHeader: React.FC<{
 const HeaderTotalContainer = tw.div`
 flex
 flex-col
-h-[100px]
-mb-4
-
+h-28
+space-y-3
 `;
 
 //제목 부분 컨테이너 (모집중 / 모집 완료 포함)
@@ -83,39 +83,39 @@ const TitleTotalContainer = tw.div`
 items-end
 flex-grow
 flex
-pb-3
-px-5
-border-b
+px-3
+space-x-5
 `;
 
 //제목
 const Title = tw.div`
-text-2xl
+text-3xl
 font-bold
 `;
 
 //모집중
 const RecruitTrue = tw.div`
-ml-5
 text-blue-500
 `;
 
 //모집 완료
 const RecruitFalse = tw.div`
-ml-5
 text-red-500
 `;
 
+const Boarder = tw.div`
+h-[1px]
+bg-white
+`
 const FreeCategory = tw.div`
-ml-5
 `;
 
 //닉네임, 날짜, 좋아요수 나타내는 컨테이너
 const EtcContainer = tw.div`
 flex
 items-end
-ml-5
-mt-2
+px-3
+space-x-5
 `;
 
 //이름
@@ -125,7 +125,6 @@ const NicnameContainer = tw.div`
 
 //날짜
 const DateContainer = tw.div`
-ml-10
 
 `;
 
@@ -137,7 +136,6 @@ mr-1
 
 //좋아요 수
 const LikeContatiner = tw.div`
-ml-7
 flex
 items-center
 `;

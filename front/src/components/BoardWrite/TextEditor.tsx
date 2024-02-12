@@ -25,6 +25,7 @@ type SelectOption = {
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
+  const {editId, editTitle, editContent} = location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
@@ -56,7 +57,7 @@ function TextEditor(props: TextEditProps) {
   const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
 
   //쓰는 값
-  const titleRef = useRef<HTMLInputElement | null>(null);
+  const [title, setTitle] = useState<string>(editTitle || "");
 
   //move page
   const navigate = useNavigate();
@@ -72,13 +73,10 @@ function TextEditor(props: TextEditProps) {
   const handleRoom = (room: number) => {
     setSelectedRoom(room);
   };
-  const handleTest = () => {
-    titleRef.current!.value = "xptmxld";
-  };
+  
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 조건대로 입력이 들어왔는지 체크
-    const title = titleRef.current ? titleRef.current.value : "";
     const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
     const roomId = selectedRoom ? selectedRoom : 0;
     if (title === "") {
@@ -147,7 +145,7 @@ function TextEditor(props: TextEditProps) {
       </Header>
       <TitleWrapper>
         {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
-        {isFree ? (
+        {isFree && (
           <SelectForm>
             {selectOption.map((option) => (
               <option value={option.value} key={option.key}>
@@ -155,15 +153,15 @@ function TextEditor(props: TextEditProps) {
               </option>
             ))}
           </SelectForm>
-        ) : null}
+        )}
         <TitleInput
           type="text"
           placeholder="제목을 입력해주세요"
-          value={location.state.editTitle}
-          ref={titleRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         ></TitleInput>
       </TitleWrapper>
-      {!isFree ? <RoomOption provoke={true} selectRoom={handleRoom}></RoomOption> : null}
+      {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
       <QuillContainer>
         <Editor
           ref={editorRef}
@@ -176,7 +174,7 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
-        <CancelButton onClick={handleTest}>취소하기</CancelButton>
+        <CancelButton >취소하기</CancelButton>
         <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
