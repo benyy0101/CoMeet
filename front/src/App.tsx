@@ -76,10 +76,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.warn(currentLounge);
-  }, [currentLounge]);
-
-  useEffect(() => {
     console.error("룸아이디 변경!", roomInfo);
     if (roomInfo.isRoomIn) {
       if (roomData === null) {
@@ -88,18 +84,15 @@ function App() {
 
       if (stompClient.current === null) {
         stompClient.current = Stomp.over(() => {
-          const sock = new SockJS(
-            `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
-          );
+          const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
           return sock;
         });
 
         stompClient.current.connect(
           {},
           () => {
-            stompClient.current.subscribe(
-              `/room/info/${roomInfo.roomId}`,
-              (e: any) => handleUpdateInfo(JSON.parse(e.body))
+            stompClient.current.subscribe(`/room/info/${roomInfo.roomId}`, (e: any) =>
+              handleUpdateInfo(JSON.parse(e.body))
             );
           },
           (e: any) => alert("에러발생!!!!!!")
@@ -109,9 +102,7 @@ function App() {
 
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
+        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
         stompClient.current = null;
       }
     };
@@ -156,9 +147,7 @@ function App() {
       case "CHANNEL_UPDATE":
         break;
       case "CHANNEL_DELETE":
-        setChannels((prev) =>
-          prev.filter((channel) => channel.channelId !== event.data.channelId)
-        );
+        setChannels((prev) => prev.filter((channel) => channel.channelId !== event.data.channelId));
         break;
       case "LOUNGE_CREATE":
         setLounges((prev) => [...prev, event.data]);
@@ -166,9 +155,7 @@ function App() {
       case "LOUNGE_UPDATE":
         break;
       case "LOUNGE_DELETE":
-        setLounges((prev) =>
-          prev.filter((lounge) => lounge.loungeId !== event.data.loungeId)
-        );
+        setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== event.data.loungeId));
         break;
     }
   };
@@ -345,24 +332,15 @@ function App() {
             {/* 모집 게시판 */}
             <Route path="/recruit-board" element={<RecruitBoardList />} />
 
-            <Route
-              path="/recruit-board/edit"
-              element={<Board isFree={true} isEdit={true} />}
-            />
+            <Route path="/recruit-board/edit" element={<Board isFree={true} isEdit={true} />} />
             {/* 모집게시판 글 상세보기 */}
-            <Route
-              path="/recruit-board/:boardId"
-              element={<BoardDetail />}
-            ></Route>
+            <Route path="/recruit-board/:boardId" element={<BoardDetail />}></Route>
 
             {/* 자유 게시판 */}
             <Route path="/free-board" element={<FreeBoardList />}></Route>
 
             {/* 자유게시판 글 상세보기 */}
-            <Route
-              path="/free-board/:boardId"
-              element={<BoardDetail />}
-            ></Route>
+            <Route path="/free-board/:boardId" element={<BoardDetail />}></Route>
             {/* 글 쓰기 & 글 수정 */}
             <Route path="/write-article" element={<WriteArticle />}></Route>
 
