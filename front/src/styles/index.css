@@ -18,3 +18,9 @@
 *::-webkit-scrollbar-track {
   background: #ccc;
 }
+
+#gui {
+  position: absolute;
+  top: 58px;
+  right: 2px;
+}

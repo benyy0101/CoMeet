@@ -122,9 +122,7 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton
-                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-                    >
+                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -135,9 +133,7 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>
-                접속중인 방이 없습니다.
-              </ServerContainer>
+              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
@@ -169,11 +165,7 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -181,11 +173,7 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -206,6 +194,7 @@ items-center
 justify-between
 px-12
 text-lg
+z-50
 `;
 
 const LeftContainer = tw.div`
@@ -319,7 +308,7 @@ focus:outline-none
 const LoginContainer = tw.div`
 flex
 space-x-4
-`
+`;
 const LoginButton = tw.button`
 p-1
 rounded-sm
@@ -328,7 +317,7 @@ border-[1px]
 border-zinc-300
 text-zinc-300
 px-2
-`
+`;
 const SignUpButton = tw.button`
 p-1
 px-2
@@ -336,7 +325,7 @@ rounded-sm
 bg-violet-500
 hover:bg-violet-600
 transition-colors
-`
+`;
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
