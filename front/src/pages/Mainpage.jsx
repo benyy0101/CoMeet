@@ -728,8 +728,8 @@ export const Mainpage = () => {
 
   return (
     <div className="w-screen h-screen absolute top-0 left-0">
-      <CustomCamvas className="z-0" ref={canvasRef} />
-      <CustomCamvas className="z-20 " ref={cometCanvasRef} id="universe" />
+      <CustomCamvas className="-z-50" ref={canvasRef} />
+      <CustomCamvas className="-z-40" ref={cometCanvasRef} />
       <Title>Comeet</Title>
       <div id="footer" className="absolute z-20 w-full bottom-0 h-[300px]">
         <svg
@@ -964,5 +964,5 @@ top-1/2
 text-slate-50/50
 text-7xl
 font-thin
-z-30
+-z-30
 `;
