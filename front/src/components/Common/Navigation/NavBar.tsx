@@ -106,7 +106,7 @@ export const NavBar = ({
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: "url(roomData.room_image)",
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -319,7 +319,7 @@ focus:outline-none
 const LoginContainer = tw.div`
 flex
 space-x-4
-`
+`;
 const LoginButton = tw.button`
 p-1
 rounded-sm
@@ -328,7 +328,7 @@ border-[1px]
 border-zinc-300
 text-zinc-300
 px-2
-`
+`;
 const SignUpButton = tw.button`
 p-1
 px-2
@@ -336,7 +336,7 @@ rounded-sm
 bg-violet-500
 hover:bg-violet-600
 transition-colors
-`
+`;
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`
