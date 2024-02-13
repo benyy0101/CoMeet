@@ -54,6 +54,9 @@ export default function RoomModify() {
     }
   };
 
+  console.log(imagePreview);
+  console.log(roomData?.room_image);
+
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data: any = {
@@ -63,12 +66,21 @@ export default function RoomModify() {
       capacity: maxPeople,
       constraints: option,
     };
-    try {
-      if (roomId) {
-        await uploadRoomImage(parseInt(roomId));
+
+    if (selectedFile) {
+      try {
+        if (roomId) {
+          const formData = new FormData();
+          formData.append("roomImageFile", selectedFile);
+          await uploadRoomImage(roomId, formData);
+
+          navigate(`/room/${roomId}`);
+        }
+      } catch {
+        alert("이미지 업로드에 실패했습니다.");
       }
-    } catch {
-      alert("이미지 업로드 실패, 다시 시도해주세요.");
+    } else {
+      alert("업로드 할 이미지를 선택해주세요.");
     }
 
     try {
@@ -237,7 +249,8 @@ top-0
 cursor-pointer
 w-32
 h-32
-bg-slate-700
+bg-white
+border
 rounded-full
 flex
 justify-center

@@ -117,9 +117,9 @@ export const searchManagingRoom = async (
 };
 
 //방 이미지 수정
-export const uploadRoomImage = async (roomId: number) => {
+export const uploadRoomImage = async (roomId: string, fileImage: FormData) => {
   const url = `room/image/${roomId}`;
-  const response = await imageAxios.post(url);
+  const response = await imageAxios.post(url, fileImage);
 };
 
 export const deleteRoomImage = async (roomId: number) => {
