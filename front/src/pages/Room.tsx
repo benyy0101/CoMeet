@@ -514,6 +514,9 @@ export const Room = ({
     leaveSession();
   };
 
+  //기본 이미지
+  const defaultRoomImg = `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`;
+
   return (
     <RoomContainer>
       <RoomHeader>
@@ -521,8 +524,7 @@ export const Room = ({
           <RoomTitleImgBorder>
             <RoomTitleImg
               style={{
-                backgroundImage:
-                  "url(https://i.pinimg.com/736x/52/8a/4f/528a4f1570bf735b7a772d17562723f1.jpg)",
+                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
               }}
             />
           </RoomTitleImgBorder>
@@ -751,6 +753,7 @@ bg-contain
 bg-no-repeat
 bg-center
 shadow-md
+bg-white
 `;
 
 const RoomTitle = tw.h1`
