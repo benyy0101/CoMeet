@@ -9,7 +9,7 @@ import { Keyword, Pageable } from "./Util";
 export interface CreateBoardParams {
   //writerId?: String; //필수
   title: string; // 필수
-  context: String; //필수
+  content: String; //필수
   type: BOARD_TYPE; //필수
   roomId?: number; // 모집이면 필수
   category?: FREE_BOARD_CATEGORY; // 자유면 필수
