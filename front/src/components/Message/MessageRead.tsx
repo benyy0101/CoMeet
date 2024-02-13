@@ -4,7 +4,7 @@ import tw from "tailwind-styled-components";
 import React, { useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { set } from "lodash";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { permitJoinRoom } from "api/Room";
 
 function MessageRead(params: {
@@ -15,10 +15,26 @@ function MessageRead(params: {
   const { noteNo, swapState, setWriter } = params;
   const [noteInfo, setNoteInfo] = React.useState<EnterNoteResponse>();
   const [dateInfo, setDateInfo] = React.useState<string>("");
+  const [permission, setPermission] = React.useState<boolean>(false);
+  const [roomId, setRoomId] = React.useState<number>(0);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await enterNote({ noteId: params.noteNo });
       setNoteInfo(data);
+      if (data.context.slice(0, 12) === "$*&SYSTEM&*$") {
+        setPermission(true);
+        const text = data.context.slice(12);
+        const result = text.split(" ");
+        setRoomId(Number(result.pop()));
+        const restOfString = result.join(" ");
+        setNoteInfo((prev: any) => ({
+          ...prev,
+          context: restOfString,
+        }));
+      } else {
+        setNoteInfo(data);
+      }
       return data;
     };
     fetchData();
@@ -37,19 +53,17 @@ function MessageRead(params: {
     setWriter(noteInfo?.writerId!);
   };
 
-  const permitHandler = async () =>{
-    try{
+  const permitHandler = async () => {
+    try {
       await permitJoinRoom({
         memberId: noteInfo?.writerId || "",
-        //여기 뭔가 특별한게 필요해
-        roomId: 99999
+        roomId: roomId,
       });
-    }
-    catch (e){
+      toast.success("승인되었습니다.");
+    } catch (e) {
       console.error(e);
     }
-
-  }
+  };
 
   return (
     <Wrapper>
@@ -58,7 +72,7 @@ function MessageRead(params: {
       </LeaveButton>
       <TitleContainer>
         <Title>
-          <WriterId>{noteInfo?.writerId}</WriterId>
+          <WriterId>{noteInfo?.writerNickname}</WriterId>
           <div>님의 쪽지</div>
         </Title>
         <Date>{dateInfo}</Date>
@@ -66,10 +80,12 @@ function MessageRead(params: {
 
       <Content>{noteInfo?.context}</Content>
       <Footer>
-        <AcceptButton>승인하기</AcceptButton>
+        {permission && (
+          <AcceptButton onClick={permitHandler}>승인하기</AcceptButton>
+        )}
         <ReplyButton onClick={setStateHandler}>답장하기</ReplyButton>
       </Footer>
-      <ToastContainer/>
+      <ToastContainer />
     </Wrapper>
   );
 }
@@ -117,6 +133,7 @@ const WriterId = tw.h1`
 text-4xl
 font-bold
 text-indigo-400
+break-words
 `;
 const Date = tw.div`
 text-sm
@@ -162,6 +179,6 @@ hover:to-lime-600
 transition
 shadow-lg
 text-emerald-900
-`
+`;
 
 export default MessageRead;
