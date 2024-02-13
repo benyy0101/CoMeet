@@ -4,20 +4,13 @@ import { RoomItemProps } from "../types";
 import { useEffect, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
-import {
-  ChevronDoubleUpIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
+import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
-import {
-  SearchRoomContent,
-  SearchRoomParams,
-  SearchRoomResponse,
-} from "models/Room.interface";
+import { SearchRoomContent, SearchRoomParams, SearchRoomResponse } from "models/Room.interface";
 import { searchRoom } from "api/Room";
+import { BackgroundGradient } from "components/Common/BackgroundGradient";
 
 const size = 10;
 
@@ -26,10 +19,7 @@ export const RoomList = () => {
   const [page, setPage] = useState<number>(0);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
 
-  const { data, isLoading, isError, refetch } = useQuery<
-    SearchRoomResponse,
-    Error
-  >({
+  const { data, isLoading, isError, refetch } = useQuery<SearchRoomResponse, Error>({
     queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", page, size],
     queryFn: () =>
       searchRoom({
@@ -52,6 +42,7 @@ export const RoomList = () => {
 
   return (
     <Wrapper>
+      <BackgroundGradient />
       <MainContainer>
         <LeftContainer>
           <FilterMenu
@@ -64,8 +55,8 @@ export const RoomList = () => {
           <SearchBarContainer>
             <SearchForm>
               <DropDowns>
-                <option value="제목+설명">제목+설명</option>
-                <option value="방장명">방장명</option>
+                <DropdownOption value="제목+설명">제목+설명</DropdownOption>
+                <DropdownOption value="방장명">방장명</DropdownOption>
               </DropDowns>
               <SearchInputContainer>
                 <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
@@ -118,6 +109,7 @@ flex-col
 w-1/6
 gap-3
 items-center
+mt-20
 `;
 const ListContainer = tw.div`
 flex
@@ -146,6 +138,12 @@ const DropDowns = tw.select`
 h-10
 p-2
 focus:outline-none
+bg-transparent
+text-slate-300
+`;
+
+const DropdownOption = tw.option`
+text-black
 `;
 
 const SearchInputContainer = tw.div`
@@ -163,12 +161,16 @@ h-full
 focus:outline-none
 p-2
 pr-6
+bg-transparent
+text-slate-300
 `;
+
 const CustomMagnifyingGlassIcon = tw(MagnifyingGlassIcon)`
 h-4
 w-4
 absolute
 right-0
+text-slate-300
 `;
 
 const SearchForm = tw.form`

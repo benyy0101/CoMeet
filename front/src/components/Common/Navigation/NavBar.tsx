@@ -140,7 +140,7 @@ export const NavBar = ({
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && <ServerDropDownList />}
+              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
