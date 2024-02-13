@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavBar } from "./components/Common/Navigation/NavBar";
 import { RoomList } from "./pages/RoomList";
@@ -115,18 +115,32 @@ function App() {
     setLounges(res.lounges);
   };
 
-  const leaveRoomHandler = async () => {
+  const leaveRoomHandler = () => {
     const data: LeaveRoomParams = {
       roomId: parseInt(roomInfo.roomId),
       keywords: undefined,
     };
-    try {
-      const res = await leaveRoom(data);
-      dispatch(setLeaveRoom());
-      // navigate("/");
-    } catch (e) {
-      console.error(e);
-    }
+    setRoomData(null);
+    setChannels([]);
+    setLounges([]);
+    setSideToggle(true);
+    setInLounge(true);
+    setCurrentLounge(null);
+    setMySessionId("");
+    setMySessionName("");
+    setSession(null);
+    setMainStreamManager(null);
+    setPublisher(null);
+    setSubscribers([]);
+    setCurrentVideoDevice(null);
+    setSpeakerIds([]);
+    setIsMuted(true);
+    setIsVideoDisabled(true);
+    setIsScreenShared(false);
+    setFilter(null);
+    stompClient.current = null;
+    OV.current = new OpenVidu();
+    return leaveRoom(data);
   };
 
   const handleUpdateInfo = (event: any) => {
@@ -258,6 +272,36 @@ function App() {
     }
   };
 
+  const leaveSession = useCallback(() => {
+    setInLounge(true);
+    // Leave the session
+    if (session) {
+      session.disconnect();
+    }
+
+    // Reset all states and OpenVidu object
+    OV.current = new OpenVidu();
+    setSession(null);
+    setSubscribers([]);
+    setMySessionId("");
+    setMainStreamManager(null);
+    setPublisher(null);
+  }, [session]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      leaveSession();
+      leaveRoomHandler().then((_) => {
+        dispatch(setLeaveRoom());
+      });
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [leaveSession]);
+
   return (
     <div className="App h-dvh">
       <BrowserRouter>
@@ -319,6 +363,8 @@ function App() {
                   filter={filter}
                   stompClient={stompClient}
                   OV={OV}
+                  leaveRoomHandler={leaveRoomHandler}
+                  leaveSession={leaveSession}
                 />
               }
             />
