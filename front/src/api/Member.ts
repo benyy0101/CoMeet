@@ -36,6 +36,15 @@ export const doubleCheckNicname = async (
   return response.data;
 };
 
+export const doubleCheckMemberId = async (
+  memberId: string
+): Promise<boolean> => {
+  const url = `member/check${makeQuerystring({ memberId })}`;
+
+  const response = await localAxios.get(url);
+  return response.data;
+};
+
 //이메일 중복 검사
 export const doubleCheckEmail = async (params: EmailCheckParams) => {
   const { email } = params;

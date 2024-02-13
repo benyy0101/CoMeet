@@ -36,9 +36,7 @@ export default function RoomItem(props: SearchRoomContent) {
       </Column>
       <Column>
         <KeywordContainer>
-          <Keyword>C++</Keyword>
-          <Keyword>JAVA</Keyword>
-          <Keyword>PYTHON</Keyword>
+          
         </KeywordContainer>
       </Column>
       <Column>

@@ -107,6 +107,7 @@ function Modal(props: ModalProps) {
 const Wrapper = tw.div`
 fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
 shadow-md
+z-40
 `;
 
 const ModalContainer = tw.div`
