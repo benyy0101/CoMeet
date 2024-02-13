@@ -37,7 +37,6 @@ export const NavBar = ({
 }: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
-
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
@@ -54,7 +53,7 @@ export const NavBar = ({
 
   const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
-
+  console.log(userInfo);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -319,7 +318,7 @@ focus:outline-none
 const LoginContainer = tw.div`
 flex
 space-x-4
-`
+`;
 const LoginButton = tw.button`
 p-1
 rounded-sm
@@ -328,7 +327,7 @@ border-[1px]
 border-zinc-300
 text-zinc-300
 px-2
-`
+`;
 const SignUpButton = tw.button`
 p-1
 px-2
@@ -336,7 +335,7 @@ rounded-sm
 bg-violet-500
 hover:bg-violet-600
 transition-colors
-`
+`;
 
 //LoginSignup: 로그인, 회원가입 메뉴
 const LoginSignup = tw.div`

@@ -9,6 +9,7 @@ import { SignupQuery } from "models/Login.interface";
 import { makeQuerystring } from "utils/ApiUtil";
 
 export const handleMember = async (memberId: string): Promise<MemberQuery> => {
+  console.log(memberId);
   const response = await localAxios.get(`/member/${memberId}`);
   return response.data;
 };

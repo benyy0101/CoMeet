@@ -17,9 +17,15 @@ export const handleLogout = async () => {
   const response = await localAxios.post("/auth/logout");
   return response;
 };
-export const githubLogin = async (): Promise<LoginResponse> => {
+export const githubLogin = async (code: string): Promise<LoginResponse> => {
   const response = await axios.get(
-    "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email"
+    process.env.REACT_APP_API_SERVER_URL + "/auth/oauth2/login/github",
+    {
+      params: {
+        code: code,
+      },
+    }
   );
+
   return response.data;
 };
