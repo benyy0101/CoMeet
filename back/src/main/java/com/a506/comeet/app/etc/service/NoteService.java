@@ -55,7 +55,7 @@ public class NoteService {
     @Transactional
     public NoteResponseDto findAndRead(Long noteId, String memberId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_NOTE));
-        readerAuthorityValidation(memberId, note);
+        receiverAuthorityValidation(memberId, note);
         note.read();
         return NoteResponseDto.builder()
                 .id(note.getId())
@@ -70,11 +70,6 @@ public class NoteService {
 
     private void receiverAuthorityValidation(String memberId, Note note) {
         if (!note.getReceiver().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아닙니다");
-    }
-
-
-    private void readerAuthorityValidation(String memberId, Note note) {
-        if (!note.getReceiver().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아니어서 읽을 수 없습니다");
     }
 
     public Page<NoteSimpleResponseDto> findList(String memberId, Pageable pageable) {
