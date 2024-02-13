@@ -5,6 +5,7 @@ import React, {
   SelectHTMLAttributes,
 } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import { MemberQuery } from "models/Member.interface";
 import {
@@ -36,6 +37,8 @@ function EditForm() {
   const [isEmailCheck, setIsEmailCheck] = useState<boolean>(true);
   const [isPw1Check, setIsPw1Check] = useState<boolean>(false);
   const [isPw2Check, setIsPw2Check] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   //처음에 myId로 다 들고와
   const fetchData = async () => {
@@ -143,18 +146,25 @@ function EditForm() {
             alert("중복되지 않는 이메일을 입력해주세요.");
           } else {
             //모든 관문을 거치면... 드디어! 수정이 된다
+            const updatedData: any = {
+              name: name,
+              password: pw1,
+              link: link,
+              description: description,
+              feature: selectedOption,
+            };
 
+            // 이메일과 닉네임이 변경되었을 때만 업데이트 요청에 포함
+            if (nickname !== myData?.nickname) {
+              updatedData.nickname = nickname;
+            }
+            if (email !== myData?.email) {
+              updatedData.email = email;
+            }
+
+            console.log(updatedData);
             try {
-              await updateMember({
-                name: name,
-                password: pw1,
-                nickname: nickname,
-                link: link,
-                email: email,
-                description: description,
-                feature: selectedOption,
-              });
-
+              await updateMember(updatedData);
               alert("정보 수정이 완료되었습니다!");
             } catch {
               alert("정보 수정에 오류가 발생했습니다. 다시 시도해주세요!");
@@ -168,7 +178,8 @@ function EditForm() {
   //회원 탈퇴
   const handleDelete = () => {
     deleteMember();
-    //여기 로그아웃 & 메인페이지로 이동 해야 하는데
+    //여기 로그아웃도 해야 함...
+    navigate(`/mainpage`, { replace: true });
   };
 
   //시작할 때 데이터 다 들고와

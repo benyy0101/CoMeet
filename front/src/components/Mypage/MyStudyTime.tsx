@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import Day from "assets/img/time-day.svg";
-import Night from "assets/img/time-night.svg";
+import Day from "assets/img/time-day.png";
+import Night from "assets/img/time-night.png";
 
 import tw from "tailwind-styled-components";
 
@@ -15,22 +15,25 @@ export const MyStudyTime = ({ mostStudyTime }: Prop) => {
 
   useEffect(() => {
     if (mostStudyTime) {
-      setStudyTime(mostStudyTime.split("FROM")[1].split("TO"));
-      if (studyTime) {
-        if (parseInt(studyTime[0]) < 18 && parseInt(studyTime[0]) >= 6) {
+      const splitTime = mostStudyTime.split("FROM")[1].split("TO");
+      setStudyTime(splitTime);
+      if (splitTime) {
+        if (parseInt(splitTime[0]) < 18 && parseInt(splitTime[0]) >= 6) {
           setDayOrNight("낮");
         } else {
           setDayOrNight("밤");
         }
       }
     }
-  }, []);
+  }, [mostStudyTime]);
 
   return (
     <TotalContainer>
       <TitleContainer>공부 시간대</TitleContainer>
       <ImgContainer>
-        {dayOrNight === "" ? null : (
+        {dayOrNight === "" ? (
+          <div>선호하는 공부시간대가 없습니다.</div>
+        ) : (
           <>
             {dayOrNight === "낮" ? (
               <img src={Day} className="w-36 h-36" />
@@ -61,9 +64,7 @@ export const MyStudyTime = ({ mostStudyTime }: Prop) => {
               </div>
             </div>
           </>
-        ) : (
-          <div>선호하는 공부시간대가 없습니다.</div>
-        )}
+        ) : null}
       </TimeContainer>
     </TotalContainer>
   );
@@ -100,6 +101,6 @@ justify-center
 const TimeContainer = tw.div`
 text-white
 text-xl
-font-semibold
+
 mb-4
 `;

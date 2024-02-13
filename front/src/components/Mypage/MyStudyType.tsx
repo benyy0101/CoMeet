@@ -14,36 +14,59 @@ interface MyStudyTypeProps {
 }
 
 export const MyStudyType = ({ feature }: MyStudyTypeProps) => {
-  const [typeImg, setTypeImg] = useState<string>(Earth);
+  const [typeImg, setTypeImg] = useState<string>();
+  const [typeCategory, setTypeCategory] = useState<string>();
+  const [ex, setEx] = useState<string>();
+
   useEffect(() => {
     switch (feature) {
       case "EARTH":
         setTypeImg(Earth);
+        setTypeCategory("지구");
+        setEx("내 특성을 설정해주세요!");
         break;
       case "BLACKHOLE":
         setTypeImg(Blackhole);
+        setTypeCategory("블랙홀");
+        setEx("한 기술에 깊게 몰입하는 것을 좋아해요");
         break;
       case "GALAXY":
         setTypeImg(Galaxy);
+        setTypeCategory("은하수");
+        setEx("새로운 사람들을 만나는데 거부감이 없어요");
         break;
       case "PROBE":
         setTypeImg(Probe);
+        setTypeCategory("탐사선");
+        setEx("새로운 기술을 탐험하는 것을 좋아해요");
         break;
       case "SUN":
         setTypeImg(Sun);
+        setTypeCategory("태양");
+        setEx(`다른 사람들과 함께 스터디를 \n 이끄는 것을 좋아해요.`);
         break;
       case "MOON":
         setTypeImg(Moon);
+        setTypeCategory("달");
+        setEx(
+          "주도적이지는 않지만 뒤에서 꾸준하고 \n 열심히 스터디에 참여해요"
+        );
         break;
     }
-  }, []);
+  }, [feature]);
   return (
     <TotalContainer>
       <TitleContainer>공부성향</TitleContainer>
       <ImgContainer>
         <img src={typeImg} alt="공부타입 이미지" className="w-36 h-36" />
       </ImgContainer>
-      <div className="text-white text-lg">지구형</div>
+      <div className="text-white text-xl font-semibold">{typeCategory}</div>
+      <div
+        className="text-center text-white my-1"
+        style={{ whiteSpace: "pre-line" }}
+      >
+        {ex}
+      </div>
     </TotalContainer>
   );
 };

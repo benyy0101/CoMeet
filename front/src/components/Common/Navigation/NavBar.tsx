@@ -44,19 +44,6 @@ export const NavBar = ({
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   const [userImg, setUserImg] = useState<string>("");
 
-  //처음에 memeberId로 다 들고와
-  const fetchData = async () => {
-    const res = await handleMember(memberId);
-    setUserImg(res.profileImage); // 데이터 상태로 설정
-  };
-
-  //시작할 때 데이터 다 들고와
-  useEffect(() => {
-    if (memberId) {
-      fetchData();
-    }
-  }, []);
-
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
   };
@@ -84,6 +71,20 @@ export const NavBar = ({
       setIsServerOpen(false);
     }
   });
+
+  //처음에 memeberId로 다 들고와
+  const fetchData = async () => {
+    const res = await handleMember(userInfo.user.memberId);
+    setUserImg(res.profileImage); // 데이터 상태로 설정
+  };
+
+  console.log(userInfo.user.memberId);
+  //시작할 때 데이터 다 들고와
+  useEffect(() => {
+    if (userInfo.isLoggedIn) {
+      fetchData();
+    }
+  }, [userInfo.isLoggedIn]);
 
   return (
     <NavBarContainer>
