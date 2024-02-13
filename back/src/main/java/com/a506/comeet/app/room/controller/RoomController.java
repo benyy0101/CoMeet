@@ -4,10 +4,13 @@ import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
 import com.a506.comeet.common.util.MemberUtil;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -27,17 +30,24 @@ public class RoomController {
     private final S3UploadService s3UploadService;
 
     @PostMapping("")
-    public ResponseEntity<Long> create(@Valid @RequestBody RoomCreateRequestDto req) {
+    public ResponseEntity<RoomSimpleResponseDto> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
-        Room created = roomService.create(req, memberId);
         req.setManagerId(memberId);
-        return ResponseEntity.ok(created.getId());
+        Room created = roomService.create(req, memberId);
+        RoomSimpleResponseDto res = new RoomSimpleResponseDto(created.getId(), created.getTitle(), created.getRoomImage());
+        return ResponseEntity.ok(res);
     }
 
     @PatchMapping("/{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
-        roomService.update(req, memberId, roomId);
+
+        try {
+            roomService.update(req, memberId, roomId);
+        } catch (DataIntegrityViolationException e) {
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
+        }
+
         return ResponseEntity.ok().build();
     }
 

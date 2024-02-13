@@ -19,10 +19,11 @@ interface til {
 }
 
 interface tilsProp {
+  isMe: boolean;
   memberId: string;
 }
 
-export default function MyTILCalendar({ memberId }: tilsProp) {
+export default function MyTILCalendar({ isMe, memberId }: tilsProp) {
   //현재 선택한 날짜
   const [selectedDay, setSelectedDay] = useState<Value>(new Date());
   const [tilList, setTilLIst] = useState<til[]>();
@@ -117,6 +118,7 @@ export default function MyTILCalendar({ memberId }: tilsProp) {
       {/* til 세부 모달 - 클릭한 날짜를 보내야 함 */}
       {isTilClick === true ? (
         <TilModal
+          isMe={isMe}
           toggleModal={handleTilModal}
           activeDate={activeDate}
           tilList={tilList}
