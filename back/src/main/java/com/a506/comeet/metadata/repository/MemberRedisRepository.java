@@ -38,7 +38,8 @@ public class MemberRedisRepository {
 
 
     public Long getCurrentRoomId(String memberId){
-        return (Long) redisTemplate.opsForHash().get(getCurrentMemberKey(memberId), "roomId");
+        String o = (String) redisTemplate.opsForHash().get(getCurrentMemberKey(memberId), "roomId");
+        return o!= null ? Long.parseLong(o) : null;
     }
 
 }
