@@ -35,7 +35,7 @@ public class NoteService {
     @Transactional
     public Note create(NoteCreateRequestDto req, String memberId) {
         Member writer = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "송신자가 존재하지 않습니다"));
-        Member receiver = memberRepository.findById(req.getReceiverId()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "수신자가 존재하지 않습니다"));
+        Member receiver = memberRepository.findByNickname(req.getReceiverNickname()).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER, "수신자가 존재하지 않습니다"));
         Note note = Note.builder()
                 .writer(writer)
                 .receiver(receiver)
