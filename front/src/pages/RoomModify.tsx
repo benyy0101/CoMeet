@@ -20,9 +20,13 @@ export default function RoomModify() {
   const roomData: RoomResponse | null = location.state.data;
 
   const [title, setTitle] = useState<string>(roomData?.title || "");
-  const [description, setDescription] = useState<string>(roomData?.description || "");
+  const [description, setDescription] = useState<string>(
+    roomData?.description || ""
+  );
   const [maxPeople, setMaxPeople] = useState<number>(roomData?.capacity || 10);
-  const [option, setOption] = useState<ROOM_CONSTRAINTS>(roomData?.constraints || "FREE");
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>(
+    roomData?.constraints || "FREE"
+  );
 
   //selectedFile 현재 올린파일
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
@@ -131,12 +135,8 @@ export default function RoomModify() {
             <ThumbImg
               id="profile"
               src={
-<<<<<<< front/src/pages/RoomModify.tsx
-                roomData?.room_image === "" || roomData?.room_image === "default_room_image_letsgo"
-=======
                 (roomData?.room_image === "" && imagePreview === "") ||
                 isRemoveImg === true
->>>>>>> front/src/pages/RoomModify.tsx
                   ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                   : imagePreview === ""
                     ? roomData?.room_image
@@ -198,7 +198,9 @@ export default function RoomModify() {
                 <option value="FREE">자유</option>
                 <option value="MICOFF">음소거 필수</option>
                 <option value="VIDEOON">캠/화면공유 필수</option>
-                <option value="VIDEOONMICOFF">캠/화면공유 필수, 음소거 필수</option>
+                <option value="VIDEOONMICOFF">
+                  캠/화면공유 필수, 음소거 필수
+                </option>
               </SelectOption>
             </InputUnit>
             <InputUnit className="w-1/3 justify-around">
