@@ -37,10 +37,11 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     @Override
     public Slice<RoomSearchResponseDto> searchDisposableRoom(RoomSearchRequestDto req, Pageable pageable) {
 
-        List<Room> content = jpaQueryFactory.selectFrom(room)
+        List<Room> content = jpaQueryFactory
+                .selectFrom(room)
                 .innerJoin(room.manager, member) // member는 1개만 사용됨
-                .leftJoin(room.roomKeywords, roomKeyword).fetchJoin()
-                .leftJoin(roomKeyword.keyword, keyword).fetchJoin()
+                .leftJoin(room.roomKeywords, roomKeyword)
+                .leftJoin(roomKeyword.keyword, keyword)
                 .where(
                         eqType(RoomType.DISPOSABLE),
                         eqKeyword(req.getSearchKeyword()),

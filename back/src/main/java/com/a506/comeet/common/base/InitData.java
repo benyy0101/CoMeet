@@ -28,7 +28,10 @@ import com.a506.comeet.app.room.repository.RoomRepository;
 import com.a506.comeet.app.room.service.ChannelService;
 import com.a506.comeet.app.room.service.LoungeService;
 import com.a506.comeet.app.room.service.RoomService;
-import com.a506.comeet.common.enums.*;
+import com.a506.comeet.common.enums.BoardType;
+import com.a506.comeet.common.enums.FreeBoardCategory;
+import com.a506.comeet.common.enums.RoomConstraints;
+import com.a506.comeet.common.enums.RoomType;
 import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import jakarta.annotation.PostConstruct;
@@ -38,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 @Component
 @Transactional
@@ -65,6 +69,10 @@ public class InitData {
     // 애플리케이션 시작 후 초기 데이터 설정
     @PostConstruct
     public void initData() {
+
+        // 시간 설정
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+
         // 회원 생성
         for (int i = 1; i <= 10; i++) {
             String userId = "user" + i;
@@ -242,7 +250,6 @@ public class InitData {
         Boolean exists = boardRepository.existsByTitle(title);
         if (!exists) {
             BoardCreateRequestDto req = BoardCreateRequestDto.builder()
-                    .writerId(writerId)
                     .title(title)
                     .content(content)
                     .type(type)

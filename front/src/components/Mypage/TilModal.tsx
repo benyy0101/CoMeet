@@ -10,6 +10,7 @@ interface til {
 }
 
 type ModalProps = {
+  isMe: boolean;
   toggleModal: () => void;
   refreshTils: () => void;
   activeDate: string;
@@ -151,16 +152,20 @@ function TilModal(props: ModalProps) {
             ) : (
               <TilContentEmpty>{tilContent}</TilContentEmpty>
             )}
-            <WriteOrModifyContainer>
-              {isTil ? (
-                <div>
-                  <WriteOrModify onClick={handleModifyTil}>수정</WriteOrModify>
-                  <Delete onClick={handleDelteTil}>삭제</Delete>
-                </div>
-              ) : (
-                <WriteOrModify onClick={handleWriteTil}>작성</WriteOrModify>
-              )}
-            </WriteOrModifyContainer>
+            {props.isMe ? (
+              <WriteOrModifyContainer>
+                {isTil ? (
+                  <div>
+                    <WriteOrModify onClick={handleModifyTil}>
+                      수정
+                    </WriteOrModify>
+                    <Delete onClick={handleDelteTil}>삭제</Delete>
+                  </div>
+                ) : (
+                  <WriteOrModify onClick={handleWriteTil}>작성</WriteOrModify>
+                )}
+              </WriteOrModifyContainer>
+            ) : null}
           </>
         )}
       </ModalContainer>
