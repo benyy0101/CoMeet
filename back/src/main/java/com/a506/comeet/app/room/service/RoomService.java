@@ -67,6 +67,7 @@ public class RoomService {
     private final String DEFAULT_CHANNEL_NAME = "기본 채널";
     private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
 
+    @Transactional
     public Room create(RoomCreateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
@@ -90,8 +91,7 @@ public class RoomService {
         return created;
     }
 
-    @Transactional
-    protected void setKeywords(RoomCreateRequestDto req, Room created) {
+    private void setKeywords(RoomCreateRequestDto req, Room created) {
         if (req.getKeywordIds() != null) {
             for (Long keywordId : req.getKeywordIds()) {
                 Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD));
@@ -101,14 +101,12 @@ public class RoomService {
         }
     }
 
-    @Transactional
-    protected void makeDefaultLoungeAndChannel(Room created) {
+    private void makeDefaultLoungeAndChannel(Room created) {
         loungeRepository.save(Lounge.builder().name(DEFAULT_LOUNGE_NAME).room(created).build());
         channelRepository.save(Channel.builder().name(DEFAULT_CHANNEL_NAME).room(created).build());
     }
 
-    @Transactional
-    protected Room createRoom(Room room) {
+    private Room createRoom(Room room) { // save는 바로 commit 됨으로 에러 발생시 바로 나옴
         try {
             return roomRepository.save(room);
         } catch (DataIntegrityViolationException e) {
@@ -116,6 +114,7 @@ public class RoomService {
         }
     }
 
+    @Transactional
     public void update(RoomUpdateRequestDto req, String memberId, long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         // 해당 요청을 방장이 요청했는지 확인
@@ -125,21 +124,31 @@ public class RoomService {
                 : null;
 
         S3ImageDelete(req, room);
-
-        updateRoom(req, room, newManager);
+        room.updateRoom(req, newManager);
 
         if (req.getKeywordIds() != null)
             updateRoomKeywords(req, room);
     }
 
-    @Transactional
-    protected void updateRoom(RoomUpdateRequestDto req, Room room, Member newManager) {
-        try {
-            room.updateRoom(req, newManager);
-        } catch (DataIntegrityViolationException e) {
-            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
+    private void updateRoomKeywords(RoomUpdateRequestDto req, Room room) {
+        Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
+        Set<Long> oldSet = room.getRoomKeywords().stream().map(r -> r.getKeyword().getId()).collect(Collectors.toSet());
+
+        // 새로 추가된 키워드 저장
+        Set<Long> pureNewSet = new HashSet<>(newSet);
+        pureNewSet.removeAll(oldSet);
+        for (Long id : pureNewSet) {
+            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findById(id).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD))));
+        }
+
+        // 제외된 키워드 삭제
+        Set<Long> pureOldSet = new HashSet<>(oldSet);
+        pureOldSet.removeAll(newSet);
+        for (Long id : pureOldSet) {
+            roomKeywordRepository.deleteByRoomIdAndKeywordId(room.getId(), id);
         }
     }
+
 
     private void S3ImageDelete(RoomUpdateRequestDto req, Room room) {
         if (req.getRoomImage() != null) {
@@ -157,6 +166,7 @@ public class RoomService {
         deleteRoom(room);
     }
 
+    @Transactional
     public void join(RoomJoinRequestDto req, String memberId, long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
 
@@ -192,7 +202,7 @@ public class RoomService {
 
         memberJoinValidation(room, member);
         passwordValidation(req, room);
-        doubleEnterValidation(memberId);
+        doubleEnterValidation(roomId, memberId);
 
         customRedisRepository.enterMember(memberId, roomId, LocalDateTime.now());
         return getRoomResponseDto(roomId);
@@ -268,8 +278,7 @@ public class RoomService {
             throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "방 입장 인원이 가득찼습니다");
     }
 
-    @Transactional
-    protected void deleteRoom(Room room) {
+    private void deleteRoom(Room room) {
         // 방과 관련된 엔티티 전부 삭제
         room.delete();
         Set<String> currentMemberId = roomRedisRepository.getMembers(room.getId());
@@ -281,8 +290,7 @@ public class RoomService {
     }
 
 
-    @Transactional
-    protected void joinMemberInnerLogic(Member member, Room room) {
+    private void joinMemberInnerLogic(Member member, Room room) {
         RoomMember roomMember = new RoomMember(member, room);
         alreadyJoinedValidation(member, room);
         roomMemberRepository.save(roomMember);
@@ -290,34 +298,15 @@ public class RoomService {
     }
 
 
-    @Transactional
-    protected void updateRoomKeywords(RoomUpdateRequestDto req, Room room) {
-        Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
-        Set<Long> oldSet = room.getRoomKeywords().stream().map(r -> r.getKeyword().getId()).collect(Collectors.toSet());
-
-        // 새로 추가된 키워드 저장
-        Set<Long> pureNewSet = new HashSet<>(newSet);
-        pureNewSet.removeAll(oldSet);
-        for (Long id : pureNewSet) {
-            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findById(id).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD))));
-        }
-
-        // 제외된 키워드 삭제
-        Set<Long> pureOldSet = new HashSet<>(oldSet);
-        pureOldSet.removeAll(newSet);
-        for (Long id : pureOldSet) {
-            roomKeywordRepository.deleteByRoomIdAndKeywordId(room.getId(), id);
-        }
-    }
-
     private void alreadyJoinedValidation(Member member, Room room) {
         if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
             throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "이미 방에 가입되어있습니다");
     }
 
-    private void doubleEnterValidation(String memberId) {
-        if (memberRedisRepository.alreadyInRoom(memberId)) {
-            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 방에 들어있는 유저입니다");
+    private void doubleEnterValidation(Long roomId, String memberId) {
+        Long currentRoomId = memberRedisRepository.getCurrentRoomId(memberId);
+        if (currentRoomId != null) {
+            leave(currentRoomId, memberId);
         }
     }
 

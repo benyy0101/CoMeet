@@ -40,7 +40,13 @@ public class RoomController {
     @PatchMapping("/{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
-        roomService.update(req, memberId, roomId);
+
+        try {
+            roomService.update(req, memberId, roomId);
+        } catch (DataIntegrityViolationException e) {
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
+        }
+
         return ResponseEntity.ok().build();
     }
 
@@ -50,15 +56,12 @@ public class RoomController {
         String memberId = MemberUtil.getMemberId();
         String url = s3UploadService.saveFile(multipartFile, "roomImage/");
         log.info("url : {}", url);
-        try {
-            roomService.update(RoomUpdateRequestDto
-                    .builder()
-                    .roomImage(url)
-                    .build(), memberId, roomId);
-        } catch (
-                DataIntegrityViolationException e) {
-            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
-        }
+
+        roomService.update(RoomUpdateRequestDto
+                .builder()
+                .roomImage(url)
+                .build(), memberId, roomId);
+
         return ResponseEntity.ok().build();
     }
 
