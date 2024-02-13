@@ -12,8 +12,9 @@ import { deleteNote, searchNote } from "api/Note";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ModalPortal from "utils/Portal";
 import { useDispatch } from "react-redux";
-import { decNoteNumber } from "store/reducers/userSlice";
+import { updateUnread } from "store/reducers/userSlice";
 import { set } from "react-hook-form";
+import { count } from "console";
 
 interface MessageListProps {
   swapState: (state: string, no: number) => void;
@@ -24,6 +25,8 @@ function MessageList(params: MessageListProps) {
   const [messages, setMessages] = React.useState<
     SearchNoteResponse | undefined
   >();
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
+
   const dispatch = useDispatch();
   const searchParams: SearchNoteParams = {
     page: page,
@@ -53,6 +56,14 @@ function MessageList(params: MessageListProps) {
   const writeNote = () => {
     swapState("write", 0);
   };
+  const countUnread = () => {
+    if (messages) {
+      const unreadMessages = messages.content.filter(
+        (message) => !message.isRead
+      );
+      return unreadMessages.length;
+    }
+  };
 
   const deleteNoteHandler = async (no: number) => {
     try {
@@ -71,6 +82,9 @@ function MessageList(params: MessageListProps) {
     }
   };
 
+  const onReadNote = (no: number) => {
+    readNote(no);
+  };
   return (
     <Wrapper>
       <Header>
@@ -91,9 +105,7 @@ function MessageList(params: MessageListProps) {
               <MessageTitle
                 onClick={() => {
                   readNote(message.id);
-                  if (!message.isRead) {
-                    dispatch(decNoteNumber());
-                  }
+                  dispatch(updateUnread(countUnread() || 0));
                 }}
               >
                 <p className="text-blue-400">{message.writerId}</p>님의 쪽지

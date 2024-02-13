@@ -68,6 +68,7 @@ export const NavBar = ({
       setIsServerOpen(false);
     }
   });
+  
 
   return (
     <NavBarContainer>
@@ -158,7 +159,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={BasicProfile} alt="profile" />
+                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
           </>
@@ -262,6 +263,7 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
+rounded-full
 h-8
 w-8
 `;

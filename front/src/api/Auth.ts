@@ -18,14 +18,11 @@ export const handleLogout = async () => {
   return response;
 };
 export const githubLogin = async (code: string): Promise<LoginResponse> => {
-  const response = await axios.get(
-    process.env.REACT_APP_API_SERVER_URL + "/auth/oauth2/login/github",
-    {
-      params: {
-        code: code,
-      },
-    }
-  );
+  const response = await localAxios.get("/auth/oauth2/login/github", {
+    params: {
+      code: code,
+    },
+  });
 
   return response.data;
 };
