@@ -727,7 +727,7 @@ export const Mainpage = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen absolute top-0 left-0">
+    <div className="w-screen h-screen fixed top-0 left-0">
       <CustomCamvas className="-z-50" ref={canvasRef} />
       <CustomCamvas className="-z-40" ref={cometCanvasRef} />
       <Title>Comeet</Title>
@@ -949,8 +949,8 @@ export const Mainpage = () => {
 
 const CustomCamvas = tw.canvas`
 absolute
-w-screen
-h-screen
+w-full
+h-full
 top-0
 left-0
 `;
