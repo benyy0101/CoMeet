@@ -66,7 +66,6 @@ export interface SearchRoomContent {
   constraints: ROOM_CONSTRAINTS;
   createdAt: string;
   keywords: Keyword[];
-  currentMcount: number;
 }
 
 interface Keyword {
