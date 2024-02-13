@@ -67,6 +67,7 @@ public class RoomService {
     private final String DEFAULT_CHANNEL_NAME = "기본 채널";
     private final String DEFAULT_LOUNGE_NAME = "기본 라운지";
 
+    @Transactional
     public Room create(RoomCreateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CommonErrorCode.RESOURCE_NOT_FOUND));
 
@@ -90,8 +91,7 @@ public class RoomService {
         return created;
     }
 
-    @Transactional
-    protected void setKeywords(RoomCreateRequestDto req, Room created) {
+    private void setKeywords(RoomCreateRequestDto req, Room created) {
         if (req.getKeywordIds() != null) {
             for (Long keywordId : req.getKeywordIds()) {
                 Keyword keyword = keywordRepository.findById(keywordId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD));
@@ -101,14 +101,12 @@ public class RoomService {
         }
     }
 
-    @Transactional
-    protected void makeDefaultLoungeAndChannel(Room created) {
+    private void makeDefaultLoungeAndChannel(Room created) {
         loungeRepository.save(Lounge.builder().name(DEFAULT_LOUNGE_NAME).room(created).build());
         channelRepository.save(Channel.builder().name(DEFAULT_CHANNEL_NAME).room(created).build());
     }
 
-    @Transactional
-    protected Room createRoom(Room room) {
+    private Room createRoom(Room room) {
         try {
             return roomRepository.save(room);
         } catch (DataIntegrityViolationException e) {
@@ -116,6 +114,7 @@ public class RoomService {
         }
     }
 
+    @Transactional
     public void update(RoomUpdateRequestDto req, String memberId, long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         // 해당 요청을 방장이 요청했는지 확인
@@ -125,15 +124,32 @@ public class RoomService {
                 : null;
 
         S3ImageDelete(req, room);
-
         updateRoom(req, room, newManager);
 
         if (req.getKeywordIds() != null)
             updateRoomKeywords(req, room);
     }
 
-    @Transactional
-    protected void updateRoom(RoomUpdateRequestDto req, Room room, Member newManager) {
+    private void updateRoomKeywords(RoomUpdateRequestDto req, Room room) {
+        Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
+        Set<Long> oldSet = room.getRoomKeywords().stream().map(r -> r.getKeyword().getId()).collect(Collectors.toSet());
+
+        // 새로 추가된 키워드 저장
+        Set<Long> pureNewSet = new HashSet<>(newSet);
+        pureNewSet.removeAll(oldSet);
+        for (Long id : pureNewSet) {
+            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findById(id).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD))));
+        }
+
+        // 제외된 키워드 삭제
+        Set<Long> pureOldSet = new HashSet<>(oldSet);
+        pureOldSet.removeAll(newSet);
+        for (Long id : pureOldSet) {
+            roomKeywordRepository.deleteByRoomIdAndKeywordId(room.getId(), id);
+        }
+    }
+
+    private void updateRoom(RoomUpdateRequestDto req, Room room, Member newManager) {
         try {
             room.updateRoom(req, newManager);
         } catch (DataIntegrityViolationException e) {
@@ -150,7 +166,6 @@ public class RoomService {
         }
     }
 
-    @Transactional
     public void delete(String memberId, Long roomId) {
         Room room = roomRepository.findById(roomId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_ROOM));
         authorityValidation(room, memberId);
@@ -289,26 +304,6 @@ public class RoomService {
         roomMember.joinRoom();
     }
 
-
-    @Transactional
-    protected void updateRoomKeywords(RoomUpdateRequestDto req, Room room) {
-        Set<Long> newSet = new HashSet<Long>(req.getKeywordIds());
-        Set<Long> oldSet = room.getRoomKeywords().stream().map(r -> r.getKeyword().getId()).collect(Collectors.toSet());
-
-        // 새로 추가된 키워드 저장
-        Set<Long> pureNewSet = new HashSet<>(newSet);
-        pureNewSet.removeAll(oldSet);
-        for (Long id : pureNewSet) {
-            roomKeywordRepository.save(new RoomKeyword(room, keywordRepository.findById(id).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_KEYWORD))));
-        }
-
-        // 제외된 키워드 삭제
-        Set<Long> pureOldSet = new HashSet<>(oldSet);
-        pureOldSet.removeAll(newSet);
-        for (Long id : pureOldSet) {
-            roomKeywordRepository.deleteByRoomIdAndKeywordId(room.getId(), id);
-        }
-    }
 
     private void alreadyJoinedValidation(Member member, Room room) {
         if (roomMemberRepository.existsByRoomAndMember(room, member)) // 최적화 가능
