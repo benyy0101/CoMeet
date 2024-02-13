@@ -64,9 +64,14 @@ export interface SearchRoomContent {
   //password: string | null;
   constraints: ROOM_CONSTRAINTS;
   createdAt: string;
-  keywords: number[];
+  keywords: Keyword[];
+  currentMcount: number;
 }
 
+interface Keyword {
+  id: number;
+  name: string;
+}
 export interface SearchRoomResponse {
   content: SearchRoomContent[];
   pageable: Pageable;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import Modal from "./Common/Modal";
 import Video from "../assets/img/video.png";
@@ -6,11 +6,36 @@ import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
 import { RoomItemProps } from "../types";
 import { SearchRoomContent } from "models/Room.interface";
-import { SpeakerXMarkIcon, VideoCameraIcon } from "@heroicons/react/24/solid";
+import {
+  SpeakerXMarkIcon,
+  VideoCameraIcon,
+  SpeakerWaveIcon,
+  VideoCameraSlashIcon,
+} from "@heroicons/react/24/solid";
+import { set } from "react-hook-form";
 
 export default function RoomItem(props: SearchRoomContent) {
   // function RoomItem(props: RoomItemProps) {
   const [modal, setModal] = React.useState<boolean>(false);
+  const [isMute, setIsMute] = React.useState<boolean>(false);
+  const [isVideo, setIsVideo] = React.useState<boolean>(false);
+
+  const optionHandler = () => {
+    const option = props.constraints;
+    if (option === "VIDEOONMICOFF") {
+      setIsMute(true);
+      setIsVideo(true);
+    } else if (option === "VIDEOON") {
+      setIsVideo(true);
+    } else if (option === "MICOFF") {
+      setIsMute(true);
+    }
+  };
+
+  useEffect(() => {
+    optionHandler();
+  }, []);
+
   const modalHandler = () => {
     setModal(!modal);
   };
@@ -21,7 +46,8 @@ export default function RoomItem(props: SearchRoomContent) {
           style={{
             backgroundImage: `url(
             ${
-              props.roomImage === "" || props.roomImage === "default_room_image_letsgo"
+              props.roomImage === "" ||
+              props.roomImage === "default_room_image_letsgo"
                 ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                 : props.roomImage
             })`,
@@ -34,26 +60,42 @@ export default function RoomItem(props: SearchRoomContent) {
           <Manager>{props.managerNickname}</Manager>
         </TitleContainer>
         <Description>{props.description}</Description>
-      </Column>
-      <Column>
         <KeywordContainer>
-          
+          {props.keywords.map((keyword) => {
+            return <Keyword>{keyword.name}</Keyword>;
+          })}
         </KeywordContainer>
       </Column>
       <Column>
         <OptionContainer>
-          <VideoCameraIcon className="w-6 h-6 text-slate-700" />
-          <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
+          {isMute ? (
+            <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <SpeakerWaveIcon className="w-6 h-6 text-slate-700" />
+          )}
+          {isVideo ? (
+            <VideoCameraIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
+          )}
         </OptionContainer>
       </Column>
       <Column>
         <CountContainer>
           {/* <CountTitle>인원</CountTitle> */}
-          <Count>? / {props.capacity}</Count>
+          <Count>
+            {props.currentMcount} / {props.capacity}
+          </Count>
         </CountContainer>
       </Column>
 
-      {modal && <Modal toggleModal={modalHandler} option="confirm" setting={props}></Modal>}
+      {modal && (
+        <Modal
+          toggleModal={modalHandler}
+          option="confirm"
+          setting={props}
+        ></Modal>
+      )}
     </Wrapper>
   );
 }
@@ -70,7 +112,7 @@ rounded-md
 cursor-pointer 
 hover:bg-purple-50
 shadow-md
-h-32
+h-40
 `;
 
 const Column = tw.div`
