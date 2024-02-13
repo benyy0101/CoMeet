@@ -1,10 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "components/Common/Pagination";
-import {
-  SearchNoteContent,
-  SearchNoteParams,
-  SearchNoteResponse,
-} from "models/Note.interface";
+import { SearchNoteContent, SearchNoteParams, SearchNoteResponse } from "models/Note.interface";
 import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -33,24 +29,14 @@ function MessageList(params: MessageListProps) {
   //이 친구로 페이지가 바뀌었는지 판단함
   const numberOfElements = useRef<number>(0);
 
-  const searchMessage = (dd: SearchNoteContent[]) => {
+  const searchMessage = () => {
     searchNote(searchNoteParams)
       .then((data) => {
         setNoteList((prev) => {
-          let newNoteList: SearchNoteContent[] = [];
-          for (const each of data.content) {
-            let flag = true;
-            for (const pre of prev) {
-              if (pre.id === each.id) {
-                flag = false;
-                break;
-              }
-            }
-            if (flag) newNoteList.push(each);
-          }
-          return prev.concat(newNoteList);
+          return prev.concat(
+            data.content.filter((each) => (prev.find((dat) => dat.id === each.id) ? false : true))
+          );
         });
-
         numberOfElements.current = data.numberOfElements;
       })
       .catch((f) => {
@@ -72,11 +58,10 @@ function MessageList(params: MessageListProps) {
     const target = entries[0];
     if (target.isIntersecting) {
       if (numberOfElements.current === pagesize) {
-        console.log(11);
         searchNoteParams.page++;
       }
       setSearchNoteParams(searchNoteParams);
-      searchMessage(noteList);
+      searchMessage();
     }
   };
 
@@ -96,9 +81,9 @@ function MessageList(params: MessageListProps) {
           return prevMessages;
         }
 
-        const newContent =
-          prevMessages?.filter((message) => message.id !== no) || [];
-        return { ...prevMessages, content: newContent };
+        const newContent = prevMessages?.filter((message) => message.id !== no) || [];
+        return newContent;
+        // return { ...prevMessages, content: newContent };
       });
     } catch (e) {
       console.error(e);
@@ -133,11 +118,7 @@ function MessageList(params: MessageListProps) {
                 <p className="text-blue-400">{message.writerId}</p>님의 쪽지
               </MessageTitle>
               <RightBox>
-                {message.isRead ? (
-                  <Status>읽음</Status>
-                ) : (
-                  <Status>안읽음</Status>
-                )}
+                {message.isRead ? <Status>읽음</Status> : <Status>안읽음</Status>}
                 <TrashCan onClick={() => deleteNoteHandler(message.id)}>
                   <TrashIcon className="w-6 h-6"></TrashIcon>
                 </TrashCan>
