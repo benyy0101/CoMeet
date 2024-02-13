@@ -9,6 +9,7 @@ import particleMask from "assets/texture/particleMask.png";
 import SmokeTexture from "assets/texture/smoke.png";
 import { useSearchParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
+import { hexTransparencies } from "constants/HexAlpha";
 
 const perlin3d = `
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -87,7 +88,8 @@ float perlin3d(vec3 P)
 
 export const Mainpage = () => {
   const canvasRef = useRef();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const cometCanvasRef = useRef();
+  const [searchParams, _] = useSearchParams();
 
   useEffect(() => {
     async function render() {
@@ -100,6 +102,8 @@ export const Mainpage = () => {
         gui.domElement.id = "gui";
       }
       const canvas = canvasRef.current;
+      const cometCanvas = cometCanvasRef.current;
+
       const scene = new THREE.Scene();
 
       const sizes = {
@@ -107,13 +111,10 @@ export const Mainpage = () => {
         height: window.innerHeight,
         pixelRatio: Math.min(Math.max(window.devicePixelRatio, 1), 2),
       };
+      cometCanvas.width = sizes.width;
+      cometCanvas.height = sizes.height;
 
-      const camera = new THREE.PerspectiveCamera(
-        55,
-        sizes.width / sizes.height,
-        0.01,
-        150
-      );
+      const camera = new THREE.PerspectiveCamera(55, sizes.width / sizes.height, 0.01, 150);
       camera.position.z = 5;
       camera.rotation.reorder("YXZ");
 
@@ -422,10 +423,7 @@ export const Mainpage = () => {
       });
       particleMaterial.needsUpdate = true;
 
-      const particlePoints = new THREE.Points(
-        particleGeometry,
-        particleMaterial
-      );
+      const particlePoints = new THREE.Points(particleGeometry, particleMaterial);
       particlePoints.position.y = -5;
 
       function setParticleGeometry() {
@@ -478,22 +476,10 @@ export const Mainpage = () => {
           .add(particleMaterial.uniforms.uSize, "value", 0, 200, 0.1)
           .name("사이즈");
         particleDebugFolder
-          .add(
-            particleMaterial.uniforms.uProgressSpeed,
-            "value",
-            0,
-            0.05,
-            0.001
-          )
+          .add(particleMaterial.uniforms.uProgressSpeed, "value", 0, 0.05, 0.001)
           .name("진행속도");
         particleDebugFolder
-          .add(
-            particleMaterial.uniforms.uPerlinFrequency,
-            "value",
-            0,
-            0.5,
-            0.01
-          )
+          .add(particleMaterial.uniforms.uPerlinFrequency, "value", 0, 0.5, 0.01)
           .name("Perlin 주기");
         particleDebugFolder
           .add(particleMaterial.uniforms.uPerlinMultiplier, "value", 0, 2, 0.1)
@@ -530,21 +516,148 @@ export const Mainpage = () => {
           tDiffuse: { value: null },
         },
       });
-      const renderTarget = new THREE.WebGLRenderTarget(
-        sizes.width,
-        sizes.height,
-        {
-          generateMipmaps: false,
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          encoding: THREE.sRGBEncoding,
-        }
-      );
+      const renderTarget = new THREE.WebGLRenderTarget(sizes.width, sizes.height, {
+        generateMipmaps: false,
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        encoding: THREE.sRGBEncoding,
+      });
       const composer = new EffectComposer(renderer, renderTarget);
       composer.setSize(sizes.width, sizes.height);
       composer.setPixelRatio(sizes.pixelRatio);
       composer.addPass(renderPass);
       composer.addPass(finalPass);
+
+      /**
+       * Comet
+       */
+      let cometDebugFolder;
+      if (searchParams.get("debug")) {
+        cometDebugFolder = gui.addFolder("Comet");
+      }
+
+      let ctx;
+      const cometConfig = {
+        speedCoeff: 0.05,
+        cometCount: 3,
+        cometColor: "#e2e1e0",
+      };
+      let stars = [];
+
+      if (searchParams.get("debug")) {
+        cometDebugFolder
+          .add(cometConfig, "speedCoeff", 0.01, 0.1, 0.01)
+          .name("속도 계수")
+          .onChange(createUniverse);
+        cometDebugFolder
+          .add(cometConfig, "cometCount", 1, 100, 1)
+          .name("갯수")
+          .onChange(createUniverse);
+        cometDebugFolder
+          .addColor(cometConfig, "cometColor", { view: "color" })
+          .name("색상")
+          .onChange(createUniverse);
+      }
+
+      createUniverse();
+
+      function createUniverse() {
+        ctx = cometCanvas.getContext("2d");
+
+        for (var i = 0; i < cometConfig.cometCount; i++) {
+          stars[i] = new Star();
+          stars[i].reset();
+        }
+
+        draw();
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, sizes.width, sizes.height);
+
+        let starsLength = stars.length;
+
+        for (var i = 0; i < starsLength; i++) {
+          var star = stars[i];
+          star.move();
+          star.fadeIn();
+          star.fadeOut();
+          star.draw();
+        }
+      }
+
+      function Star() {
+        this.reset = function () {
+          this.x = getRandInterval(0, sizes.width - 10);
+          this.y = getRandInterval(0, sizes.height);
+          this.r = getRandInterval(1.1, 2.6);
+          this.dx =
+            getRandInterval(cometConfig.speedCoeff, 6 * cometConfig.speedCoeff) +
+            cometConfig.speedCoeff * getRandInterval(50, 120) +
+            cometConfig.speedCoeff * 2;
+          this.dy =
+            -getRandInterval(cometConfig.speedCoeff, 6 * cometConfig.speedCoeff) -
+            cometConfig.speedCoeff * getRandInterval(50, 120);
+          this.fadingOut = null;
+          this.fadingIn = true;
+          this.opacity = 0;
+          this.opacityTresh = getRandInterval(0.2, 1 - 0.4);
+          this.do = getRandInterval(0.0005, 0.002) + 0.001;
+        };
+
+        this.fadeIn = function () {
+          if (this.fadingIn) {
+            this.fadingIn = this.opacity > this.opacityTresh ? false : true;
+            this.opacity += this.do;
+          }
+        };
+
+        this.fadeOut = function () {
+          if (this.fadingOut) {
+            this.fadingOut = this.opacity < 0 ? false : true;
+            this.opacity -= this.do / 2;
+            if (this.x > sizes.width || this.y < 0) {
+              this.fadingOut = false;
+              this.reset();
+            }
+          }
+        };
+
+        this.draw = function () {
+          ctx.beginPath();
+
+          ctx.fillStyle =
+            cometConfig.cometColor + hexTransparencies[Math.round(this.opacity * 100)];
+          ctx.arc(this.x, this.y, 1.5, 0, 2 * Math.PI, false);
+
+          //comet tail
+          for (var i = 0; i < 30; i++) {
+            const newOpacity = this.opacity - (this.opacity / 20) * i;
+            ctx.fillStyle =
+              cometConfig.cometColor + hexTransparencies[Math.round(newOpacity * 100)];
+            ctx.rect(this.x - (this.dx / 4) * i, this.y - (this.dy / 4) * i - 2, 1, 2);
+            ctx.fill();
+          }
+
+          ctx.closePath();
+          ctx.fill();
+        };
+
+        this.move = function () {
+          this.x += this.dx;
+          this.y += this.dy;
+          if (this.fadingOut === false) {
+            this.reset();
+          }
+          if (this.x > sizes.width - sizes.width / 4 || this.y < 0) {
+            this.fadingOut = true;
+          }
+        };
+      }
+
+      function getRandInterval(min, max) {
+        return Math.random() * (max - min) + min;
+      }
 
       /**
        * 업데이트 함수
@@ -553,10 +666,6 @@ export const Mainpage = () => {
 
       function tick() {
         const elapsedTime = clock.getElapsedTime();
-
-        /**
-         * Logic
-         */
 
         // Gradient
         gradientColor.start.value = `hsl(${elapsedTime * 10}, ${gradientColor.start.saturation}%, ${gradientColor.start.lightness}%)`;
@@ -582,6 +691,10 @@ export const Mainpage = () => {
         if (searchParams.get("debug")) {
           controls.update();
         }
+
+        // comet
+        draw();
+
         requestAnimationFrame(tick);
       }
       // renderer.render(scene, camera);
@@ -615,9 +728,10 @@ export const Mainpage = () => {
 
   return (
     <div className="w-screen h-screen absolute top-0 left-0">
-      <canvas ref={canvasRef} />
+      <CustomCamvas className="z-0" ref={canvasRef} />
+      <CustomCamvas className="z-20 " ref={cometCanvasRef} id="universe" />
       <Title>Comeet</Title>
-      <div id="footer" className="absolute z-1000 w-full bottom-0 h-[300px]">
+      <div id="footer" className="absolute z-20 w-full bottom-0 h-[300px]">
         <svg
           id="scene"
           x="0px"
@@ -833,6 +947,14 @@ export const Mainpage = () => {
   );
 };
 
+const CustomCamvas = tw.canvas`
+absolute
+w-screen
+h-screen
+top-0
+left-0
+`;
+
 const Title = tw.div`
 absolute
 left-1/2
@@ -842,4 +964,5 @@ top-1/2
 text-slate-50/50
 text-7xl
 font-thin
+z-30
 `;
