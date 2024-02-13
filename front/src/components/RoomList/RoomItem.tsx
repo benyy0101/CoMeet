@@ -12,6 +12,7 @@ import {
   SpeakerWaveIcon,
   VideoCameraSlashIcon,
   UsersIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/solid";
 import { set } from "react-hook-form";
 
@@ -78,6 +79,9 @@ export default function RoomItem(props: SearchRoomContent) {
             <VideoCameraIcon className="w-6 h-6 text-slate-700" />
           ) : (
             <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
+          )}
+          {props.isLocked && (
+            <LockClosedIcon className="w-6 h-6 text-slate-700" />
           )}
         </OptionContainer>
       </Column>
