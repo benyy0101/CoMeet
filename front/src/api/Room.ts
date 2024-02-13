@@ -122,7 +122,7 @@ export const uploadRoomImage = async (roomId: string, fileImage: FormData) => {
   const response = await imageAxios.post(url, fileImage);
 };
 
-export const deleteRoomImage = async (roomId: number) => {
+export const deleteRoomImage = async (roomId: string) => {
   const url = `room/image/${roomId}`;
-  const response = await imageAxios.delete(url);
+  const response = await localAxios.delete(url);
 };

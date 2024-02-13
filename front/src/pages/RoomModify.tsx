@@ -1,4 +1,9 @@
-import { modifyRoom, uploadRoomImage, deleteRoom } from "api/Room";
+import {
+  modifyRoom,
+  uploadRoomImage,
+  deleteRoomImage,
+  deleteRoom,
+} from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { RoomResponse } from "models/Room.interface";
 import React, { useState, ChangeEvent, useEffect } from "react";
@@ -30,6 +35,9 @@ export default function RoomModify() {
   //이미지 미리보기 파일
   const [imagePreview, setImagePreview] = useState<string>("");
 
+  //이미지 제거 했는지 확인
+  const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
+
   //이미지 바뀔 때 미리보기
   const onChangeImage = async (e: any) => {
     e.preventDefault();
@@ -50,12 +58,10 @@ export default function RoomModify() {
           }
         };
         reader.readAsDataURL(file);
+        setIsRemoveImg(false);
       }
     }
   };
-
-  console.log(imagePreview);
-  console.log(roomData?.room_image);
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,13 +80,16 @@ export default function RoomModify() {
           formData.append("roomImageFile", selectedFile);
           await uploadRoomImage(roomId, formData);
 
-          navigate(`/room/${roomId}`);
+          setIsRemoveImg(false);
+          window.location.replace(`room/${roomId}`);
         }
       } catch {
         alert("이미지 업로드에 실패했습니다.");
       }
     } else {
-      alert("업로드 할 이미지를 선택해주세요.");
+      if (isRemoveImg && imagePreview === "" && roomId) {
+        await deleteRoomImage(roomId);
+      }
     }
 
     try {
@@ -108,6 +117,14 @@ export default function RoomModify() {
     setOption(e.target.value as ROOM_CONSTRAINTS);
   };
 
+  //이미지 제거 버튼 눌렀을 때
+  const handleRoomImageRemove = async () => {
+    if (roomId) {
+      setIsRemoveImg(true);
+      setImagePreview("");
+    }
+  };
+
   return (
     <Wrapper>
       <CreateRoomContainer>
@@ -120,7 +137,8 @@ export default function RoomModify() {
             <ThumbImg
               id="profile"
               src={
-                roomData?.room_image === "" && imagePreview === ""
+                (roomData?.room_image === "" && imagePreview === "") ||
+                isRemoveImg === true
                   ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                   : imagePreview === ""
                     ? roomData?.room_image
@@ -134,6 +152,11 @@ export default function RoomModify() {
             </ThumbHover>
           </ThumbContainer>
         </ThumbLabel>
+        {roomData?.room_image || imagePreview ? (
+          <ImageRemoveButton onClick={handleRoomImageRemove}>
+            이미지 제거
+          </ImageRemoveButton>
+        ) : null}
         <input
           className="hidden"
           type="file"
@@ -240,6 +263,11 @@ relative
 flex
 items-center
 justify-center
+`;
+
+const ImageRemoveButton = tw.button`
+border-gray-300 bg-gray-300 rounded-lg p-1 ml-11 mt-3
+w-24
 `;
 
 const ThumbImg = tw.img`
