@@ -1,7 +1,7 @@
 import { modifyRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { RoomResponse } from "models/Room.interface";
-import React, { useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
@@ -13,16 +13,10 @@ export default function RoomModify() {
 
   const roomData: RoomResponse | null = location.state.data;
 
-  const [title, setTitle] = React.useState<string>(roomData?.title || "");
-  const [description, setDescription] = React.useState<string>(
-    roomData?.description || ""
-  );
-  const [maxPeople, setMaxPeople] = React.useState<number>(
-    roomData?.capacity || 10
-  );
-  const [option, setOption] = React.useState<ROOM_CONSTRAINTS>(
-    roomData?.constraints || "FREE"
-  );
+  const [title, setTitle] = useState<string>(roomData?.title || "");
+  const [description, setDescription] = useState<string>(roomData?.description || "");
+  const [maxPeople, setMaxPeople] = useState<number>(roomData?.capacity || 10);
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>(roomData?.constraints || "FREE");
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,8 +61,7 @@ export default function RoomModify() {
             <ThumbImg
               id="profile"
               src={
-                roomData?.room_image === "" ||
-                roomData?.room_image === "default_room_image_letsgo"
+                roomData?.room_image === "" || roomData?.room_image === "default_room_image_letsgo"
                   ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                   : roomData?.room_image
               }
@@ -100,12 +93,14 @@ export default function RoomModify() {
           </InputUnit>
           <Block />
           <SubTitle>방 제한:</SubTitle>
-          <InputUnit className="w-1/3">
-            <Label>
-              비밀번호 <LabelSpan>(optional)</LabelSpan>
-            </Label>
-            <TextInput type="password" />
-          </InputUnit>
+          {roomData?.type === "DISPOSABLE" && (
+            <InputUnit className="w-1/3">
+              <Label>
+                비밀번호 <LabelSpan>(optional)</LabelSpan>
+              </Label>
+              <TextInput type="password" />
+            </InputUnit>
+          )}
           <InputUnit>
             <Label>키워드</Label>
             <TextInput />
@@ -119,9 +114,7 @@ export default function RoomModify() {
                 <option value="FREE">자유</option>
                 <option value="MICOFF">음소거 필수</option>
                 <option value="VIDEOON">캠/화면공유 필수</option>
-                <option value="VIDEOONMICOFF">
-                  캠/화면공유 필수, 음소거 필수
-                </option>
+                <option value="VIDEOONMICOFF">캠/화면공유 필수, 음소거 필수</option>
               </SelectOption>
             </InputUnit>
             <InputUnit className="w-1/3 justify-around">
