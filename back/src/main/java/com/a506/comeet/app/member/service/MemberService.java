@@ -45,17 +45,14 @@ public class MemberService {
     @Transactional
     public void update(MemberUpdateRequestDto req, String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
-        S3ImageDelete(req, member);
-        member.updateMember(req);
-    }
 
-    private void S3ImageDelete(MemberUpdateRequestDto req, Member member) {
-        if (req.getProfileImage() != null) {
-            String imageUrl = member.getProfileImage();
-            if (!imageUrl.equals("")) {
-                s3UploadService.deleteImage(imageUrl, "profileImage/");
-            }
-        }
+        emailDuplicateValidation(req);
+        nicknameDuplicateValidation(req);
+
+        S3ImageDelete(req, member);
+        encodePassword(req);
+
+        member.updateMember(req);
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req) {
@@ -74,5 +71,29 @@ public class MemberService {
                 .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         metadataService.calculate(res, memberId);
         return res;
+    }
+
+    private void nicknameDuplicateValidation(MemberUpdateRequestDto req) {
+        if(req.getNickname() != null && memberRepository.existsByNickname(req.getNickname()))
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "이미 존재하는 닉네임입니다");
+    }
+
+    private void emailDuplicateValidation(MemberUpdateRequestDto req) {
+        if(req.getEmail() != null && memberRepository.existsByEmail(req.getEmail()))
+            throw new RestApiException(CustomErrorCode.DUPLICATE_VALUE, "이미 존재하는 이메일입니다");
+    }
+
+    private void S3ImageDelete(MemberUpdateRequestDto req, Member member) {
+        if (req.getProfileImage() != null) {
+            String imageUrl = member.getProfileImage();
+            if (!imageUrl.equals("")) {
+                s3UploadService.deleteImage(imageUrl, "profileImage/");
+            }
+        }
+    }
+
+    private void encodePassword(MemberUpdateRequestDto req) {
+        if (req.getPassword() != null)
+            req.setPassword(passwordEncoder.encode(req.getPassword()));
     }
 }

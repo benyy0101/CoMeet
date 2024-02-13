@@ -249,7 +249,7 @@ export const FreeBoardList = () => {
                 </SearchWrapper>
               </SearchContainer>
               <Link
-                to={`/write-article?type=free&option=write`}
+                to={`/write-article?type=FREE&option=write`}
                 state={{
                   editId: 0,
                   editTitle: "",

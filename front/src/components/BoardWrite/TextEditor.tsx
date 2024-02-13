@@ -19,20 +19,21 @@ import { useLocation, useParams } from "react-router-dom";
 
 type SelectOption = {
   key: number;
-  value: string;
+  value: FREE_BOARD_CATEGORY;
   label: string;
 };
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
-  const {editId, editTitle, editContent, isValid} = location.state;
+  const { editId, editTitle, editContent, isValid, editCategory } = location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
   const [selectOption, setSelectOption] = useState<SelectOption[]>([
-    { key: 1, value: "question", label: "질문하기" },
-    { key: 2, value: "recruit", label: "구인구직" },
-    { key: 3, value: "tips", label: "팁/정보" },
+    { key: 1, value: "QUESTION", label: "질문하기" },
+    { key: 2, value: "PROMOTION", label: "구인구직" },
+    { key: 3, value: "TIP", label: "팁/정보" },
+    { key: 4, value: "CHAT", label: "잡담" },
   ]);
 
   //isEdit이 true면 수정하기, false면 새 글 작성하기
@@ -40,7 +41,7 @@ function TextEditor(props: TextEditProps) {
   const [headerTitle, setHeaderTitle] = useState<string>("자유게시판");
 
   const dummy1: CreateBoardParams = {
-    context: "",
+    content: "",
     title: "",
     type: "RECRUIT",
   };
@@ -74,10 +75,9 @@ function TextEditor(props: TextEditProps) {
     setSelectedRoom(room);
   };
 
-  const isValidHandler = () =>{
+  const isValidHandler = () => {
     setIsRoomValid(!isRoomValid);
-  }
-  
+  };
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 조건대로 입력이 들어왔는지 체크
@@ -104,6 +104,7 @@ function TextEditor(props: TextEditProps) {
       modifyBoardParams.content = context;
       modifyBoardParams.boardId = editId;
       if (isFree) {
+        console.log("categroy", category);
         modifyBoardParams.category = category;
       } else {
         modifyBoardParams.isValid = isRoomValid;
@@ -121,10 +122,15 @@ function TextEditor(props: TextEditProps) {
           return fail;
         });
     } else {
-      createBoardParams.type = isFree ? "FREE" : "RECRUIT";
+      if (isFree) {
+        createBoardParams.type = "FREE";
+        createBoardParams.category = category;
+      } else {
+        createBoardParams.type = "RECRUIT";
+        createBoardParams.roomId = selectedRoom;
+      }
       createBoardParams.title = title;
-      createBoardParams.context = context;
-      createBoardParams.roomId = selectedRoom;
+      createBoardParams.content = context;
 
       console.log(createBoardParams);
       setCreateBoardParams(createBoardParams);
@@ -132,8 +138,7 @@ function TextEditor(props: TextEditProps) {
       createBoard(createBoardParams)
         .then((data) => {
           console.log("success", data);
-          navigate(`/recruit-board/${data}`);
-          return data;
+          navigate(isFree ? `/free-board/${data}` : `/recruit-board/${data}`);
         })
         .catch((fail) => {
           console.log("failed", fail.response.data);
@@ -149,11 +154,16 @@ function TextEditor(props: TextEditProps) {
       </Header>
       <TitleWrapper>
         {/* 모집글 수정 시 유효한지 아닌지 체크할 수 있다. 그걸 여기에서 걸어주면 좋겠다 */}
-        
+
         {isFree && (
-          <SelectForm>
+          <SelectForm
+            onChange={(data) => {
+              //@ts-ignore
+              setCategory(data.target.selectedOptions[0].value);
+            }}
+          >
             {selectOption.map((option) => (
-              <option value={option.value} key={option.key}>
+              <option value={option.value?.toString()} key={option.key}>
                 {option.label}
               </option>
             ))}
@@ -167,19 +177,21 @@ function TextEditor(props: TextEditProps) {
         ></TitleInput>
       </TitleWrapper>
       <OptionContainer>
-      {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
-      <ValidButtonContainer>
-        {
-          !isFree && <>
-          <ValidButton isOn={isRoomValid} onClick={isValidHandler}>모집중</ValidButton>
-      <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>모집완료</ValidButton>
-          </>
-        }
-      
-      </ValidButtonContainer>
-      
+        {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
+        <ValidButtonContainer>
+          {!isFree && (
+            <>
+              <ValidButton isOn={isRoomValid} onClick={isValidHandler}>
+                모집중
+              </ValidButton>
+              <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>
+                모집완료
+              </ValidButton>
+            </>
+          )}
+        </ValidButtonContainer>
       </OptionContainer>
-      
+
       <QuillContainer>
         <Editor
           ref={editorRef}
@@ -192,7 +204,7 @@ function TextEditor(props: TextEditProps) {
         />
       </QuillContainer>
       <ButtonWrapper>
-        <CancelButton >취소하기</CancelButton>
+        <CancelButton>취소하기</CancelButton>
         <SubmitButton onClick={handleWrite}>작성하기</SubmitButton>
       </ButtonWrapper>
     </Wrapper>
@@ -271,21 +283,19 @@ const TitleInput = tw.input`
 const OptionContainer = tw.div`
 flex
 justify-between
-`
+`;
 
 const ValidButtonContainer = tw.div`
 flex
 space-x-3
-`
+`;
 
-const ValidButton = tw.div<{isOn: boolean}>`
+const ValidButton = tw.div<{ isOn: boolean }>`
 p-1
 text-black
 
-${(props) => (
-  props.isOn ? "text-purple-700 border-purple-700 border-b-2" : "text-violet-100"
-)}
-`
+${(props) => (props.isOn ? "text-purple-700 border-purple-700 border-b-2" : "text-violet-100")}
+`;
 const QuillContainer = tw.div`
     w-full
     min-h-[300px]  

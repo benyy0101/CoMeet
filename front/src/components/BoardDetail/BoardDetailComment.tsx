@@ -3,12 +3,14 @@ import tw from "tailwind-styled-components";
 import { BoardCommentComponent } from "./BoardCommentComponent";
 import {
   CreateCommentParams,
+  ModifyCommentParams,
   SearchCommentContent,
   SearchCommentParams,
   SearchCommentResponse,
 } from "models/Comments.interface";
 import { useQuery } from "@tanstack/react-query";
-import { createComment, searchComment } from "api/Comment";
+import { createComment, deleteComment, modifyComment, searchComment } from "api/Comment";
+import { useSelector } from "react-redux";
 
 type TotalCommentProps = {
   boardId: number;
@@ -23,6 +25,7 @@ type TotalCommentProps = {
 
 export const BoardDetailComment = (props: TotalCommentProps) => {
   const { boardId } = props;
+  const memberNickname = useSelector((state: any) => state.user.user.nickname);
 
   //댓글 달기 관련
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
@@ -76,14 +79,54 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
 
   const handleWrite = (e: React.FormEvent) => {
     e.preventDefault();
-    if (contentRef.current?.value === "") {
+    const content = contentRef.current!.value;
+    if (content === "") {
       alert("글을 써주세요");
       return;
     }
-    createComment({ boardId: boardId, content: contentRef.current!.value })
-      .then((data) => console.log("success", data))
-      .catch(() => console.log("failed"));
-    contentRef.current!.value = "";
+    createComment({ boardId, content })
+      .then((data) => {
+        contentRef.current!.value = "";
+        console.log("success", data);
+        //정말 간단하게만 조치해둔 것. 엄밀하게는 페이지를 기준으로 새로 api 날리는 게..
+        const date = new Date();
+        const currentComment = {
+          boardId,
+          content,
+          createdAt: date.toDateString(),
+          updatedAt: date.toDateString(),
+          id: data,
+          writerNickname: memberNickname,
+        };
+        setCommentList([...commentList, currentComment]);
+      })
+      .catch(() => alert("failed"));
+  };
+
+  const handleDelete = (id: number) => {
+    deleteComment({ commentId: id })
+      .then((data) => {
+        console.log("success");
+        setCommentList(commentList.filter((each) => each.id !== id));
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+      });
+  };
+
+  const handleModify = (params: ModifyCommentParams) => {
+    modifyComment(params)
+      .then((data) => {
+        console.log("success");
+        setCommentList(
+          commentList.map((each) =>
+            each.id === params.commentId ? { ...each, content: params.content } : each
+          )
+        );
+      })
+      .catch((fail) => {
+        console.log("failure", fail.response.data);
+      });
   };
 
   return (
@@ -107,7 +150,12 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
       </WriteCommentContainer>
       {/* 댓글 부분들 - array로 받아와서 map 돌릴 부분 */}
       {commentList.map((comment) => (
-        <BoardCommentComponent key={comment.id} {...comment} />
+        <BoardCommentComponent
+          key={comment.id}
+          comment={comment}
+          handleDelete={handleDelete}
+          handleModify={handleModify}
+        />
       ))}
       <div id="observer" style={{ height: "10px" }}>
         333

@@ -259,74 +259,74 @@ export const RecruitBoardList = () => {
             </BoardListHeader>
             <SortCountBothContainer>
               <SortLeftContainer>
-              <SortCountContainer>
-                <SortCountButton onClick={handleSortOpen}>
-                  <SortCountImg src={SortingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                  {isSortOpen && (
-                    <ul ref={sortOpenRef} className="flex justify-center">
-                      <SortDropDown>
-                        <Sortbutton
-                          onClick={() => {
-                            setCurrentSort("LATEST");
-                            setIsSortOpen(false);
-                          }}
-                        >
-                          최신순
-                        </Sortbutton>
-                        <Sortbutton
-                          onClick={() => {
-                            setCurrentSort("LIKES");
-                            setIsSortOpen(false);
-                          }}
-                        >
-                          좋아요순
-                        </Sortbutton>
-                        <Sortbutton
-                          onClick={() => {
-                            setCurrentSort("RECRUIT");
-                            setIsSortOpen(false);
-                          }}
-                        >
-                          모집률순
-                        </Sortbutton>
-                      </SortDropDown>
-                    </ul>
-                  )}
-                  <SortCountText>{sortTable[currentSort]}</SortCountText>
-                </SortCountButton>
-              </SortCountContainer>
-              <SortCountContainer>
-                <SortCountButton onClick={handleCountOpen}>
-                  <SortCountImg src={SettingIcon} alt="" />
-                  <SortDownImg src={SortingDownIcon} alt="" />
-                  {isCountOpen && (
-                    <div>
-                      <ul ref={countOpenRef} className="flex justify-center">
+                <SortCountContainer>
+                  <SortCountButton onClick={handleSortOpen}>
+                    <SortCountImg src={SortingIcon} alt="" />
+                    <SortDownImg src={SortingDownIcon} alt="" />
+                    {isSortOpen && (
+                      <ul ref={sortOpenRef} className="flex justify-center">
                         <SortDropDown>
-                          <CountText>최대 인원 수</CountText>
-                          <CountInputContainer>
-                            <MaxMinNum>0</MaxMinNum>
-                            <input
-                              onMouseUp={handleMaxCount}
-                              min="0"
-                              max="50"
-                              type="range"
-                              className="w-2/3 mx-1"
-                            />
-                            <MaxMinNum>50</MaxMinNum>
-                          </CountInputContainer>
+                          <Sortbutton
+                            onClick={() => {
+                              setCurrentSort("LATEST");
+                              setIsSortOpen(false);
+                            }}
+                          >
+                            최신순
+                          </Sortbutton>
+                          <Sortbutton
+                            onClick={() => {
+                              setCurrentSort("LIKES");
+                              setIsSortOpen(false);
+                            }}
+                          >
+                            좋아요순
+                          </Sortbutton>
+                          <Sortbutton
+                            onClick={() => {
+                              setCurrentSort("RECRUIT");
+                              setIsSortOpen(false);
+                            }}
+                          >
+                            모집률순
+                          </Sortbutton>
                         </SortDropDown>
                       </ul>
-                    </div>
-                  )}
-                  <SortCountText>{currentCount}명</SortCountText>
-                </SortCountButton>
-              </SortCountContainer>
+                    )}
+                    <SortCountText>{sortTable[currentSort]}</SortCountText>
+                  </SortCountButton>
+                </SortCountContainer>
+                <SortCountContainer>
+                  <SortCountButton onClick={handleCountOpen}>
+                    <SortCountImg src={SettingIcon} alt="" />
+                    <SortDownImg src={SortingDownIcon} alt="" />
+                    {isCountOpen && (
+                      <div>
+                        <ul ref={countOpenRef} className="flex justify-center">
+                          <SortDropDown>
+                            <CountText>최대 인원 수</CountText>
+                            <CountInputContainer>
+                              <MaxMinNum>0</MaxMinNum>
+                              <input
+                                onMouseUp={handleMaxCount}
+                                min="0"
+                                max="50"
+                                type="range"
+                                className="w-2/3 mx-1"
+                              />
+                              <MaxMinNum>50</MaxMinNum>
+                            </CountInputContainer>
+                          </SortDropDown>
+                        </ul>
+                      </div>
+                    )}
+                    <SortCountText>{currentCount}명</SortCountText>
+                  </SortCountButton>
+                </SortCountContainer>
               </SortLeftContainer>
-              
+
               <Link
-                to={`/write-article?type=recruit&option=write`}
+                to={`/write-article?type=RECRUIT&option=write`}
                 state={{
                   editId: 0,
                   editTitle: "",
@@ -447,7 +447,7 @@ w-full
 const SortLeftContainer = tw.div`
 flex
 space-x-5
-`
+`;
 
 //정렬, 최대인원 설정 버튼 컨테이너
 const SortCountContainer = tw.div`

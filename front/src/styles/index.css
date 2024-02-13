@@ -30,3 +30,8 @@
 body {
   font-family: "SUITE-Regular";
 }
+#gui {
+  position: absolute;
+  top: 58px;
+  right: 2px;
+}
