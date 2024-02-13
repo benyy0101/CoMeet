@@ -193,7 +193,11 @@ public class RoomService {
     }
 
     public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto req, Pageable pageable) {
-        return roomRepository.searchDisposableRoom(req, pageable);
+        Slice<RoomSearchResponseDto> res = roomRepository.searchDisposableRoom(req, pageable);
+        for (RoomSearchResponseDto re : res) {
+            re.setCurrentMcount(roomRedisRepository.getMembers(re.getRoomId()).size());
+        }
+        return res;
     }
 
     public RoomResponseDto enter(RoomEnterRequestDto req, Long roomId, String memberId) {
