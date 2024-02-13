@@ -52,8 +52,10 @@ export const NavBar = ({
 
   //시작할 때 데이터 다 들고와
   useEffect(() => {
-    fetchData();
-  }, [memberId]);
+    if (memberId) {
+      fetchData();
+    }
+  }, []);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -119,7 +121,7 @@ export const NavBar = ({
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: "url(roomData.room_image)",
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -286,6 +288,7 @@ const NavIcon = tw.img`
 h-8
 w-8
 rounded-full
+bg-white
 `;
 
 //커뮤니티 드롭다운
@@ -400,6 +403,7 @@ bg-no-repeat
 bg-center
 shadow-md
 bg-slate-200
+bg-white
 `;
 
 //ServerText: 서버 이름
