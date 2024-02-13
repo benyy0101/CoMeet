@@ -3,11 +3,14 @@ import { createRoom } from "api/Room";
 import { ROOM_CONSTRAINTS, ROOM_TYPE } from "models/Enums.type";
 import { CreateRoomParams } from "models/Room.interface";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { addRoom } from "store/reducers/userSlice";
 import tw from "tailwind-styled-components";
 
 export default function RoomCreate() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [title, setTitle] = React.useState<string>("");
   const [description, setDescription] = React.useState<string>("");
@@ -26,8 +29,11 @@ export default function RoomCreate() {
     };
 
     const res = await createRoom(data);
+    if (type === "PERMANENT") {
+      dispatch(addRoom(res));
+    }
 
-    navigate(`/room/${res}`, { replace: true });
+    navigate(`/room/${res.roomId}`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

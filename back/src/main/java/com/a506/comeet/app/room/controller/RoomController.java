@@ -30,11 +30,12 @@ public class RoomController {
     private final S3UploadService s3UploadService;
 
     @PostMapping("")
-    public ResponseEntity<Long> create(@Valid @RequestBody RoomCreateRequestDto req) {
+    public ResponseEntity<RoomSimpleResponseDto> create(@Valid @RequestBody RoomCreateRequestDto req) {
         String memberId = MemberUtil.getMemberId();
-        Room created = roomService.create(req, memberId);
         req.setManagerId(memberId);
-        return ResponseEntity.ok(created.getId());
+        Room created = roomService.create(req, memberId);
+        RoomSimpleResponseDto res = new RoomSimpleResponseDto(created.getId(), created.getTitle(), created.getRoomImage());
+        return ResponseEntity.ok(res);
     }
 
     @PatchMapping("/{roomId}")

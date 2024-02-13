@@ -106,7 +106,7 @@ export const NavBar = ({
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: "url(roomData.room_image)",
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -140,7 +140,7 @@ export const NavBar = ({
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && <ServerDropDownList />}
+              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />

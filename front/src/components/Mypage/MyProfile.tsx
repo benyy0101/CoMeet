@@ -11,9 +11,10 @@ import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
 import Modal from "components/Common/Modal";
-import { profileImageDelete, profileModifyImage } from "api/image";
+import { profileImageDelete } from "api/image";
 
 interface myProps {
+  isMe: boolean;
   profileImage: string | undefined;
   followingCount: number | undefined;
   followerCount: number | undefined;
@@ -24,6 +25,8 @@ interface myProps {
 }
 
 export default function MyProfile({
+  // isMe: 내 마이페이지면 true, 남의 페이지면 false
+  isMe,
   profileImage,
   followingCount,
   followerCount,
@@ -40,6 +43,9 @@ export default function MyProfile({
   //팔로잉, 팔로워 클릭시
   const [followerModal, setFollowerModal] = useState<boolean>(false);
   const [followingModal, setFollowingModal] = useState<boolean>(false);
+
+  //현재 보고 있는 사람을 팔로우 했는지
+  const [isFollow, setIsFollow] = useState<boolean>();
 
   const followerModalHandler = () => {
     setFollowerModal(!followerModal);
@@ -70,14 +76,8 @@ export default function MyProfile({
 
   //이미지 삭제
   const handleDelteImg = async function () {
-    if (profileImage != "default_profile_image_letsgo") {
-      //s3에서 이미지 삭제
-      profileImageDelete(profileImage);
+    await profileImageDelete();
 
-      //DB에서 삭제
-      const updateData = { profileImage: `default_profile_image_letsgo` };
-      await profileModifyImage(updateData);
-    }
     //수정
     setIsModifyImg(false);
 
@@ -100,15 +100,17 @@ export default function MyProfile({
 
   return (
     <TotalContainer>
-      <ProfileModButton>
-        <Link to="/profile-edit">
-          <ProfileModImg src={ProifleModify} alt="" />
-        </Link>
-      </ProfileModButton>
+      {isMe ? (
+        <ProfileModButton>
+          <Link to="/profile-edit">
+            <ProfileModImg src={ProifleModify} alt="" />
+          </Link>
+        </ProfileModButton>
+      ) : null}
       <FullContainer>
         <LeftContainer>
           <ul ref={modifyImgRef}>
-            {isHovering ? (
+            {isMe && isHovering ? (
               <StyleProfileImgHover
                 style={{
                   backgroundImage: `url(${
@@ -181,10 +183,21 @@ export default function MyProfile({
               <FollowNumber>{followerCount}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
-          <div className="flex">
+          <div className="flex mb-2">
             <StyleNickName>{nickname}</StyleNickName>
+
+            {/* isFollow: 내가 A의 페이지를 갔고, 내가 A를 팔로잉 하고 있을 때 팔로잉 버튼 활성화 / 팔로잉 안 하고 있으면 팔로우 버튼 활성화*/}
+            {isMe ? null : (
+              <>
+                {isFollow ? (
+                  <FollowingButton>팔로잉</FollowingButton>
+                ) : (
+                  <FollowButton>팔로우</FollowButton>
+                )}
+              </>
+            )}
           </div>
-          <div className="flex">
+          <div className="flex ">
             {description === "" ? (
               <NoneText>한 줄 소개가 없습니다.</NoneText>
             ) : (
@@ -226,6 +239,32 @@ right-0
 mb-auto
 `;
 
+//팔로잉 버튼
+const FollowingButton = tw.button`
+text-sm
+bg-white
+text-black
+font-semibold
+px-5
+py-1
+my-auto
+rounded-md
+ml-3
+`;
+
+//팔로우 버튼
+const FollowButton = tw.button`
+text-sm
+bg-black
+text-white
+font-semibold
+px-5
+py-1
+my-auto
+rounded-md
+ml-3
+`;
+
 //수정 버튼 이미지
 const ProfileModImg = tw.img`
 border
@@ -250,15 +289,15 @@ items-center
 //프로필 이미지 보여주는 왼쪽 컨테이너
 const LeftContainer = tw.div`
     ml-16
-    mr-10
+    mr-14
 `;
 
 //프로필 이미지
 const StyleProfileImg = tw.div`
 bg-white
 rounded-full
-w-36
-h-36
+w-32
+h-32
 relative
 bg-cover
 bg-center
@@ -268,8 +307,8 @@ bg-center
 const StyleProfileImgHover = tw.div`
 bg-white
 rounded-full
-w-36
-h-36
+w-32
+h-32
 bg-cover
 bg-center
 opacity-80
@@ -293,7 +332,7 @@ h-8
 const ProfileDropdown = tw.div`
 absolute
 text-black
-top-[29%]
+top-[65%]
 
 shadow-lg
 z-50
@@ -358,7 +397,7 @@ text-base
 const StyleNickName = tw.div`
 font-extrabold
 text-3xl
-mb-2
+
 `;
 
 const StyleEdit = tw.img`

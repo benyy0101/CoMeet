@@ -193,7 +193,11 @@ public class RoomService {
     }
 
     public Slice<RoomSearchResponseDto> search(RoomSearchRequestDto req, Pageable pageable) {
-        return roomRepository.searchDisposableRoom(req, pageable);
+        Slice<RoomSearchResponseDto> res = roomRepository.searchDisposableRoom(req, pageable);
+        for (RoomSearchResponseDto re : res) {
+            re.setCurrentMcount(roomRedisRepository.getMembers(re.getRoomId()).size());
+        }
+        return res;
     }
 
     public RoomResponseDto enter(RoomEnterRequestDto req, Long roomId, String memberId) {
@@ -259,7 +263,7 @@ public class RoomService {
     }
 
     private boolean durationValidation(String enterTimeString) {
-        return Duration.between(DateParser.parse(enterTimeString), LocalDateTime.now()).toSeconds() < 5;
+        return Duration.between(DateParser.parse(enterTimeString), LocalDateTime.now()).toMinutes() < 5;
     }
 
 
