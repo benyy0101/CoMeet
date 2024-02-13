@@ -4,10 +4,13 @@ import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
 import com.a506.comeet.common.util.MemberUtil;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -37,7 +40,13 @@ public class RoomController {
     @PatchMapping("/{roomId}")
     public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
-        roomService.update(req, memberId, roomId);
+
+        try {
+            roomService.update(req, memberId, roomId);
+        } catch (DataIntegrityViolationException e) {
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
+        }
+
         return ResponseEntity.ok().build();
     }
 
