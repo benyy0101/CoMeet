@@ -6,6 +6,7 @@ import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
 import { RoomItemProps } from "../types";
 import { SearchRoomContent } from "models/Room.interface";
+import { SpeakerXMarkIcon, VideoCameraIcon } from "@heroicons/react/24/solid";
 
 export default function RoomItem(props: SearchRoomContent) {
   // function RoomItem(props: RoomItemProps) {
@@ -27,7 +28,7 @@ export default function RoomItem(props: SearchRoomContent) {
           }}
         />
       </Column>
-      <Column className="flex-grow-[1]">
+      <Column className="flex-grow-[1] max-w-[30rem]">
         <TitleContainer>
           <Title>{props.title}</Title>
           <Manager>{props.managerNickname}</Manager>
@@ -43,14 +44,14 @@ export default function RoomItem(props: SearchRoomContent) {
       </Column>
       <Column>
         <OptionContainer>
-          <Img src={Video} alt="video" />
-          <Img src={NoAudio} alt="audio" />
+          <VideoCameraIcon className="w-6 h-6 text-slate-700" />
+          <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
         </OptionContainer>
       </Column>
       <Column>
         <CountContainer>
-          <CountTitle>인원</CountTitle>
-          <Count>{props.capacity} / 30</Count>
+          {/* <CountTitle>인원</CountTitle> */}
+          <Count>? / {props.capacity}</Count>
         </CountContainer>
       </Column>
 
@@ -60,14 +61,16 @@ export default function RoomItem(props: SearchRoomContent) {
 }
 
 const Wrapper = tw.div`
+border-purple-400
+border-2
 flex  
 justify-between
 items-center
-bg-gray-200 
+bg-slate-50
 p-4 
 rounded-md 
 cursor-pointer 
-hover:bg-gray-300
+hover:bg-purple-50
 shadow-md
 h-32
 `;
@@ -129,22 +132,22 @@ text-sm`;
 
 const Count = tw.div`
 text-gray-500
+text-xs
 `;
 
 const KeywordContainer = tw.div`
+w-40
 flex
-gap-2
+gap-1
 `;
 
 const Keyword = tw.div`
-border-2
-border-gray-300
 rounded-md
 p-1
 px-2
-text-sm
+text-xs
 shadow-md
-bg-gray-700
+bg-purple-800
 text-white
 `;
 const OptionContainer = tw.div`
