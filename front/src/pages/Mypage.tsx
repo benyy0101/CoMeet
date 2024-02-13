@@ -4,7 +4,7 @@ import MyKeyword from "components/Mypage/MyKeyword";
 import { MyStudyType } from "components/Mypage/MyStudyType";
 import { MyStudyTime } from "components/Mypage/MyStudyTime";
 import MyTILCalendar from "components/Mypage/MyTILCalendar";
-import { MySumTime } from "components/Mypage/MySumTime";
+import MySumTime from "components/Mypage/MySumTime";
 import { useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
@@ -40,9 +40,9 @@ export const Mypage = () => {
     fetchData();
 
     if (memberId === userId) {
-      setIsMe(!isMe);
+      setIsMe(true);
     }
-  }, []);
+  }, [memberId]);
 
   //프로필 이미지 바뀌면 새로 고침
   useEffect(() => {
@@ -63,6 +63,7 @@ export const Mypage = () => {
         {/* 프로필 컨테이너 */}
         <ProfileContainer>
           <MyProfile
+            isMe={isMe}
             profileImage={userData?.profileImage}
             followingCount={userData?.followingCount}
             followerCount={userData?.followerCount}
@@ -95,11 +96,15 @@ export const Mypage = () => {
       <FirstContainerRight>
         {/* TIL 캘린더 컨테이너 */}
         <TILCalendarContainer>
-          <MyTILCalendar memberId={memberId} />
+          <MyTILCalendar isMe={isMe} memberId={memberId} />
         </TILCalendarContainer>
         {/* 평균 공부 시간 컨테이너 */}
         <SumTimeContainer>
-          <MySumTime />
+          <MySumTime
+            dayStudyHour={userData?.dayStudyHour}
+            weekStudyHour={userData?.weekStudyHour}
+            monthStudyHour={userData?.monthStudyHour}
+          />
         </SumTimeContainer>
       </FirstContainerRight>
     </AllContainer>

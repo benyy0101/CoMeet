@@ -100,6 +100,9 @@ function App() {
       }
     }
 
+    //창 끄기 전에 방 나가기
+    window.addEventListener("beforeunload", leaveRoomHandler);
+
     return () => {
       if (stompClient.current) {
         stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
@@ -118,7 +121,6 @@ function App() {
   const leaveRoomHandler = async () => {
     const data: LeaveRoomParams = {
       roomId: parseInt(roomInfo.roomId),
-      keywords: undefined,
     };
     try {
       const res = await leaveRoom(data);

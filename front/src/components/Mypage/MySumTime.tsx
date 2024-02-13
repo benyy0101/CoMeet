@@ -2,32 +2,36 @@ import React from "react";
 
 import tw from "tailwind-styled-components";
 
-export const MySumTime = () => {
+interface Props {
+  dayStudyHour: number | undefined;
+  weekStudyHour: number | undefined;
+  monthStudyHour: number | undefined;
+}
+
+export default function MySumTime(props: Props) {
+  const { dayStudyHour, weekStudyHour, monthStudyHour } = props;
   //예시
-  const todaySumTime = 5.3;
-  const weekSumTime = 21;
-  const monthSumTime = 100;
 
   return (
     <TotalContainer>
       <TodaySum>
         <TitleTWM>오늘</TitleTWM>
-        <TimeTWM>{todaySumTime}</TimeTWM>
+        <TimeTWM>{dayStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </TodaySum>
       <WeekSum>
         <TitleTWM>이번주</TitleTWM>
-        <TimeTWM>{weekSumTime}</TimeTWM>
+        <TimeTWM>{weekStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </WeekSum>
       <MonthSum>
         <TitleTWM>이번달</TitleTWM>
-        <TimeTWM>{monthSumTime}</TimeTWM>
+        <TimeTWM>{monthStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </MonthSum>
     </TotalContainer>
   );
-};
+}
 
 //전체 컨테이너
 const TotalContainer = tw.div`

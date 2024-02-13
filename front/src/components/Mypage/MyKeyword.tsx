@@ -44,21 +44,37 @@ export default function MyKeyword({ keywords }: Props) {
       <div className="flex flex-col items-center items-start w-full h-full gap-y-3">
         <Title>키워드</Title>
         <Wrapper>
-          <WordCloudContainer>
-            <ReactWordcloud
-              words={words}
-              options={options}
-              size={size}
-              maxWords={maxWords}
-              minSize={minSize}
-            />
-          </WordCloudContainer>
-          <TextContainer>
-            <First>1위</First>
-            {maxWeightKeywords.map((keywords) => (
-              <Keyword>{keywords.name}</Keyword>
-            ))}
-          </TextContainer>
+          {keywords?.length === 0 ? (
+            <NoneKeywords>
+              {/* 여기에 이미지 하나 넣으면 괜찮을 듯 */}
+              <NoneTitle>대표하는 키워드가 없습니다.</NoneTitle>
+              <Nonedescription>방에 들어가서 공부를 해 보세요!</Nonedescription>
+            </NoneKeywords>
+          ) : (
+            <>
+              <WordCloudContainer>
+                <ReactWordcloud
+                  words={words}
+                  options={options}
+                  size={size}
+                  maxWords={maxWords}
+                  minSize={minSize}
+                />
+              </WordCloudContainer>
+              <TextContainer>
+                <First>1위</First>
+
+                {maxWeightKeywords.slice(0, 1).map((keywords) => (
+                  <Keyword>{keywords.name}</Keyword>
+                ))}
+                {maxWeightKeywords.length > 1 ? (
+                  <MultipleKeywordText>
+                    외 {maxWeightKeywords.length - 1}개
+                  </MultipleKeywordText>
+                ) : null}
+              </TextContainer>
+            </>
+          )}
         </Wrapper>
       </div>
     </TotalContainer>
@@ -80,6 +96,21 @@ const Wrapper = tw.div`
 flex flex-col w-full h-full items-center gap-y-3
 `;
 
+const NoneKeywords = tw.div`
+flex
+flex-col
+justify-center
+items-center
+flex-grow
+`;
+
+const NoneTitle = tw.div`
+text-xl font-bold pb-3
+`;
+
+const Nonedescription = tw.div`
+text-gray-300 border-gray-300 border-b mb-7`;
+
 const WordCloudContainer = tw.div`
 flex items-center p-5 rounded-full bg-white overflow-hidden ring-[5px] outline-none ring-purple-500
 `;
@@ -94,4 +125,8 @@ mr-5 font-bold
 
 const Keyword = tw.div`
 mr-3 font-bold text-lg text-purple-300
+`;
+
+const MultipleKeywordText = tw.div`
+text-sm text-gray-300
 `;
