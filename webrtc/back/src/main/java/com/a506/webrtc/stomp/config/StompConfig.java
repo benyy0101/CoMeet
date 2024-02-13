@@ -13,6 +13,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/stomp") //handshake를 하기 위한 endpoint 지정
+                .allowedOrigins("https://i10a506.p.ssafy.io")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
