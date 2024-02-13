@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
@@ -11,6 +11,7 @@ import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
+import { handleMember } from "api/Member";
 import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
@@ -41,6 +42,18 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
+  const [userImg, setUserImg] = useState<string>("");
+
+  //처음에 memeberId로 다 들고와
+  const fetchData = async () => {
+    const res = await handleMember(memberId);
+    setUserImg(res.profileImage); // 데이터 상태로 설정
+  };
+
+  //시작할 때 데이터 다 들고와
+  useEffect(() => {
+    fetchData();
+  }, [memberId]);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -85,12 +98,12 @@ export const NavBar = ({
             <CommunityMenu>
               <CommunityButton>커뮤니티</CommunityButton>
               <DropDownCommunity>
-                <ComDropDownBUtton>
-                  <Link to="/recruit-board">모집 게시판</Link>
-                </ComDropDownBUtton>
-                <ComDropDownBUtton>
-                  <Link to="/free-board">자유 게시판</Link>
-                </ComDropDownBUtton>
+                <Link to="/recruit-board">
+                  <ComDropDownBUtton>모집 게시판</ComDropDownBUtton>
+                </Link>
+                <Link to="/free-board">
+                  <ComDropDownBUtton>자유 게시판</ComDropDownBUtton>
+                </Link>
               </DropDownCommunity>
             </CommunityMenu>
           </LeftMenu>
@@ -106,7 +119,7 @@ export const NavBar = ({
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                        backgroundImage: "url(roomData.room_image)",
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -122,7 +135,9 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+                    <ControlPanelButton
+                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                    >
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -133,7 +148,9 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
+              <ServerContainer $active={false}>
+                접속중인 방이 없습니다.
+              </ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
@@ -155,7 +172,14 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={BasicProfile} alt="profile" />
+                <NavIcon
+                  src={
+                    userImg
+                      ? userImg
+                      : `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
+                  }
+                  alt="profile"
+                />
               </Link>
             </ProfileMenu>
           </>
@@ -165,7 +189,11 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -173,7 +201,11 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -194,7 +226,6 @@ items-center
 justify-between
 px-12
 text-lg
-z-50
 `;
 
 const LeftContainer = tw.div`
@@ -254,6 +285,7 @@ justify-center
 const NavIcon = tw.img`
 h-8
 w-8
+rounded-full
 `;
 
 //커뮤니티 드롭다운
