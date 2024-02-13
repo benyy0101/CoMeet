@@ -180,6 +180,7 @@ bg-slate-700
 cursor-pointer
 border-slate-900
 border-[1px]
+text-slate-300
 `;
 
 const EditingMessageContainer = tw.div`
