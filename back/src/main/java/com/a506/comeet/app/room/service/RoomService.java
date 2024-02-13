@@ -263,7 +263,7 @@ public class RoomService {
     }
 
     private boolean durationValidation(String enterTimeString) {
-        return Duration.between(DateParser.parse(enterTimeString), LocalDateTime.now()).toSeconds() < 5;
+        return Duration.between(DateParser.parse(enterTimeString), LocalDateTime.now()).toMinutes() < 5;
     }
 
 
