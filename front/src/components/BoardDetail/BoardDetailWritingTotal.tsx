@@ -80,7 +80,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     deleteBoard({ boardId: boardDetail.id })
       .then((data) => {
         console.log("success");
-        navigate("/recruit-board");
+        navigate(boardDetail.type === "FREE" ? "/free-board" : "/recruit-board");
       })
       .catch((fail) => {
         console.log("failure", fail.response.data);
@@ -115,52 +115,51 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
       <KeywordContainer>
-        {boardDetail.type === "RECRUIT" ? keywordArr.map((words) => (
-        <Keyword key={words}>{words}</Keyword>
-        )) : null}
+        {boardDetail.type === "RECRUIT"
+          ? keywordArr.map((words) => <Keyword key={words}>{words}</Keyword>)
+          : null}
       </KeywordContainer>
-      
-        <ButtonsContainer>
-{/* 버튼 태그 어케 만드는데 ㅠ */}
-{memberNickname === boardDetail.writerNickname ? (
-        <LikeButtonContainer>
-          <LikeButton onClick={handleDelete}>
-            <LikeText className="text-red-400">삭제</LikeText>
-          </LikeButton>
-        </LikeButtonContainer>
-      ) : null}
-      {/* 버튼 태그 어케 만드는데 ㅠ */}
-      {memberNickname === boardDetail.writerNickname ? (
-        <LikeButtonContainer>
-          <LikeButton>
-          <Link
-          to={`/write-article?type=${boardDetail.type}&option=edit`}
-          state={{
-            editId: boardDetail.id,
-            editTitle: boardDetail.title,
-            editContent: boardDetail.content,
-            isValid: boardDetail.isValid
-          }}
-        >
-          <LikeText className="text-lime-400">수정</LikeText>
-        </Link>
-          </LikeButton>
-        </LikeButtonContainer>
-        
-      ) : null}
 
-      <LikeButtonContainer>
-        <LikeButton onClick={handleLike}>
-          {boardDetail.isLike ? (
-            <LikeImg src={StarFill} alt="" />
-          ) : (
-            <LikeImg src={StarEmpty} alt="" />
-          )}
-          <LikeText>좋아요</LikeText>
-        </LikeButton>
-      </LikeButtonContainer>
-        </ButtonsContainer>
-      
+      <ButtonsContainer>
+        {/* 버튼 태그 어케 만드는데 ㅠ */}
+        {memberNickname === boardDetail.writerNickname ? (
+          <LikeButtonContainer>
+            <LikeButton onClick={handleDelete}>
+              <LikeText className="text-red-400">삭제</LikeText>
+            </LikeButton>
+          </LikeButtonContainer>
+        ) : null}
+        {/* 버튼 태그 어케 만드는데 ㅠ */}
+        {memberNickname === boardDetail.writerNickname ? (
+          <LikeButtonContainer>
+            <LikeButton>
+              <Link
+                to={`/write-article?type=${boardDetail.type}&option=edit`}
+                state={{
+                  editId: boardDetail.id,
+                  editTitle: boardDetail.title,
+                  editContent: boardDetail.content,
+                  isValid: boardDetail.isValid,
+                  editCategory: boardDetail.category,
+                }}
+              >
+                <LikeText className="text-lime-400">수정</LikeText>
+              </Link>
+            </LikeButton>
+          </LikeButtonContainer>
+        ) : null}
+
+        <LikeButtonContainer>
+          <LikeButton onClick={handleLike}>
+            {boardDetail.isLike ? (
+              <LikeImg src={StarFill} alt="" />
+            ) : (
+              <LikeImg src={StarEmpty} alt="" />
+            )}
+            <LikeText>좋아요</LikeText>
+          </LikeButton>
+        </LikeButtonContainer>
+      </ButtonsContainer>
     </WritingTotalContainer>
   );
 };
@@ -183,7 +182,7 @@ flex
 items-end
 justify-end
 space-x-5
-`
+`;
 
 const KeywordContainer = tw.div`
 flex
@@ -200,7 +199,7 @@ px-3
 rounded-md
 shadow-lg
 text-white
-`
+`;
 
 //좋아요 버튼 컨테이너
 const LikeButtonContainer = tw.div`
