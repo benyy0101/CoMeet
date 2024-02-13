@@ -45,6 +45,7 @@ export const searchRoom = async (
   params: SearchRoomParams
 ): Promise<SearchRoomResponse> => {
   const url = `room${makeQuerystring(params)}`;
+  console.log(url);
   const response = await localAxios.get(url);
   return response.data;
 };

@@ -36,8 +36,9 @@ const userSlice = createSlice({
     storeMemberId: (state, action: PayloadAction<string>) => {
       state.user.memberId = action.payload;
     },
-    decNoteNumber: (state) => {
-      state.user.unreadNoteCount = state.user.unreadNoteCount - 1;
+    updateUnread: (state, action: PayloadAction<number>) => {
+      console.log("updateUnread", action.payload);
+      state.user.unreadNoteCount = action.payload;
     },
     addRoom: (state, action: PayloadAction<smallRoomdata>) => {
       state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
@@ -56,5 +57,5 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout, storeMemberId, decNoteNumber, addRoom } = userSlice.actions;
+export const { login, logout, storeMemberId, updateUnread, addRoom } = userSlice.actions;
 export default userSlice.reducer;

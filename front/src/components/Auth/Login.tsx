@@ -11,6 +11,8 @@ import { login, storeMemberId } from "store/reducers/userSlice";
 import { getKeywords } from "store/reducers/keywordSlice";
 import { searchKeyword } from "api/Keyword";
 // import { SearchKeywordResponse } from "models/Keyword.interface";
+import GithubIcon from "assets/img/githubIcons.png";
+import { githubLogin } from "api/Auth";
 function Login() {
   const dispatch = useDispatch();
   const [memberId, setMemberId] = useState("");
@@ -78,6 +80,16 @@ function Login() {
     // keywordFetch();
   };
 
+  const socialLoginHandler = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log("socialLoginHandler");
+    window.location.href =
+      "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email";
+    //dispatch(login(res));
+  };
+
+  
+
   return (
     <LoginWrapper>
       <LoginImage src={LoginBanner} alt="LoginBanner" />
@@ -111,6 +123,13 @@ function Login() {
           ) : (
             <LoginButton>시작하기</LoginButton>
           )}
+          <Border />
+          <SocialLoginContainer onClick={socialLoginHandler}>
+            <SocialLoginButton>
+              <img src={GithubIcon} className="w-6 h-6" alt="ahffk"></img>
+            </SocialLoginButton>
+            <GithubTitle>깃허브로 로그인하기</GithubTitle>
+          </SocialLoginContainer>
           {error ? <div>정보가 맞지 않습니다</div> : null}
         </LoginForm>
       </LoginContainer>
@@ -195,13 +214,42 @@ animate-spin
 const PendingButton = tw.button`
 `;
 
+const GithubTitle = tw.div`
+  text-sm
+  font-bold
+  text-center
+`;
+
 const Border = tw.div`
-  border-b-1
-  border-white
+  bg-white
+  bg-opacity-20
+  h-[1px]
   w-full
 `;
 
-const SocialLoginContainer = tw.div``;
+const SocialLoginButton = tw.div`
+w-6
+h-6
+rounded-full
+bg-white
+flex
+justify-center
+items-center
+
+`;
+
+const SocialLoginContainer = tw.button`
+  rounded-md
+  bg-[#26252A]
+  py-2
+  px-5
+  flex
+  justify-center
+  items-center
+  space-x-2
+  hover:bg-gray-700
+  transition-colors
+  `;
 
 const LoginButton = tw.button`
   flex
@@ -212,5 +260,7 @@ const LoginButton = tw.button`
   py-2
   mt-4
   rounded-md
+  hover:bg-blue-900
+  transition-colors
 `;
 export default Login;

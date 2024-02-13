@@ -26,6 +26,7 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { getRoom, leaveRoom } from "api/Room";
 import { setLeaveRoom } from "store/reducers/roomSlice";
+import Oauth from "pages/Oauth";
 
 function App() {
   //임시
@@ -397,6 +398,8 @@ function App() {
             <Route path="/userpage/:memberId" element={<Mypage />} />
             <Route path="/profile-edit" element={<ProfileEdit />}></Route>
             <Route path="/before-entrance" element={<ConditionCheck />} />
+
+            <Route path="/oauth" element={<Oauth />} />
           </Routes>
         </RoutesContainer>
       </BrowserRouter>

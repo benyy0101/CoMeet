@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import Modal from "../Common/Modal";
 import Video from "../assets/img/video.png";
@@ -8,13 +8,35 @@ import { RoomItemProps } from "../../types";
 import { SearchRoomContent } from "models/Room.interface";
 import {
   SpeakerXMarkIcon,
-  UsersIcon,
   VideoCameraIcon,
+  SpeakerWaveIcon,
+  VideoCameraSlashIcon,
+  UsersIcon,
 } from "@heroicons/react/24/solid";
+import { set } from "react-hook-form";
 
 export default function RoomItem(props: SearchRoomContent) {
   // function RoomItem(props: RoomItemProps) {
   const [modal, setModal] = React.useState<boolean>(false);
+  const [isMute, setIsMute] = React.useState<boolean>(false);
+  const [isVideo, setIsVideo] = React.useState<boolean>(false);
+
+  const optionHandler = () => {
+    const option = props.constraints;
+    if (option === "VIDEOONMICOFF") {
+      setIsMute(true);
+      setIsVideo(true);
+    } else if (option === "VIDEOON") {
+      setIsVideo(true);
+    } else if (option === "MICOFF") {
+      setIsMute(true);
+    }
+  };
+
+  useEffect(() => {
+    optionHandler();
+  }, []);
+
   const modalHandler = () => {
     setModal(!modal);
   };
@@ -39,24 +61,24 @@ export default function RoomItem(props: SearchRoomContent) {
           <Manager>{props.managerNickname}</Manager>
         </TitleContainer>
         <Description>{props.description}</Description>
-      </Column>
-      <Column>
         <KeywordContainer>
-          <Keyword>C++</Keyword>
-          <Keyword>JAVA</Keyword>
-          <Keyword>PYTHON</Keyword>
+          {props.keywords.map((keyword) => {
+            return <Keyword>{keyword.name}</Keyword>;
+          })}
         </KeywordContainer>
       </Column>
       <Column>
         <OptionContainer>
-          {props.constraints === "VIDEOONMICOFF" ||
-            (props.constraints === "VIDEOON" && (
-              <VideoCameraIcon className="w-6 h-6 text-slate-700" />
-            ))}
-          {props.constraints === "VIDEOONMICOFF" ||
-            (props.constraints === "MICOFF" && (
-              <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
-            ))}
+          {isMute ? (
+            <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <SpeakerWaveIcon className="w-6 h-6 text-slate-700" />
+          )}
+          {isVideo ? (
+            <VideoCameraIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
+          )}
         </OptionContainer>
       </Column>
       <Column>
@@ -92,7 +114,7 @@ rounded-md
 cursor-pointer 
 hover:bg-purple-50
 shadow-md
-h-32
+h-40
 `;
 
 const Column = tw.div`

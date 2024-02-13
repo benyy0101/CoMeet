@@ -31,6 +31,7 @@ export const Mypage = () => {
 
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
+    //console.log(memberId);
     const res = await handleMember(memberId);
     setUserData(res); // 데이터 상태로 설정
   };

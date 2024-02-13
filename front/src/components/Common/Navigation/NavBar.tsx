@@ -38,7 +38,6 @@ export const NavBar = ({
 }: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
-
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
@@ -55,7 +54,7 @@ export const NavBar = ({
 
   const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
-
+  console.log(userInfo);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -70,6 +69,7 @@ export const NavBar = ({
       setIsServerOpen(false);
     }
   });
+  
 
   return (
     <NavBarContainer>
@@ -165,7 +165,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={BasicProfile} alt="profile" />
+                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
           </>
@@ -271,6 +271,7 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
+rounded-full
 h-8
 w-8
 `;

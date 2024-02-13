@@ -6,19 +6,25 @@ import Lock from "../../assets/img/lock.png";
 import {
   LockClosedIcon,
   SpeakerWaveIcon,
+  SpeakerXMarkIcon,
   VideoCameraIcon,
 } from "@heroicons/react/24/solid";
+import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
 interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS>>;
+  setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FilterMenu({
   setSortByLatest,
   sortByLatest,
   setPage,
+  setConstraints,
+  setIsLockedHandler,
 }: IProps) {
   const [isLocked, setIsLocked] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -29,9 +35,17 @@ export default function FilterMenu({
     setPage(0);
   }, [isLocked, isMuted, isVideoOff, maxcount]);
 
-  const maxcountHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMaxcount(Number(e.target.value));
-  };
+  useEffect(() => {
+    if (isMuted && !isVideoOff) {
+      setConstraints("MICOFF");
+    } else if (isMuted && isVideoOff) {
+      setConstraints("VIDEOONMICOFF");
+    } else if (isVideoOff && !isMuted) {
+      setConstraints("VIDEOON");
+    } else {
+      setConstraints("FREE");
+    }
+  }, [isMuted, isVideoOff]);
 
   return (
     <Wrapper>
@@ -48,11 +62,14 @@ export default function FilterMenu({
               <input
                 type="checkbox"
                 checked={isLocked}
-                onChange={() => setIsLocked(!isLocked)}
+                onChange={() => {
+                  setIsLockedHandler(!isLocked);
+                  setIsLocked(!isLocked);
+                }}
               />
             </CheckBox>
             <CheckBox>
-              <SpeakerWaveIcon className="w-5 h-5" />
+              <SpeakerXMarkIcon className="w-5 h-5" />
               <input
                 type="checkbox"
                 checked={isMuted}
@@ -69,14 +86,6 @@ export default function FilterMenu({
             </CheckBox>
           </CheckBoxOption>
         </CheckBoxContainer>
-
-        <RangeWrapper>
-          <Title>최대인원 설정</Title>
-          <RangeContainer>
-            <input type="range" onChange={maxcountHandler} />
-            {maxcount}
-          </RangeContainer>
-        </RangeWrapper>
       </SearchOptionContainer>
     </Wrapper>
   );
