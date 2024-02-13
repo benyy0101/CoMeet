@@ -2,7 +2,7 @@
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
 import Login from "components/Auth/Login";
-import { LoginResponse, UserState } from "models/Login.interface";
+import { LoginResponse, smallRoomdata, UserState } from "models/Login.interface";
 
 // Function to retrieve user state from sessionStorage
 const loadUserState = (): UserState => {
@@ -39,6 +39,9 @@ const userSlice = createSlice({
     decNoteNumber: (state) => {
       state.user.unreadNoteCount = state.user.unreadNoteCount - 1;
     },
+    addRoom: (state, action: PayloadAction<smallRoomdata>) => {
+      state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
+    },
   },
 });
 
@@ -53,5 +56,5 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout, storeMemberId,decNoteNumber } = userSlice.actions;
+export const { login, logout, storeMemberId, decNoteNumber, addRoom } = userSlice.actions;
 export default userSlice.reducer;
