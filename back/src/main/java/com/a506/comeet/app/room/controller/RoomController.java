@@ -4,10 +4,13 @@ import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.app.room.service.RoomService;
 import com.a506.comeet.common.util.MemberUtil;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
+import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.image.service.S3UploadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -35,7 +38,7 @@ public class RoomController {
     }
 
     @PatchMapping("/{roomId}")
-    public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId){
+    public ResponseEntity<Void> update(@Valid @RequestBody RoomUpdateRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         roomService.update(req, memberId, roomId);
         return ResponseEntity.ok().build();
@@ -47,10 +50,15 @@ public class RoomController {
         String memberId = MemberUtil.getMemberId();
         String url = s3UploadService.saveFile(multipartFile, "roomImage/");
         log.info("url : {}", url);
-        roomService.update(RoomUpdateRequestDto
-                .builder()
-                .roomImage(url)
-                .build(), memberId, roomId);
+        try {
+            roomService.update(RoomUpdateRequestDto
+                    .builder()
+                    .roomImage(url)
+                    .build(), memberId, roomId);
+        } catch (
+                DataIntegrityViolationException e) {
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "이미 존재하는 방 이름입니다");
+        }
         return ResponseEntity.ok().build();
     }
 
@@ -66,7 +74,7 @@ public class RoomController {
 
 
     @DeleteMapping("/{roomId}")
-    public ResponseEntity<Void> delete(@PathVariable Long roomId){
+    public ResponseEntity<Void> delete(@PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         roomService.delete(memberId, roomId);
         return ResponseEntity.ok().build();
@@ -74,14 +82,14 @@ public class RoomController {
 
 
     @PostMapping("/join/{roomId}")
-    public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable Long roomId){
+    public ResponseEntity<Void> join(@Valid @RequestBody RoomJoinRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         roomService.join(req, memberId, roomId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/join/{roomId}")
-    public ResponseEntity<Void> withdraw(@PathVariable Long roomId){
+    public ResponseEntity<Void> withdraw(@PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         roomService.withdraw(memberId, roomId);
         return ResponseEntity.ok().build();
@@ -95,28 +103,28 @@ public class RoomController {
     }
 
     @PostMapping("/{roomId}/enter")
-    public ResponseEntity<RoomResponseDto> enter(@RequestBody RoomEnterRequestDto req, @PathVariable Long roomId){
+    public ResponseEntity<RoomResponseDto> enter(@RequestBody RoomEnterRequestDto req, @PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         RoomResponseDto res = roomService.enter(req, roomId, memberId);
         return ResponseEntity.ok(res);
     }
 
     @DeleteMapping("/{roomId}/enter")
-    public ResponseEntity<Void> leave(@PathVariable Long roomId){
+    public ResponseEntity<Void> leave(@PathVariable Long roomId) {
         String memberId = MemberUtil.getMemberId();
         String metadataId = roomService.leave(roomId, memberId);
-        log.info("메타데이터 생성 : {}",metadataId);
+        log.info("메타데이터 생성 : {}", metadataId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<RoomResponseDto> getDetails(@PathVariable Long roomId){
+    public ResponseEntity<RoomResponseDto> getDetails(@PathVariable Long roomId) {
         RoomResponseDto res = roomService.getDetails(roomId);
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/managing")
-    public ResponseEntity<List<ManagingRoomResponseDto>> getMyManagerRoom(){
+    public ResponseEntity<List<ManagingRoomResponseDto>> getMyManagerRoom() {
         String memberId = MemberUtil.getMemberId();
         return ResponseEntity.ok(roomService.getManagingRoom(memberId));
     }
