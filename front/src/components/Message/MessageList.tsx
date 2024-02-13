@@ -1,11 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "components/Common/Pagination";
-import {
-  SearchNoteContent,
-  SearchNoteParams,
-  SearchNoteResponse,
-} from "models/Note.interface";
-import React, { useEffect } from "react";
+import { SearchNoteContent, SearchNoteParams, SearchNoteResponse } from "models/Note.interface";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { deleteNote, searchNote } from "api/Note";
@@ -20,30 +16,53 @@ interface MessageListProps {
 }
 function MessageList(params: MessageListProps) {
   const { swapState } = params;
-  const [page, setPage] = React.useState<number>(1);
-  const [messages, setMessages] = React.useState<
-    SearchNoteResponse | undefined
-  >();
   const dispatch = useDispatch();
-  const searchParams: SearchNoteParams = {
-    page: page,
-    size: 5,
+  const [noteList, setNoteList] = useState<SearchNoteContent[]>([]);
+  // const [newNoteList, setNewNoteList] = useState<SearchNoteContent[]>([]);
+  const [searchNoteParams, setSearchNoteParams] = useState<SearchNoteParams>({
+    page: 0,
+    size: 20,
+  });
+
+  //무한스크롤 구현
+  const pagesize = 20;
+  //이 친구로 페이지가 바뀌었는지 판단함
+  const numberOfElements = useRef<number>(0);
+
+  const searchMessage = () => {
+    searchNote(searchNoteParams)
+      .then((data) => {
+        setNoteList((prev) => {
+          return prev.concat(
+            data.content.filter((each) => (prev.find((dat) => dat.id === each.id) ? false : true))
+          );
+        });
+        numberOfElements.current = data.numberOfElements;
+      })
+      .catch((f) => {
+        console.log("fail", f.response);
+      });
   };
-  const fetchData = async () => {
-    try {
-      const res = await searchNote(searchParams);
-      setMessages(res);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+
   useEffect(() => {
-    fetchData();
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0,
+    });
+    const observerTarget = document.getElementById("note-list-observer");
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
   }, []);
 
-  const fetchMoreData = () => {
-    setPage((prev) => prev + 1);
-    fetchData();
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      if (numberOfElements.current === pagesize) {
+        searchNoteParams.page++;
+      }
+      setSearchNoteParams(searchNoteParams);
+      searchMessage();
+    }
   };
 
   const readNote = (no: number) => {
@@ -57,14 +76,14 @@ function MessageList(params: MessageListProps) {
   const deleteNoteHandler = async (no: number) => {
     try {
       await deleteNote({ noteId: no });
-      setMessages((prevMessages) => {
+      setNoteList((prevMessages) => {
         if (!prevMessages) {
           return prevMessages;
         }
 
-        const newContent =
-          prevMessages?.content?.filter((message) => message.id !== no) || [];
-        return { ...prevMessages, content: newContent };
+        const newContent = prevMessages?.filter((message) => message.id !== no) || [];
+        return newContent;
+        // return { ...prevMessages, content: newContent };
       });
     } catch (e) {
       console.error(e);
@@ -85,7 +104,7 @@ function MessageList(params: MessageListProps) {
       </Header>
 
       <Content>
-        {messages?.content.map((message) => (
+        {noteList.map((message) => (
           <>
             <MessageItem key={message.id}>
               <MessageTitle
@@ -99,11 +118,7 @@ function MessageList(params: MessageListProps) {
                 <p className="text-blue-400">{message.writerId}</p>님의 쪽지
               </MessageTitle>
               <RightBox>
-                {message.isRead ? (
-                  <Status>읽음</Status>
-                ) : (
-                  <Status>안읽음</Status>
-                )}
+                {message.isRead ? <Status>읽음</Status> : <Status>안읽음</Status>}
                 <TrashCan onClick={() => deleteNoteHandler(message.id)}>
                   <TrashIcon className="w-6 h-6"></TrashIcon>
                 </TrashCan>
@@ -111,6 +126,9 @@ function MessageList(params: MessageListProps) {
             </MessageItem>
           </>
         ))}
+        <div id="note-list-observer" style={{ height: "10px" }}>
+          dd
+        </div>
       </Content>
     </Wrapper>
   );
@@ -188,7 +206,6 @@ bg-indigo-50
 bg-opacity-10
 p-4
 overflow-y-auto
-scrollbar-hide
 space-y-3
 `;
 export default MessageList;
