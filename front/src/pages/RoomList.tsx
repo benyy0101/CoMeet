@@ -1,58 +1,54 @@
 import tw from "tailwind-styled-components";
 import RoomItem from "../components/RoomList/RoomItem";
 import { RoomItemProps } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
+import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
 import {
-  ChevronDoubleUpIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
-import { useQuery } from "@tanstack/react-query";
+  useQuery,
+  useInfiniteQuery,
+  QueryFunction,
+  InfiniteData,
+  UseInfiniteQueryResult,
+} from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
-import {
-  SearchRoomContent,
-  SearchRoomParams,
-  SearchRoomResponse,
-} from "models/Room.interface";
+import { SearchRoomContent, SearchRoomParams, SearchRoomResponse } from "models/Room.interface";
 import { searchRoom } from "api/Room";
 import { BackgroundGradient } from "components/Common/BackgroundGradient";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
-const size = 10;
+const size = 5;
 
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
-  const [page, setPage] = useState<number>(0);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
   const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS>("FREE");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchtype, setSearchtype] = useState<string>("제목+설명");
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
-  const { data, isLoading, isError, refetch } = useQuery<
-    SearchRoomResponse,
-    Error
-  >({
-    queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", page, size],
+  const { data, isLoading, isError, refetch } = useQuery<SearchRoomResponse, Error>({
+    queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", size],
     queryFn: () =>
       searchRoom({
-        page,
         size,
         sortBy: sortByLatest ? "LATEST" : "OLDEST",
         ...(searchtype === "제목+설명" && { searchKeyword }),
         ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
-        ...(isLocked && { isLocked }),
         isLocked,
         constraints,
       }),
   });
 
   useEffect(() => {
+    last.current = false;
+    page.current = 0;
+    console.log("new loading true is latest", sortByLatest);
+
     refetch();
-  }, [page, sortByLatest, constraints, isLocked]);
+  }, [sortByLatest, constraints, isLocked]);
 
   useEffect(() => {
     console.log(data);
@@ -61,8 +57,47 @@ export const RoomList = () => {
     }
   }, [data]);
 
+  const page = useRef<number>(0);
+  const last = useRef<boolean>(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0,
+    });
+    const observerTarget = document.getElementById("room-observer");
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
+  }, []);
+
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      console.log("last value", last.current);
+      if (!last.current) {
+        page.current++;
+        console.log("true is latest", sortByLatest);
+        searchRoom({
+          page: page.current,
+          size,
+          sortBy: sortByLatest ? "LATEST" : "OLDEST",
+          ...(searchtype === "제목+설명" && { searchKeyword }),
+          ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
+          isLocked,
+          constraints,
+        }).then((data) => {
+          console.log(data.content);
+          setRoomList((prev) => prev.concat(data.content));
+          last.current = data.last;
+        });
+      }
+    }
+  };
+
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    last.current = false;
+    page.current = 0;
     refetch();
   };
 
@@ -74,7 +109,7 @@ export const RoomList = () => {
           <FilterMenu
             setSortByLatest={setSortByLatest}
             sortByLatest={sortByLatest}
-            setPage={setPage}
+            // setPage={setPage}
             setConstraints={setConstraints}
             setIsLockedHandler={setIsLocked}
           />
@@ -103,6 +138,7 @@ export const RoomList = () => {
           {roomList.map((temp) => (
             <Items key={temp.roomId} {...temp} />
           ))}
+          <div id="room-observer"></div>
         </ListContainer>
       </MainContainer>
       <Link to={"/room-regist"}>

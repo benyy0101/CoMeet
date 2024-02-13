@@ -14,7 +14,7 @@ import { ROOM_CONSTRAINTS } from "models/Enums.type";
 interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  // setPage: React.Dispatch<React.SetStateAction<number>>;
   setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS>>;
   setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -22,7 +22,7 @@ interface IProps {
 export default function FilterMenu({
   setSortByLatest,
   sortByLatest,
-  setPage,
+  // setPage,
   setConstraints,
   setIsLockedHandler,
 }: IProps) {
@@ -31,8 +31,10 @@ export default function FilterMenu({
   const [isVideoOff, setIsVideoOff] = useState<boolean>(false);
   const [maxcount, setMaxcount] = useState<number>(0);
 
+  const [sortby, setSortby] = useState<boolean>(false);
+
   useEffect(() => {
-    setPage(0);
+    // setPage(0);
   }, [isLocked, isMuted, isVideoOff, maxcount]);
 
   useEffect(() => {
@@ -70,11 +72,7 @@ export default function FilterMenu({
             </CheckBox>
             <CheckBox>
               <SpeakerXMarkIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isMuted}
-                onChange={() => setIsMuted(!isMuted)}
-              />
+              <input type="checkbox" checked={isMuted} onChange={() => setIsMuted(!isMuted)} />
             </CheckBox>
             <CheckBox>
               <VideoCameraIcon className="w-5 h-5" />

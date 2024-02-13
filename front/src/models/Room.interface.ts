@@ -75,6 +75,7 @@ interface Keyword {
 export interface SearchRoomResponse {
   content: SearchRoomContent[];
   pageable: Pageable;
+  last: boolean;
 }
 
 export interface DeleteRoomParams {
