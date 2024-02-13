@@ -92,9 +92,9 @@ export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
 export const enterRoom = async (
   params: EnterRoomParams
 ): Promise<RoomResponse> => {
-  const { roomId } = params;
+  const { roomId, password } = params;
   const url = `room/${roomId}/enter`;
-  const response = await localAxios.post(url, params);
+  const response = await localAxios.post(url, { password });
 
   return response.data;
 };

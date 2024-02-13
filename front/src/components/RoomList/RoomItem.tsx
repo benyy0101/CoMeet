@@ -1,16 +1,17 @@
 import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
-import Modal from "./Common/Modal";
+import Modal from "../Common/Modal";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
-import { RoomItemProps } from "../types";
+import { RoomItemProps } from "../../types";
 import { SearchRoomContent } from "models/Room.interface";
 import {
   SpeakerXMarkIcon,
   VideoCameraIcon,
   SpeakerWaveIcon,
   VideoCameraSlashIcon,
+  UsersIcon,
 } from "@heroicons/react/24/solid";
 import { set } from "react-hook-form";
 
@@ -83,6 +84,7 @@ export default function RoomItem(props: SearchRoomContent) {
       <Column>
         <CountContainer>
           {/* <CountTitle>인원</CountTitle> */}
+          <UsersIcon className="w-6 h-6 text-slate-700" />
           <Count>
             {props.currentMcount} / {props.capacity}
           </Count>

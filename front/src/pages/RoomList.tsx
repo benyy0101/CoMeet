@@ -1,5 +1,5 @@
 import tw from "tailwind-styled-components";
-import RoomItem from "../components/RoomItem";
+import RoomItem from "../components/RoomList/RoomItem";
 import { RoomItemProps } from "../types";
 import { useEffect, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";

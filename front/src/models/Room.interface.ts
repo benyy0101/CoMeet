@@ -60,6 +60,7 @@ export interface SearchRoomContent {
   link: string;
   roomImage: string;
   capacity: number;
+  currentMcount: number;
   isLocked: boolean;
   //password: string | null;
   constraints: ROOM_CONSTRAINTS;

@@ -24,7 +24,7 @@ export const createNote = async (
 export const searchNote = async (
   params: SearchNoteParams
 ): Promise<SearchNoteResponse> => {
-  const url = `note`;
+  const url = `note${makeQuerystring(params)}`;
   const response = await localAxios.get(url);
   return response.data;
 };
