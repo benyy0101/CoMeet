@@ -1,13 +1,11 @@
 import {
   CreateRoomParams,
-  CreateRoomResponse,
   DeleteRoomParams,
   DeleteRoomResponse,
   EnterRoomParams,
   RoomResponse,
   GetRoomParams,
   LeaveRoomParams,
-  LeaveRoomResponse,
   ModifyRoomParams,
   ModifyRoomResponse,
   PermitJoinRoomParams,
@@ -21,8 +19,9 @@ import {
 } from "models/Room.interface";
 import { localAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
+import { smallRoomdata } from "models/Login.interface";
 
-export const createRoom = async (params: CreateRoomParams): Promise<CreateRoomResponse> => {
+export const createRoom = async (params: CreateRoomParams): Promise<smallRoomdata> => {
   const url = `room`;
   const response = await localAxios.post(url, params);
   return response.data;
@@ -78,9 +77,7 @@ export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
   return response.data;
 };
 
-export const enterRoom = async (
-  params: EnterRoomParams
-): Promise<RoomResponse> => {
+export const enterRoom = async (params: EnterRoomParams): Promise<RoomResponse> => {
   const { roomId } = params;
   const url = `room/${roomId}/enter`;
   const response = await localAxios.post(url, params);
