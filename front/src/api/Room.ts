@@ -22,7 +22,9 @@ import { imageAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
 import { smallRoomdata } from "models/Login.interface";
 
-export const createRoom = async (params: CreateRoomParams): Promise<smallRoomdata> => {
+export const createRoom = async (
+  params: CreateRoomParams
+): Promise<smallRoomdata> => {
   const url = `room`;
   const response = await localAxios.post(url, params);
   return response.data;
@@ -86,10 +88,12 @@ export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
   return response.data;
 };
 
-export const enterRoom = async (params: EnterRoomParams): Promise<RoomResponse> => {
-  const { roomId } = params;
+export const enterRoom = async (
+  params: EnterRoomParams
+): Promise<RoomResponse> => {
+  const { roomId, password } = params;
   const url = `room/${roomId}/enter`;
-  const response = await localAxios.post(url, params);
+  const response = await localAxios.post(url, { password });
 
   return response.data;
 };

@@ -32,7 +32,7 @@ export const Community: React.FC = () => {
         <button onClick={handleNoticeOpen}>
           <NoticeImg src={Notice} alt="공지" />
         </button>
-        {isNoticeOpen && <RoomNotice />}
+        {isNoticeOpen && <RoomNotice text={""} />}
       </div>
     </div>
   );
