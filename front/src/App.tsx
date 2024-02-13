@@ -113,6 +113,7 @@ function App() {
     setRoomData(res);
     setChannels(res.channels);
     setLounges(res.lounges);
+    setCurrentLounge(res.lounges[0]);
   };
 
   const leaveRoomHandler = () => {

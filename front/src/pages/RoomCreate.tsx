@@ -33,7 +33,7 @@ export default function RoomCreate() {
       dispatch(addRoom(res));
     }
 
-    navigate(`/room/${res}`, { replace: true });
+    navigate(`/room/${res.roomId}`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

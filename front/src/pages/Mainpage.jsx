@@ -10,6 +10,7 @@ import SmokeTexture from "assets/texture/smoke.png";
 import { useSearchParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { hexTransparencies } from "constants/HexAlpha";
+import mainimg from "../assets/main.png";
 
 const perlin3d = `
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -731,7 +732,8 @@ export const Mainpage = () => {
       <CustomCamvas className="-z-50" ref={canvasRef} />
       <CustomCamvas className="-z-40" ref={cometCanvasRef} />
       <Title>Comeet</Title>
-      <div id="footer" className="absolute z-20 w-full bottom-0 h-[300px]">
+      <img className="fixed -bottom-8 h-80 w-80 left-1/2 -translate-x-1/2" src={mainimg} />
+      {/* <div id="footer" className="absolute z-20 w-full bottom-0 h-[300px]">
         <svg
           id="scene"
           x="0px"
@@ -942,7 +944,7 @@ export const Mainpage = () => {
             </g>
           </g>
         </svg>
-      </div>
+      </div> */}
     </div>
   );
 };

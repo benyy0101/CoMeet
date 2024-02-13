@@ -30,7 +30,7 @@ export default function RoomModify() {
 
     await modifyRoom(data);
 
-    navigate(`/room/${roomId}`, { replace: true });
+    navigate(`/room/${roomId}?modify=true`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {

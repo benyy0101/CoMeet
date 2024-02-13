@@ -18,7 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -130,6 +130,7 @@ export const Room = ({
   leaveSession,
 }: IProps) => {
   const { roomId } = useParams();
+  const [searchParams, _] = useSearchParams();
   const navigate = useNavigate();
 
   const userInfo = useSelector((state: any) => state.user);
@@ -145,7 +146,7 @@ export const Room = ({
     if (!roomInfo.isRoomIn) {
       enterRoomHandler();
     } else {
-      if (roomInfo.roomId !== roomId) {
+      if (roomInfo.roomId !== roomId || searchParams.get("modify")) {
         leaveRoomHandler().then((_) => {
           enterRoomHandler();
         });
@@ -163,10 +164,15 @@ export const Room = ({
   };
 
   const onClickLeaveRoom = () => {
-    leaveRoomHandler().then((_) => {
-      dispatch(setLeaveRoom());
-      navigate("/");
-    });
+    leaveRoomHandler()
+      .then((_) => {
+        dispatch(setLeaveRoom());
+        navigate("/");
+      })
+      .catch((error: any) => {
+        dispatch(setLeaveRoom());
+        navigate("/");
+      });
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
