@@ -7,6 +7,12 @@ export default function RoomConfirm(props: any) {
   const enterRoom = () => {
     navigate(`/room/${props.roomId}`);
   };
+
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    enterRoom();
+  };
+
   return (
     <Wrapper>
       <Title> {props.title}</Title>
@@ -15,7 +21,8 @@ export default function RoomConfirm(props: any) {
           backgroundImage: `url(
             ${
               props.roomImage &&
-              (props.roomImage === "" || props.roomImage === "default_room_image_letsgo")
+              (props.roomImage === "" ||
+                props.roomImage === "default_room_image_letsgo")
                 ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                 : props.roomImage
             })`,
@@ -23,6 +30,13 @@ export default function RoomConfirm(props: any) {
       />
       <Description> {props.description}</Description>
       <Capacity> 최대인원: {props.capacity}</Capacity>
+      {props.isLocked && (
+        <Capacity>
+          <form onSubmit={submitHandler}>
+            <input type="password" />
+          </form>
+        </Capacity>
+      )}
       <EnterButton onClick={enterRoom}>입장하기</EnterButton>
     </Wrapper>
   );

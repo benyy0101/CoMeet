@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pagination } from "components/Common/Pagination";
-import { SearchNoteContent, SearchNoteParams, SearchNoteResponse } from "models/Note.interface";
+import {
+  SearchNoteContent,
+  SearchNoteParams,
+  SearchNoteResponse,
+} from "models/Note.interface";
 import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -41,7 +45,9 @@ function MessageList(params: MessageListProps) {
       .then((data) => {
         setNoteList((prev) => {
           return prev.concat(
-            data.content.filter((each) => (prev.find((dat) => dat.id === each.id) ? false : true))
+            data.content.filter((each) =>
+              prev.find((dat) => dat.id === each.id) ? false : true
+            )
           );
         });
         numberOfElements.current = data.numberOfElements;
@@ -96,7 +102,8 @@ function MessageList(params: MessageListProps) {
           return prevMessages;
         }
 
-        const newContent = prevMessages?.filter((message) => message.id !== no) || [];
+        const newContent =
+          prevMessages?.filter((message) => message.id !== no) || [];
         return newContent;
         // return { ...prevMessages, content: newContent };
       });
@@ -131,10 +138,15 @@ function MessageList(params: MessageListProps) {
                   dispatch(updateUnread(countUnread() || 0));
                 }}
               >
-                <p className="text-blue-400">{message.writerId}</p>님의 쪽지
+                <p className="text-blue-400">{message.writerNickname}</p>님의
+                쪽지
               </MessageTitle>
               <RightBox>
-                {message.isRead ? <Status>읽음</Status> : <Status>안읽음</Status>}
+                {message.isRead ? (
+                  <Status>읽음</Status>
+                ) : (
+                  <Status>안읽음</Status>
+                )}
                 <TrashCan onClick={() => deleteNoteHandler(message.id)}>
                   <TrashIcon className="w-6 h-6"></TrashIcon>
                 </TrashCan>

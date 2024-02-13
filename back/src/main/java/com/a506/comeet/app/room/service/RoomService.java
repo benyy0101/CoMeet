@@ -205,6 +205,7 @@ public class RoomService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
 
         memberJoinValidation(room, member);
+        fullRoomValidation(roomId, room);
         passwordValidation(req, room);
         doubleEnterValidation(roomId, memberId);
 
@@ -233,6 +234,8 @@ public class RoomService {
         log.info("{} 멤버가 {} 방을 나갔습니다", memberId, roomId);
         return metadataService.create(dto);
     }
+
+
 
     public RoomResponseDto getDetails(Long roomId) {
         try {
@@ -326,5 +329,9 @@ public class RoomService {
             roomMemberRepository.findByRoomAndMember(room, member)
                     .orElseThrow(() -> new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "가입된 멤버가 아닙니다"));
         }
+    }
+
+    private void fullRoomValidation(Long roomId, Room room) {
+        if (room.getCapacity() == roomRedisRepository.getMembers(roomId).size()) throw new RestApiException(CustomErrorCode.FULL_ROOM);
     }
 }
