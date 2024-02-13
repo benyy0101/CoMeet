@@ -60,6 +60,7 @@ public class NoteService {
         return NoteResponseDto.builder()
                 .id(note.getId())
                 .writerId(note.getWriter().getMemberId())
+                .writerNickname(note.getWriter().getNickname())
                 .receiverId(note.getReceiver().getMemberId())
                 .context(note.getContext())
                 .isRead(note.getIsRead())
