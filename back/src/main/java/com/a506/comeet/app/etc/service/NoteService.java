@@ -48,7 +48,7 @@ public class NoteService {
     @Transactional
     public void delete(Long noteId, String memberId) {
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_NOTE));
-        writerAuthorityValidation(memberId, note);
+        receiverAuthorityValidation(memberId, note);
         note.delete();
     }
 
@@ -68,8 +68,8 @@ public class NoteService {
     }
 
 
-    private void writerAuthorityValidation(String memberId, Note note) {
-        if (!note.getWriter().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 작성자가 아닙니다");
+    private void receiverAuthorityValidation(String memberId, Note note) {
+        if (!note.getReceiver().getMemberId().equals(memberId)) throw new RestApiException(CustomErrorCode.NO_AUTHORIZATION, "쪽지 수신자가 아닙니다");
     }
 
 
