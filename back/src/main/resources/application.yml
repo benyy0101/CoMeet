@@ -1,17 +1,63 @@
 spring:
+  profiles:
+    include: secret
+
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/comeet?serverTimezone=UTC # mysql 8.2, mysql workbench 8.0.21 / mac은 8.0.34
-    username: comeet
-    password: comeet
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url:
+    username:
+    password:
+    driver-class-name:
+
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto:
     properties:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
-#    show-sql: true
+        format_sql:
+        dialect:
+        default_batch_fetch_size:
+  #    show-sql: true
+
+  jwt:
+    header:
+    secret:
+    access-token-validity-in-seconds :
+    refresh-token-validity-in-seconds :
+
+  data:
+    redis:
+      host:
+      port:
+    mongodb:
+      uri:
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id:
+            client-secret:
+          google:
+            client-id:
+            client-secret:
+          password-salt:
 
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL:
+
+aes:
+  secret-key:
+
+cloud:
+  aws:
+    s3:
+      bucket:
+    credentials:
+      access-key:
+      secret-key:
+    region:
+      static:
+      auto:
+    stack:
+      auto:

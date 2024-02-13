@@ -1,16 +1,34 @@
 spring:
+  profiles:
+    include: secret
+
   datasource:
-    initialization-mode: always
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
+    url:
+    username:
     password:
-    driver-class-name: org.h2.Driver
+    driver-class-name:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto:
     properties:
       hibernate:
-        format_sql: true
+        format_sql:
+        dialect:
+  #    show-sql: true
+
+  jwt:
+    header:
+    secret:
+    access-token-validity-in-seconds :
+    refresh-token-validity-in-seconds :
+
+  data:
+    redis:
+      host:
+      port:
 
 logging.level:
-  org.hibernate.SQL: debug
+  org.hibernate.SQL:
+
+aes:
+  secret-key:

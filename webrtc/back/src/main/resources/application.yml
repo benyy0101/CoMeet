@@ -3,6 +3,15 @@ server:
   ssl:
     enabled: false
 
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://heeyeon807:1234@cluster0.zyob3qk.mongodb.net/comeet?retryWrites=true&w=majority
+#      host: localhost
+#      port: 27017
+#      database: chatdb
+
 # openvidu
 OPENVIDU_URL: http://localhost:4443/
 OPENVIDU_SECRET: MY_SECRET
+

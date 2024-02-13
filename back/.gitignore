@@ -163,6 +163,7 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
@@ -171,5 +172,8 @@ gradle-app.setting
 **/generated
 
 
-.idea
+.idea/
+
+src/main/resources/application-secret.yml
+src/test/resources/application-secret.yml
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,gradle
