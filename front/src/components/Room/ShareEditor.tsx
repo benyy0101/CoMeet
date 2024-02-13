@@ -112,7 +112,7 @@ export default function ShareEditor({
   };
 
   const exportToChat = () => {
-    setMessage(`\`\`\`\n${editorRef.current.getModel().getValue()}\n\`\`\``);
+    setMessage(`\`\`\`${language}\n${editorRef.current.getModel().getValue()}\n\`\`\``);
     setInChat(true);
   };
 
