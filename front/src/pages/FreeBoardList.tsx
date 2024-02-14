@@ -20,24 +20,30 @@ import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 import { Pagination } from "components/Common/Pagination";
 import { useQuery } from "@tanstack/react-query";
-import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
+import SearchBoardResponse, {
+  SearchBoardContent,
+  SearchBoardParams,
+} from "models/Board.interface";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const FreeBoardList = () => {
   //목록 리스트
   const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
-  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
-    boardType: "FREE",
-    sortBy: "LATEST",
-    page: 0,
-    size: 10,
-  });
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
+    {
+      boardType: "FREE",
+      sortBy: "LATEST",
+      page: 0,
+      size: 10,
+    }
+  );
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
   type Condition = "제목+설명" | "작성자";
-  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
+  const [searchCondition, setSearchCondition] =
+    React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -143,7 +149,9 @@ export const FreeBoardList = () => {
       <Wrapper>
         <LeftContainer>
           {currentMenu === "ALL" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>전체</SideButtonSelected>
+            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>
+              전체
+            </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
           )}
@@ -286,7 +294,9 @@ export const FreeBoardList = () => {
                       </SortDropDown>
                     </ul>
                   )}
-                  <SortCountText>{currentSort}</SortCountText>
+                  <SortCountText>
+                    {currentSort === "LATEST" ? "최신순" : "좋아요순"}
+                  </SortCountText>
                 </SortCountButton>
               </SortCountContainer>
             </SortCountBothContainer>
