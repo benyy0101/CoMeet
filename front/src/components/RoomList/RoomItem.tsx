@@ -48,8 +48,7 @@ export default function RoomItem(props: SearchRoomContent) {
           style={{
             backgroundImage: `url(
             ${
-              props.roomImage === "" ||
-              props.roomImage === "default_room_image_letsgo"
+              props.roomImage === "" || props.roomImage === "default_room_image_letsgo"
                 ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
                 : props.roomImage
             })`,
@@ -80,9 +79,7 @@ export default function RoomItem(props: SearchRoomContent) {
           ) : (
             <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
           )}
-          {props.isLocked && (
-            <LockClosedIcon className="w-6 h-6 text-slate-700" />
-          )}
+          {props.isLocked && <LockClosedIcon className="w-6 h-6 text-slate-700" />}
         </OptionContainer>
       </Column>
       <Column>
@@ -95,13 +92,7 @@ export default function RoomItem(props: SearchRoomContent) {
         </CountContainer>
       </Column>
 
-      {modal && (
-        <Modal
-          toggleModal={modalHandler}
-          option="confirm"
-          setting={props}
-        ></Modal>
-      )}
+      {modal && <Modal toggleModal={modalHandler} option="confirm" setting={props}></Modal>}
     </Wrapper>
   );
 }
@@ -112,7 +103,7 @@ border-2
 flex  
 justify-between
 items-center
-bg-slate-50
+bg-slate-100
 p-4 
 rounded-md 
 cursor-pointer 

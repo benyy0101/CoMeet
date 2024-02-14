@@ -96,6 +96,9 @@ export const RoomList = () => {
       </MainContainer>
       <Link to={"/room-regist"}>
         <BottomButton className="right-24">
+          <HintContainer>
+            <Hint>{"방 만들기"}</Hint>
+          </HintContainer>
           <PlusIcon className="w-6 h-6" />
         </BottomButton>
       </Link>
@@ -105,6 +108,9 @@ export const RoomList = () => {
           window.scrollTo({ top: 0, behavior: "smooth" });
         }}
       >
+        <HintContainer>
+          <Hint>{"맨 위로"}</Hint>
+        </HintContainer>
         <ChevronDoubleUpIcon className="w-6 h-6" />
       </BottomButton>
     </Wrapper>
@@ -204,7 +210,7 @@ items-center
 space-x-2
 `;
 
-const BottomButton = tw.button`
+const BottomButton = tw.div`
 fixed
 bottom-6
 w-10
@@ -212,8 +218,32 @@ h-10
 flex
 justify-center
 items-center
-bg-slate-400
-hover:bg-slate-500
+bg-purple-900
+hover:bg-purple-800
 text-slate-100
 rounded-full
+cursor-pointer
+group
+`;
+
+const HintContainer = tw.div`
+absolute
+left-1/2
+-translate-x-1/2
+bottom-12
+z-10
+h-10
+bg-[#170f2a]
+p-2
+rounded-md
+border
+border-[#d9e5db]
+hidden
+group-hover:block
+`;
+
+const Hint = tw.h1`
+text-sm
+text-slate-200
+whitespace-nowrap
 `;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
@@ -37,6 +37,7 @@ export const NavBar = ({
   isVideoDisabled,
   publisher,
 }: IProps) => {
+  const location = useLocation();
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
@@ -87,11 +88,11 @@ export const NavBar = ({
   }, [userInfo.isLoggedIn]);
 
   return (
-    <NavBarContainer>
+    <NavBarContainer $home={location.pathname === "/"}>
       <LeftContainer>
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} className="w-24" alt="" />
+            <img src={logo} className="w-14" alt="" />
             <h1 className="text-xl font-thin">Comeet</h1>
           </Link>
         </Logo>
@@ -141,9 +142,7 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton
-                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-                    >
+                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -154,18 +153,14 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>
-                접속중인 방이 없습니다.
-              </ServerContainer>
+              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && (
-                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
-              )}
+              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
@@ -190,11 +185,7 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -202,11 +193,7 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               <ModalPortal>
                 {loginModal === true ? (
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -218,8 +205,8 @@ export const NavBar = ({
 };
 
 //NavBarContainer: 네비게이션바 전체 틀
-const NavBarContainer = tw.div`
-bg-[#282828]
+const NavBarContainer = tw.div<{ $home: boolean }>`
+${(p) => (p.$home ? "" : "bg-[#282828]")}
 h-14
 text-white
 flex

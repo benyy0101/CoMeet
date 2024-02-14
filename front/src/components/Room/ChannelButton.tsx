@@ -20,9 +20,9 @@ export default function ChannelButton({ id, name, active, disabled, moveChannel 
         }}
       >
         <UserGroupIcon className="text-white w-8 h-8" />
-        <TitleCotainer>
+        <TitleContainer>
           <Title>{name}</Title>
-        </TitleCotainer>
+        </TitleContainer>
       </IconButton>
     </ChannelButtonContainer>
   );
@@ -51,7 +51,7 @@ pr-40
 -mr-40
 `;
 
-const TitleCotainer = tw.div`
+const TitleContainer = tw.div`
 absolute
 left-24
 z-10
