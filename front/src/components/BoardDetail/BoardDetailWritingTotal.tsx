@@ -126,7 +126,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
           roomCapacity={boardDetail.roomCapacity}
-          roomId={boardDetail.id}
+          roomId={boardDetail.roomId}
           roomLink={boardDetail.roomLink!}
         ></BoardDetailRoomInfo>
       ) : null}
