@@ -61,7 +61,9 @@ function Modal(props: ModalProps) {
   return (
     <Wrapper onClick={modalToggleHandler}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
-        {option === "login" ? <Login></Login> : null}
+        {option === "login" ? (
+          <Login modalToggleHandler={modalToggleHandler}></Login>
+        ) : null}
         {option === "confirm" ? (
           <RoomConfirm {...setting!}></RoomConfirm>
         ) : null}
@@ -77,10 +79,10 @@ function Modal(props: ModalProps) {
           />
         ) : null}
         {option === "follower" ? (
-          <FollowList option={option}></FollowList>
+          <FollowList option={option} toggleModal={toggleModal}></FollowList>
         ) : null}
         {option === "following" ? (
-          <FollowList option={option}></FollowList>
+          <FollowList option={option} toggleModal={toggleModal}></FollowList>
         ) : null}
         {option === "message" && noteState === "list" ? (
           <MessageList swapState={setNoteStateHandler}></MessageList>

@@ -108,7 +108,7 @@ border-2
 flex  
 justify-between
 items-center
-bg-slate-50
+bg-slate-100
 p-4 
 rounded-md 
 cursor-pointer 

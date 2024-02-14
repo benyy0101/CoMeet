@@ -9,25 +9,43 @@ import {
   ListFollowingResponse,
 } from "models/Follow.interface";
 import { useQuery } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { setFollowed, setFollowing } from "store/reducers/followSlice";
 
-function FollowList(props: { option: string }) {
-  const { option } = props;
+function FollowList(props: { option: string; toggleModal: () => void }) {
+  const { option, toggleModal } = props;
   const [pageNo, setPageNo] = useState<number>(1);
   const [followingList, setFollowingList] = useState<FollowContent[]>([]);
   const [followerList, setFollowerList] = useState<FollowContent[]>([]);
-
-  const memberId = useSelector((state: any) => state.user.user.memberId);
+  const { memberId } = useParams<{ memberId: string }>();
+  const currentUser = useSelector((state: any) => state.user.user.memberId);
+  const dispatch = useDispatch();
 
   const fetchData = useCallback(async () => {
-    if (followerList.length === 0) {
-      const res = await searchFollower({ memberId, pageNo, pageSize: 10 });
+    if (followerList.length === 0 && memberId) {
+      const res = await searchFollower({
+        memberId,
+        pageNo,
+        pageSize: 10,
+      });
       setFollowerList((prev) => [...prev, ...res.content]);
+      if (currentUser === memberId) {
+        dispatch(setFollowed(res.content));
+      }
     }
 
-    if (followingList.length === 0) {
-      const res2 = await searchFollowing({ memberId, pageNo, pageSize: 10 });
+    if (followingList.length === 0 && memberId) {
+      const res2 = await searchFollowing({
+        memberId,
+        pageNo,
+        pageSize: 10,
+      });
       setFollowingList((prev) => [...prev, ...res2.content]);
+
+      if (currentUser === memberId) {
+        dispatch(setFollowing(res2.content));
+      }
     }
   }, []);
 
@@ -53,11 +71,17 @@ function FollowList(props: { option: string }) {
                   ? true
                   : false
               }
+              toggleModal={toggleModal}
             />
           ))}
         {option === "following" &&
           followingList.map((item, index) => (
-            <FollowerItem key={index} item={item} option={option} />
+            <FollowerItem
+              key={index}
+              item={item}
+              option={option}
+              toggleModal={toggleModal}
+            />
           ))}
       </ItemContainer>
     </Wrapper>

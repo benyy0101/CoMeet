@@ -6,10 +6,10 @@ import PoepleNumImg from "assets/img/people-num.svg";
 import BasicRoom from "assets/img/basic-room.png";
 import { encrypt } from "utils/Crypto";
 import { useSelector } from "react-redux";
-import { smallRoomdata } from "models/Login.interface";
 import { joinNote } from "api/Note";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { SmallRoomdata } from "models/Room.interface";
 
 type RoomInfoProps = {
   roomTitle: string;
@@ -45,7 +45,7 @@ export const BoardDetailRoomInfo: React.FC<{
 
   useEffect(() => {
     if (
-      member.joinedRooms.some((room: smallRoomdata) => roomId === room.roomId)
+      member.joinedRooms.some((room: SmallRoomdata) => roomId === room.roomId)
     ) {
       console.log("HI");
       setIsIn(true);
@@ -199,6 +199,7 @@ space-x-3
 
 const LinkGoTitle = tw.button`
 font-bold
+<<<<<<< HEAD
 rounded-md
 py-1
 px-3
@@ -214,6 +215,8 @@ dark:focus:ring-purple-800
 
 const LinkStopTitle = tw.div`
 font-bold
+=======
+>>>>>>> dev
 `;
 
 //진짜 링크 부분

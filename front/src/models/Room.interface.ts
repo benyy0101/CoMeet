@@ -75,6 +75,7 @@ interface Keyword {
 export interface SearchRoomResponse {
   content: SearchRoomContent[];
   pageable: Pageable;
+  last: boolean;
 }
 
 export interface DeleteRoomParams {
@@ -162,4 +163,10 @@ export interface SearchManagingResponses {
   roomId: number;
   title: string;
   full: boolean; // 꽉 찼는지
+}
+
+export interface SmallRoomdata {
+  roomId: number;
+  title: string;
+  roomImage: string;
 }

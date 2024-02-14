@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
@@ -9,7 +9,7 @@ import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
 import { handleMember } from "api/Member";
@@ -20,6 +20,9 @@ import {
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import logo from "../../../assets/logo.svg";
+import { logout } from "store/reducers/userSlice";
+import { handleLogout } from "api/Login";
+import defaultProfile from "../../../assets/default_profile.svg";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -38,8 +41,10 @@ export const NavBar = ({
   isVideoDisabled,
   publisher,
 }: IProps) => {
+  const navigate = useNavigate();
+
+  const location = useLocation();
   //memberId 가져오기
-  const memberId = useSelector((state: any) => state.user.user.memberId);
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
@@ -56,9 +61,8 @@ export const NavBar = ({
     setMessageModal(!messageModal);
   };
 
-  const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
-  console.log(userInfo);
+  const userInfo = useSelector((state: any) => state.user);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -82,32 +86,44 @@ export const NavBar = ({
 
   //시작할 때 데이터 다 들고와
   useEffect(() => {
+    console.error(userInfo);
     if (userInfo.isLoggedIn) {
       fetchData();
     }
     console.log(roomData);
   }, [userInfo.isLoggedIn]);
 
-  useEffect(() => {
-    if (roomData) {
-      const isUserIn =
-        roomData.members &&
-        roomData.members.some((member: any) => member.memberId === memberId);
-      console.log("isUserIn " + isUserIn);
-      setIsUserInRoom(isUserIn);
-      console.log(isUserInRoom);
-      console.log(roomData);
-      console.log(roomData && isUserInRoom);
-    }
-  }, [roomData, userInfo.user.meemberId]);
+  // useEffect(() => {
+  //   if (roomData) {
+  //     const isUserIn =
+  //       roomData.members &&
+  //       roomData.members.some((member: any) => member.memberId === memberId);
+  //     console.log("isUserIn " + isUserIn);
+  //     setIsUserInRoom(isUserIn);
+  //     console.log(isUserInRoom);
+  //     console.log(roomData);
+  //     console.log(roomData && isUserInRoom);
+  //   }
+  // }, [roomData, userInfo.user.meemberId]);
+
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    console.log("handle logout");
+    handleLogout().then(() => {
+      dispatch(logout());
+      console.log("success");
+      navigate("/", { replace: true });
+    });
+  };
 
   return (
-    <NavBarContainer>
+    <NavBarContainer $home={location.pathname === "/"}>
       <LeftContainer>
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} className="w-24" alt="" />
-            <h1 className="text-xl font-thin">Comeet</h1>
+            <img src={logo} className="w-14" alt="" />
+            <h1 className="text-md font-thin mt-1">COMEET</h1>
           </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
@@ -134,7 +150,8 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
-            {roomData && isUserInRoom ? (
+            {/* {roomData && isUserInRoom ? ( */}
+            {roomData ? (
               <ServerContainer $active={true}>
                 <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>
@@ -194,9 +211,9 @@ export const NavBar = ({
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
-              <Link to={`/userpage/${memberId}`}>
+              <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={userImg ? userImg : BasicProfile}
+                  src={userInfo.user.profileImage || defaultProfile}
                   alt={BasicProfile}
                 />
               </Link>
@@ -218,15 +235,15 @@ export const NavBar = ({
             </LoginSignup>
             <LoginSignup>
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
-              <ModalPortal>
-                {loginModal === true ? (
+              {loginModal === true ? (
+                <ModalPortal>
                   <Modal
                     toggleModal={loginModalHandler}
                     option="login"
                     setting={null}
                   />
-                ) : null}
-              </ModalPortal>
+                </ModalPortal>
+              ) : null}
             </LoginSignup>
           </LoginContainer>
         )}
@@ -236,8 +253,8 @@ export const NavBar = ({
 };
 
 //NavBarContainer: 네비게이션바 전체 틀
-const NavBarContainer = tw.div`
-bg-[#282828]
+const NavBarContainer = tw.div<{ $home: boolean }>`
+${(p) => (p.$home ? "" : "bg-[#282828]")}
 h-14
 text-white
 flex
@@ -258,7 +275,7 @@ h-full
 const RightContainer = tw.div`
 flex
 justify-start
-items-end
+items-center
 space-x-6
 `;
 
@@ -303,11 +320,12 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
-rounded-full
-h-8
-w-8
+h-10
+w-10
 rounded-full
 bg-white
+border-purple-400
+border-2
 `;
 
 //커뮤니티 드롭다운
@@ -422,7 +440,6 @@ bg-no-repeat
 bg-center
 shadow-md
 bg-slate-200
-bg-white
 `;
 
 //ServerText: 서버 이름

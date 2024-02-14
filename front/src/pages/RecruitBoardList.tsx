@@ -17,7 +17,7 @@ import { searchBoard } from "api/Board";
 import { BOARD_SORTBY } from "models/Enums.type";
 import WriteArticle from "./WriteArticle";
 import { Keyword } from "models/Util";
-import { BackgroundGradient } from "components/Common/BackgroundGradient";
+import { Background } from "components/Common/Backgruond";
 
 export const RecruitBoardList = () => {
   //목록 리스트
@@ -194,7 +194,7 @@ export const RecruitBoardList = () => {
 
   return (
     <TotalContainer>
-      <BackgroundGradient />
+      <Background />
       <Wrapper>
         <LeftContainer>
           {currentMenu === "전체" ? (
