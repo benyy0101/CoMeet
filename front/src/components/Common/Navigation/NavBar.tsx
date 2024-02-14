@@ -19,6 +19,7 @@ import {
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import logo from "../../../assets/logo.svg";
+import defaultProfile from "../../../assets/default_profile.svg";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -175,7 +176,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
+                <NavIcon src={userInfo.user.profileImage || defaultProfile} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
           </>
@@ -227,7 +228,7 @@ h-full
 const RightContainer = tw.div`
 flex
 justify-start
-items-end
+items-center
 space-x-6
 `;
 
@@ -272,11 +273,12 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
-rounded-full
-h-8
-w-8
+h-10
+w-10
 rounded-full
 bg-white
+border-purple-400
+border-2
 `;
 
 //커뮤니티 드롭다운
@@ -391,7 +393,6 @@ bg-no-repeat
 bg-center
 shadow-md
 bg-slate-200
-bg-white
 `;
 
 //ServerText: 서버 이름

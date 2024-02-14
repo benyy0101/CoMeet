@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import RoomDefault from "assets/img/room-default.svg";
-import { PlusIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 
@@ -26,7 +25,7 @@ export const ServerDropDownList = ({ setIsServerOpen }: IProps) => {
           {roomInfo.map((room: any) => (
             <Link to={`/room/${room.roomId}`} replace>
               <StyleImgTextBoth key={room.roomId} $disabled={room.roomId === +currentRoomId}>
-                <StyleServerImg src={RoomDefault} alt="" />
+                <StyleServerImg src={room.roomImage || RoomDefault} alt="" />
                 <StyleServerText>{room.title}</StyleServerText>
                 <StyleServerDot $visible={room.roomId === +currentRoomId} />
               </StyleImgTextBoth>

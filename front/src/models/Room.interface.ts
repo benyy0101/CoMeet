@@ -163,3 +163,9 @@ export interface SearchManagingResponses {
   title: string;
   full: boolean; // 꽉 찼는지
 }
+
+export interface SmallRoomdata {
+  roomId: number;
+  title: string;
+  roomImage: string;
+}
