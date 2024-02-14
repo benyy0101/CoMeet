@@ -20,12 +20,12 @@ export default function MySumTime(props: Props) {
         <TimeTime>시간</TimeTime>
       </TodaySum>
       <WeekSum>
-        <TitleTWM>이번주</TitleTWM>
+        <TitleTWM>최근 1주일</TitleTWM>
         <TimeTWM>{weekStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </WeekSum>
       <MonthSum>
-        <TitleTWM>이번달</TitleTWM>
+        <TitleTWM>최근 1달</TitleTWM>
         <TimeTWM>{monthStudyHour?.toFixed(1)}</TimeTWM>
         <TimeTime>시간</TimeTime>
       </MonthSum>
@@ -71,7 +71,7 @@ mr-4
 
 //오늘, 이번주, 이번달 타이틀
 const TitleTWM = tw.div`
-text-base
+text-lg
 font-bold
 self-center
 py-2
