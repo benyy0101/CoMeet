@@ -94,7 +94,7 @@ export const NavBar = ({
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
             <img src={logo} className="w-14" alt="" />
-            <h1 className="text-xl font-thin">Comeet</h1>
+            <h1 className="text-md font-thin mt-1">COMEET</h1>
           </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}

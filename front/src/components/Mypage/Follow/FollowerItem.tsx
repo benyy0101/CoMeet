@@ -1,82 +1,97 @@
 import { follow, unfollow } from "api/Follow";
 import { FollowContent } from "models/Follow.interface";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 interface FollowerItemProps {
   item: FollowContent;
   option: string;
   option2?: boolean;
+  toggleModal?: () => void;
 }
 
 const FollowerItem = (props: FollowerItemProps) => {
   const { item, option, option2 } = props;
-  const [isFollowing, setIsFollowing] = useState<boolean>(option2 === false ? true : false);
+  const currentMember = useSelector((state: any) => state.user.user);
+  //console.log(currentMember.memberId);
+  const [isFollowing, setIsFollowing] = useState<boolean>(
+    option2 === false ? true : false
+  );
   const isInitialRender = useRef(true);
 
-  const unfollowHandler = async (id:string) => {
-    try{
-      const res = await unfollow({memberId: id});
-    }
-    catch(e){
+  const unfollowHandler = async (id: string) => {
+    try {
+      const res = await unfollow({ memberId: id });
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  const followHandler = async (id:string) => {
-    try{
-      const res = await follow({memberId: id});
-    }
-    catch(e){
+  const followHandler = async (id: string) => {
+    try {
+      const res = await follow({ memberId: id });
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   const isFollowingHandler = () => {
     setIsFollowing(!isFollowing);
-  }
+  };
 
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       return;
     }
-    if(isFollowing){
+    if (isFollowing) {
       unfollowHandler(item.memberId);
-    }
-    else if (isFollowing === false){
+    } else if (isFollowing === false) {
       followHandler(item.memberId);
     }
-  },[isFollowing]);
+  }, [isFollowing]);
+
+  const modalHandler = () => {
+    props.toggleModal && props.toggleModal();
+  };
 
   return (
     <Wrapper>
       <LeftContainer>
-        <ProfileImage src={item.profileImage} />
+        <Link to={`/userpage/${item.memberId}`} onClick={modalHandler}>
+          <ProfileImage src={item.profileImage} />
+        </Link>
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
-      {option === "follower" && option2 === false && isFollowing && (
+      {/* {option === "follower" && option2 === false && isFollowing && (
         <RightContainer>
           <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
         </RightContainer>
       )}
-      {option === "follower" && option2 === false  && !isFollowing && (
-        <RightContainer>
-          <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
-        </RightContainer>
-      )}
+      {option === "follower" &&
+        option2 === false &&
+        !isFollowing &&
+        currentMember.memberId === item.memberId && (
+          <RightContainer>
+            <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
+          </RightContainer>
+        )}
 
-      {option === "following"  && !isFollowing && (
-        <RightContainer>
-          <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
-        </RightContainer>
-      )}
 
-      {option === "following"  && isFollowing && (
+      {option === "following" &&
+        !isFollowing &&
+        currentMember.memberId === item.memberId && (
+          <RightContainer>
+            <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
+          </RightContainer>
+        )}
+      {option === "following" && isFollowing && (
         <RightContainer>
           <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
         </RightContainer>
-      )}
+      )} */}
     </Wrapper>
   );
 };

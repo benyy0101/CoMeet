@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import ImageModifyModal from "./ImageModifyModal";
@@ -12,6 +12,14 @@ import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
 import Modal from "components/Common/Modal";
 import { profileImageDelete } from "api/image";
+import { useDispatch, useSelector } from "react-redux";
+import { solarizedDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { follow, searchFollower, searchFollowing, unfollow } from "api/Follow";
+import { idText } from "typescript";
+import { current } from "@reduxjs/toolkit";
+import { setFollowed, setFollowing } from "store/reducers/followSlice";
+import { set } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
 
 interface myProps {
   isMe: boolean;
@@ -44,8 +52,55 @@ export default function MyProfile({
   const [followerModal, setFollowerModal] = useState<boolean>(false);
   const [followingModal, setFollowingModal] = useState<boolean>(false);
 
+  const [followerList, setFollowerList] = useState<any[]>([]);
+  const [followingList, setFollowingList] = useState<any[]>([]);
+
   //현재 보고 있는 사람을 팔로우 했는지
   const [isFollow, setIsFollow] = useState<boolean>();
+  const { memberId } = useParams<{ memberId: string }>();
+  const currentUser = useSelector((state: any) => state.user.user.memberId);
+  //console.log(currentUser);
+  const myFollowing = useSelector((state: any) => state.follow.following);
+  const myFollower = useSelector((state: any) => state.follow.followed);
+  //console.log(myFollowing);
+  const dispatch = useDispatch();
+
+  const followHandler = async () => {
+    try {
+      const res = await searchFollower({
+        memberId: memberId || "",
+        pageNo: 0,
+        pageSize: 10,
+      });
+      //console.log(memberId, currentUser);
+      if (memberId === currentUser) {
+        dispatch(setFollowed(res.content));
+        //console.log(res.content);
+      }
+      setFollowerList(res.content);
+      const res2 = await searchFollowing({
+        memberId: memberId || "",
+        pageNo: 0,
+        pageSize: 10,
+      });
+      if (memberId === currentUser) {
+        dispatch(setFollowing(res2.content));
+      }
+      setFollowingList(res2.content);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    followHandler();
+    if (myFollowing.some((f: any) => f.memberId === memberId)) {
+      setIsFollow(true);
+    } else {
+      setIsFollow(false);
+    }
+    console.log(isFollow);
+  }, [memberId]);
 
   const followerModalHandler = () => {
     setFollowerModal(!followerModal);
@@ -98,6 +153,25 @@ export default function MyProfile({
   //   }
   // }, [profileImage]);
 
+  const unfollowHandler = async () => {
+    try {
+      await unfollow({ memberId: memberId! });
+      setIsFollow(!isFollow);
+      toast.success("언팔로우 되었습니다.");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const followingHandler = async () => {
+    try {
+      await follow({ memberId: memberId! });
+      setIsFollow(!isFollow);
+      toast.success("팔로우 되었습니다.");
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <TotalContainer>
       {isMe ? (
@@ -187,14 +261,13 @@ export default function MyProfile({
             <StyleNickName>{nickname}</StyleNickName>
 
             {/* isFollow: 내가 A의 페이지를 갔고, 내가 A를 팔로잉 하고 있을 때 팔로잉 버튼 활성화 / 팔로잉 안 하고 있으면 팔로우 버튼 활성화*/}
-            {isMe ? null : (
-              <>
-                {isFollow ? (
-                  <FollowingButton>팔로잉</FollowingButton>
-                ) : (
-                  <FollowButton>팔로우</FollowButton>
-                )}
-              </>
+            {memberId !== currentUser && isFollow && (
+              <FollowingButton onClick={unfollowHandler}>
+                언팔로우
+              </FollowingButton>
+            )}
+            {memberId !== currentUser && !isFollow && (
+              <FollowButton onClick={followingHandler}>팔로우</FollowButton>
             )}
           </div>
           <div className="flex ">
@@ -218,6 +291,7 @@ export default function MyProfile({
       {/* <RecentIn>
         최근 접속 시간: {recentTime}
         </RecentIn> */}
+      <ToastContainer />
     </TotalContainer>
   );
 }
