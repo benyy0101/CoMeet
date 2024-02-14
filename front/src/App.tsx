@@ -102,10 +102,13 @@ function App() {
           (e: any) => alert("에러발생!!!!!!")
         );
       }
+      try {
+        //창 끄기 전에 방 나가기
+        window.addEventListener("beforeunload", leaveRoomHandler);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
-    //창 끄기 전에 방 나가기
-    window.addEventListener("beforeunload", leaveRoomHandler);
 
     return () => {
       if (stompClient.current) {
