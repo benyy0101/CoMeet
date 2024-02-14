@@ -24,8 +24,10 @@ export default function MyKeyword({ keywords }: Props) {
     { weight: -Infinity } as Keyword
   ).weight;
 
-  const maxWeightKeywords =
-    keywords?.filter((keyword) => keyword.weight === maxWeight) || [];
+  // const maxWeightKeywords =
+  //   keywords?.filter((keyword) => keyword.weight === maxWeight) || [];
+  const sortedKeywords = keywords?.sort((a, b) => b.weight - a.weight) || [];
+  const topThreeKeywords = sortedKeywords.slice(0, 3);
 
   const options = {
     fontSizes: [10, 60] as [number, number], // 글씨 크기 범위 설정 (최소 크기: 20, 최대 크기: 100)
@@ -62,16 +64,30 @@ export default function MyKeyword({ keywords }: Props) {
                 />
               </WordCloudContainer>
               <TextContainer>
-                <First>1위</First>
-
-                {maxWeightKeywords.slice(0, 1).map((keywords) => (
-                  <Keyword>{keywords.name}</Keyword>
-                ))}
-                {maxWeightKeywords.length > 1 ? (
-                  <MultipleKeywordText>
-                    외 {maxWeightKeywords.length - 1}개
-                  </MultipleKeywordText>
-                ) : null}
+                <RankContainer>
+                  <First>1위</First>
+                  {topThreeKeywords.length >= 1 ? (
+                    <Keyword>{topThreeKeywords[0].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
+                <RankContainer>
+                  <First>2위</First>
+                  {topThreeKeywords.length >= 2 ? (
+                    <Keyword>{topThreeKeywords[1].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
+                <RankContainer>
+                  <First>3위</First>
+                  {topThreeKeywords.length >= 3 ? (
+                    <Keyword>{topThreeKeywords[2].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
               </TextContainer>
             </>
           )}
@@ -93,7 +109,7 @@ text-xl font-bold my-5
 `;
 
 const Wrapper = tw.div`
-flex flex-col w-full h-full items-center gap-y-3
+flex flex-col w-full h-full items-center gap-y-3 justify-around
 `;
 
 const NoneKeywords = tw.div`
@@ -116,11 +132,15 @@ flex items-center p-5 rounded-full bg-white overflow-hidden ring-[5px] outline-n
 `;
 
 const TextContainer = tw.div`
-my-5 flex justify-center items-center
+flex flex-col justify-center items-start mb-[15%]
+`;
+
+const RankContainer = tw.div`
+flex items-center
 `;
 
 const First = tw.div`
-mr-5 font-bold
+mr-7 font-bold text-xl my-1
 `;
 
 const Keyword = tw.div`

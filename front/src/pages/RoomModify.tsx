@@ -120,6 +120,8 @@ export default function RoomModify() {
     if (roomId) {
       setIsRemoveImg(true);
       setImagePreview("");
+      // 선택했다가 지웠을 경우가 있을 수도 있으니
+      setSelectedFile(undefined);
     }
   };
 

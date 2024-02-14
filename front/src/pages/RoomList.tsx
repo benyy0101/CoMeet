@@ -24,8 +24,8 @@ import {
   SearchRoomResponse,
 } from "models/Room.interface";
 import { searchRoom } from "api/Room";
-import { BackgroundGradient } from "components/Common/BackgroundGradient";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
+import { Background } from "components/Common/Backgruond";
 
 const size = 5;
 
@@ -120,7 +120,7 @@ export const RoomList = () => {
 
   return (
     <Wrapper>
-      <BackgroundGradient />
+      <Background />
       <MainContainer>
         <LeftContainer>
           <FilterMenu

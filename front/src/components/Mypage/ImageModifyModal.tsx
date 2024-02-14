@@ -88,6 +88,8 @@ function ImageModifyModal(props: ModalProps) {
       //마이페이지 useEffect
       handleChange();
       setIsClick(false);
+      // 강제 새로고침...
+      window.location.reload();
     }
   };
 
