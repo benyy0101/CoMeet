@@ -75,7 +75,11 @@ function ImageModifyModal(props: ModalProps) {
           //s3에 업로드
           const formData = new FormData();
           formData.append("profileImageFile", selectedFile);
-          const res = await uploadImage(formData);
+          try {
+            const res = await uploadImage(formData);
+          } catch (error) {
+            console.log(error);
+          }
 
           toggleModal();
         } catch {
@@ -130,7 +134,7 @@ function ImageModifyModal(props: ModalProps) {
 }
 
 const Wrapper = tw.div`
-fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
+fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50
 `;
 
 const ModalContainer = tw.div`
