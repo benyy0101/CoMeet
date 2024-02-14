@@ -8,6 +8,7 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   VideoCameraIcon,
+  VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
@@ -57,36 +58,14 @@ export default function FilterMenu({
       <SearchOptionContainer>
         <CheckBoxContainer>
           <Title>방 기본 설정</Title>
-          {/* TODO: 체크박스 커스텀하기 */}
-          <CheckBoxOption>
-            <CheckBox>
-              <LockClosedIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isLocked}
-                onChange={() => {
-                  setIsLockedHandler(!isLocked);
-                  setIsLocked(!isLocked);
-                }}
-              />
-            </CheckBox>
-            <CheckBox>
-              <SpeakerXMarkIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isMuted}
-                onChange={() => setIsMuted(!isMuted)}
-              />
-            </CheckBox>
-            <CheckBox>
-              <VideoCameraIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isVideoOff}
-                onChange={() => setIsVideoOff(!isVideoOff)}
-              />
-            </CheckBox>
-          </CheckBoxOption>
+          <SearchForm>
+            <DropDowns>
+              <DropdownOption value="VIDEOONMICOFF">fdufd</DropdownOption>
+              <DropdownOption value="VIDEOON">방장명</DropdownOption>
+              <DropdownOption value="MICOFF">방장명</DropdownOption>
+              <DropdownOption value="FREE">방장명</DropdownOption>
+            </DropDowns>
+          </SearchForm>
         </CheckBoxContainer>
       </SearchOptionContainer>
     </Wrapper>
@@ -115,6 +94,42 @@ items-center
 divide-y
 divide-slate-200
 overflow-hidden
+`;
+const SearchForm = tw.form`
+flex
+items-center
+space-x-2
+`;
+
+const DropDowns = tw.select`
+h-10
+p-2
+focus:outline-none
+bg-transparent
+text-black
+`;
+
+const SearchInputContainer = tw.div`
+flex
+h-10
+items-center
+justify-end
+relative
+border-b-[1px]
+`;
+
+const SearchBar = tw.input`
+w-full
+h-full
+focus:outline-none
+p-2
+pr-6
+bg-transparent
+text-slate-300
+`;
+
+const DropdownOption = tw.option`
+text-black
 `;
 
 const Img = tw.img`
