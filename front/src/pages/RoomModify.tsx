@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
 import { onChange } from "react-toastify/dist/core/store";
+import BasicRoom from "assets/img/basic-room.svg";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -139,7 +140,7 @@ export default function RoomModify() {
               src={
                 (roomData?.room_image === "" && imagePreview === "") ||
                 isRemoveImg === true
-                  ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
+                  ? BasicRoom
                   : imagePreview === ""
                     ? roomData?.room_image
                     : imagePreview

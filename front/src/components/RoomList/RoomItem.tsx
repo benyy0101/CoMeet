@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import Modal from "../Common/Modal";
+import BasicRoom from "assets/img/basic-room.svg";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
@@ -47,12 +48,7 @@ export default function RoomItem(props: SearchRoomContent) {
         <ProfileImg
           style={{
             backgroundImage: `url(
-            ${
-              props.roomImage === "" ||
-              props.roomImage === "default_room_image_letsgo"
-                ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
-                : props.roomImage
-            })`,
+            ${props.roomImage ? props.roomImage : BasicRoom})`,
           }}
         />
       </Column>
@@ -137,6 +133,8 @@ h-20
 rounded-full
 bg-cover
 bg-center
+bg-white
+border
 `;
 
 const Title = tw.h1`

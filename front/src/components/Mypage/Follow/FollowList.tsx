@@ -37,26 +37,28 @@ function FollowList(props: { option: string }) {
 
   return (
     <Wrapper>
-      {option === "follower" && (<Title>팔로워</Title>)}
-      {option === "following" && (<Title>팔로잉</Title>)}
+      {option === "follower" && <Title>팔로워</Title>}
+      {option === "following" && <Title>팔로잉</Title>}
       <ItemContainer>
-      {option === "follower" &&
-        followerList.map((item, index) => (
-          <FollowerItem
-            key={item.memberId}
-            item={item}
-            option={option}
-            option2={
-              followingList.some((followItem) => followItem.memberId === item.memberId)
-                ? true
-                : false
-            }
-          />
-        ))}
-      {option === "following" &&
-        followingList.map((item, index) => (
-          <FollowerItem key={index} item={item} option={option} />
-        ))}
+        {option === "follower" &&
+          followerList.map((item, index) => (
+            <FollowerItem
+              key={item.memberId}
+              item={item}
+              option={option}
+              option2={
+                followingList.some(
+                  (followItem) => followItem.memberId === item.memberId
+                )
+                  ? true
+                  : false
+              }
+            />
+          ))}
+        {option === "following" &&
+          followingList.map((item, index) => (
+            <FollowerItem key={index} item={item} option={option} />
+          ))}
       </ItemContainer>
     </Wrapper>
   );
@@ -80,7 +82,7 @@ const Title = tw.div`
 text-3xl
 text-bold
 text-sky-100
-`
+`;
 
 const ItemContainer = tw.div`
 w-full
@@ -94,5 +96,5 @@ rounded-md
 max-h-96
 overflow-scroll
 scrollbar-hide
-`
+`;
 export default FollowList;

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
+import BasicRoom from "assets/img/basic-room.svg";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
@@ -125,7 +126,7 @@ export const NavBar = ({
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : BasicRoom})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>

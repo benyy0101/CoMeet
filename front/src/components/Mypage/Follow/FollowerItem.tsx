@@ -2,6 +2,7 @@ import { follow, unfollow } from "api/Follow";
 import { FollowContent } from "models/Follow.interface";
 import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
+import BasicProfile from "assets/img/basic-profile.svg";
 
 interface FollowerItemProps {
   item: FollowContent;
@@ -11,48 +12,49 @@ interface FollowerItemProps {
 
 const FollowerItem = (props: FollowerItemProps) => {
   const { item, option, option2 } = props;
-  const [isFollowing, setIsFollowing] = useState<boolean>(option2 === false ? true : false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(
+    option2 === false ? true : false
+  );
   const isInitialRender = useRef(true);
 
-  const unfollowHandler = async (id:string) => {
-    try{
-      const res = await unfollow({memberId: id});
-    }
-    catch(e){
+  const unfollowHandler = async (id: string) => {
+    try {
+      const res = await unfollow({ memberId: id });
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  const followHandler = async (id:string) => {
-    try{
-      const res = await follow({memberId: id});
-    }
-    catch(e){
+  const followHandler = async (id: string) => {
+    try {
+      const res = await follow({ memberId: id });
+    } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   const isFollowingHandler = () => {
     setIsFollowing(!isFollowing);
-  }
+  };
 
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       return;
     }
-    if(isFollowing){
+    if (isFollowing) {
       unfollowHandler(item.memberId);
-    }
-    else if (isFollowing === false){
+    } else if (isFollowing === false) {
       followHandler(item.memberId);
     }
-  },[isFollowing]);
+  }, [isFollowing]);
 
   return (
     <Wrapper>
       <LeftContainer>
-        <ProfileImage src={item.profileImage} />
+        <ProfileImage
+          src={item.profileImage ? item.profileImage : BasicProfile}
+        />
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>
       {option === "follower" && option2 === false && isFollowing && (
@@ -60,19 +62,19 @@ const FollowerItem = (props: FollowerItemProps) => {
           <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
         </RightContainer>
       )}
-      {option === "follower" && option2 === false  && !isFollowing && (
+      {option === "follower" && option2 === false && !isFollowing && (
         <RightContainer>
           <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
         </RightContainer>
       )}
 
-      {option === "following"  && !isFollowing && (
+      {option === "following" && !isFollowing && (
         <RightContainer>
           <FollowButton onClick={isFollowingHandler}>언팔로우</FollowButton>
         </RightContainer>
       )}
 
-      {option === "following"  && isFollowing && (
+      {option === "following" && isFollowing && (
         <RightContainer>
           <FollowButton onClick={isFollowingHandler}>팔로우</FollowButton>
         </RightContainer>
