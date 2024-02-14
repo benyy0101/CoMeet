@@ -7,11 +7,7 @@ import { BoardDetailRoomInfo } from "./BoardDetailRoomInfo";
 import StarFill from "assets/img/star-fill.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { KeywordComponent } from "./KeywordComponent";
-import {
-  BOARD_TYPE,
-  FREE_BOARD_CATEGORY,
-  RECRUIT_BOARD_CATEGORY,
-} from "models/Enums.type";
+import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
 import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
@@ -31,9 +27,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   const { boardId } = props;
   const memberNickname = useSelector((state: any) => state.user.user.nickname);
   const navigate = useNavigate();
-  const [viewerContent, setViewerContent] = useState<string | undefined>(
-    undefined
-  );
+  const [viewerContent, setViewerContent] = useState<string | undefined>(undefined);
 
   const dummy: EnterBoardResponse = {
     id: 0,
@@ -48,6 +42,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     roomTitle: "이건 테스d트",
     roomDescription: "요ㄴㄴ요",
     roomMcount: 1,
+    roomId: 1,
     roomCapacity: 10,
     roomImage: "default_room_image_letsgo",
     isLocked: false,
@@ -92,9 +87,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     deleteBoard({ boardId: boardDetail.id })
       .then((data) => {
         console.log("success");
-        navigate(
-          boardDetail.type === "FREE" ? "/free-board" : "/recruit-board"
-        );
+        navigate(boardDetail.type === "FREE" ? "/free-board" : "/recruit-board");
       })
       .catch((fail) => {
         console.log("failure", fail.response.data);
