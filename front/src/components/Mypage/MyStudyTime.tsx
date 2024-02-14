@@ -29,7 +29,7 @@ export const MyStudyTime = ({ mostStudyTime }: Prop) => {
 
   return (
     <TotalContainer>
-      <TitleContainer>공부 시간대</TitleContainer>
+      <TitleContainer>주요 공부 시간대</TitleContainer>
       <ImgContainer>
         {dayOrNight === "" ? (
           <div>선호하는 공부시간대가 없습니다.</div>

@@ -40,9 +40,9 @@ function ImageModifyModal(props: ModalProps) {
     setSelectedFile(file);
 
     if (file) {
-      //1메가 아래의 이미지만 업로드하게 하기 - 1메가 이상은 안 보내진다... 왜지?
-      if (file.size >= 1 * 1024 * 1024) {
-        alert("1mb 이하의 파일만 업로드 가능합니다.");
+      //1메가 아래의 이미지만 업로드하게 하기
+      if (file.size >= 10 * 1024 * 1024) {
+        alert("10MB 이하의 파일만 업로드 가능합니다.");
         e.target.value = null;
       } else {
         //파일 선택시
@@ -75,7 +75,11 @@ function ImageModifyModal(props: ModalProps) {
           //s3에 업로드
           const formData = new FormData();
           formData.append("profileImageFile", selectedFile);
-          const res = await uploadImage(formData);
+          try {
+            const res = await uploadImage(formData);
+          } catch (error) {
+            console.log(error);
+          }
 
           toggleModal();
         } catch {
@@ -89,7 +93,7 @@ function ImageModifyModal(props: ModalProps) {
       handleChange();
       setIsClick(false);
       // 강제 새로고침...
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -130,7 +134,7 @@ function ImageModifyModal(props: ModalProps) {
 }
 
 const Wrapper = tw.div`
-fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center
+fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50
 `;
 
 const ModalContainer = tw.div`

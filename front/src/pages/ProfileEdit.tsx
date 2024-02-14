@@ -1,4 +1,4 @@
-
+import { Background } from "components/Common/Backgruond";
 import EditForm from "components/ProfileEdit/EditForm";
 import React from "react";
 import tw from "tailwind-styled-components";
@@ -6,6 +6,7 @@ import tw from "tailwind-styled-components";
 function ProfileEdit() {
   return (
     <Wrapper>
+      <Background />
       <Title>회원정보 수정</Title>
       <EditForm />
     </Wrapper>
@@ -20,7 +21,7 @@ flex-col
 
 items-center
 relative
-bg-[#180E2C]
+
 pt-5
 `;
 

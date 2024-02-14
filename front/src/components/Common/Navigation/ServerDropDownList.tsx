@@ -29,7 +29,10 @@ export const ServerDropDownList = ({ setIsServerOpen }: IProps) => {
                 key={room.roomId}
                 $disabled={room.roomId === +currentRoomId}
               >
-                <StyleServerImg src={room.roomImage || RoomDefault} alt="" />
+                <StyleServerImg
+                  src={room.roomImage ? room.roomImage : BasicRoom}
+                  alt=""
+                />
                 <StyleServerText>{room.title}</StyleServerText>
                 <StyleServerDot $visible={room.roomId === +currentRoomId} />
               </StyleImgTextBoth>
