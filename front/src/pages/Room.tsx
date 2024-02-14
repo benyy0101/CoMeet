@@ -18,7 +18,12 @@ import {
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -81,6 +86,8 @@ interface IProps {
   filter: IFilter | null;
   stompClient: any;
   OV: React.MutableRefObject<OpenVidu>;
+  leaveRoomHandler: () => Promise<any>;
+  leaveSession: () => void;
 }
 
 export const Room = ({
@@ -124,8 +131,11 @@ export const Room = ({
   filter,
   stompClient,
   OV,
+  leaveRoomHandler,
+  leaveSession,
 }: IProps) => {
   const { roomId } = useParams();
+  const [searchParams, _] = useSearchParams();
   const navigate = useNavigate();
 
   const userInfo = useSelector((state: any) => state.user);
@@ -141,7 +151,7 @@ export const Room = ({
     if (!roomInfo.isRoomIn) {
       enterRoomHandler();
     } else {
-      if (roomInfo.roomId !== roomId) {
+      if (roomInfo.roomId !== roomId || searchParams.get("modify")) {
         leaveRoomHandler().then((_) => {
           enterRoomHandler();
         });
@@ -159,38 +169,15 @@ export const Room = ({
   };
 
   const onClickLeaveRoom = () => {
-    leaveRoomHandler().then((_) => {
-      dispatch(setLeaveRoom());
-      navigate("/");
-    });
-  };
-
-  const leaveRoomHandler = () => {
-    const data: LeaveRoomParams = {
-      roomId: parseInt(roomInfo.roomId),
-      keywords: undefined,
-    };
-    setRoomData(null);
-    setChannels([]);
-    setLounges([]);
-    setSideToggle(true);
-    setInLounge(true);
-    setCurrentLounge(null);
-    setMySessionId("");
-    setMySessionName("");
-    setSession(null);
-    setMainStreamManager(null);
-    setPublisher(null);
-    setSubscribers([]);
-    setCurrentVideoDevice(null);
-    setSpeakerIds([]);
-    setIsMuted(true);
-    setIsVideoDisabled(true);
-    setIsScreenShared(false);
-    setFilter(null);
-    stompClient.current = null;
-    OV.current = new OpenVidu();
-    return leaveRoom(data);
+    leaveRoomHandler()
+      .then((_) => {
+        dispatch(setLeaveRoom());
+        navigate("/");
+      })
+      .catch((error: any) => {
+        dispatch(setLeaveRoom());
+        navigate("/");
+      });
   };
 
   const moveChannel = (sessionId: string, sessionName: string) => {
@@ -318,22 +305,6 @@ export const Room = ({
     }
   }, [session, userInfo.user.nickname]);
 
-  const leaveSession = useCallback(() => {
-    setInLounge(true);
-    // Leave the session
-    if (session) {
-      session.disconnect();
-    }
-
-    // Reset all states and OpenVidu object
-    OV.current = new OpenVidu();
-    setSession(null);
-    setSubscribers([]);
-    setMySessionId("");
-    setMainStreamManager(null);
-    setPublisher(null);
-  }, [session]);
-
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
@@ -382,18 +353,6 @@ export const Room = ({
       return prevSubscribers.filter((sub) => sub !== streamManager);
     });
   }, []);
-
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      leaveSession();
-      leaveRoomHandler();
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [leaveSession]);
 
   const getToken = useCallback(async () => {
     return createSession(mySessionId).then((sessionId) =>
@@ -514,6 +473,9 @@ export const Room = ({
     leaveSession();
   };
 
+  //기본 이미지
+  const defaultRoomImg = `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`;
+
   return (
     <RoomContainer>
       <RoomHeader>
@@ -521,15 +483,14 @@ export const Room = ({
           <RoomTitleImgBorder>
             <RoomTitleImg
               style={{
-                backgroundImage:
-                  "url(https://i.pinimg.com/736x/52/8a/4f/528a4f1570bf735b7a772d17562723f1.jpg)",
+                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
               }}
             />
           </RoomTitleImgBorder>
           <RoomTitle>{roomData?.title}</RoomTitle>
           <RoomNoticeButton onClick={toggleNotice}>
             <BellAlertIcon />
-            {noticeClicked ? <RoomNotice /> : null}
+            {noticeClicked ? <RoomNotice text={roomData?.notice} /> : null}
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
@@ -751,6 +712,7 @@ bg-contain
 bg-no-repeat
 bg-center
 shadow-md
+bg-white
 `;
 
 const RoomTitle = tw.h1`

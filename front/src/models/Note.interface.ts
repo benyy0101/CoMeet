@@ -1,7 +1,7 @@
 import { Pageable, Sort } from "./Util";
 
 export interface CreateNoteParams {
-  receiverId: string;
+  receiverNickname: string;
   context: string;
 }
 
@@ -17,6 +17,7 @@ export interface SearchNoteParams {
 export interface SearchNoteContent {
   id: number;
   writerId: string;
+  writerNickname: string;
   receiverId: string;
   isRead: boolean;
 }
@@ -42,6 +43,7 @@ export interface EnterNoteParams {
 export interface EnterNoteResponse {
   id: number;
   writerId: string;
+  writerNickname: string;
   receiverId: string;
   context: string;
   isRead: boolean;

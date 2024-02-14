@@ -14,6 +14,6 @@ public class NoteCreateRequestDto {
     public String context;
 
     @NotNull
-    public String receiverId;
+    public String receiverNickname;
 
 }

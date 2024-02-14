@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 
-import { uploadImage, profileModifyImage, profileImageDelete } from "api/image";
+import { uploadImage, profileImageDelete } from "api/image";
 
 import ArrowTop from "assets/img/top-arrow.png";
 
@@ -77,23 +77,7 @@ function ImageModifyModal(props: ModalProps) {
           formData.append("profileImageFile", selectedFile);
           const res = await uploadImage(formData);
 
-          try {
-            //프로필 수정
-            const updateData = { profileImage: res };
-            await profileModifyImage(updateData);
-
-            //만약 기본 이미지가 아니면 s3에서도 이미지 삭제 해야 함
-            if (prevImageUrl != "default_profile_image_letsgo") {
-              await profileImageDelete(prevImageUrl);
-            }
-
-            //이미지 업로드 모달창 닫고
-            toggleModal();
-          } catch {
-            //만약 update 할 때 오류가 나면 이미 s3에 올렸던 이미지를 삭제함
-            await profileImageDelete(res);
-            alert("이미지 수정에 실패했습니다.");
-          }
+          toggleModal();
         } catch {
           alert("이미지 업로드에 실패했습니다.");
         }
@@ -104,6 +88,8 @@ function ImageModifyModal(props: ModalProps) {
       //마이페이지 useEffect
       handleChange();
       setIsClick(false);
+      // 강제 새로고침...
+      window.location.reload();
     }
   };
 

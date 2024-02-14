@@ -7,6 +7,12 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, String>, MemberCustomRepository{
 
+    Optional<Member> findByNickname(String nickname);
+
     boolean existsByMemberIdOrEmailOrNickname(String memberId, String email, String nickname);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByNickname(String nickname);
 
 }

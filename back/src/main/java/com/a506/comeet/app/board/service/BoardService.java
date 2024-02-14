@@ -48,7 +48,7 @@ public class BoardService {
 
         Room room = null;
         if(req.getType().equals(BoardType.RECRUIT)){
-            if(boardRepository.existsById(req.getRoomId()))
+            if(boardRepository.existsByRoomId(req.getRoomId()))
                 throw new RestApiException(DUPLICATE_VALUE, "해당 방이 이미 게시되어 있습니다.");
             room = roomRepository.findById(req.getRoomId()).orElseThrow(() -> new RestApiException(NO_ROOM));
         }

@@ -44,7 +44,9 @@ public class Room extends BaseEntity {
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomKeyword> roomKeywords = new ArrayList<>();
 
+    @Column(unique = true)
     private String title;
+
     private String description;
     @Column(name = "room_image")
     private String roomImage = "";

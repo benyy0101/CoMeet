@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class NoteSimpleResponseDto {
     private Long id;
     private String writerId;
+    private String writerNickname;
     private String receiverId;
     private Boolean isRead;
-
 }

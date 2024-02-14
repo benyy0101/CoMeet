@@ -1,13 +1,11 @@
 import {
   CreateRoomParams,
-  CreateRoomResponse,
   DeleteRoomParams,
   DeleteRoomResponse,
   EnterRoomParams,
   RoomResponse,
   GetRoomParams,
   LeaveRoomParams,
-  LeaveRoomResponse,
   ModifyRoomParams,
   ModifyRoomResponse,
   PermitJoinRoomParams,
@@ -18,11 +16,13 @@ import {
   SearchRoomResponse,
   WithdrawRoomParams,
   WithdrawRoomResponse,
+  SmallRoomdata,
 } from "models/Room.interface";
 import { localAxios } from "./http-commons";
+import { imageAxios } from "./http-commons";
 import { makeQuerystring } from "utils/ApiUtil";
 
-export const createRoom = async (params: CreateRoomParams): Promise<CreateRoomResponse> => {
+export const createRoom = async (params: CreateRoomParams): Promise<SmallRoomdata> => {
   const url = `room`;
   const response = await localAxios.post(url, params);
   return response.data;
@@ -39,6 +39,7 @@ export const modifyRoom = async (params: ModifyRoomParams): Promise<ModifyRoomRe
 
 export const searchRoom = async (params: SearchRoomParams): Promise<SearchRoomResponse> => {
   const url = `room${makeQuerystring(params)}`;
+  console.log(url);
   const response = await localAxios.get(url);
   return response.data;
 };
@@ -78,12 +79,10 @@ export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
   return response.data;
 };
 
-export const enterRoom = async (
-  params: EnterRoomParams
-): Promise<RoomResponse> => {
-  const { roomId } = params;
+export const enterRoom = async (params: EnterRoomParams): Promise<RoomResponse> => {
+  const { roomId, password } = params;
   const url = `room/${roomId}/enter`;
-  const response = await localAxios.post(url, params);
+  const response = await localAxios.post(url, { password });
 
   return response.data;
 };
@@ -91,11 +90,9 @@ export const enterRoom = async (
 export const leaveRoom = async (params: LeaveRoomParams) => {
   const { roomId } = params;
   const url = `room/${roomId}/enter`;
-  const data = {
-    keywords: "",
-  };
+
   //이거 잘되는지 확인 필요
-  const response = await localAxios.delete(url, { data: data });
+  const response = await localAxios.delete(url);
   return response.data;
 };
 
@@ -105,4 +102,15 @@ export const searchManagingRoom = async (
   const url = `room/managing`;
   const response = await localAxios.get(url);
   return response.data;
+};
+
+//방 이미지 수정
+export const uploadRoomImage = async (roomId: string, fileImage: FormData) => {
+  const url = `room/image/${roomId}`;
+  const response = await imageAxios.post(url, fileImage);
+};
+
+export const deleteRoomImage = async (roomId: string) => {
+  const url = `room/image/${roomId}`;
+  const response = await localAxios.delete(url);
 };

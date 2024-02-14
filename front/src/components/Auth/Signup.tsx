@@ -4,8 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { SignupQuery } from "models/Login.interface";
-import { handleSignup } from "api/Member";
+import {
+  doubleCheckEmail,
+  handleSignup,
+  doubleCheckNicname,
+  doubleCheckMemberId,
+} from "api/Member";
 import { redirect, useNavigate } from "react-router-dom";
+import { set } from "lodash";
 
 function Signup() {
   const navigate = useNavigate();
@@ -32,6 +38,29 @@ function Signup() {
     }
   }, [passwordCheck]);
 
+  const passwordCheckHandler = () => {
+    if (password !== passwordCheck) {
+      setPasswordCheckErr(true);
+    } else {
+      console.log("passwordCheckHandler");
+      setPasswordCheckErr(false);
+    }
+  };
+
+  const validHandler = async (type: string) => {
+    try {
+      if (type === "memberId") {
+        const res = await doubleCheckMemberId(memberId);
+        if (!res) setMemberIdErr(true);
+      } else if (type === "nickname") {
+        const res = await doubleCheckNicname({ nickname: nickname });
+        if (!res) setNicknameErr(true);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const signupHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(false);
@@ -57,7 +86,9 @@ function Signup() {
             <InputContainer>
               <LabelContainer>
                 <InputLabel>아이디</InputLabel>
-                {memberIdErr ? <WarningText>존재하는 아이디입니다</WarningText> : null}
+                {memberIdErr ? (
+                  <WarningText>존재하는 아이디입니다</WarningText>
+                ) : null}
               </LabelContainer>
               <LoginInput
                 type="text"
@@ -81,14 +112,20 @@ function Signup() {
             <InputContainer>
               <LabelContainer>
                 <InputLabel>닉네임</InputLabel>
-                {nicknameErr ? <WarningText>존재하는 닉네임입니다</WarningText> : null}
+                {nicknameErr ? (
+                  <WarningText>존재하는 닉네임입니다</WarningText>
+                ) : null}
               </LabelContainer>
               <LoginInput
                 $option={error}
-                placeholder="진짜공부만함"
+                placeholder="코밋코밋"
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
+                onFocus={(e) => setNicknameErr(false)}
+                onBlur={(e) => {
+                  validHandler("nickname");
+                }}
               />
             </InputContainer>
           </InputLeftContainer>
@@ -104,7 +141,13 @@ function Signup() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 @
-                <DomainSelect onChange={(e) => setDomain(e.target.value)} value={domain}>
+                <DomainSelect
+                  onChange={(e) => setDomain(e.target.value)}
+                  value={domain}
+                  onBlur={() => {
+                    validHandler("email");
+                  }}
+                >
                   <DomainOption value="naver.com">naver.com</DomainOption>
                   <DomainOption value="gmail.com">gmail.com</DomainOption>
                   <DomainOption value="kakao.com">kakao.com</DomainOption>
@@ -116,7 +159,9 @@ function Signup() {
             <InputContainer>
               <LabelContainer>
                 <InputLabel>비밀번호</InputLabel>
-                {passwordErr ? <WarningText>형식을 맞춰주세요</WarningText> : null}
+                {passwordErr ? (
+                  <WarningText>형식을 맞춰주세요</WarningText>
+                ) : null}
               </LabelContainer>
               <LoginInput
                 placeholder="영문, 숫자, 특수문자 포함 8자 이상"
@@ -129,14 +174,19 @@ function Signup() {
             <InputContainer>
               <LabelContainer>
                 <InputLabel>비밀번호 확인</InputLabel>
-                {passwordCheckErr ? <WarningText>일치하지 않습니다</WarningText> : null}
+                {passwordCheckErr ? (
+                  <WarningText>일치하지 않습니다</WarningText>
+                ) : null}
               </LabelContainer>
 
               <LoginInput
                 $option={error}
                 type="password"
                 value={passwordCheck}
-                onChange={(e) => setPasswordCheck(e.target.value)}
+                onChange={(e) => {
+                  setPasswordCheck(e.target.value);
+                }}
+                onBlur={passwordCheckHandler}
               />
             </InputContainer>
           </InputRightContainer>

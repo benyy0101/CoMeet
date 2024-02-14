@@ -1,10 +1,16 @@
-import { modifyRoom } from "api/Room";
+import {
+  modifyRoom,
+  uploadRoomImage,
+  deleteRoomImage,
+  deleteRoom,
+} from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { RoomResponse } from "models/Room.interface";
-import React, { useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
+import { onChange } from "react-toastify/dist/core/store";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -13,16 +19,47 @@ export default function RoomModify() {
 
   const roomData: RoomResponse | null = location.state.data;
 
-  const [title, setTitle] = React.useState<string>(roomData?.title || "");
-  const [description, setDescription] = React.useState<string>(
+  const [title, setTitle] = useState<string>(roomData?.title || "");
+  const [description, setDescription] = useState<string>(
     roomData?.description || ""
   );
-  const [maxPeople, setMaxPeople] = React.useState<number>(
-    roomData?.capacity || 10
-  );
-  const [option, setOption] = React.useState<ROOM_CONSTRAINTS>(
+  const [maxPeople, setMaxPeople] = useState<number>(roomData?.capacity || 10);
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>(
     roomData?.constraints || "FREE"
   );
+
+  //selectedFile 현재 올린파일
+  const [selectedFile, setSelectedFile] = useState<File | undefined>();
+  //이미지 미리보기 파일
+  const [imagePreview, setImagePreview] = useState<string>("");
+
+  //이미지 제거 했는지 확인
+  const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
+
+  //이미지 바뀔 때 미리보기
+  const onChangeImage = async (e: any) => {
+    e.preventDefault();
+    const file = e.target.files[0];
+    setSelectedFile(file);
+
+    if (file) {
+      //1메가 아래의 이미지만 업로드하게 하기 - 1메가 이상은 안 보내진다... 왜지?
+      if (file.size >= 1 * 1024 * 1024) {
+        alert("1mb 이하의 파일만 업로드 가능합니다.");
+        e.target.value = null;
+      } else {
+        //파일 선택시
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            setImagePreview(reader.result);
+          }
+        };
+        reader.readAsDataURL(file);
+        setIsRemoveImg(false);
+      }
+    }
+  };
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,9 +71,32 @@ export default function RoomModify() {
       constraints: option,
     };
 
-    await modifyRoom(data);
+    if (selectedFile) {
+      try {
+        if (roomId) {
+          const formData = new FormData();
+          formData.append("roomImageFile", selectedFile);
+          await uploadRoomImage(roomId, formData);
 
-    navigate(`/room/${roomId}`, { replace: true });
+          setIsRemoveImg(false);
+          window.location.replace(`room/${roomId}`);
+        }
+      } catch {
+        alert("이미지 업로드에 실패했습니다.");
+      }
+    } else {
+      if (isRemoveImg && imagePreview === "" && roomId) {
+        await deleteRoomImage(roomId);
+      }
+    }
+
+    try {
+      await modifyRoom(data);
+    } catch {
+      alert("방 정보 수정 실패, 다시 시도해주세요.");
+    }
+
+    navigate(`/room/${roomId}?modify=true`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +115,16 @@ export default function RoomModify() {
     setOption(e.target.value as ROOM_CONSTRAINTS);
   };
 
+  //이미지 제거 버튼 눌렀을 때
+  const handleRoomImageRemove = async () => {
+    if (roomId) {
+      setIsRemoveImg(true);
+      setImagePreview("");
+      // 선택했다가 지웠을 경우가 있을 수도 있으니
+      setSelectedFile(undefined);
+    }
+  };
+
   return (
     <Wrapper>
       <CreateRoomContainer>
@@ -67,10 +137,12 @@ export default function RoomModify() {
             <ThumbImg
               id="profile"
               src={
-                roomData?.room_image === "" ||
-                roomData?.room_image === "default_room_image_letsgo"
+                (roomData?.room_image === "" && imagePreview === "") ||
+                isRemoveImg === true
                   ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
-                  : roomData?.room_image
+                  : imagePreview === ""
+                    ? roomData?.room_image
+                    : imagePreview
               }
               alt="thumb"
             />
@@ -80,11 +152,18 @@ export default function RoomModify() {
             </ThumbHover>
           </ThumbContainer>
         </ThumbLabel>
+        {roomData?.room_image || imagePreview ? (
+          <ImageRemoveButton onClick={handleRoomImageRemove}>
+            이미지 제거
+          </ImageRemoveButton>
+        ) : null}
         <input
           className="hidden"
           type="file"
           name="file"
+          accept="image/*"
           id="file"
+          onChange={onChangeImage}
           // @change="onChangeImage"
         />
         <CreateRoomForm onSubmit={submitHandler}>
@@ -100,12 +179,14 @@ export default function RoomModify() {
           </InputUnit>
           <Block />
           <SubTitle>방 제한:</SubTitle>
-          <InputUnit className="w-1/3">
-            <Label>
-              비밀번호 <LabelSpan>(optional)</LabelSpan>
-            </Label>
-            <TextInput type="password" />
-          </InputUnit>
+          {roomData?.type === "DISPOSABLE" && (
+            <InputUnit className="w-1/3">
+              <Label>
+                비밀번호 <LabelSpan>(optional)</LabelSpan>
+              </Label>
+              <TextInput type="password" />
+            </InputUnit>
+          )}
           <InputUnit>
             <Label>키워드</Label>
             <TextInput />
@@ -186,6 +267,11 @@ items-center
 justify-center
 `;
 
+const ImageRemoveButton = tw.button`
+border-gray-300 bg-gray-300 rounded-lg p-1 ml-11 mt-3
+w-24
+`;
+
 const ThumbImg = tw.img`
 absolute
 left-0
@@ -193,7 +279,8 @@ top-0
 cursor-pointer
 w-32
 h-32
-bg-slate-700
+bg-white
+border
 rounded-full
 flex
 justify-center
