@@ -23,6 +23,8 @@ export const handleSignup = async (req: SignupQuery): Promise<SignupQuery> => {
 export const updateMember = async (params: MemberUpdateParams) => {
   const url = `member`;
   const response = await localAxios.patch(url, params);
+
+  console.log(response.data);
 };
 
 //닉네임 중복 검사

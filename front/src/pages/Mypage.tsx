@@ -84,11 +84,11 @@ export const Mypage = () => {
           <ThirdContainer>
             {/* 공부 타입 컨테이너 */}
             <StudyTypeContainer>
-              <MyStudyType />
+              <MyStudyType feature={userData?.feature} />
             </StudyTypeContainer>
             {/* 공부 시간 컨테이너 */}
             <StudyTimeContainer>
-              <MyStudyTime />
+              <MyStudyTime mostStudyTime={userData?.mostStudyTime} />
             </StudyTimeContainer>
           </ThirdContainer>
         </SecondContainer>
@@ -99,7 +99,7 @@ export const Mypage = () => {
         <TILCalendarContainer>
           <MyTILCalendar isMe={isMe} memberId={memberId} />
         </TILCalendarContainer>
-        {/* 평균 공부 시간 컨테이너 */}
+        {/* 공부 합계 시간 컨테이너 */}
         <SumTimeContainer>
           <MySumTime
             dayStudyHour={userData?.dayStudyHour}
@@ -116,7 +116,7 @@ export const Mypage = () => {
 // h 고쳐야 함
 const AllContainer = tw.div`
 flex
-h-[100vh]
+h-[120vh]
 px-10
 py-2
 bg-[#180E2C]

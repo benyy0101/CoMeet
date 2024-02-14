@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
@@ -11,6 +11,7 @@ import Modal from "components/Common/Modal";
 import { useSelector } from "react-redux";
 import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
+import { handleMember } from "api/Member";
 import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
@@ -41,6 +42,7 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
+  const [userImg, setUserImg] = useState<string>("");
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -69,7 +71,20 @@ export const NavBar = ({
       setIsServerOpen(false);
     }
   });
-  
+
+  //처음에 memeberId로 다 들고와
+  const fetchData = async () => {
+    const res = await handleMember(userInfo.user.memberId);
+    setUserImg(res.profileImage); // 데이터 상태로 설정
+  };
+
+  console.log(userInfo.user.memberId);
+  //시작할 때 데이터 다 들고와
+  useEffect(() => {
+    if (userInfo.isLoggedIn) {
+      fetchData();
+    }
+  }, [userInfo.isLoggedIn]);
 
   return (
     <NavBarContainer>
@@ -89,12 +104,12 @@ export const NavBar = ({
             <CommunityMenu>
               <CommunityButton>커뮤니티</CommunityButton>
               <DropDownCommunity>
-                <ComDropDownBUtton>
-                  <Link to="/recruit-board">모집 게시판</Link>
-                </ComDropDownBUtton>
-                <ComDropDownBUtton>
-                  <Link to="/free-board">자유 게시판</Link>
-                </ComDropDownBUtton>
+                <Link to="/recruit-board">
+                  <ComDropDownBUtton>모집 게시판</ComDropDownBUtton>
+                </Link>
+                <Link to="/free-board">
+                  <ComDropDownBUtton>자유 게시판</ComDropDownBUtton>
+                </Link>
               </DropDownCommunity>
             </CommunityMenu>
           </LeftMenu>
@@ -212,7 +227,6 @@ items-center
 justify-between
 px-12
 text-lg
-z-50
 `;
 
 const LeftContainer = tw.div`
@@ -274,6 +288,8 @@ const NavIcon = tw.img`
 rounded-full
 h-8
 w-8
+rounded-full
+bg-white
 `;
 
 //커뮤니티 드롭다운
@@ -388,6 +404,7 @@ bg-no-repeat
 bg-center
 shadow-md
 bg-slate-200
+bg-white
 `;
 
 //ServerText: 서버 이름
