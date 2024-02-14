@@ -180,7 +180,10 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
+                <NavIcon
+                  src={userImg ? userImg : BasicProfile}
+                  alt={BasicProfile}
+                />
               </Link>
             </ProfileMenu>
           </>

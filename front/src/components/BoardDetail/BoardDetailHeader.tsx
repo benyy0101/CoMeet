@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 import StarFill from "assets/img/star-fill.svg";
+import BasicProfile from "assets/img/basic-profile.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { FREE_BOARD_CATEGORY } from "models/Enums.type";
 
@@ -17,6 +18,7 @@ export const BoardDetailHeader: React.FC<{
   createdAt: string;
   category?: FREE_BOARD_CATEGORY;
   isLiked: boolean;
+  writerImg: string;
 }> = (props) => {
   let categoryTitle: string = "";
 
@@ -54,7 +56,13 @@ export const BoardDetailHeader: React.FC<{
       </TitleTotalContainer>
       <Boarder></Boarder>
       <EtcContainer>
-        <NicnameContainer>{props.nickname}</NicnameContainer>
+        <ProfileContainer>
+          <ProfileImg
+            src={props.writerImg ? props.writerImg : BasicProfile}
+            alt=""
+          />
+          <NicnameContainer>{props.nickname}</NicnameContainer>
+        </ProfileContainer>
         <DateContainer>{props.createdAt}</DateContainer>
         <LikeContatiner>
           <LikeImg src={StarFill} alt="" />
@@ -106,7 +114,7 @@ text-red-500
 const Boarder = tw.div`
 h-[1px]
 bg-white
-`
+`;
 const FreeCategory = tw.div`
 `;
 
@@ -116,6 +124,15 @@ flex
 items-end
 px-3
 space-x-5
+`;
+
+const ProfileContainer = tw.div`
+flex
+items-center
+`;
+
+const ProfileImg = tw.img`
+w-7 h-7 bg-white rounded-full mr-2
 `;
 
 //이름

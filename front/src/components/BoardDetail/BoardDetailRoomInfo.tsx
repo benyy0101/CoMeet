@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 import PoepleNumImg from "assets/img/people-num.svg";
-import RoomImg from "assets/img/room-default.png";
+import BasicRoom from "assets/img/basic-room.svg";
 import { encrypt } from "utils/Crypto";
 import { useSelector } from "react-redux";
 import { smallRoomdata } from "models/Login.interface";
-import {joinNote} from "api/Note";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { joinNote } from "api/Note";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 type RoomInfoProps = {
   roomTitle: string;
@@ -18,6 +18,7 @@ type RoomInfoProps = {
   roomCapacity: number;
   roomLink: string | null;
   roomId: number;
+  roomImg: string;
 };
 // export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
 export const BoardDetailRoomInfo: React.FC<{
@@ -27,12 +28,11 @@ export const BoardDetailRoomInfo: React.FC<{
   roomCapacity: number;
   roomLink: string | null;
   roomId: number;
+  roomImg: string;
 }> = (props: RoomInfoProps) => {
-  const {
-    roomId
-  } = props;
+  const { roomId } = props;
 
-  const member = useSelector((state:any) => state.user.user);
+  const member = useSelector((state: any) => state.user.user);
   console.log(member);
   console.log(roomId);
   //방 ID로 방 조회해서 가져올 것들
@@ -40,47 +40,48 @@ export const BoardDetailRoomInfo: React.FC<{
 
   //방 링크 이것도 제대로 만들어야 할 것 같다.
   const [roomLink, setRoomLink] = useState<string>("");
-  const [isIn,setIsIn] = useState<boolean>(false);
+  const [isIn, setIsIn] = useState<boolean>(false);
   //const roomLink = `${process.env.REACT_APP_API_SERVER_URL}/room/${props.roomId}`;
 
-  useEffect(()=>{
-    if(member.joinedRooms.some((room: smallRoomdata)=> roomId === room.roomId)){
-      console.log("HI")
+  useEffect(() => {
+    if (
+      member.joinedRooms.some((room: smallRoomdata) => roomId === room.roomId)
+    ) {
+      console.log("HI");
       setIsIn(true);
     }
     const encryptedOrigin = encrypt(process.env.REACT_APP_API_SERVER_URL!);
     const encryptedRoomId = encrypt(props.roomId.toString());
     let result = `${encryptedOrigin}/room/${encryptedRoomId}`;
     setRoomLink(result);
-  },[props]);
-
-  
+  }, [props]);
 
   //이미지도 가져오고
   const registHandler = async () => {
-    try{
-      await joinNote({roomId: roomId});
+    try {
+      await joinNote({ roomId: roomId });
       notify("success");
-    }
-    catch(e){
+    } catch (e) {
       console.error(e);
       notify("failure");
     }
-  }
+  };
 
-  const notify = (option:string) => {
-    if(option === "success"){
+  const notify = (option: string) => {
+    if (option === "success") {
       toast.success("가입요청을 보냈습니다. 방장의 승인을 기다려 주세요!");
-    }
-    else if (option === "failure"){
+    } else if (option === "failure") {
       toast.error("이미 가입된 방이거나, 방장의 승인을 기다리는 중입니다.");
     }
-  }
+  };
 
   return (
     <RoomHyper>
       <TotalContainer>
-        <RoomImgContainer src={RoomImg} alt="" />
+        <RoomImgContainer
+          src={props.roomImg ? props.roomImg : BasicRoom}
+          alt=""
+        />
         <RoomInfo>
           <TitleAndNumContainer>
             <RoomTitle>{props.roomTitle}</RoomTitle>
@@ -93,21 +94,27 @@ export const BoardDetailRoomInfo: React.FC<{
           </TitleAndNumContainer>
           <RoomEx>{props.roomDescription}</RoomEx>
 
-            <LinkContainer>
+          <LinkContainer>
             {!isIn ? (
               <>
-              <LinkTitle>
-            가입 링크
-            </LinkTitle>
-            <RoomHyperLink disabled={isIn} onClick={registHandler}>{
-            roomLink!.length > 20 ? roomLink?.slice(0,20).concat("...") : roomLink!
-            }</RoomHyperLink></> 
-            ) : <LinkTitle className="text-violet-400">이미 가입된 방입니다!</LinkTitle>}            
-            </LinkContainer>
-          
+                <LinkGoTitle onClick={registHandler}>
+                  가입 신청 보내기
+                </LinkGoTitle>
+                {/* <RoomHyperLink disabled={isIn} onClick={registHandler}>
+                  {roomLink!.length > 20
+                    ? roomLink?.slice(0, 20).concat("...")
+                    : roomLink!}
+                </RoomHyperLink> */}
+              </>
+            ) : (
+              <LinkStopTitle className="text-violet-400">
+                이미 가입된 방입니다!
+              </LinkStopTitle>
+            )}
+          </LinkContainer>
         </RoomInfo>
       </TotalContainer>
-      <ToastContainer/>
+      <ToastContainer />
     </RoomHyper>
   );
 };
@@ -134,6 +141,7 @@ rounded-l-lg
 w-40
 min-h-70
 object-cover
+bg-white
 `;
 
 //이미지 제외 모든 정보
@@ -186,14 +194,29 @@ text-gray-400
 const LinkContainer = tw.div`
 flex 
 space-x-3
-`
+`;
 
-const LinkTitle = tw.div`
+const LinkGoTitle = tw.button`
 font-bold
-`
+rounded-md
+py-1
+px-3
+bg-gradient-to-l
+from-[#539AB1]
+to-[#7C5EBD]
+hover:bg-gradient-to-r
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
+`;
+
+const LinkStopTitle = tw.div`
+font-bold
+`;
 
 //진짜 링크 부분
-const RoomHyperLink = tw.div<{disabled:boolean}>`
+const RoomHyperLink = tw.div<{ disabled: boolean }>`
 max-w-[400px]
 transition-colors
 hover:text-blue-500

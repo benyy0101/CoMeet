@@ -7,7 +7,11 @@ import { BoardDetailRoomInfo } from "./BoardDetailRoomInfo";
 import StarFill from "assets/img/star-fill.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { KeywordComponent } from "./KeywordComponent";
-import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
+import {
+  BOARD_TYPE,
+  FREE_BOARD_CATEGORY,
+  RECRUIT_BOARD_CATEGORY,
+} from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
 import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
@@ -80,7 +84,9 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     deleteBoard({ boardId: boardDetail.id })
       .then((data) => {
         console.log("success");
-        navigate(boardDetail.type === "FREE" ? "/free-board" : "/recruit-board");
+        navigate(
+          boardDetail.type === "FREE" ? "/free-board" : "/recruit-board"
+        );
       })
       .catch((fail) => {
         console.log("failure", fail.response.data);
@@ -91,6 +97,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
+        writerImg={boardDetail.writerImage}
         nickname={boardDetail.writerNickname}
         title={boardDetail.title}
         likecount={boardDetail.likeCount}
@@ -102,6 +109,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       {/* 게시글 타입이 모집게시판일 경우에만 방 정보 보여줌 */}
       {boardDetail.type === "RECRUIT" ? (
         <BoardDetailRoomInfo
+          roomImg={boardDetail.roomImage}
           roomTitle={boardDetail.roomTitle}
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
