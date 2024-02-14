@@ -115,6 +115,7 @@ function MessageList(params: MessageListProps) {
   const onReadNote = (no: number) => {
     readNote(no);
   };
+
   return (
     <Wrapper>
       <Header>
@@ -154,9 +155,7 @@ function MessageList(params: MessageListProps) {
             </MessageItem>
           </>
         ))}
-        <div id="note-list-observer" style={{ height: "10px" }}>
-          dd
-        </div>
+        <div id="note-list-observer" style={{ height: "10px" }}></div>
       </Content>
     </Wrapper>
   );
