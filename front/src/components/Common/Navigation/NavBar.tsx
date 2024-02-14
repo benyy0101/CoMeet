@@ -150,6 +150,7 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
+            <button onClick={logoutHandler}>로그아웃</button>
             {/* {roomData && isUserInRoom ? ( */}
             {roomData ? (
               <ServerContainer $active={true}>
@@ -173,9 +174,7 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton
-                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-                    >
+                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -186,18 +185,14 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>
-                접속중인 방이 없습니다.
-              </ServerContainer>
+              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && (
-                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
-              )}
+              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
@@ -212,10 +207,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
-                <NavIcon
-                  src={userImg ? userImg : defaultProfile}
-                  alt={BasicProfile}
-                />
+                <NavIcon src={userImg ? userImg : defaultProfile} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
           </>
@@ -225,11 +217,7 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -237,11 +225,7 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               {loginModal === true ? (
                 <ModalPortal>
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 </ModalPortal>
               ) : null}
             </LoginSignup>

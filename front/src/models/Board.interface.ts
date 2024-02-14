@@ -94,6 +94,7 @@ export interface EnterBoardResponse {
   roomMcount: number;
   roomCapacity: number;
   roomImage: string;
+  roomId: number;
   isLocked: boolean;
   writerNickname: string;
   writerImage: string;
