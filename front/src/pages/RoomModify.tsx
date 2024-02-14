@@ -6,7 +6,7 @@ import {
 } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { RoomResponse } from "models/Room.interface";
-import React, { useState, ChangeEvent, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
@@ -19,14 +19,12 @@ export default function RoomModify() {
 
   const roomData: RoomResponse | null = location.state.data;
 
-  const [title, setTitle] = React.useState<string>(roomData?.title || "");
-  const [description, setDescription] = React.useState<string>(
+  const [title, setTitle] = useState<string>(roomData?.title || "");
+  const [description, setDescription] = useState<string>(
     roomData?.description || ""
   );
-  const [maxPeople, setMaxPeople] = React.useState<number>(
-    roomData?.capacity || 10
-  );
-  const [option, setOption] = React.useState<ROOM_CONSTRAINTS>(
+  const [maxPeople, setMaxPeople] = useState<number>(roomData?.capacity || 10);
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>(
     roomData?.constraints || "FREE"
   );
 
@@ -98,7 +96,7 @@ export default function RoomModify() {
       alert("방 정보 수정 실패, 다시 시도해주세요.");
     }
 
-    navigate(`/room/${roomId}`, { replace: true });
+    navigate(`/room/${roomId}?modify=true`, { replace: true });
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,12 +179,14 @@ export default function RoomModify() {
           </InputUnit>
           <Block />
           <SubTitle>방 제한:</SubTitle>
-          <InputUnit className="w-1/3">
-            <Label>
-              비밀번호 <LabelSpan>(optional)</LabelSpan>
-            </Label>
-            <TextInput type="password" />
-          </InputUnit>
+          {roomData?.type === "DISPOSABLE" && (
+            <InputUnit className="w-1/3">
+              <Label>
+                비밀번호 <LabelSpan>(optional)</LabelSpan>
+              </Label>
+              <TextInput type="password" />
+            </InputUnit>
+          )}
           <InputUnit>
             <Label>키워드</Label>
             <TextInput />

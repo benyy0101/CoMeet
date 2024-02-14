@@ -27,13 +27,15 @@ const Contents = tw.p`
 p-2
 `;
 
-export const RoomNotice = () => {
+interface IProps {
+  text: string | undefined;
+}
+
+export const RoomNotice = ({ text }: IProps) => {
   return (
     <NoticeContainer>
       <Title>모두 필독해주세요!</Title>
-      <Contents>
-        이것은 공지입니다. 이것은 공지입니다. 이것은 공지입니다.
-      </Contents>
+      <Contents>{text}</Contents>
     </NoticeContainer>
   );
 };

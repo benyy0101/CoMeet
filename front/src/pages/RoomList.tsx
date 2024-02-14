@@ -1,5 +1,5 @@
 import tw from "tailwind-styled-components";
-import RoomItem from "../components/RoomItem";
+import RoomItem from "../components/RoomList/RoomItem";
 import { RoomItemProps } from "../types";
 import { useEffect, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
@@ -18,6 +18,8 @@ import {
   SearchRoomResponse,
 } from "models/Room.interface";
 import { searchRoom } from "api/Room";
+import { BackgroundGradient } from "components/Common/BackgroundGradient";
+import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
 const size = 10;
 
@@ -25,6 +27,10 @@ export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [page, setPage] = useState<number>(0);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
+  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS>("FREE");
+  const [searchKeyword, setSearchKeyword] = useState<string>("");
+  const [searchtype, setSearchtype] = useState<string>("제목+설명");
+  const [isLocked, setIsLocked] = useState<boolean>(false);
 
   const { data, isLoading, isError, refetch } = useQuery<
     SearchRoomResponse,
@@ -36,12 +42,17 @@ export const RoomList = () => {
         page,
         size,
         sortBy: sortByLatest ? "LATEST" : "OLDEST",
+        ...(searchtype === "제목+설명" && { searchKeyword }),
+        ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
+        ...(isLocked && { isLocked }),
+        isLocked,
+        constraints,
       }),
   });
 
   useEffect(() => {
     refetch();
-  }, [page, sortByLatest]);
+  }, [page, sortByLatest, constraints, isLocked]);
 
   useEffect(() => {
     console.log(data);
@@ -50,25 +61,41 @@ export const RoomList = () => {
     }
   }, [data]);
 
+  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    refetch();
+  };
+
   return (
     <Wrapper>
+      <BackgroundGradient />
       <MainContainer>
         <LeftContainer>
           <FilterMenu
             setSortByLatest={setSortByLatest}
             sortByLatest={sortByLatest}
             setPage={setPage}
+            setConstraints={setConstraints}
+            setIsLockedHandler={setIsLocked}
           />
         </LeftContainer>
         <ListContainer>
           <SearchBarContainer>
-            <SearchForm>
-              <DropDowns>
-                <option value="제목+설명">제목+설명</option>
-                <option value="방장명">방장명</option>
+            <SearchForm onSubmit={submitHandler}>
+              <DropDowns
+                onChange={(e) => {
+                  setSearchtype(e.target.value);
+                }}
+              >
+                <DropdownOption value="제목+설명">제목+설명</DropdownOption>
+                <DropdownOption value="방장명">방장명</DropdownOption>
               </DropDowns>
               <SearchInputContainer>
-                <SearchBar placeholder="검색어를 입력하세요"></SearchBar>
+                <SearchBar
+                  placeholder="검색어를 입력하세요"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                ></SearchBar>
                 <CustomMagnifyingGlassIcon />
               </SearchInputContainer>
             </SearchForm>
@@ -118,6 +145,7 @@ flex-col
 w-1/6
 gap-3
 items-center
+mt-20
 `;
 const ListContainer = tw.div`
 flex
@@ -146,6 +174,12 @@ const DropDowns = tw.select`
 h-10
 p-2
 focus:outline-none
+bg-transparent
+text-slate-300
+`;
+
+const DropdownOption = tw.option`
+text-black
 `;
 
 const SearchInputContainer = tw.div`
@@ -163,12 +197,16 @@ h-full
 focus:outline-none
 p-2
 pr-6
+bg-transparent
+text-slate-300
 `;
+
 const CustomMagnifyingGlassIcon = tw(MagnifyingGlassIcon)`
 h-4
 w-4
 absolute
 right-0
+text-slate-300
 `;
 
 const SearchForm = tw.form`

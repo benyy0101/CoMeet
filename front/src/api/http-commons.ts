@@ -22,7 +22,7 @@ export const imageAxios: AxiosInstance = axios.create({
 
 localAxios.interceptors.request.use(
   (config) => {
-    console.log("interceptor");
+    //console.log("interceptor");
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

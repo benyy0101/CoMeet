@@ -28,7 +28,7 @@ function MessageWrite(props: {
     e.preventDefault();
     const req: CreateNoteParams = {
       context: content,
-      receiverId: receiver || writer,
+      receiverNickname: receiver || writer,
     };
     try {
       const response = createNote(req);

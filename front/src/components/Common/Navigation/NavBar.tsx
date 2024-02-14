@@ -18,6 +18,7 @@ import {
   VideoCameraIcon,
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
+import logo from "../../../assets/logo.svg";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -38,7 +39,6 @@ export const NavBar = ({
 }: IProps) => {
   //memberId 가져오기
   const memberId = useSelector((state: any) => state.user.user.memberId);
-
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
@@ -56,7 +56,7 @@ export const NavBar = ({
 
   const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
-
+  console.log(userInfo);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -90,7 +90,10 @@ export const NavBar = ({
     <NavBarContainer>
       <LeftContainer>
         <Logo>
-          <Link to="/">[코밋]</Link>
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={logo} className="w-24" alt="" />
+            <h1 className="text-xl font-thin">Comeet</h1>
+          </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
         {userInfo.isLoggedIn ? (
@@ -160,7 +163,9 @@ export const NavBar = ({
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && <ServerDropDownList />}
+              {isServerOpen && (
+                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
+              )}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
@@ -175,14 +180,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${memberId}`}>
-                <NavIcon
-                  src={
-                    userImg
-                      ? userImg
-                      : `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
-                  }
-                  alt="profile"
-                />
+                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
           </>
@@ -252,10 +250,11 @@ transition-colors
 `;
 //Logo: 로고 메뉴
 const Logo = tw.div`
-w-40
+w-48  
 flex
+items-center
 justify-center
-bg-slate-500
+space-x-2
 `;
 
 //Menu: 방 찾기, 커뮤니티 메뉴 그룹
@@ -286,6 +285,7 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
+rounded-full
 h-8
 w-8
 rounded-full
