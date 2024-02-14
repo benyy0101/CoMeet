@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import axios from "axios";
 import { Background } from "components/Common/Backgruond";
+import { updateUserImg } from "store/reducers/userSlice";
 
 export const Mypage = () => {
   const dispatch = useDispatch();
@@ -47,11 +48,23 @@ export const Mypage = () => {
     }
   }, [memberId]);
 
+  useEffect(() => {
+    // fetchData();
+
+    handleMember(memberId).then((data) => {
+      dispatch(updateUserImg({ img: data.profileImage }));
+    });
+  }, []);
+
   //프로필 이미지 바뀌면 새로 고침
   useEffect(() => {
     if (isChange) {
-      fetchData();
       setisChange(false);
+      handleMember(memberId).then((data) => {
+        setUserData(data);
+        console.log(userData);
+        dispatch(updateUserImg({ img: data.profileImage }));
+      });
     }
   }, [isChange]);
 

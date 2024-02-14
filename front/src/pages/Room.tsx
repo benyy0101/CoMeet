@@ -374,6 +374,8 @@ export const Room = ({
     console.log("modal:", modal);
   };
 
+  console.log(userInfo);
+
   //여기에 채널 추가, 삭제 함수 추가
   const addChannel = async (props: string) => {
     try {
@@ -582,6 +584,7 @@ export const Room = ({
               <Lounge lounge={currentLounge} />
             ) : (
               <Channel
+                profileImg={userInfo.user.profileImage}
                 session={session}
                 mySessionName={mySessionName}
                 mySessionId={mySessionId}

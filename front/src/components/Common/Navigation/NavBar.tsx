@@ -23,6 +23,7 @@ import logo from "../../../assets/logo.svg";
 import { logout } from "store/reducers/userSlice";
 import { handleLogout } from "api/Login";
 import defaultProfile from "../../../assets/default_profile.svg";
+import { updateUserImg } from "store/reducers/userSlice";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -84,11 +85,17 @@ export const NavBar = ({
     setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
+  useEffect(() => {
+    setUserImg(userInfo.user.profileImage);
+  }, [userInfo.user.profileImage]);
+
   //시작할 때 데이터 다 들고와
   useEffect(() => {
+    console.log(userImg);
     console.error(userInfo);
     if (userInfo.isLoggedIn) {
       fetchData();
+      dispatch(updateUserImg({ img: userImg }));
     }
     console.log(roomData);
   }, [userInfo.isLoggedIn]);
