@@ -6,6 +6,7 @@ import SortingDownIcon from "assets/img/sort-down.svg";
 import SearchImgIcon from "assets/img/search.svg";
 
 import HotBoardIcon from "assets/img/hot-board.svg";
+import ChatBoardIcon from "assets/img/chat-board.svg";
 import TipBoardIcon from "assets/img/tip-board.svg";
 import PromBoardIcon from "assets/img/promotion-board.svg";
 import AskBoardIcon from "assets/img/ask-board.svg";
@@ -14,6 +15,7 @@ import HotBlackBoardIcon from "assets/img/hot-black-board.svg";
 import TipBlackBoardIcon from "assets/img/tip-black-board.svg";
 import PromBlackBoardIcon from "assets/img/promotion-black-board.svg";
 import AskBlackBoardIcon from "assets/img/ask-black-board.svg";
+import ChatBlackBoardIcon from "assets/img/chat-board-black.svg";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
@@ -168,12 +170,12 @@ export const FreeBoardList = () => {
           )}
           {currentMenu === "CHAT" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={HotBlackBoardIcon} alt="" />
+              <SideIconImg src={ChatBlackBoardIcon} alt="" />
               <SidebuttonTitle>잡담</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={HotBoardIcon} alt="" />
+              <SideIconImg src={ChatBoardIcon} alt="" />
               <SidebuttonTitle>잡담</SidebuttonTitle>
             </SideButton>
           )}

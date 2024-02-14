@@ -44,20 +44,34 @@ export const BoardCommentComponent = (props: CommentProps) => {
     <TotalContainer>
       <Comment>
         <NicAndDate>
-          <Nicname>{writerNickname}</Nicname>
-          <Date>{updatedAt}</Date>
+          <div className="flex">
+            <Nicname>{writerNickname}</Nicname>
+            <Date>{updatedAt}</Date>
+          </div>
+          <div>
+            {memberNickname === writerNickname ? (
+              <>
+                <button className="text-gray-400 px-2 py-1 text-sm rounded-md">
+                  수정
+                </button>
+                <button
+                  className="text-gray-400 mx-2 my-1 text-sm mr-2 hover:border-b"
+                  onClick={() => props.handleDelete(id)}
+                >
+                  삭제
+                </button>
+              </>
+            ) : // <div className="flex justify-end mr-1">
+            //   {/* <button onClick={handleModifySub}>수정 -----</button> */}
+            // </div>
+            null}
+          </div>
         </NicAndDate>
         <Context id={id.toString()}>{content}</Context>
         {/* <Context>{content}</Context>  미안하다..!*/}
         {/* <textarea readOnly className="text-black" id={id.toString()}>
           {content}
         </textarea> */}
-        {memberNickname === writerNickname ? (
-          <NicAndDate>
-            <button onClick={handleModifySub}>수정 -----</button>
-            <button onClick={() => props.handleDelete(id)}>삭제</button>
-          </NicAndDate>
-        ) : null}
       </Comment>
     </TotalContainer>
   );
@@ -82,11 +96,13 @@ my-5
 const NicAndDate = tw.div`
 flex
 mb-3
+justify-between
 `;
 
 //닉네임
 const Nicname = tw.div`
 mr-3
+font-bold
 text-gray-200
 `;
 
@@ -97,13 +113,11 @@ text-gray-400
 
 //댓글 내용
 const Context = tw.div`
-border
-bg-gray-200
-text-black
+text-white
 flex-grow
 py-3
-px-2
-mb-2
+px-3
+bg-gray-900
 mx-1
 text-sm
 break-words

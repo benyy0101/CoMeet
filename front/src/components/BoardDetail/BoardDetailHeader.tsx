@@ -84,6 +84,7 @@ flex
 flex-col
 h-28
 space-y-3
+text-white
 `;
 
 //제목 부분 컨테이너 (모집중 / 모집 완료 포함)
