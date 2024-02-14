@@ -22,7 +22,7 @@ export const imageAxios: AxiosInstance = axios.create({
 
 localAxios.interceptors.request.use(
   (config) => {
-    console.log("interceptor");
+    //console.log("interceptor");
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -50,7 +50,6 @@ imageAxios.interceptors.request.use(
 
 localAxios.interceptors.response.use(
   async (response) => {
-    // console.log(response);
     if (response.data.jwtToken) {
       sessionStorage.setItem("accessToken", response.data.jwtToken.accessToken);
       sessionStorage.setItem(
@@ -68,7 +67,13 @@ localAxios.interceptors.response.use(
         store.dispatch(logout());
         //window.location.href = "/";
       }
+      // } else if (response.data === "logout") {
+      //   console.log("interceptor");
+      //   sessionStorage.removeItem("accessToken");
+      //   sessionStorage.removeItem("refreshToken");
+      //   return response;
     } else {
+      console.log("response", response);
       return response;
     }
   },

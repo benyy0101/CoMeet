@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavBar } from "./components/Common/Navigation/NavBar";
 import { RoomList } from "./pages/RoomList";
@@ -26,10 +26,11 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { getRoom, leaveRoom } from "api/Room";
 import { setLeaveRoom } from "store/reducers/roomSlice";
+import Oauth from "pages/Oauth";
 
 function App() {
   //임시
-  const userInfo = useSelector((state: any) => state.user);
+  // const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -84,15 +85,18 @@ function App() {
 
       if (stompClient.current === null) {
         stompClient.current = Stomp.over(() => {
-          const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
+          const sock = new SockJS(
+            `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
+          );
           return sock;
         });
 
         stompClient.current.connect(
           {},
           () => {
-            stompClient.current.subscribe(`/room/info/${roomInfo.roomId}`, (e: any) =>
-              handleUpdateInfo(JSON.parse(e.body))
+            stompClient.current.subscribe(
+              `/room/info/${roomInfo.roomId}`,
+              (e: any) => handleUpdateInfo(JSON.parse(e.body))
             );
           },
           (e: any) => alert("에러발생!!!!!!")
@@ -100,9 +104,14 @@ function App() {
       }
     }
 
+    //창 끄기 전에 방 나가기
+    window.addEventListener("beforeunload", leaveRoomHandler);
+
     return () => {
       if (stompClient.current) {
-        stompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        stompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         stompClient.current = null;
       }
     };
@@ -113,20 +122,34 @@ function App() {
     setRoomData(res);
     setChannels(res.channels);
     setLounges(res.lounges);
+    setCurrentLounge(res.lounges[0]);
   };
 
-  const leaveRoomHandler = async () => {
+  const leaveRoomHandler = () => {
     const data: LeaveRoomParams = {
       roomId: parseInt(roomInfo.roomId),
-      keywords: undefined,
     };
-    try {
-      const res = await leaveRoom(data);
-      dispatch(setLeaveRoom());
-      // navigate("/");
-    } catch (e) {
-      console.error(e);
-    }
+    setRoomData(null);
+    setChannels([]);
+    setLounges([]);
+    setSideToggle(true);
+    setInLounge(true);
+    setCurrentLounge(null);
+    setMySessionId("");
+    setMySessionName("");
+    setSession(null);
+    setMainStreamManager(null);
+    setPublisher(null);
+    setSubscribers([]);
+    setCurrentVideoDevice(null);
+    setSpeakerIds([]);
+    setIsMuted(true);
+    setIsVideoDisabled(true);
+    setIsScreenShared(false);
+    setFilter(null);
+    stompClient.current = null;
+    OV.current = new OpenVidu();
+    return leaveRoom(data);
   };
 
   const handleUpdateInfo = (event: any) => {
@@ -147,7 +170,9 @@ function App() {
       case "CHANNEL_UPDATE":
         break;
       case "CHANNEL_DELETE":
-        setChannels((prev) => prev.filter((channel) => channel.channelId !== event.data.channelId));
+        setChannels((prev) =>
+          prev.filter((channel) => channel.channelId !== event.data.channelId)
+        );
         break;
       case "LOUNGE_CREATE":
         setLounges((prev) => [...prev, event.data]);
@@ -155,7 +180,9 @@ function App() {
       case "LOUNGE_UPDATE":
         break;
       case "LOUNGE_DELETE":
-        setLounges((prev) => prev.filter((lounge) => lounge.loungeId !== event.data.loungeId));
+        setLounges((prev) =>
+          prev.filter((lounge) => lounge.loungeId !== event.data.loungeId)
+        );
         break;
     }
   };
@@ -258,6 +285,36 @@ function App() {
     }
   };
 
+  const leaveSession = useCallback(() => {
+    setInLounge(true);
+    // Leave the session
+    if (session) {
+      session.disconnect();
+    }
+
+    // Reset all states and OpenVidu object
+    OV.current = new OpenVidu();
+    setSession(null);
+    setSubscribers([]);
+    setMySessionId("");
+    setMainStreamManager(null);
+    setPublisher(null);
+  }, [session]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      leaveSession();
+      leaveRoomHandler().then((_) => {
+        dispatch(setLeaveRoom());
+      });
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [leaveSession]);
+
   return (
     <div className="App h-dvh">
       <BrowserRouter>
@@ -319,6 +376,8 @@ function App() {
                   filter={filter}
                   stompClient={stompClient}
                   OV={OV}
+                  leaveRoomHandler={leaveRoomHandler}
+                  leaveSession={leaveSession}
                 />
               }
             />
@@ -332,15 +391,24 @@ function App() {
             {/* 모집 게시판 */}
             <Route path="/recruit-board" element={<RecruitBoardList />} />
 
-            <Route path="/recruit-board/edit" element={<Board isFree={true} isEdit={true} />} />
+            <Route
+              path="/recruit-board/edit"
+              element={<Board isFree={true} isEdit={true} />}
+            />
             {/* 모집게시판 글 상세보기 */}
-            <Route path="/recruit-board/:boardId" element={<BoardDetail />}></Route>
+            <Route
+              path="/recruit-board/:boardId"
+              element={<BoardDetail />}
+            ></Route>
 
             {/* 자유 게시판 */}
             <Route path="/free-board" element={<FreeBoardList />}></Route>
 
             {/* 자유게시판 글 상세보기 */}
-            <Route path="/free-board/:boardId" element={<BoardDetail />}></Route>
+            <Route
+              path="/free-board/:boardId"
+              element={<BoardDetail />}
+            ></Route>
             {/* 글 쓰기 & 글 수정 */}
             <Route path="/write-article" element={<WriteArticle />}></Route>
 
@@ -348,6 +416,8 @@ function App() {
             <Route path="/userpage/:memberId" element={<Mypage />} />
             <Route path="/profile-edit" element={<ProfileEdit />}></Route>
             <Route path="/before-entrance" element={<ConditionCheck />} />
+
+            <Route path="/oauth" element={<Oauth />} />
           </Routes>
         </RoutesContainer>
       </BrowserRouter>

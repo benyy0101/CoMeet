@@ -4,6 +4,7 @@ import com.a506.comeet.app.room.controller.dto.*;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.RoomConstraints;
 import com.a506.comeet.common.enums.RoomType;
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -37,10 +38,11 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
     @Override
     public Slice<RoomSearchResponseDto> searchDisposableRoom(RoomSearchRequestDto req, Pageable pageable) {
 
-        List<Room> content = jpaQueryFactory.selectFrom(room)
+        List<Room> content = jpaQueryFactory
+                .selectFrom(room)
                 .innerJoin(room.manager, member) // member는 1개만 사용됨
-                .leftJoin(room.roomKeywords, roomKeyword).fetchJoin()
-                .leftJoin(roomKeyword.keyword, keyword).fetchJoin()
+                .leftJoin(room.roomKeywords, roomKeyword)
+                .leftJoin(roomKeyword.keyword, keyword).distinct()
                 .where(
                         eqType(RoomType.DISPOSABLE),
                         eqKeyword(req.getSearchKeyword()),
@@ -155,10 +157,10 @@ public class RoomRepositoryCustomImpl implements RoomRepositoryCustom {
 
     private <T> OrderSpecifier<?> makeOrder(RoomSearchRequestDto req) {
         // default는 최신순으로 가져오기로 함
-        if (req.getSortBy() == null) return room.createdAt.desc();
+        if (req.getSortBy() == null) return new OrderSpecifier<>(Order.DESC, room.createdAt);
         return switch (req.getSortBy()) {
-            case LATEST -> room.createdAt.desc();
-            case OLDEST -> room.createdAt.asc();
+            case LATEST -> new OrderSpecifier<>(Order.DESC, room.createdAt);
+            case OLDEST -> new OrderSpecifier<>(Order.ASC, room.createdAt);
         };
     }
 

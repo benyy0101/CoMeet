@@ -74,6 +74,7 @@ export default function Chat({ chatDomain, id, username, setMessage, message }: 
   //메시지 브로커로 메시지 전송
   const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
+    if (message === "") return;
 
     const data = {
       [`${chatDomain}Id`]: id,

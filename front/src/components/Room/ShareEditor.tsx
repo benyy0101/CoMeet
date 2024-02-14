@@ -112,7 +112,9 @@ export default function ShareEditor({
   };
 
   const exportToChat = () => {
-    setMessage(`\`\`\`${language}\n${editorRef.current.getModel().getValue()}\n\`\`\``);
+    const code = editorRef.current.getModel().getValue();
+    if (code === "") return;
+    setMessage(`\`\`\`${language}\n${code}\n\`\`\``);
     setInChat(true);
   };
 
@@ -180,6 +182,7 @@ bg-slate-700
 cursor-pointer
 border-slate-900
 border-[1px]
+text-slate-300
 `;
 
 const EditingMessageContainer = tw.div`

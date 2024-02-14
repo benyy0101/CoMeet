@@ -9,6 +9,7 @@ import { SignupQuery } from "models/Login.interface";
 import { makeQuerystring } from "utils/ApiUtil";
 
 export const handleMember = async (memberId: string): Promise<MemberQuery> => {
+  console.log(memberId);
   const response = await localAxios.get(`/member/${memberId}`);
   return response.data;
 };
@@ -22,6 +23,8 @@ export const handleSignup = async (req: SignupQuery): Promise<SignupQuery> => {
 export const updateMember = async (params: MemberUpdateParams) => {
   const url = `member`;
   const response = await localAxios.patch(url, params);
+
+  console.log(response.data);
 };
 
 //닉네임 중복 검사
@@ -30,6 +33,15 @@ export const doubleCheckNicname = async (
 ): Promise<boolean> => {
   const { nickname } = params;
   const url = `member/check${makeQuerystring({ nickname })}`;
+
+  const response = await localAxios.get(url);
+  return response.data;
+};
+
+export const doubleCheckMemberId = async (
+  memberId: string
+): Promise<boolean> => {
+  const url = `member/check${makeQuerystring({ memberId })}`;
 
   const response = await localAxios.get(url);
   return response.data;

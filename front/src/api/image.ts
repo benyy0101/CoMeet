@@ -7,13 +7,6 @@ export const uploadImage = async (fileImage: FormData) => {
   return response.data;
 };
 
-export const profileModifyImage = async (updateData: object) => {
-  const response = await localAxios.patch("/member", updateData);
-};
-
-export const profileImageDelete = async (url: string | undefined) => {
-  if (url != undefined) {
-    const encodedUrl = "/member/image?profileImageUrl=" + url;
-    const response = await localAxios.delete(encodedUrl);
-  }
+export const profileImageDelete = async () => {
+  const response = await localAxios.delete("/member/image");
 };

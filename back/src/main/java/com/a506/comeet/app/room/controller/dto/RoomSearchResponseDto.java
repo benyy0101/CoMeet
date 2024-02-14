@@ -6,6 +6,7 @@ import com.a506.comeet.common.enums.RoomConstraints;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,8 @@ public class RoomSearchResponseDto {
     private String description;
     private String roomImage;
     private Integer capacity;
+    @Setter
+    private Integer currentMcount;
     private Boolean isLocked;
     private String password;
     private RoomConstraints constraints;

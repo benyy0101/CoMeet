@@ -21,9 +21,9 @@ export default function LoungeButton({ lounge, active, disabled, moveLounge }: I
       >
         <ChatBubbleOvalLeftEllipsisIcon className="text-white w-8 h-8" />
       </IconButton>
-      <TitleCotainer>
+      <TitleContainer>
         <Title>{lounge.name}</Title>
-      </TitleCotainer>
+      </TitleContainer>
     </LoungeButtonContainer>
   );
 }
@@ -51,7 +51,7 @@ pr-40
 -mr-40
 `;
 
-const TitleCotainer = tw.div`
+const TitleContainer = tw.div`
 absolute
 left-24
 z-10

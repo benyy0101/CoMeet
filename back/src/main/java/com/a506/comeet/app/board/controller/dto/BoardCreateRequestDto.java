@@ -15,7 +15,6 @@ public class BoardCreateRequestDto {
 
     private final Integer likeCount = 0;
     private final Boolean isValid = true;
-    private String writerId;
     private String title;
     private String content;
     private BoardType type;

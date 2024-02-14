@@ -1,9 +1,11 @@
+import { SmallRoomdata } from "./Room.interface";
+
 export interface loginState {
   memberId: string;
   nickname: string;
   profileImage: string;
   unreadNoteCount: number;
-  joinedRooms: smallRoomdata[];
+  joinedRooms: SmallRoomdata[];
 }
 
 export interface LoginResponse extends loginState {
@@ -11,7 +13,7 @@ export interface LoginResponse extends loginState {
   profileImage: string;
   jwtToken: JwtToken;
   unreadNoteCount: number;
-  joinedRooms: smallRoomdata[];
+  joinedRooms: SmallRoomdata[];
 }
 
 export interface JwtToken {
@@ -30,14 +32,6 @@ export interface SignupQuery {
 
 export interface ValidityResponse {
   isValid: boolean;
-}
-
-export interface smallRoomdata {
-  roomId: number;
-  title: string;
-  roomImage:
-    | string
-    | "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png";
 }
 
 export interface UserState {

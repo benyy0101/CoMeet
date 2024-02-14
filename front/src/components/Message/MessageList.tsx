@@ -5,15 +5,16 @@ import {
   SearchNoteParams,
   SearchNoteResponse,
 } from "models/Note.interface";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "tailwind-styled-components";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { deleteNote, searchNote } from "api/Note";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ModalPortal from "utils/Portal";
 import { useDispatch } from "react-redux";
-import { decNoteNumber } from "store/reducers/userSlice";
+import { updateUnread } from "store/reducers/userSlice";
 import { set } from "react-hook-form";
+import { count } from "console";
 
 interface MessageListProps {
   swapState: (state: string, no: number) => void;
@@ -24,26 +25,57 @@ function MessageList(params: MessageListProps) {
   const [messages, setMessages] = React.useState<
     SearchNoteResponse | undefined
   >();
+  const [unreadCount, setUnreadCount] = React.useState<number>(0);
+
   const dispatch = useDispatch();
-  const searchParams: SearchNoteParams = {
-    page: page,
-    size: 5,
+  const [noteList, setNoteList] = useState<SearchNoteContent[]>([]);
+  // const [newNoteList, setNewNoteList] = useState<SearchNoteContent[]>([]);
+  const [searchNoteParams, setSearchNoteParams] = useState<SearchNoteParams>({
+    page: 0,
+    size: 20,
+  });
+
+  //무한스크롤 구현
+  const pagesize = 20;
+  //이 친구로 페이지가 바뀌었는지 판단함
+  const numberOfElements = useRef<number>(0);
+
+  const searchMessage = () => {
+    searchNote(searchNoteParams)
+      .then((data) => {
+        setNoteList((prev) => {
+          return prev.concat(
+            data.content.filter((each) =>
+              prev.find((dat) => dat.id === each.id) ? false : true
+            )
+          );
+        });
+        numberOfElements.current = data.numberOfElements;
+      })
+      .catch((f) => {
+        console.log("fail", f.response);
+      });
   };
-  const fetchData = async () => {
-    try {
-      const res = await searchNote(searchParams);
-      setMessages(res);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+
   useEffect(() => {
-    fetchData();
+    const observer = new IntersectionObserver(handleObserver, {
+      threshold: 0,
+    });
+    const observerTarget = document.getElementById("note-list-observer");
+    if (observerTarget) {
+      observer.observe(observerTarget);
+    }
   }, []);
 
-  const fetchMoreData = () => {
-    setPage((prev) => prev + 1);
-    fetchData();
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      if (numberOfElements.current === pagesize) {
+        searchNoteParams.page++;
+      }
+      setSearchNoteParams(searchNoteParams);
+      searchMessage();
+    }
   };
 
   const readNote = (no: number) => {
@@ -53,24 +85,36 @@ function MessageList(params: MessageListProps) {
   const writeNote = () => {
     swapState("write", 0);
   };
+  const countUnread = () => {
+    if (messages) {
+      const unreadMessages = messages.content.filter(
+        (message) => !message.isRead
+      );
+      return unreadMessages.length;
+    }
+  };
 
   const deleteNoteHandler = async (no: number) => {
     try {
       await deleteNote({ noteId: no });
-      setMessages((prevMessages) => {
+      setNoteList((prevMessages) => {
         if (!prevMessages) {
           return prevMessages;
         }
 
         const newContent =
-          prevMessages?.content?.filter((message) => message.id !== no) || [];
-        return { ...prevMessages, content: newContent };
+          prevMessages?.filter((message) => message.id !== no) || [];
+        return newContent;
+        // return { ...prevMessages, content: newContent };
       });
     } catch (e) {
       console.error(e);
     }
   };
 
+  const onReadNote = (no: number) => {
+    readNote(no);
+  };
   return (
     <Wrapper>
       <Header>
@@ -85,18 +129,17 @@ function MessageList(params: MessageListProps) {
       </Header>
 
       <Content>
-        {messages?.content.map((message) => (
+        {noteList.map((message) => (
           <>
             <MessageItem key={message.id}>
               <MessageTitle
                 onClick={() => {
                   readNote(message.id);
-                  if (!message.isRead) {
-                    dispatch(decNoteNumber());
-                  }
+                  dispatch(updateUnread(countUnread() || 0));
                 }}
               >
-                <p className="text-blue-400">{message.writerId}</p>님의 쪽지
+                <p className="text-blue-400">{message.writerNickname}</p>님의
+                쪽지
               </MessageTitle>
               <RightBox>
                 {message.isRead ? (
@@ -111,6 +154,9 @@ function MessageList(params: MessageListProps) {
             </MessageItem>
           </>
         ))}
+        <div id="note-list-observer" style={{ height: "10px" }}>
+          dd
+        </div>
       </Content>
     </Wrapper>
   );
@@ -188,7 +234,6 @@ bg-indigo-50
 bg-opacity-10
 p-4
 overflow-y-auto
-scrollbar-hide
 space-y-3
 `;
 export default MessageList;

@@ -24,8 +24,10 @@ export default function MyKeyword({ keywords }: Props) {
     { weight: -Infinity } as Keyword
   ).weight;
 
-  const maxWeightKeywords =
-    keywords?.filter((keyword) => keyword.weight === maxWeight) || [];
+  // const maxWeightKeywords =
+  //   keywords?.filter((keyword) => keyword.weight === maxWeight) || [];
+  const sortedKeywords = keywords?.sort((a, b) => b.weight - a.weight) || [];
+  const topThreeKeywords = sortedKeywords.slice(0, 3);
 
   const options = {
     fontSizes: [10, 60] as [number, number], // 글씨 크기 범위 설정 (최소 크기: 20, 최대 크기: 100)
@@ -44,21 +46,51 @@ export default function MyKeyword({ keywords }: Props) {
       <div className="flex flex-col items-center items-start w-full h-full gap-y-3">
         <Title>키워드</Title>
         <Wrapper>
-          <WordCloudContainer>
-            <ReactWordcloud
-              words={words}
-              options={options}
-              size={size}
-              maxWords={maxWords}
-              minSize={minSize}
-            />
-          </WordCloudContainer>
-          <TextContainer>
-            <First>1위</First>
-            {maxWeightKeywords.map((keywords) => (
-              <Keyword>{keywords.name}</Keyword>
-            ))}
-          </TextContainer>
+          {keywords?.length === 0 ? (
+            <NoneKeywords>
+              {/* 여기에 이미지 하나 넣으면 괜찮을 듯 */}
+              <NoneTitle>대표하는 키워드가 없습니다.</NoneTitle>
+              <Nonedescription>방에 들어가서 공부를 해 보세요!</Nonedescription>
+            </NoneKeywords>
+          ) : (
+            <>
+              <WordCloudContainer>
+                <ReactWordcloud
+                  words={words}
+                  options={options}
+                  size={size}
+                  maxWords={maxWords}
+                  minSize={minSize}
+                />
+              </WordCloudContainer>
+              <TextContainer>
+                <RankContainer>
+                  <First>1위</First>
+                  {topThreeKeywords.length >= 1 ? (
+                    <Keyword>{topThreeKeywords[0].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
+                <RankContainer>
+                  <First>2위</First>
+                  {topThreeKeywords.length >= 2 ? (
+                    <Keyword>{topThreeKeywords[1].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
+                <RankContainer>
+                  <First>3위</First>
+                  {topThreeKeywords.length >= 3 ? (
+                    <Keyword>{topThreeKeywords[2].name}</Keyword>
+                  ) : (
+                    "없음"
+                  )}
+                </RankContainer>
+              </TextContainer>
+            </>
+          )}
         </Wrapper>
       </div>
     </TotalContainer>
@@ -77,21 +109,44 @@ text-xl font-bold my-5
 `;
 
 const Wrapper = tw.div`
-flex flex-col w-full h-full items-center gap-y-3
+flex flex-col w-full h-full items-center gap-y-3 justify-around
 `;
+
+const NoneKeywords = tw.div`
+flex
+flex-col
+justify-center
+items-center
+flex-grow
+`;
+
+const NoneTitle = tw.div`
+text-xl font-bold pb-3
+`;
+
+const Nonedescription = tw.div`
+text-gray-300 border-gray-300 border-b mb-7`;
 
 const WordCloudContainer = tw.div`
 flex items-center p-5 rounded-full bg-white overflow-hidden ring-[5px] outline-none ring-purple-500
 `;
 
 const TextContainer = tw.div`
-my-5 flex justify-center items-center
+flex flex-col justify-center items-start mb-[15%]
+`;
+
+const RankContainer = tw.div`
+flex items-center
 `;
 
 const First = tw.div`
-mr-5 font-bold
+mr-7 font-bold text-xl my-1
 `;
 
 const Keyword = tw.div`
 mr-3 font-bold text-lg text-purple-300
+`;
+
+const MultipleKeywordText = tw.div`
+text-sm text-gray-300
 `;

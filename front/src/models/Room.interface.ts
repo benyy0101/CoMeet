@@ -60,16 +60,22 @@ export interface SearchRoomContent {
   link: string;
   roomImage: string;
   capacity: number;
+  currentMcount: number;
   isLocked: boolean;
   //password: string | null;
   constraints: ROOM_CONSTRAINTS;
   createdAt: string;
-  keywords: number[];
+  keywords: Keyword[];
 }
 
+interface Keyword {
+  id: number;
+  name: string;
+}
 export interface SearchRoomResponse {
   content: SearchRoomContent[];
   pageable: Pageable;
+  last: boolean;
 }
 
 export interface DeleteRoomParams {
@@ -157,4 +163,10 @@ export interface SearchManagingResponses {
   roomId: number;
   title: string;
   full: boolean; // 꽉 찼는지
+}
+
+export interface SmallRoomdata {
+  roomId: number;
+  title: string;
+  roomImage: string;
 }

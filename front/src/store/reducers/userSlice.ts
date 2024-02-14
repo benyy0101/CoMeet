@@ -1,16 +1,16 @@
 // userSlice.ts
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
-import Login from "components/Auth/Login";
 import { LoginResponse, UserState } from "models/Login.interface";
+import { SmallRoomdata } from "models/Room.interface";
 
 // Function to retrieve user state from sessionStorage
 const loadUserState = (): UserState => {
   const storedState = sessionStorage.getItem("userState");
-  return storedState ? JSON.parse(storedState) : initialState;
+  return storedState ? JSON.parse(storedState) : initialUserState;
 };
 
-const initialState: UserState = {
+const initialUserState: UserState = {
   user: {
     memberId: "",
     nickname: "",
@@ -30,14 +30,19 @@ const userSlice = createSlice({
       state.isLoggedIn = true;
     },
     logout: (state) => {
-      state.user = initialState.user;
-      state.isLoggedIn = false;
+      console.log("logout reducer", state);
+      state.user = initialUserState.user;
+      state.isLoggedIn = initialUserState.isLoggedIn;
     },
     storeMemberId: (state, action: PayloadAction<string>) => {
       state.user.memberId = action.payload;
     },
-    decNoteNumber: (state) => {
-      state.user.unreadNoteCount = state.user.unreadNoteCount - 1;
+    updateUnread: (state, action: PayloadAction<number>) => {
+      console.log("updateUnread", action.payload);
+      state.user.unreadNoteCount = action.payload;
+    },
+    addRoom: (state, action: PayloadAction<SmallRoomdata>) => {
+      state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
     },
   },
 });
@@ -53,5 +58,6 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout, storeMemberId,decNoteNumber } = userSlice.actions;
+export const { login, logout, storeMemberId, updateUnread, addRoom } =
+  userSlice.actions;
 export default userSlice.reducer;

@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import RoomDefault from "assets/img/room-default.svg";
-import { PlusIcon } from "@heroicons/react/24/solid";
 import { useSelector } from "react-redux";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 
-export const ServerDropDownList = () => {
+interface IProps {
+  setIsServerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const ServerDropDownList = ({ setIsServerOpen }: IProps) => {
   const currentRoomId = useSelector((state: any) => state.room.roomId);
   const roomInfo = useSelector((state: any) => state.user.user.joinedRooms);
 
@@ -13,7 +16,7 @@ export const ServerDropDownList = () => {
     <StyleDropdownMenu>
       <StyleDropdownTitleContainer>
         <StyleDropdownTitle>가입한 방 목록</StyleDropdownTitle>
-        <Link to="/room-regist">
+        <Link to="/room-regist" onClick={() => setIsServerOpen(false)}>
           <AddButton>+ 방 만들기</AddButton>
         </Link>
       </StyleDropdownTitleContainer>
@@ -21,11 +24,8 @@ export const ServerDropDownList = () => {
         <ServerContent>
           {roomInfo.map((room: any) => (
             <Link to={`/room/${room.roomId}`} replace>
-              <StyleImgTextBoth
-                key={room.roomId}
-                $disabled={room.roomId === +currentRoomId}
-              >
-                <StyleServerImg src={RoomDefault} alt="" />
+              <StyleImgTextBoth key={room.roomId} $disabled={room.roomId === +currentRoomId}>
+                <StyleServerImg src={room.roomImage || RoomDefault} alt="" />
                 <StyleServerText>{room.title}</StyleServerText>
                 <StyleServerDot $visible={room.roomId === +currentRoomId} />
               </StyleImgTextBoth>

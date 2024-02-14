@@ -1,15 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
-import Modal from "./Common/Modal";
+import Modal from "../Common/Modal";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";
-import { RoomItemProps } from "../types";
+import { RoomItemProps } from "../../types";
 import { SearchRoomContent } from "models/Room.interface";
+import {
+  SpeakerXMarkIcon,
+  VideoCameraIcon,
+  SpeakerWaveIcon,
+  VideoCameraSlashIcon,
+  UsersIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/solid";
+import { set } from "react-hook-form";
 
 export default function RoomItem(props: SearchRoomContent) {
   // function RoomItem(props: RoomItemProps) {
   const [modal, setModal] = React.useState<boolean>(false);
+  const [isMute, setIsMute] = React.useState<boolean>(false);
+  const [isVideo, setIsVideo] = React.useState<boolean>(false);
+
+  const optionHandler = () => {
+    const option = props.constraints;
+    if (option === "VIDEOONMICOFF") {
+      setIsMute(true);
+      setIsVideo(true);
+    } else if (option === "VIDEOON") {
+      setIsVideo(true);
+    } else if (option === "MICOFF") {
+      setIsMute(true);
+    }
+  };
+
+  useEffect(() => {
+    optionHandler();
+  }, []);
+
   const modalHandler = () => {
     setModal(!modal);
   };
@@ -27,30 +55,40 @@ export default function RoomItem(props: SearchRoomContent) {
           }}
         />
       </Column>
-      <Column className="flex-grow-[1]">
+      <Column className="flex-grow-[1] max-w-[30rem]">
         <TitleContainer>
           <Title>{props.title}</Title>
           <Manager>{props.managerNickname}</Manager>
         </TitleContainer>
         <Description>{props.description}</Description>
-      </Column>
-      <Column>
         <KeywordContainer>
-          <Keyword>C++</Keyword>
-          <Keyword>JAVA</Keyword>
-          <Keyword>PYTHON</Keyword>
+          {props.keywords.map((keyword) => {
+            return <Keyword>{keyword.name}</Keyword>;
+          })}
         </KeywordContainer>
       </Column>
       <Column>
         <OptionContainer>
-          <Img src={Video} alt="video" />
-          <Img src={NoAudio} alt="audio" />
+          {isMute ? (
+            <SpeakerXMarkIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <SpeakerWaveIcon className="w-6 h-6 text-slate-700" />
+          )}
+          {isVideo ? (
+            <VideoCameraIcon className="w-6 h-6 text-slate-700" />
+          ) : (
+            <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
+          )}
+          {props.isLocked && <LockClosedIcon className="w-6 h-6 text-slate-700" />}
         </OptionContainer>
       </Column>
       <Column>
         <CountContainer>
-          <CountTitle>인원</CountTitle>
-          <Count>{props.capacity} / 30</Count>
+          {/* <CountTitle>인원</CountTitle> */}
+          <UsersIcon className="w-6 h-6 text-slate-700" />
+          <Count>
+            {props.currentMcount} / {props.capacity}
+          </Count>
         </CountContainer>
       </Column>
 
@@ -60,16 +98,18 @@ export default function RoomItem(props: SearchRoomContent) {
 }
 
 const Wrapper = tw.div`
+border-purple-400
+border-2
 flex  
 justify-between
 items-center
-bg-gray-200 
+bg-slate-100
 p-4 
 rounded-md 
 cursor-pointer 
-hover:bg-gray-300
+hover:bg-purple-50
 shadow-md
-h-32
+h-40
 `;
 
 const Column = tw.div`
@@ -129,22 +169,22 @@ text-sm`;
 
 const Count = tw.div`
 text-gray-500
+text-xs
 `;
 
 const KeywordContainer = tw.div`
+w-40
 flex
-gap-2
+gap-1
 `;
 
 const Keyword = tw.div`
-border-2
-border-gray-300
 rounded-md
 p-1
 px-2
-text-sm
+text-xs
 shadow-md
-bg-gray-700
+bg-purple-800
 text-white
 `;
 const OptionContainer = tw.div`

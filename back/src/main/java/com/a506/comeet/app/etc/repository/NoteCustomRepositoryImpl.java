@@ -29,6 +29,7 @@ public class NoteCustomRepositoryImpl implements NoteCustomRepository {
                                 NoteSimpleResponseDto.class,
                                 note.id,
                                 note.writer.memberId,
+                                note.writer.nickname,
                                 note.receiver.memberId,
                                 note.isRead
                         )).from(note)
