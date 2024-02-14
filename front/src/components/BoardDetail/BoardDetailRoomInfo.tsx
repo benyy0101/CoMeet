@@ -131,6 +131,7 @@ mt-10
 rounded-lg
 break-words
 bg-[#1F1C29]
+text-white
 `;
 
 //룸 이미지 컨테이너인데 h-70으로 설정해뒀는데

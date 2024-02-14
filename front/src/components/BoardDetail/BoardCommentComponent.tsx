@@ -51,15 +51,10 @@ export const BoardCommentComponent = (props: CommentProps) => {
           <div>
             {memberNickname === writerNickname ? (
               <>
-                <button className="text-gray-400 px-2 py-1 text-sm rounded-md">
-                  수정
-                </button>
-                <button
-                  className="text-gray-400 mx-2 my-1 text-sm mr-2 hover:border-b"
-                  onClick={() => props.handleDelete(id)}
-                >
+                <ModifyButton>수정</ModifyButton>
+                <DeleteButton onClick={() => props.handleDelete(id)}>
                   삭제
-                </button>
+                </DeleteButton>
               </>
             ) : // <div className="flex justify-end mr-1">
             //   {/* <button onClick={handleModifySub}>수정 -----</button> */}
@@ -109,6 +104,14 @@ text-gray-200
 //날짜
 const Date = tw.div`
 text-gray-400
+`;
+
+const ModifyButton = tw.button`
+text-gray-400 text-sm hover:bg-gray-800 rounded-md px-2 py-1 mr-1
+`;
+
+const DeleteButton = tw.button`
+text-gray-400 text-sm mr-2  hover:bg-gray-800 rounded-md px-2 py-1
 `;
 
 //댓글 내용
