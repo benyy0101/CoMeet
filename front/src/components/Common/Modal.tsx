@@ -77,10 +77,10 @@ function Modal(props: ModalProps) {
           />
         ) : null}
         {option === "follower" ? (
-          <FollowList option={option}></FollowList>
+          <FollowList option={option} toggleModal={toggleModal}></FollowList>
         ) : null}
         {option === "following" ? (
-          <FollowList option={option}></FollowList>
+          <FollowList option={option} toggleModal={toggleModal}></FollowList>
         ) : null}
         {option === "message" && noteState === "list" ? (
           <MessageList swapState={setNoteStateHandler}></MessageList>
