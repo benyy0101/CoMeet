@@ -8,21 +8,24 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   VideoCameraIcon,
+  VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 
 interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS>>;
+  // setPage: React.Dispatch<React.SetStateAction<number>>;
+  setConstraints: React.Dispatch<
+    React.SetStateAction<ROOM_CONSTRAINTS | "ALL">
+  >;
   setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function FilterMenu({
   setSortByLatest,
   sortByLatest,
-  setPage,
+  // setPage,
   setConstraints,
   setIsLockedHandler,
 }: IProps) {
@@ -31,21 +34,15 @@ export default function FilterMenu({
   const [isVideoOff, setIsVideoOff] = useState<boolean>(false);
   const [maxcount, setMaxcount] = useState<number>(0);
 
-  useEffect(() => {
-    setPage(0);
-  }, [isLocked, isMuted, isVideoOff, maxcount]);
+  const [sortby, setSortby] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isMuted && !isVideoOff) {
-      setConstraints("MICOFF");
-    } else if (isMuted && isVideoOff) {
-      setConstraints("VIDEOONMICOFF");
-    } else if (isVideoOff && !isMuted) {
-      setConstraints("VIDEOON");
-    } else {
-      setConstraints("FREE");
-    }
-  }, [isMuted, isVideoOff]);
+    // setPage(0);
+  }, [isLocked, isMuted, isVideoOff, maxcount]);
+
+  const dropDownHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setConstraints(e.target.value as ROOM_CONSTRAINTS);
+  };
 
   return (
     <Wrapper>
@@ -55,36 +52,17 @@ export default function FilterMenu({
       <SearchOptionContainer>
         <CheckBoxContainer>
           <Title>방 기본 설정</Title>
-          {/* TODO: 체크박스 커스텀하기 */}
-          <CheckBoxOption>
-            <CheckBox>
-              <LockClosedIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isLocked}
-                onChange={() => {
-                  setIsLockedHandler(!isLocked);
-                  setIsLocked(!isLocked);
-                }}
-              />
-            </CheckBox>
-            <CheckBox>
-              <SpeakerXMarkIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isMuted}
-                onChange={() => setIsMuted(!isMuted)}
-              />
-            </CheckBox>
-            <CheckBox>
-              <VideoCameraIcon className="w-5 h-5" />
-              <input
-                type="checkbox"
-                checked={isVideoOff}
-                onChange={() => setIsVideoOff(!isVideoOff)}
-              />
-            </CheckBox>
-          </CheckBoxOption>
+          <SearchForm>
+            <DropDowns onChange={dropDownHandler}>
+              <DropdownOption value="ALL">모두</DropdownOption>
+              <DropdownOption value="VIDEOONMICOFF">
+                캠/화면공유 필수, 음소거 필수
+              </DropdownOption>
+              <DropdownOption value="VIDEOON">캠/화면공유 필수</DropdownOption>
+              <DropdownOption value="MICOFF">음소거 필수</DropdownOption>
+              <DropdownOption value="FREE">자유</DropdownOption>
+            </DropDowns>
+          </SearchForm>
         </CheckBoxContainer>
       </SearchOptionContainer>
     </Wrapper>
@@ -113,6 +91,42 @@ items-center
 divide-y
 divide-slate-200
 overflow-hidden
+`;
+const SearchForm = tw.form`
+flex
+items-center
+space-x-2
+`;
+
+const DropDowns = tw.select`
+h-10
+p-2
+focus:outline-none
+bg-transparent
+text-black
+`;
+
+const SearchInputContainer = tw.div`
+flex
+h-10
+items-center
+justify-end
+relative
+border-b-[1px]
+`;
+
+const SearchBar = tw.input`
+w-full
+h-full
+focus:outline-none
+p-2
+pr-6
+bg-transparent
+text-slate-300
+`;
+
+const DropdownOption = tw.option`
+text-black
 `;
 
 const Img = tw.img`
