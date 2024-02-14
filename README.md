@@ -106,7 +106,7 @@
 
 - Spring Boot
 
-  - application-secret.yml 파일을 만들어 gitignore. 에 관리하여 사용하였습니다.
+  - application-secret.yml 파일을 만들어 .gitignore 에 관리하여 사용하였습니다.
   - application.yml
 
     ```
@@ -180,6 +180,13 @@
 ##### 3. 빌드 및 실행
 
 - Front
+  ```
+  npm install -f && CI=false npm run build
+  cp -rf  build /var/jenkins_home/settings
+  ```
+  ```
+  serve -s /settings/build
+  ```
 - Back
 
   ```
@@ -196,7 +203,10 @@
 
   ```
   upstream ssafy {
-      server i10a506.p.ssafy.io:3002;
+      server {your web application server for dev};
+  }
+  upstream ssaf {
+      server {your web application server for deploy};
   }
 
   server {
@@ -205,7 +215,7 @@
       listen [::]:80;
 
       location / {
-          proxy_pass http://localhost:3002;
+          proxy_pass {your web server};
       }
   }
   server {
@@ -223,22 +233,15 @@
 
   server {
   #    index index.html index.htm index.nginx-debian.html;
-      server_name i10a506.p.ssafy.io; # managed by Certbot
+      server_name {your domain name}; # managed by Certbot
 
 
       location / {
-          proxy_pass http://i10a506.p.ssafy.io:3001;
+          proxy_pass {your web server};
       }
           location /api {
 
-  #        if ($request_method = 'OPTIONS') {
-  #                  add_header 'Access-Control-Allow-Origin' 'http://localhost:3000, http://i10a506.p.ssafy.io:3001';
-  #            add_header 'Access-Control-Allow-Credentials' 'true';
-  #                   add_header 'Access-Control-Allow-Methods' 'GET, POST, DELETE, PATCH, OPTIONS';
-  #                  add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
-  #                 add_header 'Access-Control-Max-Age' 86400;
-      #                return 204;
-      #       }
+
 
           rewrite ^/api/(.*)$ /$1 break;
           proxy_pass http://ssafy;
@@ -246,20 +249,20 @@
       }
       location /api2 {
           rewrite ^/api2/(.*)$ /$1 break;
-          proxy_pass http://i10a506.p.ssafy.io:3003;
+          proxy_pass http://ssaf;
           proxy_pass_request_headers on;
       }
 
       listen [::]:443 ssl ipv6only=on; # managed by Certbot
       listen 443 ssl; # managed by Certbot
-      ssl_certificate /etc/letsencrypt/live/i10a506.p.ssafy.io/fullchain.pem; # managed by Certbot
-      ssl_certificate_key /etc/letsencrypt/live/i10a506.p.ssafy.io/privkey.pem; # managed by Certbot
+      ssl_certificate {your full chain pem}; # managed by Certbot
+      ssl_certificate_key {your private key pem}; # managed by Certbot
       include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
       ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
   }
   server {
-      if ($host = i10a506.p.ssafy.io) {
+      if ($host = {your domain name}) {
           return 308 https://$host$request_uri;
       }  # managed by Certbot
       if ($host = localhost) {
@@ -269,7 +272,7 @@
 
       listen 80 ;
       listen [::]:80 ;
-      server_name i10a506.p.ssafy.io;
+      server_name {your domain name}
       return 404; # managed by Certbot
 
 
