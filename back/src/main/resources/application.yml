@@ -38,9 +38,6 @@ spring:
           github:
             client-id:
             client-secret:
-          google:
-            client-id:
-            client-secret:
           password-salt:
 
 logging.level:
