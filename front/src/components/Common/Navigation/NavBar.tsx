@@ -213,7 +213,7 @@ export const NavBar = ({
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={userInfo.user.profileImage || defaultProfile}
+                  src={userImg ? userImg : defaultProfile}
                   alt={BasicProfile}
                 />
               </Link>

@@ -4,7 +4,7 @@ import React, {
   ChangeEvent,
   SelectHTMLAttributes,
 } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { MemberQuery } from "models/Member.interface";
@@ -18,6 +18,7 @@ import {
 
 import tw from "tailwind-styled-components";
 import FeatureSelect from "./FeatureSelect";
+import { updateUserNickname } from "store/reducers/userSlice";
 
 function EditForm() {
   //id 리덕스에서 가져오고
@@ -39,6 +40,7 @@ function EditForm() {
   const [isPw2Check, setIsPw2Check] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   //처음에 myId로 다 들고와
   const fetchData = async () => {
@@ -165,6 +167,8 @@ function EditForm() {
             console.log(updatedData);
             try {
               await updateMember(updatedData);
+              dispatch(updateUserNickname({ nickname }));
+
               alert("정보 수정이 완료되었습니다!");
             } catch {
               alert("정보 수정에 오류가 발생했습니다. 다시 시도해주세요!");

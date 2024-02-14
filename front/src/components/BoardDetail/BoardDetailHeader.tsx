@@ -2,6 +2,7 @@
 // 방 Id, 키워드들, 작성 날짜
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import tw from "tailwind-styled-components";
 
@@ -57,6 +58,8 @@ export const BoardDetailHeader: React.FC<{
       <Boarder></Boarder>
       <EtcContainer>
         <ProfileContainer>
+          {/* <Link to={`/userpage/${props.memberId}`} className="flex items-center">
+          </Link> */}
           <ProfileImg
             src={props.writerImg ? props.writerImg : BasicProfile}
             alt=""
