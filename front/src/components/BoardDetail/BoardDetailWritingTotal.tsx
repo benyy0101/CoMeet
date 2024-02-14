@@ -7,13 +7,21 @@ import { BoardDetailRoomInfo } from "./BoardDetailRoomInfo";
 import StarFill from "assets/img/star-fill.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { KeywordComponent } from "./KeywordComponent";
-import { BOARD_TYPE, FREE_BOARD_CATEGORY, RECRUIT_BOARD_CATEGORY } from "models/Enums.type";
+import {
+  BOARD_TYPE,
+  FREE_BOARD_CATEGORY,
+  RECRUIT_BOARD_CATEGORY,
+} from "models/Enums.type";
 import { EnterBoardResponse } from "models/Board.interface";
 import { useQuery } from "@tanstack/react-query";
 import { deleteBoard, enterBoard, likeBoard, unlikeBoard } from "api/Board";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+
+import { Viewer } from "@toast-ui/react-editor";
+import "@toast-ui/editor/dist/toastui-editor.css";
+import "@toast-ui/editor/dist/theme/toastui-editor-dark.css";
 
 type BoardDetailProps = {
   boardId: number;
@@ -23,11 +31,15 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   const { boardId } = props;
   const memberNickname = useSelector((state: any) => state.user.user.nickname);
   const navigate = useNavigate();
+  const [viewerContent, setViewerContent] = useState<string | undefined>(
+    undefined
+  );
 
   const dummy: EnterBoardResponse = {
     id: 0,
+    writerId: "",
     title: "title",
-    content: "내용",
+    content: "",
     likeCount: 0,
     type: "RECRUIT",
     category: null,
@@ -80,7 +92,9 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     deleteBoard({ boardId: boardDetail.id })
       .then((data) => {
         console.log("success");
-        navigate(boardDetail.type === "FREE" ? "/free-board" : "/recruit-board");
+        navigate(
+          boardDetail.type === "FREE" ? "/free-board" : "/recruit-board"
+        );
       })
       .catch((fail) => {
         console.log("failure", fail.response.data);
@@ -88,9 +102,21 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       });
   };
 
+  const viewerStyle = {
+    background: "none",
+  };
+
+  useEffect(() => {
+    if (boardDetail.content) {
+      setViewerContent(boardDetail.content);
+    }
+  }, [boardDetail.content]);
+
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
+        writerId={boardDetail.writerId}
+        writerImg={boardDetail.writerImage}
         nickname={boardDetail.writerNickname}
         title={boardDetail.title}
         likecount={boardDetail.likeCount}
@@ -102,6 +128,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
       {/* 게시글 타입이 모집게시판일 경우에만 방 정보 보여줌 */}
       {boardDetail.type === "RECRUIT" ? (
         <BoardDetailRoomInfo
+          roomImg={boardDetail.roomImage}
           roomTitle={boardDetail.roomTitle}
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
@@ -111,7 +138,11 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
         ></BoardDetailRoomInfo>
       ) : null}
 
-      <ContentContainer>{boardDetail.content}</ContentContainer>
+      <ContentContainer>
+        {boardDetail.content != "" ? (
+          <Viewer initialValue={boardDetail.content} theme="dark" />
+        ) : null}
+      </ContentContainer>
 
       {/* 모집게시판이면 방 키워드 가져옴 */}
       <KeywordContainer>
@@ -166,14 +197,16 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
 //작성 글 전체
 const WritingTotalContainer = tw.div`
-text-white
 w-full
 h-full
 `;
 
 //내용 부분
 const ContentContainer = tw.div`
-m-10
+rounded-md
+p-5
+my-5
+mx-5
 break-words
 `;
 
@@ -204,6 +237,7 @@ text-white
 //좋아요 버튼 컨테이너
 const LikeButtonContainer = tw.div`
 flex
+
 `;
 
 const LikeButton = tw.button`
@@ -214,6 +248,7 @@ focus:bg-[#1F1C29]
 hover:bg-[#282436]
 focus:text-white
 transition
+text-white
 `;
 
 const LikeImg = tw.img`

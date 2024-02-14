@@ -2,7 +2,6 @@ package com.a506.comeet.app.board.controller.dto;
 
 import com.a506.comeet.app.board.entity.Board;
 import com.a506.comeet.app.keyword.controller.KeywordResponseDto;
-import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.room.entity.Room;
 import com.a506.comeet.common.enums.BoardType;
 import com.a506.comeet.common.enums.FreeBoardCategory;
@@ -38,6 +37,7 @@ public class BoardDetailResponseDto {
     private String roomImage; //방 이미지
     private Boolean isLocked; //방 잠금 여부
 
+    private String writerId; //작성자 아이디
     private String writerNickname; //작성자 닉네임
     private String writerImage; //작성자 이미지
     private Boolean isLike; // 좋아요 여부
@@ -47,7 +47,7 @@ public class BoardDetailResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime updatedAt; //수정 날짜
 
-    public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, List<KeywordResponseDto> keywords, Boolean isLike) {
+    public static BoardDetailResponseDto toBoardSearchResponseDto(Board board, Room room, List<KeywordResponseDto> keywords, String writerId, Boolean isLike) {
 
         return BoardDetailResponseDto.builder()
                 .id(board.getId())
@@ -67,6 +67,7 @@ public class BoardDetailResponseDto {
                 .roomImage(room != null ? room.getRoomImage() : null)
                 .isLocked(room != null ? room.getIsLocked() : null)
 
+                .writerId(writerId)
                 .writerNickname(board.getWriter().getNickname())
                 .writerImage(board.getWriter().getProfileImage())
                 .isLike(isLike)

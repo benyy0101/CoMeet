@@ -4,7 +4,7 @@ import React, {
   ChangeEvent,
   SelectHTMLAttributes,
 } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { MemberQuery } from "models/Member.interface";
@@ -18,6 +18,7 @@ import {
 
 import tw from "tailwind-styled-components";
 import FeatureSelect from "./FeatureSelect";
+import { updateUserNickname } from "store/reducers/userSlice";
 
 function EditForm() {
   //id 리덕스에서 가져오고
@@ -39,6 +40,7 @@ function EditForm() {
   const [isPw2Check, setIsPw2Check] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   //처음에 myId로 다 들고와
   const fetchData = async () => {
@@ -136,10 +138,10 @@ function EditForm() {
     if (isNicknameCheck === false) {
       alert("중복되지 않는 닉네임을 입력해주세요.");
     } else {
-      if (isPw1Check === false || pw1.length <= 0) {
+      if (isPw1Check === false && pw1.length > 0) {
         alert("조건에 맞는 비밀번호를 설정해주세요.");
       } else {
-        if (isPw2Check === false || pw2.length <= 0) {
+        if (isPw2Check === false && pw2.length > 0) {
           alert("비밀번호 확인란에 조건에 맞는 비밀번호를 입력해주세요.");
         } else {
           if (isEmailCheck === false) {
@@ -148,7 +150,6 @@ function EditForm() {
             //모든 관문을 거치면... 드디어! 수정이 된다
             const updatedData: any = {
               name: name,
-              password: pw1,
               link: link,
               description: description,
               feature: selectedOption,
@@ -162,9 +163,15 @@ function EditForm() {
               updatedData.email = email;
             }
 
+            if (pw2) {
+              updatedData.password = pw2;
+            }
+
             console.log(updatedData);
             try {
               await updateMember(updatedData);
+              dispatch(updateUserNickname({ nickname }));
+
               alert("정보 수정이 완료되었습니다!");
             } catch {
               alert("정보 수정에 오류가 발생했습니다. 다시 시도해주세요!");
@@ -242,9 +249,7 @@ function EditForm() {
               type="password"
             />
             <Label>비밀번호</Label>
-            {pw1 === "" ? (
-              <FailText>비밀번호를 입력해주세요.</FailText>
-            ) : (
+            {pw1 === "" ? null : (
               <>
                 {isPw1Check ? (
                   <SuccessText>규칙에 알맞은 비밀번호입니다.</SuccessText>
@@ -267,9 +272,7 @@ function EditForm() {
               type="password"
             />
             <Label>비밀번호 확인</Label>
-            {pw2 === "" ? (
-              <FailText>비밀번호를 입력해주세요.</FailText>
-            ) : (
+            {pw2 === "" ? null : (
               <>
                 {isPw2Check ? (
                   <SuccessText>비밀번호가 같습니다.</SuccessText>

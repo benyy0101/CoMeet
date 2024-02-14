@@ -44,6 +44,15 @@ const userSlice = createSlice({
     addRoom: (state, action: PayloadAction<SmallRoomdata>) => {
       state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
     },
+    updateUserNickname: (
+      state,
+      action: PayloadAction<{ nickname: string }>
+    ) => {
+      state.user.nickname = action.payload.nickname;
+    },
+    updateUserImg: (state, action: PayloadAction<{ img: string }>) => {
+      state.user.profileImage = action.payload.img;
+    },
   },
 });
 
@@ -58,6 +67,13 @@ export const setupUserStatePersistence = (store: Store) => {
   });
 };
 
-export const { login, logout, storeMemberId, updateUnread, addRoom } =
-  userSlice.actions;
+export const {
+  login,
+  logout,
+  storeMemberId,
+  updateUnread,
+  addRoom,
+  updateUserNickname,
+  updateUserImg,
+} = userSlice.actions;
 export default userSlice.reducer;

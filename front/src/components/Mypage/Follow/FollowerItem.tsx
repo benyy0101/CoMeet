@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
+import BasicProfile from "assets/img/basic-profile.svg";
 
 interface FollowerItemProps {
   item: FollowContent;
@@ -61,7 +62,10 @@ const FollowerItem = (props: FollowerItemProps) => {
     <Wrapper>
       <LeftContainer>
         <Link to={`/userpage/${item.memberId}`} onClick={modalHandler}>
-          <ProfileImage src={item.profileImage} />
+          <ProfileImage
+            src={item.profileImage ? item.profileImage : BasicProfile}
+          />
+          {/* <ProfileImage src={item.profileImage} /> */}
         </Link>
         <ProfileName>{item.nickname}</ProfileName>
       </LeftContainer>

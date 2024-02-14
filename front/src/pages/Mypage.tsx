@@ -12,11 +12,12 @@ import { useQuery } from "@tanstack/react-query";
 import tw from "tailwind-styled-components";
 import { MemberQuery } from "models/Member.interface";
 import { handleMember } from "api/Member";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import axios from "axios";
 
 export const Mypage = () => {
+  const dispatch = useDispatch();
   //id 리덕스에서 가져오고
   const userId = useSelector((state: any) => state.user.user.memberId);
 

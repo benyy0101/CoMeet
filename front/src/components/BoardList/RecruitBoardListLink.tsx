@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
 
 import StarFill from "assets/img/star-fill.svg";
+import BasicRoom from "assets/img/basic-room.png";
+import BasicProfile from "assets/img/basic-profile.svg";
 import { SearchBoardContent } from "models/Board.interface";
 import { Keyword } from "models/Util";
 
@@ -27,12 +29,19 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
     <Link to={`/recruit-board/${boardId}`}>
       <TotalContainer>
         <LeftContainer>
-          <RoomImg src={props.roomImage} alt="roomImg" />
+          <RoomImg
+            src={props.roomImage ? props.roomImage : BasicRoom}
+            alt="roomImg"
+          />
         </LeftContainer>
         <CenterContainer>
           <TitleAndValidContainer>
             <RecruitValid>
-              {props.isValid ? <ValidTrue>모집중</ValidTrue> : <ValidFalse>모집완료</ValidFalse>}
+              {props.isValid ? (
+                <ValidTrue>모집중</ValidTrue>
+              ) : (
+                <ValidFalse>모집완료</ValidFalse>
+              )}
             </RecruitValid>
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
@@ -44,7 +53,10 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
         </CenterContainer>
         <RightContainer>
           <WriterContainer>
-            <WriterImg src={props.writerImage} alt="wrtierImg" />
+            <WriterImg
+              src={props.writerImage ? props.writerImage : BasicProfile}
+              alt="wrtierImg"
+            />
             <WriterNicname>{props.writerNickname}</WriterNicname>
           </WriterContainer>
           <WriteDate>{props.createdAt}</WriteDate>
@@ -83,6 +95,7 @@ w-[120px]
 h-[90px]
 object-cover
 rounded-lg
+bg-white
 `;
 
 //제목, 모집중, 키워드 적혀 있는 가운데 컨테이너
@@ -177,6 +190,7 @@ w-6
 h-6
 rounded-full
 mr-1
+bg-white
 `;
 
 // 작성자 닉네임

@@ -6,6 +6,7 @@ import SortingDownIcon from "assets/img/sort-down.svg";
 import SearchImgIcon from "assets/img/search.svg";
 
 import HotBoardIcon from "assets/img/hot-board.svg";
+import ChatBoardIcon from "assets/img/chat-board.svg";
 import TipBoardIcon from "assets/img/tip-board.svg";
 import PromBoardIcon from "assets/img/promotion-board.svg";
 import AskBoardIcon from "assets/img/ask-board.svg";
@@ -14,30 +15,37 @@ import HotBlackBoardIcon from "assets/img/hot-black-board.svg";
 import TipBlackBoardIcon from "assets/img/tip-black-board.svg";
 import PromBlackBoardIcon from "assets/img/promotion-black-board.svg";
 import AskBlackBoardIcon from "assets/img/ask-black-board.svg";
+import ChatBlackBoardIcon from "assets/img/chat-board-black.svg";
 
 import useOutsideClick from "hooks/useOutsideClick";
 import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 import { Pagination } from "components/Common/Pagination";
 import { useQuery } from "@tanstack/react-query";
-import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
+import SearchBoardResponse, {
+  SearchBoardContent,
+  SearchBoardParams,
+} from "models/Board.interface";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const FreeBoardList = () => {
   //목록 리스트
   const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
-  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
-    boardType: "FREE",
-    sortBy: "LATEST",
-    page: 0,
-    size: 10,
-  });
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
+    {
+      boardType: "FREE",
+      sortBy: "LATEST",
+      page: 0,
+      size: 10,
+    }
+  );
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
   type Condition = "제목+설명" | "작성자";
-  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
+  const [searchCondition, setSearchCondition] =
+    React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -143,7 +151,9 @@ export const FreeBoardList = () => {
       <Wrapper>
         <LeftContainer>
           {currentMenu === "ALL" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>전체</SideButtonSelected>
+            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>
+              전체
+            </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
           )}
@@ -160,12 +170,12 @@ export const FreeBoardList = () => {
           )}
           {currentMenu === "CHAT" ? (
             <SideButtonSelected onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={HotBlackBoardIcon} alt="" />
+              <SideIconImg src={ChatBlackBoardIcon} alt="" />
               <SidebuttonTitle>잡담</SidebuttonTitle>
             </SideButtonSelected>
           ) : (
             <SideButton onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={HotBoardIcon} alt="" />
+              <SideIconImg src={ChatBoardIcon} alt="" />
               <SidebuttonTitle>잡담</SidebuttonTitle>
             </SideButton>
           )}
@@ -286,7 +296,9 @@ export const FreeBoardList = () => {
                       </SortDropDown>
                     </ul>
                   )}
-                  <SortCountText>{currentSort}</SortCountText>
+                  <SortCountText>
+                    {currentSort === "LATEST" ? "최신순" : "좋아요순"}
+                  </SortCountText>
                 </SortCountButton>
               </SortCountContainer>
             </SortCountBothContainer>
