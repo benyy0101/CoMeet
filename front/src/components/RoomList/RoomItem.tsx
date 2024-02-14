@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import tw from "tailwind-styled-components";
 import Modal from "../Common/Modal";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 import Video from "../assets/img/video.png";
 import Screen from "../assets/img/screen.png";
 import NoAudio from "../assets/img/no-audio.png";

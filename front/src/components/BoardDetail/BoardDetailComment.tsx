@@ -9,7 +9,12 @@ import {
   SearchCommentResponse,
 } from "models/Comments.interface";
 import { useQuery } from "@tanstack/react-query";
-import { createComment, deleteComment, modifyComment, searchComment } from "api/Comment";
+import {
+  createComment,
+  deleteComment,
+  modifyComment,
+  searchComment,
+} from "api/Comment";
 import { useSelector } from "react-redux";
 
 type TotalCommentProps = {
@@ -32,10 +37,11 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
 
   //댓글 리스트 관련
   const [commentList, setCommentList] = useState<SearchCommentContent[]>([]);
-  const [searchCommentParams, setSearchCommentParams] = useState<SearchCommentParams>({
-    boardId: boardId,
-    page: 0,
-  });
+  const [searchCommentParams, setSearchCommentParams] =
+    useState<SearchCommentParams>({
+      boardId: boardId,
+      page: 0,
+    });
 
   //무한스크롤 구현
   const pagesize = 10;
@@ -120,7 +126,9 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
         console.log("success");
         setCommentList(
           commentList.map((each) =>
-            each.id === params.commentId ? { ...each, content: params.content } : each
+            each.id === params.commentId
+              ? { ...each, content: params.content }
+              : each
           )
         );
       })
@@ -157,9 +165,7 @@ export const BoardDetailComment = (props: TotalCommentProps) => {
           handleModify={handleModify}
         />
       ))}
-      <div id="observer" style={{ height: "10px" }}>
-        333
-      </div>
+      <div id="observer" style={{ height: "10px" }}></div>
     </CommentTotalContainer>
   );
 };
@@ -183,8 +189,7 @@ font-bold
 
 //댓글 인풋 컨테이너
 const CommentInputContainer = tw.div`
-  mx-4
-  mb-4
+  mx-1
   border
   border-gray-200
   rounded-lg
@@ -211,7 +216,8 @@ const CommentInput = tw.textarea`
 const ButtonContainer = tw.div`
 flex
 justify-end
-mr-5
+mr-1
+mt-2
 `;
 
 // 댓글 등록버튼

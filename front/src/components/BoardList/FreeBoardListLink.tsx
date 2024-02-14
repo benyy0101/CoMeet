@@ -2,6 +2,7 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
+import BasicProfile from "assets/img/basic-profile.svg";
 
 import StarFill from "assets/img/star-fill.svg";
 import HotBoardIcon from "assets/img/hot-board.svg";
@@ -43,7 +44,10 @@ export const FreeBoardListLink = (props: SearchBoardContent) => {
           </TitleAndCategoryContainer>
           <div className="flex">
             <WriterContainer>
-              <WriterImg src={props.writerImage} alt="wrtierImg" />
+              <WriterImg
+                src={props.writerImage ? props.writerImage : BasicProfile}
+                alt="wrtierImg"
+              />
               <WriterNicname>{props.writerNickname}</WriterNicname>
             </WriterContainer>
             <WriteDate>{props.createdAt}</WriteDate>
@@ -116,6 +120,7 @@ w-6
 h-6
 rounded-full
 mr-2
+bg-white
 `;
 
 // 작성자 닉네임

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 
 export default function RoomConfirm(props: any) {
   const navigate = useNavigate();

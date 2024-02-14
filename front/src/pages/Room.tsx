@@ -44,7 +44,7 @@ import { filterType } from "constants/Filter";
 import { useDispatch } from "react-redux";
 import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 
 interface IProps {
   setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
 
 import StarFill from "assets/img/star-fill.svg";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 import BasicProfile from "assets/img/basic-profile.svg";
 import { SearchBoardContent } from "models/Board.interface";
 import { Keyword } from "models/Util";

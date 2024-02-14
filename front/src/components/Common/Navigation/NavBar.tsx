@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
@@ -44,6 +44,7 @@ export const NavBar = ({
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   const [userImg, setUserImg] = useState<string>("");
+  const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -79,13 +80,26 @@ export const NavBar = ({
     setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
-  console.log(userInfo.user.memberId);
   //시작할 때 데이터 다 들고와
   useEffect(() => {
     if (userInfo.isLoggedIn) {
       fetchData();
     }
+    console.log(roomData);
   }, [userInfo.isLoggedIn]);
+
+  useEffect(() => {
+    if (roomData) {
+      const isUserIn =
+        roomData.members &&
+        roomData.members.some((member: any) => member.memberId === memberId);
+      console.log("isUserIn " + isUserIn);
+      setIsUserInRoom(isUserIn);
+      console.log(isUserInRoom);
+      console.log(roomData);
+      console.log(roomData && isUserInRoom);
+    }
+  }, [roomData, userInfo.user.meemberId]);
 
   return (
     <NavBarContainer>
@@ -120,7 +134,7 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
-            {roomData ? (
+            {roomData && isUserInRoom ? (
               <ServerContainer $active={true}>
                 <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>

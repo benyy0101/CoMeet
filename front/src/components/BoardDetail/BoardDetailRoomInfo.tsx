@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 import PoepleNumImg from "assets/img/people-num.svg";
-import BasicRoom from "assets/img/basic-room.svg";
+import BasicRoom from "assets/img/basic-room.png";
 import { encrypt } from "utils/Crypto";
 import { useSelector } from "react-redux";
 import { smallRoomdata } from "models/Login.interface";

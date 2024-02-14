@@ -1,4 +1,7 @@
-import { ModifyCommentParams, SearchCommentContent } from "models/Comments.interface";
+import {
+  ModifyCommentParams,
+  SearchCommentContent,
+} from "models/Comments.interface";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -44,10 +47,11 @@ export const BoardCommentComponent = (props: CommentProps) => {
           <Nicname>{writerNickname}</Nicname>
           <Date>{updatedAt}</Date>
         </NicAndDate>
+        <Context id={id.toString()}>{content}</Context>
         {/* <Context>{content}</Context>  미안하다..!*/}
-        <textarea readOnly className="text-black" id={id.toString()}>
+        {/* <textarea readOnly className="text-black" id={id.toString()}>
           {content}
-        </textarea>
+        </textarea> */}
         {memberNickname === writerNickname ? (
           <NicAndDate>
             <button onClick={handleModifySub}>수정 -----</button>
@@ -92,4 +96,17 @@ text-gray-400
 `;
 
 //댓글 내용
-const Context = tw.div``;
+const Context = tw.div`
+border
+bg-gray-200
+text-black
+flex-grow
+py-3
+px-2
+mb-2
+mx-1
+text-sm
+break-words
+rounded-md
+whitespace-pre-line
+`;
