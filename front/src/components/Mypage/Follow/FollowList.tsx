@@ -9,25 +9,43 @@ import {
   ListFollowingResponse,
 } from "models/Follow.interface";
 import { useQuery } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { setFollowed, setFollowing } from "store/reducers/followSlice";
 
-function FollowList(props: { option: string }) {
-  const { option } = props;
+function FollowList(props: { option: string; toggleModal: () => void }) {
+  const { option, toggleModal } = props;
   const [pageNo, setPageNo] = useState<number>(1);
   const [followingList, setFollowingList] = useState<FollowContent[]>([]);
   const [followerList, setFollowerList] = useState<FollowContent[]>([]);
-
-  const memberId = useSelector((state: any) => state.user.user.memberId);
+  const { memberId } = useParams<{ memberId: string }>();
+  const currentUser = useSelector((state: any) => state.user.user.memberId);
+  const dispatch = useDispatch();
 
   const fetchData = useCallback(async () => {
-    if (followerList.length === 0) {
-      const res = await searchFollower({ memberId, pageNo, pageSize: 10 });
+    if (followerList.length === 0 && memberId) {
+      const res = await searchFollower({
+        memberId,
+        pageNo,
+        pageSize: 10,
+      });
       setFollowerList((prev) => [...prev, ...res.content]);
+      if (currentUser === memberId) {
+        dispatch(setFollowed(res.content));
+      }
     }
 
-    if (followingList.length === 0) {
-      const res2 = await searchFollowing({ memberId, pageNo, pageSize: 10 });
+    if (followingList.length === 0 && memberId) {
+      const res2 = await searchFollowing({
+        memberId,
+        pageNo,
+        pageSize: 10,
+      });
       setFollowingList((prev) => [...prev, ...res2.content]);
+
+      if (currentUser === memberId) {
+        dispatch(setFollowing(res2.content));
+      }
     }
   }, []);
 
@@ -37,26 +55,34 @@ function FollowList(props: { option: string }) {
 
   return (
     <Wrapper>
-      {option === "follower" && (<Title>팔로워</Title>)}
-      {option === "following" && (<Title>팔로잉</Title>)}
+      {option === "follower" && <Title>팔로워</Title>}
+      {option === "following" && <Title>팔로잉</Title>}
       <ItemContainer>
-      {option === "follower" &&
-        followerList.map((item, index) => (
-          <FollowerItem
-            key={item.memberId}
-            item={item}
-            option={option}
-            option2={
-              followingList.some((followItem) => followItem.memberId === item.memberId)
-                ? true
-                : false
-            }
-          />
-        ))}
-      {option === "following" &&
-        followingList.map((item, index) => (
-          <FollowerItem key={index} item={item} option={option} />
-        ))}
+        {option === "follower" &&
+          followerList.map((item, index) => (
+            <FollowerItem
+              key={item.memberId}
+              item={item}
+              option={option}
+              option2={
+                followingList.some(
+                  (followItem) => followItem.memberId === item.memberId
+                )
+                  ? true
+                  : false
+              }
+              toggleModal={toggleModal}
+            />
+          ))}
+        {option === "following" &&
+          followingList.map((item, index) => (
+            <FollowerItem
+              key={index}
+              item={item}
+              option={option}
+              toggleModal={toggleModal}
+            />
+          ))}
       </ItemContainer>
     </Wrapper>
   );
@@ -80,7 +106,7 @@ const Title = tw.div`
 text-3xl
 text-bold
 text-sky-100
-`
+`;
 
 const ItemContainer = tw.div`
 w-full
@@ -94,5 +120,5 @@ rounded-md
 max-h-96
 overflow-scroll
 scrollbar-hide
-`
+`;
 export default FollowList;

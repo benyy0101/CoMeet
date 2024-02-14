@@ -1,11 +1,8 @@
 // userSlice.ts
 
 import { createSlice, PayloadAction, Store } from "@reduxjs/toolkit";
-import {
-  LoginResponse,
-  smallRoomdata,
-  UserState,
-} from "models/Login.interface";
+import { LoginResponse, UserState } from "models/Login.interface";
+import { SmallRoomdata } from "models/Room.interface";
 
 // Function to retrieve user state from sessionStorage
 const loadUserState = (): UserState => {
@@ -44,7 +41,7 @@ const userSlice = createSlice({
       console.log("updateUnread", action.payload);
       state.user.unreadNoteCount = action.payload;
     },
-    addRoom: (state, action: PayloadAction<smallRoomdata>) => {
+    addRoom: (state, action: PayloadAction<SmallRoomdata>) => {
       state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
     },
   },

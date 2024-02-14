@@ -332,6 +332,7 @@ public class RoomService {
     }
 
     private void fullRoomValidation(Long roomId, Room room) {
-        if (room.getCapacity() == roomRedisRepository.getMembers(roomId).size()) throw new RestApiException(CustomErrorCode.FULL_ROOM);
+        if (room.getCapacity() == roomRedisRepository.getMembers(roomId).size())
+            throw new RestApiException(CustomErrorCode.FULL_ROOM);
     }
 }

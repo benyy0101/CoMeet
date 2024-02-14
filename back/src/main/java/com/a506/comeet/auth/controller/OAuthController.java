@@ -29,13 +29,6 @@ public class OAuthController {
         return new ResponseEntity<>(res, headers, HttpStatus.OK);
     }
 
-    @GetMapping("login/google")
-    public ResponseEntity<LoginResponseDto> googleLogin(@RequestParam String code){
-        LoginResponseDto res = oAuthService.googleOAuthLogin(code);
-        HttpHeaders headers = getHeadersWithCookie(res);
-        return new ResponseEntity<>(res, headers, HttpStatus.OK);
-    }
-
     private HttpHeaders getHeadersWithCookie(LoginResponseDto res) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", res.getJwtToken().deleteRefreshToken())
                 .maxAge(refreshTokenValidityInSeconds)

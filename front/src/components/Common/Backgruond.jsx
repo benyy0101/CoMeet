@@ -141,10 +141,10 @@ left-0
 w-screen
 h-screen
 -z-50
-bg-gradient-to-b
-from-[#0A031C]
-from-80%
-to-[#100530]
+bg-gradient-to-br
+from-[#1f1227]
+from-50%
+to-[#191b23]
 `;
 
 const CustomCanvas = tw.canvas`
@@ -165,6 +165,5 @@ h-screen
 fixed
 top-0
 left-0
-bg-slate-700
 -z-40
 `;

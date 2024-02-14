@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
@@ -21,6 +21,7 @@ import {
 import logo from "../../../assets/logo.svg";
 import { logout } from "store/reducers/userSlice";
 import { handleLogout } from "api/Login";
+import defaultProfile from "../../../assets/default_profile.svg";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -41,6 +42,7 @@ export const NavBar = ({
 }: IProps) => {
   const navigate = useNavigate();
 
+  const location = useLocation();
   //memberId 가져오기
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
@@ -57,7 +59,8 @@ export const NavBar = ({
     setMessageModal(!messageModal);
   };
 
-  const state = useSelector((state: any) => state);
+  const roomInfo = useSelector((state: any) => state.room);
+  const userInfo = useSelector((state: any) => state.user);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -75,17 +78,17 @@ export const NavBar = ({
 
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
-    const res = await handleMember(state.user.user.memberId);
+    const res = await handleMember(userInfo.user.memberId);
     setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
   //시작할 때 데이터 다 들고와
   useEffect(() => {
-    console.error(state.user);
-    if (state.user.isLoggedIn) {
-      // fetchData();
+    console.error(userInfo);
+    if (userInfo.isLoggedIn) {
+      fetchData();
     }
-  }, [state.user.isLoggedIn]);
+  }, [userInfo.isLoggedIn]);
 
   const dispatch = useDispatch();
 
@@ -99,16 +102,16 @@ export const NavBar = ({
   };
 
   return (
-    <NavBarContainer>
+    <NavBarContainer $home={location.pathname === "/"}>
       <LeftContainer>
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} className="w-24" alt="" />
-            <h1 className="text-xl font-thin">Comeet</h1>
+            <img src={logo} className="w-14" alt="" />
+            <h1 className="text-md font-thin mt-1">COMEET</h1>
           </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
-        {state.user.isLoggedIn ? (
+        {userInfo.isLoggedIn ? (
           <LeftMenu>
             <RoomSearch>
               <Link to="/roomlist">방 찾기</Link>
@@ -129,15 +132,12 @@ export const NavBar = ({
       </LeftContainer>
 
       <RightContainer>
-        {state.user.isLoggedIn ? (
+        {userInfo.isLoggedIn ? (
           <>
             <button onClick={logoutHandler}>로그아웃</button>
             {roomData ? (
               <ServerContainer $active={true}>
-                <Link
-                  to={`/room/${state.room.roomId}`}
-                  className="w-full h-full"
-                >
+                <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
@@ -185,8 +185,8 @@ export const NavBar = ({
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
-              {state.user.user.unreadNoteCount !== 0 ? (
-                <UnreadCount>{state.user.user.unreadNoteCount}</UnreadCount>
+              {userInfo.user.unreadNoteCount !== 0 ? (
+                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>
               ) : null}
               <ModalPortal>
                 {messageModal === true ? (
@@ -195,9 +195,9 @@ export const NavBar = ({
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
-              <Link to={`/userpage/${state.user.user.memberId}`}>
+              <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={state.user.user.profileImage}
+                  src={userInfo.user.profileImage || defaultProfile}
                   alt={BasicProfile}
                 />
               </Link>
@@ -237,8 +237,8 @@ export const NavBar = ({
 };
 
 //NavBarContainer: 네비게이션바 전체 틀
-const NavBarContainer = tw.div`
-bg-[#282828]
+const NavBarContainer = tw.div<{ $home: boolean }>`
+${(p) => (p.$home ? "" : "bg-[#282828]")}
 h-14
 text-white
 flex
@@ -259,7 +259,7 @@ h-full
 const RightContainer = tw.div`
 flex
 justify-start
-items-end
+items-center
 space-x-6
 `;
 
@@ -304,11 +304,12 @@ items-center
 justify-center
 `;
 const NavIcon = tw.img`
-rounded-full
-h-8
-w-8
+h-10
+w-10
 rounded-full
 bg-white
+border-purple-400
+border-2
 `;
 
 //커뮤니티 드롭다운
@@ -423,7 +424,6 @@ bg-no-repeat
 bg-center
 shadow-md
 bg-slate-200
-bg-white
 `;
 
 //ServerText: 서버 이름
