@@ -15,7 +15,7 @@ interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
   // setPage: React.Dispatch<React.SetStateAction<number>>;
-  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS>>;
+  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS | null>>;
   setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -72,7 +72,11 @@ export default function FilterMenu({
             </CheckBox>
             <CheckBox>
               <SpeakerXMarkIcon className="w-5 h-5" />
-              <input type="checkbox" checked={isMuted} onChange={() => setIsMuted(!isMuted)} />
+              <input
+                type="checkbox"
+                checked={isMuted}
+                onChange={() => setIsMuted(!isMuted)}
+              />
             </CheckBox>
             <CheckBox>
               <VideoCameraIcon className="w-5 h-5" />

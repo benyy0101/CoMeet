@@ -4,7 +4,11 @@ import { RoomItemProps } from "../types";
 import { useEffect, useRef, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
-import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronDoubleUpIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
 import {
   useQuery,
   useInfiniteQuery,
@@ -14,7 +18,11 @@ import {
 } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
-import { SearchRoomContent, SearchRoomParams, SearchRoomResponse } from "models/Room.interface";
+import {
+  SearchRoomContent,
+  SearchRoomParams,
+  SearchRoomResponse,
+} from "models/Room.interface";
 import { searchRoom } from "api/Room";
 import { BackgroundGradient } from "components/Common/BackgroundGradient";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
@@ -24,12 +32,15 @@ const size = 5;
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
-  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS>("FREE");
+  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | null>(null);
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchtype, setSearchtype] = useState<string>("제목+설명");
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
-  const { data, isLoading, isError, refetch } = useQuery<SearchRoomResponse, Error>({
+  const { data, isLoading, isError, refetch } = useQuery<
+    SearchRoomResponse,
+    Error
+  >({
     queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", size],
     queryFn: () =>
       searchRoom({
@@ -38,14 +49,13 @@ export const RoomList = () => {
         ...(searchtype === "제목+설명" && { searchKeyword }),
         ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
         isLocked,
-        constraints,
+        ...(constraints !== null && { constraints: constraints }),
       }),
   });
 
   useEffect(() => {
     last.current = false;
     page.current = 0;
-    console.log("new loading true is latest", sortByLatest);
 
     refetch();
   }, [sortByLatest, constraints, isLocked]);
@@ -54,11 +64,32 @@ export const RoomList = () => {
     console.log(data);
     if (data?.content) {
       setRoomList(data.content);
+      last.current = data.last;
     }
   }, [data]);
 
   const page = useRef<number>(0);
   const last = useRef<boolean>(false);
+  const [isScrolled, SetIsScrolled] = useState<number>(0);
+
+  useEffect(() => {
+    console.log("isscroll", isScrolled);
+    console.log("sortByLatest:", sortByLatest);
+    page.current++;
+    searchRoom({
+      page: page.current,
+      size,
+      sortBy: sortByLatest ? "LATEST" : "OLDEST",
+      ...(searchtype === "제목+설명" && { searchKeyword }),
+      ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
+      isLocked,
+      ...(constraints !== null && { constraints: constraints }),
+    }).then((data) => {
+      console.log(data.content);
+      setRoomList((prev) => prev.concat(data.content));
+      last.current = data.last;
+    });
+  }, [isScrolled]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(handleObserver, {
@@ -75,21 +106,7 @@ export const RoomList = () => {
     if (target.isIntersecting) {
       console.log("last value", last.current);
       if (!last.current) {
-        page.current++;
-        console.log("true is latest", sortByLatest);
-        searchRoom({
-          page: page.current,
-          size,
-          sortBy: sortByLatest ? "LATEST" : "OLDEST",
-          ...(searchtype === "제목+설명" && { searchKeyword }),
-          ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
-          isLocked,
-          constraints,
-        }).then((data) => {
-          console.log(data.content);
-          setRoomList((prev) => prev.concat(data.content));
-          last.current = data.last;
-        });
+        SetIsScrolled((prev) => ++prev);
       }
     }
   };
