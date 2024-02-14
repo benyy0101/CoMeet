@@ -13,6 +13,7 @@ import { FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const BoardDetailHeader: React.FC<{
   nickname: string;
+  writerId: string;
   title: string;
   likecount: number;
   valid: boolean;
@@ -58,13 +59,16 @@ export const BoardDetailHeader: React.FC<{
       <Boarder></Boarder>
       <EtcContainer>
         <ProfileContainer>
-          {/* <Link to={`/userpage/${props.memberId}`} className="flex items-center">
-          </Link> */}
-          <ProfileImg
-            src={props.writerImg ? props.writerImg : BasicProfile}
-            alt=""
-          />
-          <NicnameContainer>{props.nickname}</NicnameContainer>
+          <Link
+            to={`/userpage/${props.writerId}`}
+            className="flex items-center"
+          >
+            <ProfileImg
+              src={props.writerImg ? props.writerImg : BasicProfile}
+              alt=""
+            />
+            <NicnameContainer>{props.nickname}</NicnameContainer>
+          </Link>
         </ProfileContainer>
         <DateContainer>{props.createdAt}</DateContainer>
         <LikeContatiner>

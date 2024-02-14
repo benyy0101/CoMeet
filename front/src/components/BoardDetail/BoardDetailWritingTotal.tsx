@@ -37,6 +37,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
 
   const dummy: EnterBoardResponse = {
     id: 0,
+    writerId: "",
     title: "title",
     content: "",
     likeCount: 0,
@@ -114,6 +115,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
   return (
     <WritingTotalContainer>
       <BoardDetailHeader
+        writerId={boardDetail.writerId}
         writerImg={boardDetail.writerImage}
         nickname={boardDetail.writerNickname}
         title={boardDetail.title}
