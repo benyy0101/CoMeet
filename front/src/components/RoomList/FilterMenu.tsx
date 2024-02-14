@@ -16,7 +16,9 @@ interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
   // setPage: React.Dispatch<React.SetStateAction<number>>;
-  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS | null>>;
+  setConstraints: React.Dispatch<
+    React.SetStateAction<ROOM_CONSTRAINTS | "ALL">
+  >;
   setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -38,17 +40,9 @@ export default function FilterMenu({
     // setPage(0);
   }, [isLocked, isMuted, isVideoOff, maxcount]);
 
-  useEffect(() => {
-    if (isMuted && !isVideoOff) {
-      setConstraints("MICOFF");
-    } else if (isMuted && isVideoOff) {
-      setConstraints("VIDEOONMICOFF");
-    } else if (isVideoOff && !isMuted) {
-      setConstraints("VIDEOON");
-    } else {
-      setConstraints("FREE");
-    }
-  }, [isMuted, isVideoOff]);
+  const dropDownHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setConstraints(e.target.value as ROOM_CONSTRAINTS);
+  };
 
   return (
     <Wrapper>
@@ -59,11 +53,14 @@ export default function FilterMenu({
         <CheckBoxContainer>
           <Title>방 기본 설정</Title>
           <SearchForm>
-            <DropDowns>
-              <DropdownOption value="VIDEOONMICOFF">fdufd</DropdownOption>
-              <DropdownOption value="VIDEOON">방장명</DropdownOption>
-              <DropdownOption value="MICOFF">방장명</DropdownOption>
-              <DropdownOption value="FREE">방장명</DropdownOption>
+            <DropDowns onChange={dropDownHandler}>
+              <DropdownOption value="ALL">모두</DropdownOption>
+              <DropdownOption value="VIDEOONMICOFF">
+                캠/화면공유 필수, 음소거 필수
+              </DropdownOption>
+              <DropdownOption value="VIDEOON">캠/화면공유 필수</DropdownOption>
+              <DropdownOption value="MICOFF">음소거 필수</DropdownOption>
+              <DropdownOption value="FREE">자유</DropdownOption>
             </DropDowns>
           </SearchForm>
         </CheckBoxContainer>

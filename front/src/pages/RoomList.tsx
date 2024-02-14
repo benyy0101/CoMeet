@@ -32,7 +32,9 @@ const size = 5;
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
-  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | null>(null);
+  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | "ALL">(
+    "ALL"
+  );
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchtype, setSearchtype] = useState<string>("제목+설명");
   const [isLocked, setIsLocked] = useState<boolean>(false);
@@ -49,14 +51,14 @@ export const RoomList = () => {
         ...(searchtype === "제목+설명" && { searchKeyword }),
         ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
         isLocked,
-        ...(constraints !== null && { constraints: constraints }),
+        ...(constraints !== "ALL" && { constraints: constraints }),
       }),
   });
 
   useEffect(() => {
     last.current = false;
     page.current = 0;
-
+    console.log(constraints);
     refetch();
   }, [sortByLatest, constraints, isLocked]);
 
@@ -83,7 +85,7 @@ export const RoomList = () => {
       ...(searchtype === "제목+설명" && { searchKeyword }),
       ...(searchtype === "방장명" && { managerNickname: searchKeyword }),
       isLocked,
-      ...(constraints !== null && { constraints: constraints }),
+      ...(constraints !== "ALL" && { constraints: constraints }),
     }).then((data) => {
       console.log(data.content);
       setRoomList((prev) => prev.concat(data.content));
