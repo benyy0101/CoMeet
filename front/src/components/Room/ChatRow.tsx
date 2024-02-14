@@ -11,10 +11,7 @@ export default function ChatRow({ chat }: IProps) {
       <ProfileImg
         style={{
           backgroundImage: `url(
-            ${
-              chat.profileImage ||
-              "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png"
-            })`,
+            ${chat.profileImage})`,
         }}
       />
       <Info>

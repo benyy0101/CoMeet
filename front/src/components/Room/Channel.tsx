@@ -18,6 +18,7 @@ import {
 import { ChatBubbleBottomCenterIcon as ChatSolidIcon } from "@heroicons/react/24/solid";
 
 interface IProps {
+  profileImg: string;
   session: any;
   mySessionName: string;
   mySessionId: string;
@@ -33,6 +34,7 @@ interface IProps {
 const sidePageSize = 2;
 
 export default function Channel({
+  profileImg,
   session,
   mySessionName,
   mySessionId,
@@ -127,6 +129,7 @@ export default function Channel({
                 </ChatNavbar>
                 {inChat ? (
                   <Chat
+                    profileImg={profileImg}
                     chatDomain={"channel"}
                     id={mySessionId}
                     username={myUserName}

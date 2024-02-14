@@ -28,6 +28,7 @@ import SearchBoardResponse, {
 } from "models/Board.interface";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
+import { Background } from "components/Common/Backgruond";
 
 export const FreeBoardList = () => {
   //목록 리스트
@@ -148,6 +149,7 @@ export const FreeBoardList = () => {
 
   return (
     <TotalContainer>
+      <Background />
       <Wrapper>
         <LeftContainer>
           {currentMenu === "ALL" ? (
@@ -335,7 +337,7 @@ flex
 
 w-full
 h-full
-bg-[#070311]
+
 pt-10
 pb-20
 min-h-svh
@@ -536,7 +538,6 @@ absolute
 inset-y-0
 left-[120px]
 items-center
-pl-3
 pointer-events-none
 z-index: 1;
 `;

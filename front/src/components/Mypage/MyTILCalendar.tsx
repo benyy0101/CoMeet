@@ -154,6 +154,7 @@ const StyledCalendar = styled(Calendar)`
 
   color: white;
   background-color: #3c334d;
+  opacity: 0.75;
 
   //네비게이션바
   .react-calendar__navigation {
