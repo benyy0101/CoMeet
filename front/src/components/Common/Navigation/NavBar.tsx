@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
+import BasicRoom from "assets/img/basic-room.png";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
@@ -48,6 +49,7 @@ export const NavBar = ({
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   const [userImg, setUserImg] = useState<string>("");
+  const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -88,7 +90,21 @@ export const NavBar = ({
     if (userInfo.isLoggedIn) {
       fetchData();
     }
+    console.log(roomData);
   }, [userInfo.isLoggedIn]);
+
+  // useEffect(() => {
+  //   if (roomData) {
+  //     const isUserIn =
+  //       roomData.members &&
+  //       roomData.members.some((member: any) => member.memberId === memberId);
+  //     console.log("isUserIn " + isUserIn);
+  //     setIsUserInRoom(isUserIn);
+  //     console.log(isUserInRoom);
+  //     console.log(roomData);
+  //     console.log(roomData && isUserInRoom);
+  //   }
+  // }, [roomData, userInfo.user.meemberId]);
 
   const dispatch = useDispatch();
 
@@ -134,14 +150,14 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
-            <button onClick={logoutHandler}>로그아웃</button>
+            {/* {roomData && isUserInRoom ? ( */}
             {roomData ? (
               <ServerContainer $active={true}>
                 <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : BasicRoom})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -197,7 +213,7 @@ export const NavBar = ({
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={userInfo.user.profileImage || defaultProfile}
+                  src={userImg ? userImg : defaultProfile}
                   alt={BasicProfile}
                 />
               </Link>

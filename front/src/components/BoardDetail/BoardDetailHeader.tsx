@@ -2,21 +2,25 @@
 // 방 Id, 키워드들, 작성 날짜
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import tw from "tailwind-styled-components";
 
 import StarFill from "assets/img/star-fill.svg";
+import BasicProfile from "assets/img/basic-profile.svg";
 import StarEmpty from "assets/img/star-empty.svg";
 import { FREE_BOARD_CATEGORY } from "models/Enums.type";
 
 export const BoardDetailHeader: React.FC<{
   nickname: string;
+  writerId: string;
   title: string;
   likecount: number;
   valid: boolean;
   createdAt: string;
   category?: FREE_BOARD_CATEGORY;
   isLiked: boolean;
+  writerImg: string;
 }> = (props) => {
   let categoryTitle: string = "";
 
@@ -54,7 +58,18 @@ export const BoardDetailHeader: React.FC<{
       </TitleTotalContainer>
       <Boarder></Boarder>
       <EtcContainer>
-        <NicnameContainer>{props.nickname}</NicnameContainer>
+        <ProfileContainer>
+          <Link
+            to={`/userpage/${props.writerId}`}
+            className="flex items-center"
+          >
+            <ProfileImg
+              src={props.writerImg ? props.writerImg : BasicProfile}
+              alt=""
+            />
+            <NicnameContainer>{props.nickname}</NicnameContainer>
+          </Link>
+        </ProfileContainer>
         <DateContainer>{props.createdAt}</DateContainer>
         <LikeContatiner>
           <LikeImg src={StarFill} alt="" />
@@ -76,6 +91,7 @@ flex
 flex-col
 h-28
 space-y-3
+text-white
 `;
 
 //제목 부분 컨테이너 (모집중 / 모집 완료 포함)
@@ -106,7 +122,7 @@ text-red-500
 const Boarder = tw.div`
 h-[1px]
 bg-white
-`
+`;
 const FreeCategory = tw.div`
 `;
 
@@ -116,6 +132,15 @@ flex
 items-end
 px-3
 space-x-5
+`;
+
+const ProfileContainer = tw.div`
+flex
+items-center
+`;
+
+const ProfileImg = tw.img`
+w-7 h-7 bg-white rounded-full mr-2
 `;
 
 //이름

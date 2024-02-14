@@ -94,11 +94,15 @@ function Login({ modalToggleHandler }: IProps) {
   };
 
   const socialLoginHandler = (e: React.MouseEvent) => {
-    e.preventDefault();
-    console.log("socialLoginHandler");
-    window.location.href =
-      "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email";
-    //dispatch(login(res));
+    try {
+      e.preventDefault();
+      console.log("socialLoginHandler");
+      window.location.href =
+        "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email";
+      //dispatch(login(res));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

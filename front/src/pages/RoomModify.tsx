@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import { CameraIcon } from "@heroicons/react/24/outline";
 import { onChange } from "react-toastify/dist/core/store";
+import BasicRoom from "assets/img/basic-room.png";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -62,41 +63,45 @@ export default function RoomModify() {
   };
 
   const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const data: any = {
-      roomId,
-      title,
-      description,
-      capacity: maxPeople,
-      constraints: option,
-    };
-
-    if (selectedFile) {
-      try {
-        if (roomId) {
-          const formData = new FormData();
-          formData.append("roomImageFile", selectedFile);
-          await uploadRoomImage(roomId, formData);
-
-          setIsRemoveImg(false);
-          window.location.replace(`room/${roomId}`);
-        }
-      } catch {
-        alert("이미지 업로드에 실패했습니다.");
-      }
+    if (roomData?.mcount && roomData?.mcount > maxPeople) {
+      alert("최소 인원을 현재 인원보다 적게 설정할 수 없습니다.");
     } else {
-      if (isRemoveImg && imagePreview === "" && roomId) {
-        await deleteRoomImage(roomId);
+      e.preventDefault();
+      const data: any = {
+        roomId,
+        title,
+        description,
+        capacity: maxPeople,
+        constraints: option,
+      };
+
+      if (selectedFile) {
+        try {
+          if (roomId) {
+            const formData = new FormData();
+            formData.append("roomImageFile", selectedFile);
+            await uploadRoomImage(roomId, formData);
+
+            setIsRemoveImg(false);
+            window.location.replace(`room/${roomId}`);
+          }
+        } catch {
+          alert("이미지 업로드에 실패했습니다.");
+        }
+      } else {
+        if (isRemoveImg && imagePreview === "" && roomId) {
+          await deleteRoomImage(roomId);
+        }
       }
-    }
 
-    try {
-      await modifyRoom(data);
-    } catch {
-      alert("방 정보 수정 실패, 다시 시도해주세요.");
-    }
+      try {
+        await modifyRoom(data);
+      } catch {
+        alert("방 정보 수정 실패, 다시 시도해주세요.");
+      }
 
-    navigate(`/room/${roomId}?modify=true`, { replace: true });
+      navigate(`/room/${roomId}?modify=true`, { replace: true });
+    }
   };
 
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +144,7 @@ export default function RoomModify() {
               src={
                 (roomData?.room_image === "" && imagePreview === "") ||
                 isRemoveImg === true
-                  ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
+                  ? BasicRoom
                   : imagePreview === ""
                     ? roomData?.room_image
                     : imagePreview
@@ -206,6 +211,9 @@ export default function RoomModify() {
               </SelectOption>
             </InputUnit>
             <InputUnit className="w-1/3 justify-around">
+              <Label>
+                현재 인원: <LabelSpan>{roomData?.mcount}명</LabelSpan>
+              </Label>
               <Label>
                 최대 인원: <LabelSpan>{maxPeople}명</LabelSpan>
               </Label>

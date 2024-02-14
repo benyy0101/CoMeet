@@ -44,6 +44,7 @@ import { filterType } from "constants/Filter";
 import { useDispatch } from "react-redux";
 import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import BasicRoom from "assets/img/basic-room.png";
 
 interface IProps {
   setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;
@@ -483,7 +484,7 @@ export const Room = ({
           <RoomTitleImgBorder>
             <RoomTitleImg
               style={{
-                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : BasicRoom})`,
               }}
             />
           </RoomTitleImgBorder>

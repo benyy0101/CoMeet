@@ -81,6 +81,7 @@ export interface EnterBoardParams {
  */
 export interface EnterBoardResponse {
   id: number;
+  writerId: string;
   title: string;
   content: string;
   likeCount: number;

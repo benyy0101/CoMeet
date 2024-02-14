@@ -3,6 +3,7 @@ import tw from "tailwind-styled-components";
 import RoomDefault from "assets/img/room-default.svg";
 import { useSelector } from "react-redux";
 import { XCircleIcon } from "@heroicons/react/24/outline";
+import BasicRoom from "assets/img/basic-room.png";
 
 interface IProps {
   setIsServerOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +25,10 @@ export const ServerDropDownList = ({ setIsServerOpen }: IProps) => {
         <ServerContent>
           {roomInfo.map((room: any) => (
             <Link to={`/room/${room.roomId}`} replace>
-              <StyleImgTextBoth key={room.roomId} $disabled={room.roomId === +currentRoomId}>
+              <StyleImgTextBoth
+                key={room.roomId}
+                $disabled={room.roomId === +currentRoomId}
+              >
                 <StyleServerImg src={room.roomImage || RoomDefault} alt="" />
                 <StyleServerText>{room.title}</StyleServerText>
                 <StyleServerDot $visible={room.roomId === +currentRoomId} />
@@ -104,6 +108,7 @@ const StyleServerImg = tw.img`
 bg-white
 rounded-full
 w-7
+h-7
 mr-2
 ml-1
 `;

@@ -2,10 +2,12 @@ import React from "react";
 import tw from "tailwind-styled-components";
 import { Link } from "react-router-dom";
 import { BoardListProps } from "types";
+import BasicProfile from "assets/img/basic-profile.svg";
 
 import StarFill from "assets/img/star-fill.svg";
 import HotBoardIcon from "assets/img/hot-board.svg";
 import TipBoardIcon from "assets/img/tip-board.svg";
+import ChatBoardIcon from "assets/img/chat-board.svg";
 import PromBoardIcon from "assets/img/promotion-board.svg";
 import AskBoardIcon from "assets/img/ask-board.svg";
 import { SearchBoardContent } from "models/Board.interface";
@@ -16,7 +18,7 @@ export const FreeBoardListLink = (props: SearchBoardContent) => {
   switch (props.category) {
     case "CHAT":
       category = "잡담";
-      icon = TipBoardIcon;
+      icon = ChatBoardIcon;
       break;
     case "TIP":
       category = "팁";
@@ -43,7 +45,10 @@ export const FreeBoardListLink = (props: SearchBoardContent) => {
           </TitleAndCategoryContainer>
           <div className="flex">
             <WriterContainer>
-              <WriterImg src={props.writerImage} alt="wrtierImg" />
+              <WriterImg
+                src={props.writerImage ? props.writerImage : BasicProfile}
+                alt="wrtierImg"
+              />
               <WriterNicname>{props.writerNickname}</WriterNicname>
             </WriterContainer>
             <WriteDate>{props.createdAt}</WriteDate>
@@ -116,6 +121,7 @@ w-6
 h-6
 rounded-full
 mr-2
+bg-white
 `;
 
 // 작성자 닉네임

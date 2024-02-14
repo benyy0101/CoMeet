@@ -15,19 +15,22 @@ type RoomButtonProps = {
   active: boolean;
 };
 function RoomOption(props: RoomOptionProps) {
-  const {selectRoom, editRoom} = props;
+  const { selectRoom, editRoom } = props;
 
   const dummy = [{ roomId: 42, title: "SSAFY 9기", full: true }];
   const [roomList, setRoomList] = useState<SearchManagingResponses[]>(dummy);
 
-  const { data: ManagedRoomData,refetch } = useQuery<SearchManagingResponses[], Error>({
+  const { data: ManagedRoomData, refetch } = useQuery<
+    SearchManagingResponses[],
+    Error
+  >({
     queryKey: ["managedRoomData"],
     queryFn: () => searchManagingRoom({}),
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     refetch();
-  },[]);
+  }, []);
 
   useEffect(() => {
     setRoomList(ManagedRoomData!);
@@ -42,7 +45,8 @@ function RoomOption(props: RoomOptionProps) {
   };
   return (
     <Wrapper>
-      {roomList && editRoom?.length === 0 && (
+      {roomList &&
+        editRoom?.length === 0 &&
         roomList.map((room) => (
           <RoomButton
             key={room.roomId}
@@ -52,23 +56,19 @@ function RoomOption(props: RoomOptionProps) {
           >
             {room.title}
           </RoomButton>
-        ))
-      )}
-      {
-        roomList && editRoom?.length !== 0 && (
-          roomList.map((room) => (
-            <RoomButton
-              key={room.roomId}
-              onClick={() => selectedHandler(room)}
-              selected={selected === room.roomId}
-              active={room.title === editRoom}
-            >
-              {room.title}
-            </RoomButton>
-          ))
-        )
-
-      }
+        ))}
+      {roomList &&
+        editRoom?.length !== 0 &&
+        roomList.map((room) => (
+          <RoomButton
+            key={room.roomId}
+            onClick={() => selectedHandler(room)}
+            selected={selected === room.roomId}
+            active={room.title === editRoom}
+          >
+            {room.title}
+          </RoomButton>
+        ))}
     </Wrapper>
   );
 }
@@ -83,10 +83,11 @@ const Wrapper = tw.div`
 `;
 
 const RoomButton = tw.button<RoomButtonProps>`
-  text-purple-400
+
   rounded-xl
   px-2
   m-2
+  text-black
   ${(props) => (props.selected && props.active ? "text-purple-700" : "")} 
   ${(props) => (props.active ? "" : "text-red-900 opacity-40 cursor-not-allowed disabled")}
 `;

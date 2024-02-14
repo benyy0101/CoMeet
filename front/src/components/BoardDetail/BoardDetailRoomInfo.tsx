@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import tw from "tailwind-styled-components";
 
 import PoepleNumImg from "assets/img/people-num.svg";
-import RoomImg from "assets/img/room-default.png";
+import BasicRoom from "assets/img/basic-room.png";
 import { encrypt } from "utils/Crypto";
 import { useSelector } from "react-redux";
 import { joinNote } from "api/Note";
@@ -18,6 +18,7 @@ type RoomInfoProps = {
   roomCapacity: number;
   roomLink: string | null;
   roomId: number;
+  roomImg: string;
 };
 // export const BoardDetailRoomInfo: React.FC<{ roomId: string }> = (props) => {
 export const BoardDetailRoomInfo: React.FC<{
@@ -27,6 +28,7 @@ export const BoardDetailRoomInfo: React.FC<{
   roomCapacity: number;
   roomLink: string | null;
   roomId: number;
+  roomImg: string;
 }> = (props: RoomInfoProps) => {
   const { roomId } = props;
 
@@ -42,7 +44,9 @@ export const BoardDetailRoomInfo: React.FC<{
   //const roomLink = `${process.env.REACT_APP_API_SERVER_URL}/room/${props.roomId}`;
 
   useEffect(() => {
-    if (member.joinedRooms.some((room: SmallRoomdata) => roomId === room.roomId)) {
+    if (
+      member.joinedRooms.some((room: SmallRoomdata) => roomId === room.roomId)
+    ) {
       console.log("HI");
       setIsIn(true);
     }
@@ -74,7 +78,10 @@ export const BoardDetailRoomInfo: React.FC<{
   return (
     <RoomHyper>
       <TotalContainer>
-        <RoomImgContainer src={RoomImg} alt="" />
+        <RoomImgContainer
+          src={props.roomImg ? props.roomImg : BasicRoom}
+          alt=""
+        />
         <RoomInfo>
           <TitleAndNumContainer>
             <RoomTitle>{props.roomTitle}</RoomTitle>
@@ -90,13 +97,19 @@ export const BoardDetailRoomInfo: React.FC<{
           <LinkContainer>
             {!isIn ? (
               <>
-                <LinkTitle>가입 링크</LinkTitle>
-                <RoomHyperLink disabled={isIn} onClick={registHandler}>
-                  {roomLink!.length > 20 ? roomLink?.slice(0, 20).concat("...") : roomLink!}
-                </RoomHyperLink>
+                <LinkGoTitle onClick={registHandler}>
+                  가입 신청 보내기
+                </LinkGoTitle>
+                {/* <RoomHyperLink disabled={isIn} onClick={registHandler}>
+                  {roomLink!.length > 20
+                    ? roomLink?.slice(0, 20).concat("...")
+                    : roomLink!}
+                </RoomHyperLink> */}
               </>
             ) : (
-              <LinkTitle className="text-violet-400">이미 가입된 방입니다!</LinkTitle>
+              <LinkStopTitle className="text-violet-400">
+                이미 가입된 방입니다!
+              </LinkStopTitle>
             )}
           </LinkContainer>
         </RoomInfo>
@@ -118,6 +131,7 @@ mt-10
 rounded-lg
 break-words
 bg-[#1F1C29]
+text-white
 `;
 
 //룸 이미지 컨테이너인데 h-70으로 설정해뒀는데
@@ -128,6 +142,7 @@ rounded-l-lg
 w-40
 min-h-70
 object-cover
+bg-white
 `;
 
 //이미지 제외 모든 정보
@@ -182,8 +197,26 @@ flex
 space-x-3
 `;
 
-const LinkTitle = tw.div`
+const LinkGoTitle = tw.button`
 font-bold
+<<<<<<< HEAD
+rounded-md
+py-1
+px-3
+bg-gradient-to-l
+from-[#539AB1]
+to-[#7C5EBD]
+hover:bg-gradient-to-r
+focus:ring-4
+focus:outline-none
+focus:ring-purple-200
+dark:focus:ring-purple-800
+`;
+
+const LinkStopTitle = tw.div`
+font-bold
+=======
+>>>>>>> dev
 `;
 
 //진짜 링크 부분

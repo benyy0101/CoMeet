@@ -6,7 +6,7 @@ import ImageModifyModal from "./ImageModifyModal";
 
 import tw from "tailwind-styled-components";
 
-import ProfileImg from "assets/img/test-user.jpeg";
+import BasicProfile from "assets/img/basic-profile.svg";
 import ProifleModify from "assets/img/profile-modify.svg";
 import CarmeraImg from "assets/img/carmera.svg";
 import EditPencil from "assets/img/edit-pencil.svg";
@@ -188,9 +188,7 @@ export default function MyProfile({
               <StyleProfileImgHover
                 style={{
                   backgroundImage: `url(${
-                    profileImage === ""
-                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
-                      : `${profileImage}`
+                    profileImage === "" ? `${BasicProfile}` : `${profileImage}`
                   })`,
                 }}
                 onMouseOver={handleMouseOver}
@@ -204,9 +202,7 @@ export default function MyProfile({
               <StyleProfileImg
                 style={{
                   backgroundImage: `url(${
-                    profileImage === ""
-                      ? `https://comeet-a506.s3.ap-northeast-2.amazonaws.com/profileImage/basic-profile.svg`
-                      : `${profileImage}`
+                    profileImage === "" ? `${BasicProfile}` : `${profileImage}`
                   })`,
                 }}
                 onMouseOver={handleMouseOver}
