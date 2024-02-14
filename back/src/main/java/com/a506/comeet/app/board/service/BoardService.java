@@ -92,7 +92,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_BOARD));
 
         boolean isLike = checkLikeStatus(boardId, memberId);
-        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), getKeywords(board.getRoom()), isLike);
+        return BoardDetailResponseDto.toBoardSearchResponseDto(board, board.getRoom(), getKeywords(board.getRoom()), board.getWriter().getMemberId(), isLike);
     }
 
     @Transactional
