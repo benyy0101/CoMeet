@@ -157,6 +157,7 @@ export default function MyProfile({
     try {
       await unfollow({ memberId: memberId! });
       setIsFollow(!isFollow);
+      setFollowerList(followerList.filter((f) => f.memberId !== currentUser));
       toast.success("언팔로우 되었습니다.");
     } catch (e) {
       console.log(e);
@@ -167,6 +168,7 @@ export default function MyProfile({
     try {
       await follow({ memberId: memberId! });
       setIsFollow(!isFollow);
+      setFollowerList(followerList.concat(currentUser));
       toast.success("팔로우 되었습니다.");
     } catch (e) {
       console.log(e);
@@ -244,7 +246,7 @@ export default function MyProfile({
                 ></Modal>
               ) : null}
               <FollowText>팔로잉</FollowText>
-              <FollowNumber>{followingCount}</FollowNumber>
+              <FollowNumber>{followingList.length}</FollowNumber>
             </SytleFollowing>
             <StyleFllower onClick={followerModalHandler}>
               {followerModal ? (
@@ -254,7 +256,7 @@ export default function MyProfile({
                 ></Modal>
               ) : null}
               <FollowText>팔로워</FollowText>
-              <FollowNumber>{followerCount}</FollowNumber>
+              <FollowNumber>{followerList.length}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
           <div className="flex mb-2">
