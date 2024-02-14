@@ -8,78 +8,80 @@
 
 메인 페이지 이미지 필요 (gif 되면 좋겠다!)
 
-### Introduction
+### 서비스 소개
 
-##### 📌 Why Commit?
+##### 📌 Why Comeet?
 
-- ~~한 불편함에서 시작하여, 개발자들만의 온라인 스터디 커뮤니티를 구상하게 되었습니다
+- 🤔 왜 스터디를 모집하는 공간과 스터디를 진행하는 공간이 분리되어야할까? 라는 불편함에서 시작하였습니다.
+
+- 👨‍💻 더 나아가 함께 지식을 공유하는 개발자들만의 문화를 적극 반영한 온라인 스터디 플랫폼을 구상하게 되었습니다.
 
 ##### 📌 Easy & Fast Interaction
 
-- 누구나 들어올 수 있는 방을 일회성으로 생성하여 사람들과 함께 쉽고 빠르게 공부할 수도, 보다 지속적인 스터디를 위해 폐쇄적인 방을 만들어 운영할 수도 있습니다.
-- 화면 공유와 실시간 마크다운 코드 채팅을 통해 즉각적이며 상호적인 스터디를 진행할 수 있습니다.
+- 🧑‍🤝‍🧑 코밋에서는 누구나 들어올 수 있는 방을 일회성으로 생성하여 사람들과 함께 쉽고 빠르게 공부할 수 있습니다.
+- 🔒 또한 모집 게시판에서 보다 지속적인 스터디를 위해 사적인 방을 만들어 운영할 수도 있습니다.
+
+##### 📌 Real-Time Study
+
+- 🖥️ 화면 공유를 통해 다른 개발자들의 공부 방법을 쉽게 참고할 수 있습니다.
+- 📝 실시간 마크다운 코드 채팅을 통해 즉각적이며 상호적인 스터디를 진행할 수 있습니다.
 
 ##### 📌 For Developers
 
-- 코밋은 관심있는 분야, 공부시간이 담긴 메타데이터를 통해 사용자의 기록, 분석합니다.
-- 또한 공부 성향, TIL을 통해 자신의 스터디 스타일을 표현하고 자신과 잘 맞는 개발자를 찾을 수 있습니다.
+- 📊 코밋은 관심있는 분야, 공부시간이 담긴 메타데이터를 통해 사용자의 기록, 분석한 정보를 제공합니다.
+- 🤝 또한 공부 성향, TIL을 통해 자신의 스터디 스타일을 표현하고 자신과 잘 맞는 개발자를 찾아 교류할 수 있습니다.
 
 ### ⏱ 개발 기간
 
 - 2024.01.08 ~ 2024.02.15 (6주)
 
-### 🧑‍💻 팀소개
+### 🧑‍💻👩🏻‍💻 팀 소개
 
-| 김태수                                                                                                                                     | 이유로                                                                                                                                     | [정현아](https://github.com/JHyeon-a)                                                                                          | 김희연                                                                                                                                     | [정덕주](https://github.com/Damongsanga)                                                                                                   | [김동건](https://github.com/Zerotay)                                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/97e4445e-6437-4ee9-b989-c80de981d20b" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/139304856?v=4cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/e77290ea-72d3-498f-8e2d-0f97331449b1" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> |
-| Leader, Front                                                                                                                              | Front, Back                                                                                                                                | Front                                                                                                                          | Back                                                                                                                                       | Back                                                                                                                                       | CI&CD & Front                                                                                                                              |
-| 담당 기능                                                                                                                                  | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                      | 담당 기능                                                                                                                                  | 유저 인가.인증                                                                                                                             | 담당 기능                                                                                                                                  |
+| 김태수                                                                                                                                     | 이유로                                                                                                                                     | [정현아](https://github.com/JHyeon-a)                                                                                          | 김희연                                                                                                                                     | [정덕주](https://github.com/Damongsanga)                                                                                                   | [김동건](https://github.com/Zerotay)                                                      |
+| ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/97e4445e-6437-4ee9-b989-c80de981d20b" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/139304856?v=4cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/e77290ea-72d3-498f-8e2d-0f97331449b1" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/67823010?v=4" width="150" height="150"> |
+| Leader, Front                                                                                                                              | Front, Back                                                                                                                                | Front                                                                                                                          | Back                                                                                                                                       | Back                                                                                                                                       | CI&CD, Front                                                                              |
+| 담당 기능                                                                                                                                  | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                      | 담당 기능                                                                                                                                  | 유저 인가.인증                                                                                                                             | 담당 기능                                                                                 |
 
 ### 🛠️ 기술 스택
 
 ##### Front
 
-<img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=black">
-<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black">
-<img src="https://img.shields.io/badge/tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
-<img src="https://img.shields.io/badge/reactquery-FF4154?style=for-the-badge&logo=reactquery&logoColor=white">
+<img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=black" width="auto" height="25">
+<img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black" width="auto" height="25">
+<img src="https://img.shields.io/badge/tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/reactquery-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" width="auto" height="25">
 
 ##### Back
 
-<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> 
-<img src="https://img.shields.io/badge/SPRING DATA JPA-6DB33F?style=for-the-badge&logoColor=white"> 
-<img src="https://img.shields.io/badge/querydsl-669DF6?style=for-the-badge&logoColor=white"> 
-<img src="https://img.shields.io/badge/SPRING SECURITY-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white">
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" width="auto" height="25"> 
+<img src="https://img.shields.io/badge/SPRING DATA JPA-6DB33F?style=for-the-badge&logoColor=white" width="auto" height="25"> 
+<img src="https://img.shields.io/badge/querydsl-669DF6?style=for-the-badge&logoColor=white" width="auto" height="25"> 
+<img src="https://img.shields.io/badge/SPRING SECURITY-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" width="auto" height="25">
 
-<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
-<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white">
-<img src="https://img.shields.io/badge/mongodb-4479A1?style=for-the-badge&logo=mongodb&logoColor=white">
-<img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white">
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/mongodb-4479A1?style=for-the-badge&logo=mongodb&logoColor=white" v>
+<img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" width="auto" height="25">
 
 ##### Environment
 
-<img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white">
-<img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
-<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
+<img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"width="auto" height="25">
 
-<img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
-<img src="https://img.shields.io/badge/sonarqube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white">
-<img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white">
-<img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white">
+<img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/sonarqube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white" width="auto" height="25">
 
-<img src="https://img.shields.io/badge/openvidu-F46800?style=for-the-badge&logoColor=white">
+<img src="https://img.shields.io/badge/openvidu-F46800?style=for-the-badge&logoColor=white" width="auto" height="25">
 
 ##### Cooperation
 
-<img src="https://img.shields.io/badge/gitlab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white">
-<img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white">
-<img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white">
-
-##### Etc
-
-<img src="https://img.shields.io/badge/figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
-<img src="https://img.shields.io/badge/erdcloud-F46800?style=for-the-badge&logoColor=white">
+<img src="https://img.shields.io/badge/gitlab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white" width="auto" height="25">
 
 #### 🌐 포팅 메뉴얼
 
@@ -287,7 +289,7 @@
 아키텍처 이미지 넣어주면 됩니다 임시로 넣을께요
 <img width="716" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17f18133-c3fb-4283-8523-1ededb287dc4">
 
-#### 🎚️ 주요 기능
+#### 💡 주요 기능
 
 1. 로그인 & 소셜 로그인
 2. 일회용방, 지속방 구분
@@ -297,14 +299,20 @@
 6. 방 & 게시판 검색
 7. 모집 게시판 & 가입링크 & 쪽지 전송 (중요)
 
-#### [API 명세서](https://www.notion.so/API-75586b08754643c3b8c514174477d506?pvs=4)
+#### 📜 자료
+
+##### 1. ERD
+
+![코밋](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad)
+
+##### [2. API 명세서](https://www.notion.so/API-75586b08754643c3b8c514174477d506?pvs=4)
 
 ![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/996b2ddb-cbfd-4f4a-856a-4fcb2b1530db)
 
-#### [트러블 슈팅 기록](https://www.notion.so/6b959b38992d4e1f9f44e785ef2dd2aa?pvs=4)
+##### [3. 트러블 슈팅 기록](https://www.notion.so/6b959b38992d4e1f9f44e785ef2dd2aa?pvs=4)
 
 ![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/acd8cb66-73e7-49e9-86e9-3fe736f6f8c3)
 
-#### [학습 자료](https://www.notion.so/7416e76f0e5c47d39c3dbb7995d78eb5?pvs=4#845852fbceb14aaca4d83d837dad969d)
+##### [4. 학습 자료](https://www.notion.so/7416e76f0e5c47d39c3dbb7995d78eb5?pvs=4#845852fbceb14aaca4d83d837dad969d)
 
 ![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/b8f20ff0-e37d-4f3f-8e58-788de5a6afe1)
