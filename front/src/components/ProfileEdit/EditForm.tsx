@@ -105,11 +105,15 @@ function EditForm() {
   //이메일 중복 검사
   const handleIsCheckEmail = async () => {
     if (email !== undefined) {
-      let check = await doubleCheckEmail({ email: email });
-      if (check === false && email === myData?.email) {
-        check = true;
+      try {
+        let check = await doubleCheckEmail({ email: email });
+        if (check === false && email === myData?.email) {
+          check = true;
+        }
+        setIsEmailCheck(check);
+      } catch (error) {
+        console.log(error);
       }
-      setIsEmailCheck(check);
     }
   };
 
@@ -291,10 +295,14 @@ function EditForm() {
               onChange={handleEmail}
             />
             <Label>이메일</Label>
-            {isEmailCheck ? (
-              <SuccessText>중복되는 이메일이 없습니다.</SuccessText>
-            ) : (
-              <FailText>중복되는 이메일이 있습니다.</FailText>
+            {email === "" ? null : (
+              <>
+                {isEmailCheck ? (
+                  <SuccessText>중복되는 이메일이 없습니다.</SuccessText>
+                ) : (
+                  <FailText>중복되는 이메일이 있습니다.</FailText>
+                )}
+              </>
             )}
           </FormContainer>
         </FormWrapperSecond>
