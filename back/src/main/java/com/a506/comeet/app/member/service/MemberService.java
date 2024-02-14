@@ -7,6 +7,7 @@ import com.a506.comeet.app.member.controller.dto.MemberUpdateRequestDto;
 import com.a506.comeet.app.member.entity.Member;
 import com.a506.comeet.app.member.repository.MemberRepository;
 import com.a506.comeet.app.room.repository.RoomMemberRepository;
+import com.a506.comeet.error.errorcode.CommonErrorCode;
 import com.a506.comeet.error.errorcode.CustomErrorCode;
 import com.a506.comeet.error.exception.RestApiException;
 import com.a506.comeet.image.service.S3UploadService;
@@ -48,11 +49,18 @@ public class MemberService {
 
         emailDuplicateValidation(req);
         nicknameDuplicateValidation(req);
+        socialUserPasswordValidation(req, member);
 
         S3ImageDelete(req, member);
         encodePassword(req);
 
         member.updateMember(req);
+    }
+
+    private void socialUserPasswordValidation(MemberUpdateRequestDto req, Member member) {
+        if (member.getRoles().contains("SOCIAL") && req.getPassword() != null){
+            throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "소셜로그인 유저는 비밀번호를 변경할 수 없습니다.");
+        }
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req) {
