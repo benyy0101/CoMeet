@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
@@ -8,7 +8,7 @@ import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
 import { handleMember } from "api/Member";
@@ -19,6 +19,8 @@ import {
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import logo from "../../../assets/logo.svg";
+import { logout } from "store/reducers/userSlice";
+import { handleLogout } from "api/Login";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -37,8 +39,9 @@ export const NavBar = ({
   isVideoDisabled,
   publisher,
 }: IProps) => {
+  const navigate = useNavigate();
+
   //memberId 가져오기
-  const memberId = useSelector((state: any) => state.user.user.memberId);
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
@@ -54,9 +57,7 @@ export const NavBar = ({
     setMessageModal(!messageModal);
   };
 
-  const userInfo = useSelector((state: any) => state.user);
-  const roomInfo = useSelector((state: any) => state.room);
-  console.log(userInfo);
+  const state = useSelector((state: any) => state);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -74,17 +75,28 @@ export const NavBar = ({
 
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
-    const res = await handleMember(userInfo.user.memberId);
+    const res = await handleMember(state.user.user.memberId);
     setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
-  console.log(userInfo.user.memberId);
   //시작할 때 데이터 다 들고와
   useEffect(() => {
-    if (userInfo.isLoggedIn) {
-      fetchData();
+    console.error(state.user);
+    if (state.user.isLoggedIn) {
+      // fetchData();
     }
-  }, [userInfo.isLoggedIn]);
+  }, [state.user.isLoggedIn]);
+
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    console.log("handle logout");
+    handleLogout().then(() => {
+      dispatch(logout());
+      console.log("success");
+      navigate("/", { replace: true });
+    });
+  };
 
   return (
     <NavBarContainer>
@@ -96,7 +108,7 @@ export const NavBar = ({
           </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
-        {userInfo.isLoggedIn ? (
+        {state.user.isLoggedIn ? (
           <LeftMenu>
             <RoomSearch>
               <Link to="/roomlist">방 찾기</Link>
@@ -117,11 +129,15 @@ export const NavBar = ({
       </LeftContainer>
 
       <RightContainer>
-        {userInfo.isLoggedIn ? (
+        {state.user.isLoggedIn ? (
           <>
+            <button onClick={logoutHandler}>로그아웃</button>
             {roomData ? (
               <ServerContainer $active={true}>
-                <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
+                <Link
+                  to={`/room/${state.room.roomId}`}
+                  className="w-full h-full"
+                >
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
@@ -169,8 +185,8 @@ export const NavBar = ({
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
-              {userInfo.user.unreadNoteCount !== 0 ? (
-                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>
+              {state.user.user.unreadNoteCount !== 0 ? (
+                <UnreadCount>{state.user.user.unreadNoteCount}</UnreadCount>
               ) : null}
               <ModalPortal>
                 {messageModal === true ? (
@@ -179,8 +195,11 @@ export const NavBar = ({
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
-              <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={userInfo.user.profileImage} alt={BasicProfile} />
+              <Link to={`/userpage/${state.user.user.memberId}`}>
+                <NavIcon
+                  src={state.user.user.profileImage}
+                  alt={BasicProfile}
+                />
               </Link>
             </ProfileMenu>
           </>
@@ -200,15 +219,15 @@ export const NavBar = ({
             </LoginSignup>
             <LoginSignup>
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
-              <ModalPortal>
-                {loginModal === true ? (
+              {loginModal === true ? (
+                <ModalPortal>
                   <Modal
                     toggleModal={loginModalHandler}
                     option="login"
                     setting={null}
                   />
-                ) : null}
-              </ModalPortal>
+                </ModalPortal>
+              ) : null}
             </LoginSignup>
           </LoginContainer>
         )}

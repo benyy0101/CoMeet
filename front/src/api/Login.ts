@@ -13,6 +13,7 @@ export const handleLogin = async (
 };
 
 export const handleLogout = async () => {
+  console.log("api logout");
   const response = await localAxios.post("/auth/logout");
   return response;
 };
