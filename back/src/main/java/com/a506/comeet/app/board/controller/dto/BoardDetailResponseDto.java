@@ -29,6 +29,7 @@ public class BoardDetailResponseDto {
     @Builder.Default
     private Boolean isValid = true; // true - 모집 중, false - 모집 완료
 
+    private Long roomId;
     private List<KeywordResponseDto> roomKeywords; //방 키워드
     private String roomTitle;   //방 제목
     private String roomDescription; //방 소개
@@ -59,6 +60,7 @@ public class BoardDetailResponseDto {
                 .isValid(board.getIsValid())
 
                 //자유 게시판에는 null이 들어감
+                .roomId(room != null ? room.getId() : null)
                 .roomKeywords(room != null ? keywords : null)
                 .roomTitle(room != null ? room.getTitle() : null)
                 .roomDescription(room != null ? room.getDescription() : null)
