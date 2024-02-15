@@ -45,13 +45,24 @@ export const NavBar = ({
 }: IProps) => {
   const navigate = useNavigate();
 
-  const location = useLocation();
   //memberId 가져오기
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   // const [userImg, setUserImg] = useState<string>("");
   const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
+  const [transparent, setTransparent] = useState<boolean>(true);
+
+  useEffect(() => {
+    function scrollHandler() {
+      setTransparent(window.scrollY < 100);
+    }
+    window.addEventListener("scroll", scrollHandler);
+
+    return () => {
+      window.removeEventListener("scroll", scrollHandler);
+    };
+  }, []);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -126,7 +137,7 @@ export const NavBar = ({
   };
 
   return (
-    <NavBarContainer $home={location.pathname === "/"}>
+    <NavBarContainer $transparent={transparent}>
       <LeftContainer>
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
@@ -252,8 +263,8 @@ export const NavBar = ({
 };
 
 //NavBarContainer: 네비게이션바 전체 틀
-const NavBarContainer = tw.div<{ $home: boolean }>`
-${(p) => (p.$home ? "" : "bg-[#282828]")}
+const NavBarContainer = tw.div<{ $transparent: boolean }>`
+${(p) => (p.$transparent ? "bg-transparent" : "bg-[#1f1227]")}
 h-14
 text-white
 flex
@@ -261,6 +272,8 @@ items-center
 justify-between
 px-12
 text-lg
+transition-colors
+ease-in-out
 `;
 
 const LeftContainer = tw.div`
