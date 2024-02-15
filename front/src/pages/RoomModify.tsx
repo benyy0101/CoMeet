@@ -43,6 +43,7 @@ export default function RoomModify() {
   const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
 
   const [selectedKeyword, setSelectedKeyword] = useState<Keyword[]>([]);
+  const [modifiedNotice, setModifiedNotice] = useState<string>("");
 
   //이미지 바뀔 때 미리보기
   const onChangeImage = async (e: any) => {
@@ -82,6 +83,7 @@ export default function RoomModify() {
         capacity: maxPeople,
         constraints: option,
         keywordIds,
+        notice: modifiedNotice,
       };
 
       if (selectedFile) {
@@ -237,7 +239,7 @@ export default function RoomModify() {
             <TextInput value={description} onChange={descriptionHandler} />
           </InputUnit>
           <Block />
-          <SubTitle>방 제한:</SubTitle>
+          <SubTitle>방 제한</SubTitle>
           {roomData?.type === "DISPOSABLE" && (
             <InputUnit className="w-1/3">
               <Label>
@@ -249,7 +251,7 @@ export default function RoomModify() {
           <InputUnit>
             <Label>키워드</Label>
             <select
-              className="w-40 border-[1px] rounded-md"
+              className="w-40 border-[1px] rounded-md p-2"
               onChange={selectHandler}
             >
               {keywords?.map((keyword: any) => (
@@ -304,6 +306,17 @@ export default function RoomModify() {
               />
             </InputUnit>
           </OptionContainer>
+          <InputUnit>
+            <SubTitle>공지 (1000자 제한)</SubTitle>
+            <textarea
+              name="notice"
+              id="notice"
+              className="border-[1px] focus:outline-none p-2 rounded-lg focus:ring-2 focus:ring-purple-900 h-40"
+              maxLength={1000}
+              value={modifiedNotice}
+              onChange={(e) => setModifiedNotice(e.target.value)}
+            ></textarea>
+          </InputUnit>
           <SubmitButtonContainer>
             <DeleteButton onClick={deleteHandler}>방 삭제하기</DeleteButton>
             <SubmitButton>변경사항 저장</SubmitButton>
@@ -337,6 +350,7 @@ flex
 flex-col
 items-center
 w-full
+min-h-screen
 py-10
 `;
 
@@ -432,7 +446,7 @@ space-y-2
 
 const InputUnit = tw.div`
 w-full
-h-20
+max-h-96
 flex
 flex-col
 space-y-2

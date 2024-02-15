@@ -7,7 +7,7 @@ import { Keyword } from "models/Util";
 
 // Function to retrieve user state from sessionStorage
 const loadKeywordState = (): KeywordState => {
-  const storedState = sessionStorage.getItem("kewordState");
+  const storedState = sessionStorage.getItem("keywordState");
   return storedState ? JSON.parse(storedState) : initialState;
 };
 
