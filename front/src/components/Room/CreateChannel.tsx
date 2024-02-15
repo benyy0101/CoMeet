@@ -44,6 +44,7 @@ function CreateChannel(props: CreateChannelProps) {
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("submit");
     if (title && isChannelFocused) {
       console.log("channel");
       addChannel!(title);
@@ -110,15 +111,16 @@ function CreateChannel(props: CreateChannelProps) {
             <NewChannel
               value={title}
               onChange={titleHandler}
-              onBlur={isAddBtnFocusedHandler}
+              onClick={() => console.log("shit")}
+              // onBlur={isAddBtnFocusedHandler}
               ref={inputRef}
             />
             <InputButton>
               <CancelButton onClick={() => setIsAddBtnFocused(false)} />
             </InputButton>
-            <input type="submit">
-              <ConfirmButton />
-            </input>
+            <InputButton>
+              <ConfirmButton type="submit" />
+            </InputButton>
           </NewForm>
         )}
       </NewContainer>
