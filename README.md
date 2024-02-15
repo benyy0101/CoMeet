@@ -1,12 +1,12 @@
 # 🌠 개발자들을 위한 모각코 커뮤니티 사이트 COMEET
-![image-5.png](./image-5.png)
+![COMEET](./doc/COMEET.png)
 
 <hr>
 
 여기에 메인 이미지
 
 
-## 📌 서비스 소개 (24.01.08 ~ 24.02.15)
+## 📌 서비스 소개
 
 ##### Why Comeet?
 - 왜 스터디를 모집하는 공간과 스터디를 진행하는 공간이 분리되어야할까? 라는 불편함에서 시작하였습니다.
@@ -308,21 +308,18 @@
 ## 📄 문서
 
 ##### 1. ERD
-
-<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad
-">
+![ERD](./doc/ERD.png) {: width="100" height="100"}
 
 ##### [2. 요구 사항 명세서](https://www.notion.so/d8936d52d8b34c3fa1ae3326b29426b8)
-<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/1a1d37a2-3864-41e1-a0f5-8363753c57c3
-">
+![Requirement](./doc/Requirement.PNG)
 
 
 ##### [3. API 명세서](https://satin-turkey-70b.notion.site/API-75586b08754643c3b8c514174477d506?pvs=4)
-<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/899bc5b1-6a1d-4379-8c0b-5a1b569a0c8d
-">
+![API](./doc/API.PNG)
 
 ##### [4. 스터디](https://satin-turkey-70b.notion.site/16e7dd0673a44db6b94d53347d6714f5?pvs=4)
 
+<br/>
 
 ## ⏰ 개발 기간
 - 24.01.08 ~ 24.02.15 (6주)
