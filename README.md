@@ -308,14 +308,14 @@
 ## 📄 문서
 
 ##### 1. ERD
-![ERD](./doc/ERD.png) {: width="100" height="100"}
+![ERD](./doc/ERD.png)
 
 ##### [2. 요구 사항 명세서](https://www.notion.so/d8936d52d8b34c3fa1ae3326b29426b8)
-![Requirement](./doc/Requirement.PNG)
+![Requirement](./doc/Requirement.png)
 
 
 ##### [3. API 명세서](https://satin-turkey-70b.notion.site/API-75586b08754643c3b8c514174477d506?pvs=4)
-![API](./doc/API.PNG)
+![API](./doc/API.png)
 
 ##### [4. 스터디](https://satin-turkey-70b.notion.site/16e7dd0673a44db6b94d53347d6714f5?pvs=4)
 
