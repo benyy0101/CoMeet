@@ -305,7 +305,7 @@
 
 ![코밋](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad)
 
-##### [2. API 명세서](https://www.notion.so/API-75586b08754643c3b8c514174477d506?pvs=4)
+##### [2. API 명세서](https://satin-turkey-70b.notion.site/API-75586b08754643c3b8c514174477d506?pvs=4)
 
 ![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/996b2ddb-cbfd-4f4a-856a-4fcb2b1530db)
 
