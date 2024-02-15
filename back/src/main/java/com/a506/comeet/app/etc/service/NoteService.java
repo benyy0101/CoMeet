@@ -106,7 +106,6 @@ public class NoteService {
     }
 
     private String createContext(Room room, Member writer){
-        return "$*&SYSTEM&*$" + writer.getNickname() + "님이 " + room.getTitle() + " 방에 가입 요청을 보냈습니다! " +
-                room.getId();
+        return String.join("\t", "$*&SYSTEM&*$", writer.getNickname(), room.getId().toString(), room.getTitle(), room.getRoomImage());
     }
 }
