@@ -1,41 +1,32 @@
-# 🌠COMEET🌠
+# 🌠 개발자들을 위한 모각코 커뮤니티 사이트 COMEET
+![image-5.png](./image-5.png)
+
+<hr>
 
 여기에 메인 이미지
 
-<hr>
 
-###### 개발자들을 위한 모각코 커뮤니티 사이트입니다
+## 📌 서비스 소개 (24.01.08 ~ 24.02.15)
 
-<hr>
+##### Why Comeet?
+- 왜 스터디를 모집하는 공간과 스터디를 진행하는 공간이 분리되어야할까? 라는 불편함에서 시작하였습니다.
+- 더 나아가 함께 지식을 공유하는 개발자들만의 문화를 적극 반영한 온라인 스터디 플랫폼을 구상하게 되었습니다.
 
-### 서비스 소개
+##### Easy & Fast Interaction
+- 코밋에서는 누구나 들어올 수 있는 방을 일회성으로 생성하여 사람들과 함께 쉽고 빠르게 공부할 수 있습니다.
+- 또한 모집 게시판에서 보다 지속적인 스터디를 위해 사적인 방을 만들어 운영할 수도 있습니다.
 
-##### 📌 Why Comeet?
+##### Real-Time Study
+- 화면 공유를 통해 다른 개발자들의 공부 방법을 쉽게 참고할 수 있습니다.
+- 실시간 마크다운 코드 채팅을 통해 즉각적이며 상호적인 스터디를 진행할 수 있습니다.
 
-- 🤔 왜 스터디를 모집하는 공간과 스터디를 진행하는 공간이 분리되어야할까? 라는 불편함에서 시작하였습니다.
+##### For Developers
+- 코밋은 관심있는 분야, 공부시간이 담긴 메타데이터를 통해 사용자의 기록, 분석한 정보를 제공합니다.
+- 또한 공부 성향, TIL을 통해 자신의 스터디 스타일을 표현하고 자신과 잘 맞는 개발자를 찾아 교류할 수 있습니다.
 
-- 👨‍💻 더 나아가 함께 지식을 공유하는 개발자들만의 문화를 적극 반영한 온라인 스터디 플랫폼을 구상하게 되었습니다.
+<br/>
 
-##### 📌 Easy & Fast Interaction
-
-- 🧑‍🤝‍🧑 코밋에서는 누구나 들어올 수 있는 방을 일회성으로 생성하여 사람들과 함께 쉽고 빠르게 공부할 수 있습니다.
-- 🔒 또한 모집 게시판에서 보다 지속적인 스터디를 위해 사적인 방을 만들어 운영할 수도 있습니다.
-
-##### 📌 Real-Time Study
-
-- 🖥️ 화면 공유를 통해 다른 개발자들의 공부 방법을 쉽게 참고할 수 있습니다.
-- 📝 실시간 마크다운 코드 채팅을 통해 즉각적이며 상호적인 스터디를 진행할 수 있습니다.
-
-##### 📌 For Developers
-
-- 📊 코밋은 관심있는 분야, 공부시간이 담긴 메타데이터를 통해 사용자의 기록, 분석한 정보를 제공합니다.
-- 🤝 또한 공부 성향, TIL을 통해 자신의 스터디 스타일을 표현하고 자신과 잘 맞는 개발자를 찾아 교류할 수 있습니다.
-
-### ⏱ 개발 기간
-
-- 2024.01.08 ~ 2024.02.15 (6주)
-
-### 🧑‍💻👩🏻‍💻 팀 소개
+## 👩 팀 구성
 
 | [김태수](https://github.com/benyy0101)                                                                                                                                     | [이유로](https://github.com/rheeeuro)                                                                                                                                     | [정현아](https://github.com/JHyeon-a)                                                                                          | [김희연](https://github.com/heeyeon3050)                                                                                                                                     | [정덕주](https://github.com/Damongsanga)                                                                                                   | [김동건](https://github.com/Zerotay)                                                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
@@ -43,47 +34,51 @@
 | Leader, Front                                                                                                                              | Front, Back                                                                                                                                | Front                                                                                                                          | Back                                                                                                                                       | Back                                                                                                                                       | CI&CD, Front                                                                              |
 | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                      | 담당 기능                                                                                                                                  | 유저 인가.인증                                                                                                                             | 담당 기능                                                                                 |
 
-### 🛠️ 기술 스택
+<br/>
 
-##### Front
+## 🛠️ 기술 스택
 
+**Front**
+<br/>
 <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=black" width="auto" height="25">
 <img src="https://img.shields.io/badge/react-61DAFB?style=for-the-badge&logo=react&logoColor=black" width="auto" height="25">
 <img src="https://img.shields.io/badge/tailwind-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/reactquery-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" width="auto" height="25">
 
-##### Back
-
+**Back**
+<br/>
 <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" width="auto" height="25"> 
 <img src="https://img.shields.io/badge/SPRING DATA JPA-6DB33F?style=for-the-badge&logoColor=white" width="auto" height="25"> 
 <img src="https://img.shields.io/badge/querydsl-669DF6?style=for-the-badge&logoColor=white" width="auto" height="25"> 
 <img src="https://img.shields.io/badge/SPRING SECURITY-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" width="auto" height="25">
-
-<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" width="auto" height="25">
-<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" width="auto" height="25">
-<img src="https://img.shields.io/badge/mongodb-4479A1?style=for-the-badge&logo=mongodb&logoColor=white" v>
 <img src="https://img.shields.io/badge/amazons3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" width="auto" height="25">
 
-##### Environment
+**Database**
+<br/>
+<img src="https://img.shields.io/badge/redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white" width="auto" height="25">
+<img src="https://img.shields.io/badge/mongodb-4479A1?style=for-the-badge&logo=mongodb&logoColor=white" height="25">
 
+**Environment**
+<br/>
 <img src="https://img.shields.io/badge/nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" width="auto" height="25">
-<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white"width="auto" height="25">
-
+<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/sonarqube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white" width="auto" height="25">
-
 <img src="https://img.shields.io/badge/openvidu-F46800?style=for-the-badge&logoColor=white" width="auto" height="25">
 
-##### Cooperation
-
+**Cooperation**
+<br/>
 <img src="https://img.shields.io/badge/gitlab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/jira-0052CC?style=for-the-badge&logo=jira&logoColor=white" width="auto" height="25">
 <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white" width="auto" height="25">
 
-#### 🌐 포팅 메뉴얼
+<br/>
+
+## 🌐 포팅 메뉴얼
 
 <details>
 <summary>포팅 메뉴얼 펼치기</summary>
@@ -92,7 +87,7 @@
 ##### 1. 개발 환경 (Version)
 
 - Front
-  - VS Code??
+  - VS Code
 
 - Back
   - Java : `coretto-17`
@@ -103,7 +98,13 @@
 
 ##### 2. 주요 setting
 
-- React???
+- React
+      
+    ```
+    REACT_APP_API_SERVER_URL = https://i10a506.p.ssafy.io/api
+    REACT_APP_WEBSOCKET_SERVER_URL = https://i10a506.p.ssafy.io:8443/
+    REACT_APP_SECRETKEY = {YOUR SECRET KEY}
+    ```
 
 - Spring Boot
 
@@ -283,14 +284,16 @@
 </div>
 </details>
 
-#### 아키텍처
+<br/>
+
+## 🎨 아키텍처
 
 <img width="500" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/aff7e4e7-e733-4443-bbad-70c3483b3438
 ">
 
-#### 💡 주요 기능
+## 💡 주요 기능
 
-# 화면녹화해서 gif로 변환해서 넣을 예정
+(화면녹화해서 gif로 변환해서 넣을 예정)
 
 1. 로그인 & 소셜 로그인
 2. 일회용방, 지속방 구분
@@ -300,20 +303,26 @@
 6. 방 & 게시판 검색
 7. 모집 게시판 & 가입링크 & 쪽지 전송 (중요)
 
-#### 📜 자료
+<br/>
+
+## 📄 문서
 
 ##### 1. ERD
 
 <img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad
 ">
 
-##### 2. 요구 사항 명세서
+##### [2. 요구 사항 명세서](https://www.notion.so/d8936d52d8b34c3fa1ae3326b29426b8)
 <img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/1a1d37a2-3864-41e1-a0f5-8363753c57c3
 ">
 
 
-##### 3. API 명세서
+##### [3. API 명세서](https://satin-turkey-70b.notion.site/API-75586b08754643c3b8c514174477d506?pvs=4)
 <img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/899bc5b1-6a1d-4379-8c0b-5a1b569a0c8d
 ">
 
+##### [4. 스터디](https://satin-turkey-70b.notion.site/16e7dd0673a44db6b94d53347d6714f5?pvs=4)
 
+
+## ⏰ 개발 기간
+- 24.01.08 ~ 24.02.15 (6주)
