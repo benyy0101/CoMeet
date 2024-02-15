@@ -9,24 +9,18 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import ChatRow from "./ChatRow";
 import { formatDate } from "utils/FormatDate";
 import BasicProfile from "assets/img/basic-profile.svg";
+import { useSelector } from "react-redux";
 
 interface IProps {
-  profileImg: string;
   chatDomain: string;
   id: string;
-  username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({
-  profileImg,
-  chatDomain,
-  id,
-  username,
-  setMessage,
-  message,
-}: IProps) {
+export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
+  const userInfo = useSelector((state: any) => state.user);
+
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -45,9 +39,7 @@ export default function Chat({
 
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
-            const sock = new SockJS(
-              `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
-            );
+            const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
             return sock;
           });
 
@@ -70,9 +62,7 @@ export default function Chat({
 
     return () => {
       if (chatStompClient.current) {
-        chatStompClient.current.disconnect(() =>
-          console.log("방 웹소켓 연결 끊김!")
-        );
+        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
         chatStompClient.current = null;
       }
     };
@@ -85,27 +75,21 @@ export default function Chat({
   }
 
   //메시지 브로커로 메시지 전송
-  const handleSubmit = (
-    e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
-  ) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     if (message === "") return;
 
     const data = {
       [`${chatDomain}Id`]: id,
-      memberId: "heeyeon3050",
-      nickname: username,
+      memberId: userInfo.user.memberId,
+      nickname: userInfo.user.nickname,
       message,
       imageUrl: "",
-      profileImage: `${profileImg ? profileImg : BasicProfile}`,
-      createdAt: formatDate(new Date()),
+      profileImage: `${userInfo.user.profileImage ? userInfo.user.profileImage : BasicProfile}`,
+      createdAt: formatDate(new Date(new Date().toLocaleString("en", { timeZone: "Asia/Seoul" }))),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send(
-      `/app/chat/${chatDomain}/send`,
-      {},
-      JSON.stringify(data)
-    );
+    chatStompClient.current.send(`/app/chat/${chatDomain}/send`, {}, JSON.stringify(data));
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({
@@ -121,9 +105,7 @@ export default function Chat({
     }
   }, [rows]);
 
-  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (
-    e
-  ) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     setMessage(e.target.value);
   };
 
