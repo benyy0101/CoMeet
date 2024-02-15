@@ -116,12 +116,7 @@ export const Mainpage = () => {
       cometCanvas.width = sizes.width;
       cometCanvas.height = sizes.height;
 
-      const camera = new THREE.PerspectiveCamera(
-        55,
-        sizes.width / sizes.height,
-        0.01,
-        150
-      );
+      const camera = new THREE.PerspectiveCamera(55, sizes.width / sizes.height, 0.01, 150);
       camera.position.z = 5;
       camera.rotation.reorder("YXZ");
 
@@ -160,7 +155,7 @@ export const Mainpage = () => {
 
       gradientColor.start = {};
       gradientColor.start.saturation = 32;
-      gradientColor.start.lightness = 38;
+      gradientColor.start.lightness = 53;
       gradientColor.start.value = `hsl(0, ${gradientColor.start.saturation}%, ${gradientColor.start.lightness}%)`;
       gradientColor.start.instance = new THREE.Color(gradientColor.start.value);
       const gradientGeometry = new THREE.PlaneGeometry(2, 2, 1, 1);
@@ -357,7 +352,7 @@ export const Mainpage = () => {
        * Particles
        */
 
-      const particleCount = { value: 2000 };
+      const particleCount = { value: 3000 };
 
       let particleDebugFolder;
       if (searchParams.get("debug")) {
@@ -430,10 +425,7 @@ export const Mainpage = () => {
       });
       particleMaterial.needsUpdate = true;
 
-      const particlePoints = new THREE.Points(
-        particleGeometry,
-        particleMaterial
-      );
+      const particlePoints = new THREE.Points(particleGeometry, particleMaterial);
       particlePoints.position.y = -5;
 
       function setParticleGeometry() {
@@ -486,22 +478,10 @@ export const Mainpage = () => {
           .add(particleMaterial.uniforms.uSize, "value", 0, 200, 0.1)
           .name("사이즈");
         particleDebugFolder
-          .add(
-            particleMaterial.uniforms.uProgressSpeed,
-            "value",
-            0,
-            0.05,
-            0.001
-          )
+          .add(particleMaterial.uniforms.uProgressSpeed, "value", 0, 0.05, 0.001)
           .name("진행속도");
         particleDebugFolder
-          .add(
-            particleMaterial.uniforms.uPerlinFrequency,
-            "value",
-            0,
-            0.5,
-            0.01
-          )
+          .add(particleMaterial.uniforms.uPerlinFrequency, "value", 0, 0.5, 0.01)
           .name("Perlin 주기");
         particleDebugFolder
           .add(particleMaterial.uniforms.uPerlinMultiplier, "value", 0, 2, 0.1)
@@ -538,16 +518,12 @@ export const Mainpage = () => {
           tDiffuse: { value: null },
         },
       });
-      const renderTarget = new THREE.WebGLRenderTarget(
-        sizes.width,
-        sizes.height,
-        {
-          generateMipmaps: false,
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          encoding: THREE.sRGBEncoding,
-        }
-      );
+      const renderTarget = new THREE.WebGLRenderTarget(sizes.width, sizes.height, {
+        generateMipmaps: false,
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        encoding: THREE.sRGBEncoding,
+      });
       const composer = new EffectComposer(renderer, renderTarget);
       composer.setSize(sizes.width, sizes.height);
       composer.setPixelRatio(sizes.pixelRatio);
@@ -618,17 +594,11 @@ export const Mainpage = () => {
           this.y = getRandInterval(0, sizes.height);
           this.r = getRandInterval(1.1, 2.6);
           this.dx =
-            getRandInterval(
-              cometConfig.speedCoeff,
-              6 * cometConfig.speedCoeff
-            ) +
+            getRandInterval(cometConfig.speedCoeff, 6 * cometConfig.speedCoeff) +
             cometConfig.speedCoeff * getRandInterval(50, 120) +
             cometConfig.speedCoeff * 2;
           this.dy =
-            -getRandInterval(
-              cometConfig.speedCoeff,
-              6 * cometConfig.speedCoeff
-            ) -
+            -getRandInterval(cometConfig.speedCoeff, 6 * cometConfig.speedCoeff) -
             cometConfig.speedCoeff * getRandInterval(50, 120);
           this.fadingOut = null;
           this.fadingIn = true;
@@ -659,22 +629,15 @@ export const Mainpage = () => {
           ctx.beginPath();
 
           ctx.fillStyle =
-            cometConfig.cometColor +
-            hexTransparencies[Math.round(this.opacity * 100)];
+            cometConfig.cometColor + hexTransparencies[Math.round(this.opacity * 100)];
           ctx.arc(this.x, this.y, 1.5, 0, 2 * Math.PI, false);
 
           //comet tail
           for (var i = 0; i < 30; i++) {
             const newOpacity = this.opacity - (this.opacity / 20) * i;
             ctx.fillStyle =
-              cometConfig.cometColor +
-              hexTransparencies[Math.round(newOpacity * 100)];
-            ctx.rect(
-              this.x - (this.dx / 4) * i,
-              this.y - (this.dy / 4) * i - 2,
-              1,
-              2
-            );
+              cometConfig.cometColor + hexTransparencies[Math.round(newOpacity * 100)];
+            ctx.rect(this.x - (this.dx / 4) * i, this.y - (this.dy / 4) * i - 2, 1, 2);
             ctx.fill();
           }
 
