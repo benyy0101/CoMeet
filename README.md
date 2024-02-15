@@ -1,5 +1,7 @@
 # 🌠 개발자들을 위한 모각코 커뮤니티 사이트 COMEET
-![COMEET](./doc/COMEET.png)
+<div align="center">
+![COMEET](./doc/COMEET.png){: width="600" height="350"}
+</div>
 
 <hr>
 
