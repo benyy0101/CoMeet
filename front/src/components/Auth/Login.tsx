@@ -114,7 +114,6 @@ function Login({ modalToggleHandler }: IProps) {
 
   return (
     <LoginWrapper>
-      <LoginImage src={LoginBanner} alt="LoginBanner" />
       <LoginContainer>
         <LoginTitle>로그인</LoginTitle>
         <LoginForm onSubmit={loginHandler}>
