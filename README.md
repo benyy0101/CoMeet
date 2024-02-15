@@ -289,7 +289,7 @@
 
 ## 🎨 아키텍처
 
-<img width="500" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/aff7e4e7-e733-4443-bbad-70c3483b3438
+<img width="1000" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/aff7e4e7-e733-4443-bbad-70c3483b3438
 ">
 
 ## 💡 주요 기능
