@@ -18,7 +18,12 @@ import {
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -40,6 +45,7 @@ import { useDispatch } from "react-redux";
 import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import BasicRoom from "assets/img/basic-room.png";
+import { Background } from "components/Common/Backgruond";
 
 interface IProps {
   setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;
@@ -219,7 +225,9 @@ export const Room = ({
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
+    mySession.on("streamDestroyed", (event) =>
+      deleteSubscriber(event.stream.streamManager)
+    );
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -245,7 +253,9 @@ export const Room = ({
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
+      setSpeakerIds((prev) =>
+        prev.filter((id) => id !== event.connection.connectionId)
+      );
     });
 
     setSession(mySession);
@@ -273,7 +283,9 @@ export const Room = ({
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter((device) => device.kind === "videoinput");
+          const videoDevices = devices.filter(
+            (device) => device.kind === "videoinput"
+          );
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -285,7 +297,11 @@ export const Room = ({
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log("There was an error connecting to the session:", error.code, error.message);
+          console.log(
+            "There was an error connecting to the session:",
+            error.code,
+            error.message
+          );
         }
       });
     }
@@ -294,7 +310,9 @@ export const Room = ({
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter((device) => device.kind === "videoinput");
+      const videoDevices = devices.filter(
+        (device) => device.kind === "videoinput"
+      );
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -339,7 +357,9 @@ export const Room = ({
   }, []);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
+    return createSession(mySessionId).then((sessionId) =>
+      createToken(sessionId)
+    );
   }, [mySessionId]);
 
   const toggleNotice = () => {
@@ -375,7 +395,11 @@ export const Room = ({
         data: newChannel,
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
+      stompClient.current.send(
+        `/app/room/info/send`,
+        {},
+        JSON.stringify(event)
+      );
     } catch (e) {
       console.log(e);
     }
@@ -391,7 +415,11 @@ export const Room = ({
         data: { channelId: id },
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
+      stompClient.current.send(
+        `/app/room/info/send`,
+        {},
+        JSON.stringify(event)
+      );
     } catch (e) {
       console.log(e);
     }
@@ -415,7 +443,11 @@ export const Room = ({
         data: newLounge,
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
+      stompClient.current.send(
+        `/app/room/info/send`,
+        {},
+        JSON.stringify(event)
+      );
     } catch (e) {
       console.log(e);
     }
@@ -431,7 +463,11 @@ export const Room = ({
         data: { loungeId: id },
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
+      stompClient.current.send(
+        `/app/room/info/send`,
+        {},
+        JSON.stringify(event)
+      );
     } catch (e) {
       console.log(e);
     }
@@ -446,6 +482,7 @@ export const Room = ({
 
   return (
     <RoomContainer>
+      <Background />
       <RoomHeader>
         <RoomTitleContainer>
           <RoomTitleImgBorder>
@@ -494,8 +531,13 @@ export const Room = ({
                   {lounges.map((l) => (
                     <LoungeButton
                       key={l.loungeId}
-                      active={inLounge && currentLounge?.loungeId === l.loungeId}
-                      disabled={isLoading || (inLounge && currentLounge?.loungeId === l.loungeId)}
+                      active={
+                        inLounge && currentLounge?.loungeId === l.loungeId
+                      }
+                      disabled={
+                        isLoading ||
+                        (inLounge && currentLounge?.loungeId === l.loungeId)
+                      }
                       lounge={l}
                       moveLounge={moveLounge}
                     />
@@ -509,7 +551,10 @@ export const Room = ({
                     <ChannelButton
                       key={c.channelId}
                       active={mySessionId === c.channelId.toString()}
-                      disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
+                      disabled={
+                        isLoading ||
+                        (!inLounge && mySessionId === c.channelId.toString())
+                      }
                       id={c.channelId.toString()}
                       name={c.name}
                       moveChannel={moveChannel}
@@ -570,14 +615,18 @@ export const Room = ({
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+          <ControlPanelButton
+            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+          >
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
+          <ControlPanelButton
+            onClick={() => setIsScreenShared(!isScreenShared)}
+          >
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -586,9 +635,15 @@ export const Room = ({
           </ControlPanelButton>
           <ControlPanelButton>
             {filter ? (
-              <SparklesIcon className="w-8 h-8 text-yellow-400" onClick={() => setFilter(null)} />
+              <SparklesIcon
+                className="w-8 h-8 text-yellow-400"
+                onClick={() => setFilter(null)}
+              />
             ) : (
-              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
+              <SparklesIcon
+                className="w-8 h-8"
+                onClick={() => setFilterMenuOpen(true)}
+              />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>
@@ -621,10 +676,7 @@ h-[calc(100vh-48px)]
 flex
 flex-col
 relative
-bg-gradient-to-b
-from-[#0A031C]
-from-80%
-to-[#100530]
+
 
 `;
 

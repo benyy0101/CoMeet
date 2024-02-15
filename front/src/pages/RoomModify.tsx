@@ -9,9 +9,12 @@ import { RoomResponse } from "models/Room.interface";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { CameraIcon } from "@heroicons/react/24/outline";
+import { CameraIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { onChange } from "react-toastify/dist/core/store";
 import BasicRoom from "assets/img/basic-room.png";
+import { useSelector } from "react-redux";
+import { Keyword } from "models/Util";
+import { set } from "react-hook-form";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -29,6 +32,8 @@ export default function RoomModify() {
     roomData?.constraints || "FREE"
   );
 
+  const keywords = useSelector((state: any) => state.keyword.keywords);
+
   //selectedFile 현재 올린파일
   const [selectedFile, setSelectedFile] = useState<File | undefined>();
   //이미지 미리보기 파일
@@ -36,6 +41,9 @@ export default function RoomModify() {
 
   //이미지 제거 했는지 확인
   const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
+
+  const [selectedKeyword, setSelectedKeyword] = useState<Keyword[]>([]);
+  const [modifiedNotice, setModifiedNotice] = useState<string>("");
 
   //이미지 바뀔 때 미리보기
   const onChangeImage = async (e: any) => {
@@ -67,12 +75,15 @@ export default function RoomModify() {
       alert("최소 인원을 현재 인원보다 적게 설정할 수 없습니다.");
     } else {
       e.preventDefault();
+      const keywordIds = selectedKeyword.map((keyword: Keyword) => keyword.id);
       const data: any = {
         roomId,
         title,
         description,
         capacity: maxPeople,
         constraints: option,
+        keywordIds,
+        notice: modifiedNotice,
       };
 
       if (selectedFile) {
@@ -146,6 +157,35 @@ export default function RoomModify() {
     }
   };
 
+  const selectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    e.preventDefault();
+    const newKeyword = keywords?.find(
+      (keyword: Keyword) => keyword.name === e.target.value
+    );
+    if (
+      !selectedKeyword.find(
+        (keyword: Keyword) => keyword.name === e.target.value
+      )
+    ) {
+      setSelectedKeyword((prev) => [...prev, newKeyword]);
+    }
+  };
+
+  const dropHandler = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    target: string
+  ) => {
+    e.preventDefault();
+    const dropKeyword = keywords?.find(
+      (keyword: Keyword) => keyword.name === target
+    );
+    setSelectedKeyword(
+      selectedKeyword.filter(
+        (keyword: Keyword) => keyword.name !== dropKeyword?.name
+      )
+    );
+  };
+
   return (
     <Wrapper>
       <CreateRoomContainer>
@@ -199,7 +239,7 @@ export default function RoomModify() {
             <TextInput value={description} onChange={descriptionHandler} />
           </InputUnit>
           <Block />
-          <SubTitle>방 제한:</SubTitle>
+          <SubTitle>방 제한</SubTitle>
           {roomData?.type === "DISPOSABLE" && (
             <InputUnit className="w-1/3">
               <Label>
@@ -210,7 +250,30 @@ export default function RoomModify() {
           )}
           <InputUnit>
             <Label>키워드</Label>
-            <TextInput />
+            <select
+              className="w-40 border-[1px] rounded-md p-2"
+              onChange={selectHandler}
+            >
+              {keywords?.map((keyword: any) => (
+                <option key={keyword.keywordId} value={keyword.name}>
+                  {keyword.name}
+                </option>
+              ))}
+            </select>
+            <KeywordContainer>
+              {selectedKeyword.map((keyword: any) => (
+                <KeywordToken key={keyword.keywordId}>
+                  {keyword.name}
+                  <button
+                    onClick={(e) => {
+                      dropHandler(e, keyword.name);
+                    }}
+                  >
+                    <XMarkIcon className="w-4 h-4 text-red-400"></XMarkIcon>
+                  </button>
+                </KeywordToken>
+              ))}
+            </KeywordContainer>
           </InputUnit>
           <Block />
           <SubTitle>방 설정:</SubTitle>
@@ -243,6 +306,17 @@ export default function RoomModify() {
               />
             </InputUnit>
           </OptionContainer>
+          <InputUnit>
+            <SubTitle>공지 (1000자 제한)</SubTitle>
+            <textarea
+              name="notice"
+              id="notice"
+              className="border-[1px] focus:outline-none p-2 rounded-lg focus:ring-2 focus:ring-purple-900 h-40"
+              maxLength={1000}
+              value={modifiedNotice}
+              onChange={(e) => setModifiedNotice(e.target.value)}
+            ></textarea>
+          </InputUnit>
           <SubmitButtonContainer>
             <DeleteButton onClick={deleteHandler}>방 삭제하기</DeleteButton>
             <SubmitButton>변경사항 저장</SubmitButton>
@@ -253,11 +327,30 @@ export default function RoomModify() {
   );
 }
 
+const KeywordContainer = tw.div`
+flex
+space-x-2
+`;
+const KeywordToken = tw.div`
+bg-violet-700
+p-1
+px-2
+rounded-md
+shadow-md
+text-white
+text-sm
+flex
+items-center
+justify-between
+space-x-2
+`;
+
 const Wrapper = tw.div`
 flex
 flex-col
 items-center
 w-full
+min-h-screen
 py-10
 `;
 
@@ -353,7 +446,7 @@ space-y-2
 
 const InputUnit = tw.div`
 w-full
-h-20
+max-h-96
 flex
 flex-col
 space-y-2

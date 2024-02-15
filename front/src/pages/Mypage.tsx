@@ -48,13 +48,13 @@ export const Mypage = () => {
     }
   }, [memberId]);
 
-  useEffect(() => {
-    // fetchData();
+  // useEffect(() => {
+  //   // fetchData();
 
-    handleMember(memberId).then((data) => {
-      dispatch(updateUserImg({ img: data.profileImage }));
-    });
-  }, []);
+  //   handleMember(memberId).then((data) => {
+  //     dispatch(updateUserImg({ img: data.profileImage }));
+  //   });
+  // }, []);
 
   //프로필 이미지 바뀌면 새로 고침
   useEffect(() => {
