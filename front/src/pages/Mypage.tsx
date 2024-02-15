@@ -170,7 +170,7 @@ bg-opacity-75
 // 키워드, 공부타입, 공부시간 들어 있는 컨테이너
 const SecondContainer = tw.div`
 flex
-h-[67%]
+min-h-[67%]
 `;
 
 // 키워드 컨테이너
