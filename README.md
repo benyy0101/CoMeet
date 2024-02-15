@@ -1,12 +1,12 @@
 # 🌠COMEET🌠
 
+여기에 메인 이미지
+
 <hr>
 
 ###### 개발자들을 위한 모각코 커뮤니티 사이트입니다
 
 <hr>
-
-메인 페이지 이미지 필요 (gif 되면 좋겠다!)
 
 ### 서비스 소개
 
@@ -37,9 +37,9 @@
 
 ### 🧑‍💻👩🏻‍💻 팀 소개
 
-| 김태수                                                                                                                                     | 이유로                                                                                                                                     | [정현아](https://github.com/JHyeon-a)                                                                                          | 김희연                                                                                                                                     | [정덕주](https://github.com/Damongsanga)                                                                                                   | [김동건](https://github.com/Zerotay)                                                      |
+| [김태수](https://github.com/benyy0101)                                                                                                                                     | [이유로](https://github.com/rheeeuro)                                                                                                                                     | [정현아](https://github.com/JHyeon-a)                                                                                          | [김희연](https://github.com/heeyeon3050)                                                                                                                                     | [정덕주](https://github.com/Damongsanga)                                                                                                   | [김동건](https://github.com/Zerotay)                                                      |
 | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/97e4445e-6437-4ee9-b989-c80de981d20b" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/139304856?v=4cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/e77290ea-72d3-498f-8e2d-0f97331449b1" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/67823010?v=4" width="150" height="150"> |
+| <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/47638660?v=4" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/139304856?v=4cd575a38-8fc4-4470-889b-b920862f2e30" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/111184269?v=4" width="150" height="150"> | <img src="https://github.com/damdam6/BaekJoon-Group-Board/assets/110401199/e77290ea-72d3-498f-8e2d-0f97331449b1" width="150" height="150"> | <img src="https://avatars.githubusercontent.com/u/67823010?v=4" width="150" height="150"> |
 | Leader, Front                                                                                                                              | Front, Back                                                                                                                                | Front                                                                                                                          | Back                                                                                                                                       | Back                                                                                                                                       | CI&CD, Front                                                                              |
 | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                                  | 담당 기능                                                                                                                      | 담당 기능                                                                                                                                  | 유저 인가.인증                                                                                                                             | 담당 기능                                                                                 |
 
@@ -92,8 +92,7 @@
 ##### 1. 개발 환경 (Version)
 
 - Front
-
-  - VS Code :
+  - VS Code??
 
 - Back
   - Java : `coretto-17`
@@ -104,7 +103,7 @@
 
 ##### 2. 주요 setting
 
-- React
+- React???
 
 - Spring Boot
 
@@ -286,10 +285,12 @@
 
 #### 아키텍처
 
-아키텍처 이미지 넣어주면 됩니다 임시로 넣을께요
-<img width="716" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17f18133-c3fb-4283-8523-1ededb287dc4">
+<img width="500" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/aff7e4e7-e733-4443-bbad-70c3483b3438
+">
 
 #### 💡 주요 기능
+
+# 화면녹화해서 gif로 변환해서 넣을 예정
 
 1. 로그인 & 소셜 로그인
 2. 일회용방, 지속방 구분
@@ -303,16 +304,16 @@
 
 ##### 1. ERD
 
-![코밋](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad)
+<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/17c0e116-ce86-4b93-af0f-d7d845195bad
+">
 
-##### [2. API 명세서](https://www.notion.so/API-75586b08754643c3b8c514174477d506?pvs=4)
+##### 2. 요구 사항 명세서
+<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/1a1d37a2-3864-41e1-a0f5-8363753c57c3
+">
 
-![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/996b2ddb-cbfd-4f4a-856a-4fcb2b1530db)
 
-##### [3. 트러블 슈팅 기록](https://www.notion.so/6b959b38992d4e1f9f44e785ef2dd2aa?pvs=4)
+##### 3. API 명세서
+<img width="600" alt="image" src="https://github.com/Damongsanga/TIL_write_freely/assets/110401199/899bc5b1-6a1d-4379-8c0b-5a1b569a0c8d
+">
 
-![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/acd8cb66-73e7-49e9-86e9-3fe736f6f8c3)
 
-##### [4. 학습 자료](https://www.notion.so/7416e76f0e5c47d39c3dbb7995d78eb5?pvs=4#845852fbceb14aaca4d83d837dad969d)
-
-![image](https://github.com/Damongsanga/TIL_write_freely/assets/110401199/b8f20ff0-e37d-4f3f-8e58-788de5a6afe1)

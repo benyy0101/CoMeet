@@ -129,10 +129,8 @@ export default function Channel({
                 </ChatNavbar>
                 {inChat ? (
                   <Chat
-                    profileImg={profileImg}
                     chatDomain={"channel"}
                     id={mySessionId}
-                    username={myUserName}
                     setMessage={setMessage}
                     message={message}
                   />
@@ -153,15 +151,10 @@ export default function Channel({
                     .filter((sub) => sub !== mainStreamManager)
                     .slice(page * sidePageSize, (page + 1) * sidePageSize)
                     .map((sub, i) => (
-                      <StreamContainer
-                        key={sub.id}
-                        onClick={() => handleMainVideoStream(sub)}
-                      >
+                      <StreamContainer key={sub.id} onClick={() => handleMainVideoStream(sub)}>
                         <UserVideoComponent
                           streamManager={sub}
-                          speaking={speakerIds.includes(
-                            sub.stream.connection.connectionId
-                          )}
+                          speaking={speakerIds.includes(sub.stream.connection.connectionId)}
                           isMain={false}
                         />
                       </StreamContainer>
@@ -219,27 +212,19 @@ export default function Channel({
                     >
                       <UserVideoComponent
                         streamManager={sub}
-                        speaking={speakerIds.includes(
-                          sub.stream.connection.connectionId
-                        )}
+                        speaking={speakerIds.includes(sub.stream.connection.connectionId)}
                         isMain={false}
                       />
                     </StreamContainer>
                   ))}
             </ViedoGrid>
             {page > 0 && (
-              <PaginationButton
-                className="left-1"
-                onClick={() => setPage((prev) => prev - 1)}
-              >
+              <PaginationButton className="left-1" onClick={() => setPage((prev) => prev - 1)}>
                 <LeftIcon />
               </PaginationButton>
             )}
             {subscribers.length + 1 > (page + 1) * pageSize && (
-              <PaginationButton
-                className="right-1"
-                onClick={() => setPage((prev) => prev + 1)}
-              >
+              <PaginationButton className="right-1" onClick={() => setPage((prev) => prev + 1)}>
                 <RightIcon />
               </PaginationButton>
             )}

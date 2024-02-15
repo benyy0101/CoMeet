@@ -1,4 +1,5 @@
 import MarkdownRenderer from "components/MarkdownRenderer";
+import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 interface IProps {
@@ -6,9 +7,16 @@ interface IProps {
 }
 
 export default function ChatRow({ chat }: IProps) {
+  const navigate = useNavigate();
+
+  const navigateToProfile = () => {
+    navigate(`/userpage/${chat.memberId}`);
+  };
+
   return (
     <ChatRowContainer>
       <ProfileImg
+        onClick={navigateToProfile}
         style={{
           backgroundImage: `url(
             ${chat.profileImage})`,
@@ -16,7 +24,7 @@ export default function ChatRow({ chat }: IProps) {
       />
       <Info>
         <WriterRow>
-          <Writer>{chat.nickname}</Writer>
+          <Writer onClick={navigateToProfile}>{chat.nickname}</Writer>
           <SendAt>{chat.createdAt.slice(0, 21)}</SendAt>
         </WriterRow>
         <MarkdownContainer>
@@ -56,11 +64,13 @@ min-h-10
 rounded-full
 bg-cover
 bg-center
+cursor-pointer
 `;
 
 const Writer = tw.h1`
 text-md
 font-semibold
+cursor-pointer
 `;
 
 const SendAt = tw.p`
