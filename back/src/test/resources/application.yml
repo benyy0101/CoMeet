@@ -7,6 +7,7 @@ spring:
     username:
     password:
     driver-class-name:
+
   jpa:
     hibernate:
       ddl-auto:

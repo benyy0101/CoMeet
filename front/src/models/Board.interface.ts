@@ -81,6 +81,7 @@ export interface EnterBoardParams {
  */
 export interface EnterBoardResponse {
   id: number;
+  writerId: string;
   title: string;
   content: string;
   likeCount: number;
@@ -93,6 +94,7 @@ export interface EnterBoardResponse {
   roomMcount: number;
   roomCapacity: number;
   roomImage: string;
+  roomId: number;
   isLocked: boolean;
   writerNickname: string;
   writerImage: string;

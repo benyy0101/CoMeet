@@ -30,7 +30,7 @@ import Oauth from "pages/Oauth";
 
 function App() {
   //임시
-  const userInfo = useSelector((state: any) => state.user);
+  // const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
 
   const [isLogin, setIsLogin] = useState<boolean>(false);
@@ -99,10 +99,13 @@ function App() {
           (e: any) => alert("에러발생!!!!!!")
         );
       }
+      try {
+        //창 끄기 전에 방 나가기
+        window.addEventListener("beforeunload", leaveRoomHandler);
+      } catch (error) {
+        console.log(error);
+      }
     }
-
-    //창 끄기 전에 방 나가기
-    window.addEventListener("beforeunload", leaveRoomHandler);
 
     return () => {
       if (stompClient.current) {
@@ -121,6 +124,9 @@ function App() {
   };
 
   const leaveRoomHandler = () => {
+    if (session) {
+      session.disconnect();
+    }
     const data: LeaveRoomParams = {
       roomId: parseInt(roomInfo.roomId),
     };

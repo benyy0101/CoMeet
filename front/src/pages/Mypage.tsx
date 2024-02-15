@@ -12,11 +12,14 @@ import { useQuery } from "@tanstack/react-query";
 import tw from "tailwind-styled-components";
 import { MemberQuery } from "models/Member.interface";
 import { handleMember } from "api/Member";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import axios from "axios";
+import { Background } from "components/Common/Backgruond";
+import { updateUserImg } from "store/reducers/userSlice";
 
 export const Mypage = () => {
+  const dispatch = useDispatch();
   //id 리덕스에서 가져오고
   const userId = useSelector((state: any) => state.user.user.memberId);
 
@@ -45,11 +48,23 @@ export const Mypage = () => {
     }
   }, [memberId]);
 
+  useEffect(() => {
+    // fetchData();
+
+    handleMember(memberId).then((data) => {
+      dispatch(updateUserImg({ img: data.profileImage }));
+    });
+  }, []);
+
   //프로필 이미지 바뀌면 새로 고침
   useEffect(() => {
     if (isChange) {
-      fetchData();
       setisChange(false);
+      handleMember(memberId).then((data) => {
+        setUserData(data);
+        console.log(userData);
+        dispatch(updateUserImg({ img: data.profileImage }));
+      });
     }
   }, [isChange]);
 
@@ -59,6 +74,7 @@ export const Mypage = () => {
 
   return (
     <AllContainer>
+      <Background />
       {/* 왼쪽 부분 - 프로필, 키워드, 공부타입, 공부타임 */}
       <FirstContainerLeft>
         {/* 프로필 컨테이너 */}
@@ -119,7 +135,7 @@ flex
 h-[120vh]
 px-10
 py-2
-bg-[#180E2C]
+
 `;
 
 // 프로필/키워드/공부타입/공부시간 컨테이너
@@ -148,6 +164,7 @@ h-[30%]
 mb-5
 rounded-xl
 bg-[#3C334D]
+bg-opacity-75
 `;
 
 // 키워드, 공부타입, 공부시간 들어 있는 컨테이너
@@ -159,6 +176,7 @@ h-[67%]
 // 키워드 컨테이너
 const KeywordContainer = tw.div`
 bg-[#3C334D]
+bg-opacity-75
 w-[50%]
 mr-5
 rounded-xl
@@ -176,6 +194,7 @@ const StudyTypeContainer = tw.div`
 flex-1
 rounded-xl
 bg-[#3C334D]
+bg-opacity-75
 mb-5
 `;
 
@@ -184,6 +203,7 @@ const StudyTimeContainer = tw.div`
 flex-1
 rounded-xl
 bg-[#3C334D]
+bg-opacity-75
 `;
 
 // TIL 캘린더 컨테이너
@@ -191,7 +211,7 @@ const TILCalendarContainer = tw.div`
 h-[65%]
 mb-5
 rounded-xl
-bg-[#3C334D]
+
 `;
 
 // 공부 합계 시간 컨테이너
@@ -199,4 +219,5 @@ const SumTimeContainer = tw.div`
 h-[32%]
 rounded-xl
 bg-[#3C334D]
+bg-opacity-75
 `;

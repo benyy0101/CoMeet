@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
+import BasicRoom from "assets/img/basic-room.png";
 
 export default function RoomConfirm(props: any) {
   const navigate = useNavigate();
@@ -19,13 +20,7 @@ export default function RoomConfirm(props: any) {
       <ProfileImg
         style={{
           backgroundImage: `url(
-            ${
-              props.roomImage &&
-              (props.roomImage === "" ||
-                props.roomImage === "default_room_image_letsgo")
-                ? "https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png"
-                : props.roomImage
-            })`,
+            ${props.roomImage ? props.roomImage : BasicRoom})`,
         }}
       />
       <Description> {props.description}</Description>
@@ -63,6 +58,7 @@ h-20
 rounded-full
 bg-cover
 bg-center
+bg-white
 `;
 
 const Title = tw.h1`

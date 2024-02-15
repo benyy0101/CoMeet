@@ -38,10 +38,12 @@ spring:
           github:
             client-id:
             client-secret:
-          google:
-            client-id:
-            client-secret:
           password-salt:
+
+  servlet:
+    multipart:
+      max-file-size:
+      max-request-size:
 
 logging.level:
   org.hibernate.SQL:

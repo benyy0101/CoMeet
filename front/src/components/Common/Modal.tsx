@@ -61,7 +61,9 @@ function Modal(props: ModalProps) {
   return (
     <Wrapper onClick={modalToggleHandler}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
-        {option === "login" ? <Login></Login> : null}
+        {option === "login" ? (
+          <Login modalToggleHandler={modalToggleHandler}></Login>
+        ) : null}
         {option === "confirm" ? (
           <RoomConfirm {...setting!}></RoomConfirm>
         ) : null}

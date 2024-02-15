@@ -18,12 +18,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { createSession, createToken } from "../api/OvSession";
 import ChannelButton from "../components/Room/ChannelButton";
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
@@ -44,6 +39,7 @@ import { filterType } from "constants/Filter";
 import { useDispatch } from "react-redux";
 import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import BasicRoom from "assets/img/basic-room.png";
 
 interface IProps {
   setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;
@@ -223,9 +219,7 @@ export const Room = ({
       });
       setSubscribers((subscribers) => [...subscribers, subscriber]);
     });
-    mySession.on("streamDestroyed", (event) =>
-      deleteSubscriber(event.stream.streamManager)
-    );
+    mySession.on("streamDestroyed", (event) => deleteSubscriber(event.stream.streamManager));
     mySession.on("reconnecting", () => console.warn("재접속 시도중입니다...."));
     mySession.on("reconnected", () => console.log("재접속에 성공했습니다."));
     mySession.on("sessionDisconnected", (event) => {
@@ -251,9 +245,7 @@ export const Room = ({
 
     mySession.on("publisherStopSpeaking", (event: any) => {
       console.log("User " + event.connection.connectionId + " stop speaking");
-      setSpeakerIds((prev) =>
-        prev.filter((id) => id !== event.connection.connectionId)
-      );
+      setSpeakerIds((prev) => prev.filter((id) => id !== event.connection.connectionId));
     });
 
     setSession(mySession);
@@ -281,9 +273,7 @@ export const Room = ({
           session.publish(publisher);
 
           const devices = await OV.current.getDevices();
-          const videoDevices = devices.filter(
-            (device) => device.kind === "videoinput"
-          );
+          const videoDevices = devices.filter((device) => device.kind === "videoinput");
           const currentVideoDeviceId = publisher.stream
             .getMediaStream()
             .getVideoTracks()[0]
@@ -295,11 +285,7 @@ export const Room = ({
           setPublisher(publisher);
           setCurrentVideoDevice(currentVideoDevice);
         } catch (error: any) {
-          console.log(
-            "There was an error connecting to the session:",
-            error.code,
-            error.message
-          );
+          console.log("There was an error connecting to the session:", error.code, error.message);
         }
       });
     }
@@ -308,9 +294,7 @@ export const Room = ({
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
+      const videoDevices = devices.filter((device) => device.kind === "videoinput");
 
       if (videoDevices && videoDevices.length > 1) {
         const newVideoDevice = videoDevices.filter(
@@ -355,9 +339,7 @@ export const Room = ({
   }, []);
 
   const getToken = useCallback(async () => {
-    return createSession(mySessionId).then((sessionId) =>
-      createToken(sessionId)
-    );
+    return createSession(mySessionId).then((sessionId) => createToken(sessionId));
   }, [mySessionId]);
 
   const toggleNotice = () => {
@@ -372,6 +354,8 @@ export const Room = ({
     setModal(!modal);
     console.log("modal:", modal);
   };
+
+  console.log(userInfo);
 
   //여기에 채널 추가, 삭제 함수 추가
   const addChannel = async (props: string) => {
@@ -391,11 +375,7 @@ export const Room = ({
         data: newChannel,
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(
-        `/app/room/info/send`,
-        {},
-        JSON.stringify(event)
-      );
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
@@ -411,11 +391,7 @@ export const Room = ({
         data: { channelId: id },
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(
-        `/app/room/info/send`,
-        {},
-        JSON.stringify(event)
-      );
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
@@ -439,11 +415,7 @@ export const Room = ({
         data: newLounge,
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(
-        `/app/room/info/send`,
-        {},
-        JSON.stringify(event)
-      );
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
@@ -459,11 +431,7 @@ export const Room = ({
         data: { loungeId: id },
       };
       console.log("보내는 이벤트", event);
-      stompClient.current.send(
-        `/app/room/info/send`,
-        {},
-        JSON.stringify(event)
-      );
+      stompClient.current.send(`/app/room/info/send`, {}, JSON.stringify(event));
     } catch (e) {
       console.log(e);
     }
@@ -483,7 +451,7 @@ export const Room = ({
           <RoomTitleImgBorder>
             <RoomTitleImg
               style={{
-                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                backgroundImage: `url(${roomData?.room_image ? roomData.room_image : BasicRoom})`,
               }}
             />
           </RoomTitleImgBorder>
@@ -494,11 +462,13 @@ export const Room = ({
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
-          <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
-            <RoomButton>
-              <Cog6ToothIcon className="w-8 h-8" />
-            </RoomButton>
-          </Link>
+          {roomData?.managerId === userInfo.user.memberId && (
+            <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
+              <RoomButton>
+                <Cog6ToothIcon className="w-8 h-8 hover:text-violet-700 transition-color" />
+              </RoomButton>
+            </Link>
+          )}
           <RoomButton onClick={onClickLeaveRoom}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
@@ -524,13 +494,8 @@ export const Room = ({
                   {lounges.map((l) => (
                     <LoungeButton
                       key={l.loungeId}
-                      active={
-                        inLounge && currentLounge?.loungeId === l.loungeId
-                      }
-                      disabled={
-                        isLoading ||
-                        (inLounge && currentLounge?.loungeId === l.loungeId)
-                      }
+                      active={inLounge && currentLounge?.loungeId === l.loungeId}
+                      disabled={isLoading || (inLounge && currentLounge?.loungeId === l.loungeId)}
                       lounge={l}
                       moveLounge={moveLounge}
                     />
@@ -544,10 +509,7 @@ export const Room = ({
                     <ChannelButton
                       key={c.channelId}
                       active={mySessionId === c.channelId.toString()}
-                      disabled={
-                        isLoading ||
-                        (!inLounge && mySessionId === c.channelId.toString())
-                      }
+                      disabled={isLoading || (!inLounge && mySessionId === c.channelId.toString())}
                       id={c.channelId.toString()}
                       name={c.name}
                       moveChannel={moveChannel}
@@ -557,23 +519,25 @@ export const Room = ({
               </SideContentContainer>
             </SideWrapper>
           ) : null}
-          <RoomAddButton onClick={handleModal}>
-            <PlusIcon className="w-6 h-6"></PlusIcon>
-            <ModalPortal>
-              {modal ? (
-                <Modal
-                  channels={channels}
-                  removeChannel={removeChannel}
-                  addChannel={addChannel}
-                  toggleModal={handleModal}
-                  option="channelCreate"
-                  lounges={lounges}
-                  addLounge={addLounge}
-                  removeLounge={removeLounge}
-                ></Modal>
-              ) : null}
-            </ModalPortal>
-          </RoomAddButton>
+          {roomData?.managerId === userInfo.user.memberId && (
+            <RoomAddButton onClick={handleModal}>
+              <PlusIcon className="w-6 h-6"></PlusIcon>
+              <ModalPortal>
+                {modal ? (
+                  <Modal
+                    channels={channels}
+                    removeChannel={removeChannel}
+                    addChannel={addChannel}
+                    toggleModal={handleModal}
+                    option="channelCreate"
+                    lounges={lounges}
+                    addLounge={addLounge}
+                    removeLounge={removeLounge}
+                  ></Modal>
+                ) : null}
+              </ModalPortal>
+            </RoomAddButton>
+          )}
         </RoomSidebar>
         {currentLounge && (
           <ChannelBorder>
@@ -581,6 +545,7 @@ export const Room = ({
               <Lounge lounge={currentLounge} />
             ) : (
               <Channel
+                profileImg={userInfo.user.profileImage}
                 session={session}
                 mySessionName={mySessionName}
                 mySessionId={mySessionId}
@@ -605,18 +570,14 @@ export const Room = ({
               <SpeakerWaveIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-          >
+          <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
             {isVideoDisabled ? (
               <VideoCameraSlashIcon className="w-8 h-8 text-red-400" />
             ) : (
               <VideoCameraIcon className="w-8 h-8" />
             )}
           </ControlPanelButton>
-          <ControlPanelButton
-            onClick={() => setIsScreenShared(!isScreenShared)}
-          >
+          <ControlPanelButton onClick={() => setIsScreenShared(!isScreenShared)}>
             {isScreenShared ? (
               <SignalIcon className="w-8 h-8" />
             ) : (
@@ -625,15 +586,9 @@ export const Room = ({
           </ControlPanelButton>
           <ControlPanelButton>
             {filter ? (
-              <SparklesIcon
-                className="w-8 h-8 text-yellow-400"
-                onClick={() => setFilter(null)}
-              />
+              <SparklesIcon className="w-8 h-8 text-yellow-400" onClick={() => setFilter(null)} />
             ) : (
-              <SparklesIcon
-                className="w-8 h-8"
-                onClick={() => setFilterMenuOpen(true)}
-              />
+              <SparklesIcon className="w-8 h-8" onClick={() => setFilterMenuOpen(true)} />
             )}
             {filterMenuOpen && (
               <FilterMenu onMouseLeave={() => setFilterMenuOpen(false)}>

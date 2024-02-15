@@ -1,4 +1,7 @@
-import { ModifyCommentParams, SearchCommentContent } from "models/Comments.interface";
+import {
+  ModifyCommentParams,
+  SearchCommentContent,
+} from "models/Comments.interface";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -41,19 +44,29 @@ export const BoardCommentComponent = (props: CommentProps) => {
     <TotalContainer>
       <Comment>
         <NicAndDate>
-          <Nicname>{writerNickname}</Nicname>
-          <Date>{updatedAt}</Date>
+          <div className="flex">
+            <Nicname>{writerNickname}</Nicname>
+            <Date>{updatedAt}</Date>
+          </div>
+          <div>
+            {memberNickname === writerNickname ? (
+              <>
+                <ModifyButton>수정</ModifyButton>
+                <DeleteButton onClick={() => props.handleDelete(id)}>
+                  삭제
+                </DeleteButton>
+              </>
+            ) : // <div className="flex justify-end mr-1">
+            //   {/* <button onClick={handleModifySub}>수정 -----</button> */}
+            // </div>
+            null}
+          </div>
         </NicAndDate>
+        <Context id={id.toString()}>{content}</Context>
         {/* <Context>{content}</Context>  미안하다..!*/}
-        <textarea readOnly className="text-black" id={id.toString()}>
+        {/* <textarea readOnly className="text-black" id={id.toString()}>
           {content}
-        </textarea>
-        {memberNickname === writerNickname ? (
-          <NicAndDate>
-            <button onClick={handleModifySub}>수정 -----</button>
-            <button onClick={() => props.handleDelete(id)}>삭제</button>
-          </NicAndDate>
-        ) : null}
+        </textarea> */}
       </Comment>
     </TotalContainer>
   );
@@ -78,11 +91,13 @@ my-5
 const NicAndDate = tw.div`
 flex
 mb-3
+justify-between
 `;
 
 //닉네임
 const Nicname = tw.div`
 mr-3
+font-bold
 text-gray-200
 `;
 
@@ -91,5 +106,24 @@ const Date = tw.div`
 text-gray-400
 `;
 
+const ModifyButton = tw.button`
+text-gray-400 text-sm hover:bg-gray-800 rounded-md px-2 py-1 mr-1
+`;
+
+const DeleteButton = tw.button`
+text-gray-400 text-sm mr-2  hover:bg-gray-800 rounded-md px-2 py-1
+`;
+
 //댓글 내용
-const Context = tw.div``;
+const Context = tw.div`
+text-white
+flex-grow
+py-3
+px-3
+bg-gray-900
+mx-1
+text-sm
+break-words
+rounded-md
+whitespace-pre-line
+`;

@@ -25,7 +25,8 @@ type SelectOption = {
 
 function TextEditor(props: TextEditProps) {
   const location = useLocation();
-  const { editId, editTitle, editContent, isValid, editCategory } = location.state;
+  const { editId, editTitle, editContent, isValid, editCategory } =
+    location.state;
 
   const editorRef = useRef<Editor | null>(null);
   const { isFree, isEdit } = props;
@@ -45,14 +46,16 @@ function TextEditor(props: TextEditProps) {
     title: "",
     type: "RECRUIT",
   };
-  const [createBoardParams, setCreateBoardParams] = useState<CreateBoardParams>(dummy1);
+  const [createBoardParams, setCreateBoardParams] =
+    useState<CreateBoardParams>(dummy1);
 
   const dummy2: ModifyBoardParams = {
     boardId: 0,
     content: "",
     title: "",
   };
-  const [modifyBoardParams, setModifyBoardParams] = useState<ModifyBoardParams>(dummy2);
+  const [modifyBoardParams, setModifyBoardParams] =
+    useState<ModifyBoardParams>(dummy2);
 
   const [isRoomValid, setIsRoomValid] = useState<boolean>(isValid);
   const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
@@ -81,7 +84,9 @@ function TextEditor(props: TextEditProps) {
 
   const handleWrite = (event: React.MouseEvent<HTMLButtonElement>) => {
     // 조건대로 입력이 들어왔는지 체크
-    const context = editorRef.current ? editorRef.current.getInstance().getMarkdown() : "";
+    const context = editorRef.current
+      ? editorRef.current.getInstance().getMarkdown()
+      : "";
     const roomId = selectedRoom ? selectedRoom : 0;
     if (title === "") {
       alert("제목을 작성하세요");
@@ -177,7 +182,9 @@ function TextEditor(props: TextEditProps) {
         ></TitleInput>
       </TitleWrapper>
       <OptionContainer>
-        {!isFree ? <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption> : null}
+        {!isFree ? (
+          <RoomOption editRoom={editTitle} selectRoom={handleRoom}></RoomOption>
+        ) : null}
         <ValidButtonContainer>
           {!isFree && (
             <>
@@ -300,7 +307,8 @@ const QuillContainer = tw.div`
     w-full
     min-h-[300px]  
     rounded-md
-    mb-4           
+    mb-4    
+    text-black       
 `;
 const ButtonWrapper = tw.div`
   w-full

@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserState } from "models/Login.interface";
 import { handleLogin } from "api/Login";
 import { useQuery } from "@tanstack/react-query";
@@ -7,28 +7,38 @@ import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginResponse } from "models/Login.interface";
-import { login, storeMemberId } from "store/reducers/userSlice";
+import { login, storeMemberId, updateUserImg } from "store/reducers/userSlice";
 import { getKeywords } from "store/reducers/keywordSlice";
 import { searchKeyword } from "api/Keyword";
 // import { SearchKeywordResponse } from "models/Keyword.interface";
 import GithubIcon from "assets/img/githubIcons.png";
 import { githubLogin } from "api/Auth";
-function Login() {
+import { useNavigate } from "react-router-dom";
+import { handleMember } from "api/Member";
+
+interface IProps {
+  modalToggleHandler: () => void;
+}
+
+function Login({ modalToggleHandler }: IProps) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const userInfo = useSelector((state: any) => state.user);
   const [memberId, setMemberId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    data: userData,
-    isError,
-    isLoading,
-    refetch: loginRefetch,
-  } = useQuery<LoginResponse, Error>({
-    queryKey: ["user"],
-    queryFn: () => handleLogin(memberId, password),
-    enabled: false,
-  });
+  // const {
+  //   data: userData,
+  //   isError,
+  //   isLoading,
+  //   refetch: loginRefetch,
+  // } = useQuery<LoginResponse, Error>({
+  //   queryKey: ["user", memberId],
+  //   queryFn: () => handleLogin(memberId, password),
+  //   enabled: false,
+  // });
 
   // const { data: keywordData, refetch: keywordFetch } = useQuery<SearchKeywordResponse, Error>({
   //   queryKey: ["keyword"],
@@ -43,52 +53,64 @@ function Login() {
   // }, [keywordData]);
 
   useEffect(() => {
-    if (isError) {
-      setError(true);
-    }
-  }, [isError]);
-
-  useEffect(() => {
     if (memberId === "") {
       setError(false);
     }
   }, [memberId]);
 
-  useEffect(() => {
-    if (userData) {
-      const res = userData;
-      dispatch(login(res));
-      dispatch(storeMemberId(memberId));
-      // let keywords: SearchKeywordResponse = {
-      //   lst: [],
-      // };
-      searchKeyword({}).then((data) => {
-        console.log(data);
-        // keywords = data;
-        dispatch(getKeywords(data));
-        return data;
-      });
-      // console.log(keywords);
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   if (userData) {
+  //     console.error("123", userData);
+  //     const res = userData;
+
+  //     // console.log(keywords);
+  //   }
+  // }, [userData]);
 
   const loginHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(false);
+    setIsLoading(true);
 
-    loginRefetch();
+    handleLogin(memberId, password)
+      .then((res) => {
+        dispatch(login(res));
+        dispatch(storeMemberId(memberId));
+        // let keywords: SearchKeywordResponse = {
+        //   lst: [],
+        // };
+        searchKeyword({}).then((data) => {
+          console.log(data);
+          // keywords = data;
+          dispatch(getKeywords(data));
+          return data;
+        });
+
+        handleMember(memberId).then((data) => {
+          console.log(data);
+          dispatch(updateUserImg({ img: data.profileImage }));
+        });
+
+        setMemberId("");
+        setPassword("");
+        modalToggleHandler();
+      })
+      .catch((error: any) => setError(true));
+
     // keywordFetch();
   };
 
   const socialLoginHandler = (e: React.MouseEvent) => {
-    e.preventDefault();
-    console.log("socialLoginHandler");
-    window.location.href =
-      "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email";
-    //dispatch(login(res));
+    try {
+      e.preventDefault();
+      console.log("socialLoginHandler");
+      window.location.href =
+        "https://github.com/login/oauth/authorize?client_id=ee190e90e2c248f7e25d&scope=user:email";
+      //dispatch(login(res));
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  
 
   return (
     <LoginWrapper>

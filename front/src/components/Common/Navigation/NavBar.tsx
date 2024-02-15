@@ -1,25 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import tw from "tailwind-styled-components";
 
 import BasicProfile from "assets/img/basic-profile.svg";
+import BasicRoom from "assets/img/basic-room.png";
 
 import { ServerDropDownList } from "./ServerDropDownList";
 import useOutsideClick from "hooks/useOutsideClick";
 import ModalPortal from "utils/Portal";
 import Modal from "components/Common/Modal";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
 import { handleMember } from "api/Member";
 import {
+  PowerIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   VideoCameraIcon,
   VideoCameraSlashIcon,
 } from "@heroicons/react/24/solid";
 import logo from "../../../assets/logo.svg";
+import { logout } from "store/reducers/userSlice";
+import { handleLogout } from "api/Login";
 import defaultProfile from "../../../assets/default_profile.svg";
+import { updateUserImg } from "store/reducers/userSlice";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -38,13 +43,15 @@ export const NavBar = ({
   isVideoDisabled,
   publisher,
 }: IProps) => {
+  const navigate = useNavigate();
+
   const location = useLocation();
   //memberId 가져오기
-  const memberId = useSelector((state: any) => state.user.user.memberId);
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   const [userImg, setUserImg] = useState<string>("");
+  const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
 
   const loginModalHandler = () => {
     setLoginModal(!loginModal);
@@ -56,9 +63,8 @@ export const NavBar = ({
     setMessageModal(!messageModal);
   };
 
-  const userInfo = useSelector((state: any) => state.user);
   const roomInfo = useSelector((state: any) => state.room);
-  console.log(userInfo);
+  const userInfo = useSelector((state: any) => state.user);
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -80,13 +86,44 @@ export const NavBar = ({
     setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
-  console.log(userInfo.user.memberId);
+  useEffect(() => {
+    setUserImg(userInfo.user.profileImage);
+  }, [userInfo.user.profileImage]);
+
   //시작할 때 데이터 다 들고와
   useEffect(() => {
+    console.log(userImg);
+    console.error(userInfo);
     if (userInfo.isLoggedIn) {
       fetchData();
+      dispatch(updateUserImg({ img: userImg }));
     }
+    console.log(roomData);
   }, [userInfo.isLoggedIn]);
+
+  // useEffect(() => {
+  //   if (roomData) {
+  //     const isUserIn =
+  //       roomData.members &&
+  //       roomData.members.some((member: any) => member.memberId === memberId);
+  //     console.log("isUserIn " + isUserIn);
+  //     setIsUserInRoom(isUserIn);
+  //     console.log(isUserInRoom);
+  //     console.log(roomData);
+  //     console.log(roomData && isUserInRoom);
+  //   }
+  // }, [roomData, userInfo.user.meemberId]);
+
+  const dispatch = useDispatch();
+
+  const logoutHandler = () => {
+    console.log("handle logout");
+    handleLogout().then(() => {
+      dispatch(logout());
+      console.log("success");
+      navigate("/", { replace: true });
+    });
+  };
 
   return (
     <NavBarContainer $home={location.pathname === "/"}>
@@ -94,7 +131,7 @@ export const NavBar = ({
         <Logo>
           <Link to="/" className="flex items-center space-x-2">
             <img src={logo} className="w-14" alt="" />
-            <h1 className="text-xl font-thin">Comeet</h1>
+            <h1 className="text-md font-thin mt-1">COMEET</h1>
           </Link>
         </Logo>
         {/*로그인 하면 서버, 프로필 메뉴 나오고 로그인 안 하면 회원가입, 로그인 메뉴 나옴*/}
@@ -121,13 +158,14 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
+            {/* {roomData && isUserInRoom ? ( */}
             {roomData ? (
               <ServerContainer $active={true}>
                 <Link to={`/room/${roomInfo.roomId}`} className="w-full h-full">
                   <ServerTitleContainer>
                     <RoomThumbnail
                       style={{
-                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : `https://cdn1.iconfinder.com/data/icons/line-full-package/150/.svg-15-512.png`})`,
+                        backgroundImage: `url(${roomData?.room_image ? roomData.room_image : BasicRoom})`,
                       }}
                     />
                     <ServerText>{roomData.title}</ServerText>
@@ -143,7 +181,9 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+                    <ControlPanelButton
+                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                    >
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -154,14 +194,18 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
+              <ServerContainer $active={false}>
+                접속중인 방이 없습니다.
+              </ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
+              {isServerOpen && (
+                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
+              )}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
@@ -175,10 +219,16 @@ export const NavBar = ({
               </ModalPortal>
             </EnvelopMenu>
             <ProfileMenu>
-              <Link to={`/userpage/${memberId}`}>
-                <NavIcon src={userInfo.user.profileImage || defaultProfile} alt={BasicProfile} />
+              <Link to={`/userpage/${userInfo.user.memberId}`}>
+                <NavIcon
+                  src={userImg ? userImg : defaultProfile}
+                  alt={BasicProfile}
+                />
               </Link>
             </ProfileMenu>
+            <button onClick={logoutHandler}>
+              <PowerIcon className="w-8 h-8 text-red-700 text-bold hover:text-red-800 transition-colors" />
+            </button>
           </>
         ) : (
           <LoginContainer>
@@ -186,17 +236,25 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
             <LoginSignup>
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
-              <ModalPortal>
-                {loginModal === true ? (
-                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
-                ) : null}
-              </ModalPortal>
+              {loginModal === true ? (
+                <ModalPortal>
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
+                </ModalPortal>
+              ) : null}
             </LoginSignup>
           </LoginContainer>
         )}
