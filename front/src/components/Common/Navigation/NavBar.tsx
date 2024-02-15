@@ -14,6 +14,7 @@ import { ComputerDesktopIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 import { RoomResponse } from "models/Room.interface";
 import { handleMember } from "api/Member";
 import {
+  PowerIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   VideoCameraIcon,
@@ -49,7 +50,7 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
-  const [userImg, setUserImg] = useState<string>("");
+  // const [userImg, setUserImg] = useState<string>("");
   const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
 
   const loginModalHandler = () => {
@@ -82,20 +83,20 @@ export const NavBar = ({
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
     const res = await handleMember(userInfo.user.memberId);
-    setUserImg(res.profileImage); // 데이터 상태로 설정
+    // setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
-  useEffect(() => {
-    setUserImg(userInfo.user.profileImage);
-  }, [userInfo.user.profileImage]);
+  // useEffect(() => {
+  //   setUserImg(userInfo.user.profileImage);
+  // }, [userInfo.user.profileImage]);
 
   //시작할 때 데이터 다 들고와
   useEffect(() => {
-    console.log(userImg);
+    // console.log(userImg);
     console.error(userInfo);
     if (userInfo.isLoggedIn) {
       fetchData();
-      dispatch(updateUserImg({ img: userImg }));
+      // dispatch(updateUserImg({ img: userImg }));
     }
     console.log(roomData);
   }, [userInfo.isLoggedIn]);
@@ -157,7 +158,6 @@ export const NavBar = ({
       <RightContainer>
         {userInfo.isLoggedIn ? (
           <>
-            <button onClick={logoutHandler}>로그아웃</button>
             {/* {roomData && isUserInRoom ? ( */}
             {roomData ? (
               <ServerContainer $active={true}>
@@ -214,9 +214,17 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
-                <NavIcon src={userImg ? userImg : defaultProfile} alt={BasicProfile} />
+                <NavIcon
+                  src={
+                    userInfo.user.profileImage === "" ? defaultProfile : userInfo.user.profileImage
+                  }
+                  alt={BasicProfile}
+                />
               </Link>
             </ProfileMenu>
+            <button onClick={logoutHandler}>
+              <PowerIcon className="w-8 h-8 text-red-700 text-bold hover:text-red-800 transition-colors" />
+            </button>
           </>
         ) : (
           <LoginContainer>

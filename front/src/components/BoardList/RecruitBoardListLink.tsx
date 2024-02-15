@@ -29,19 +29,12 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
     <Link to={`/recruit-board/${boardId}`}>
       <TotalContainer>
         <LeftContainer>
-          <RoomImg
-            src={props.roomImage ? props.roomImage : BasicRoom}
-            alt="roomImg"
-          />
+          <RoomImg src={props.roomImage ? props.roomImage : BasicRoom} alt="roomImg" />
         </LeftContainer>
         <CenterContainer>
           <TitleAndValidContainer>
             <RecruitValid>
-              {props.isValid ? (
-                <ValidTrue>모집중</ValidTrue>
-              ) : (
-                <ValidFalse>모집완료</ValidFalse>
-              )}
+              {props.isValid ? <ValidTrue>모집중</ValidTrue> : <ValidFalse>모집완료</ValidFalse>}
             </RecruitValid>
             <BoardTitle>{props.title}</BoardTitle>
           </TitleAndValidContainer>
@@ -53,10 +46,7 @@ export const RecruitBoardListLink = (props: SearchBoardContent) => {
         </CenterContainer>
         <RightContainer>
           <WriterContainer>
-            <WriterImg
-              src={props.writerImage ? props.writerImage : BasicProfile}
-              alt="wrtierImg"
-            />
+            <WriterImg src={props.writerImage ? props.writerImage : BasicProfile} alt="wrtierImg" />
             <WriterNicname>{props.writerNickname}</WriterNicname>
           </WriterContainer>
           <WriteDate>{props.createdAt}</WriteDate>
@@ -158,12 +148,12 @@ mb-3
 
 //방 키워드
 const RoomKeyword = tw.div`
-text-[16px]
+text-base
 font-medium
 px-2
-
 rounded-lg
 bg-gray-600
+text-slate-200
 `;
 
 //작성자 닉네임, 작성자 이미지, 작성 날짜, 좋아요수 있는 오른쪽 컨테이너

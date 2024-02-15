@@ -52,7 +52,7 @@ export default function RoomItem(props: SearchRoomContent) {
           }}
         />
       </Column>
-      <Column className="flex-grow-[1] max-w-[30rem]">
+      <Column className="flex-grow-[1] max-w-[40rem]">
         <TitleContainer>
           <Title>{props.title}</Title>
           <Manager>{props.managerNickname}</Manager>
@@ -76,9 +76,7 @@ export default function RoomItem(props: SearchRoomContent) {
           ) : (
             <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
           )}
-          {props.isLocked && (
-            <LockClosedIcon className="w-6 h-6 text-slate-700" />
-          )}
+          {props.isLocked && <LockClosedIcon className="w-6 h-6 text-slate-700" />}
         </OptionContainer>
       </Column>
       <Column>
@@ -91,13 +89,7 @@ export default function RoomItem(props: SearchRoomContent) {
         </CountContainer>
       </Column>
 
-      {modal && (
-        <Modal
-          toggleModal={modalHandler}
-          option="confirm"
-          setting={props}
-        ></Modal>
-      )}
+      {modal && <Modal toggleModal={modalHandler} option="confirm" setting={props}></Modal>}
     </Wrapper>
   );
 }
@@ -128,13 +120,13 @@ px-4
 
 const ProfileImg = tw.div`
 bg-slate-300
-w-20
-h-20
+w-24
+h-24
 rounded-full
 bg-cover
 bg-center
-bg-white
-border
+border-purple-400
+border-2
 `;
 
 const Title = tw.h1`
@@ -186,13 +178,12 @@ gap-1
 `;
 
 const Keyword = tw.div`
-rounded-md
-p-1
+text-base
+font-medium
 px-2
-text-xs
-shadow-md
-bg-purple-800
-text-white
+rounded-lg
+bg-gray-600
+text-slate-200
 `;
 const OptionContainer = tw.div`
 flex

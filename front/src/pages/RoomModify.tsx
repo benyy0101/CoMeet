@@ -45,8 +45,8 @@ export default function RoomModify() {
 
     if (file) {
       //1메가 아래의 이미지만 업로드하게 하기 - 1메가 이상은 안 보내진다... 왜지?
-      if (file.size >= 1 * 1024 * 1024) {
-        alert("1mb 이하의 파일만 업로드 가능합니다.");
+      if (file.size >= 10 * 1024 * 1024) {
+        alert("10mb 이하의 파일만 업로드 가능합니다.");
         e.target.value = null;
       } else {
         //파일 선택시
@@ -127,6 +127,22 @@ export default function RoomModify() {
       setImagePreview("");
       // 선택했다가 지웠을 경우가 있을 수도 있으니
       setSelectedFile(undefined);
+    }
+  };
+
+  const deleteHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    eliminateRoom();
+  };
+
+  const eliminateRoom = async () => {
+    if (window.confirm("정말로 방을 삭제하시겠습니까?")) {
+      try {
+        const res = await deleteRoom({ roomId: parseInt(roomId!) });
+      } catch {
+        console.error("방 삭제 실패");
+      }
+    } else {
     }
   };
 
@@ -228,6 +244,7 @@ export default function RoomModify() {
             </InputUnit>
           </OptionContainer>
           <SubmitButtonContainer>
+            <DeleteButton onClick={deleteHandler}>방 삭제하기</DeleteButton>
             <SubmitButton>변경사항 저장</SubmitButton>
           </SubmitButtonContainer>
         </CreateRoomForm>
@@ -395,6 +412,19 @@ justify-end
 py-8
 border-t
 border-slate-400
+space-x-4
+`;
+
+const DeleteButton = tw.button`
+bg-red-700
+p-4
+flex
+justify-center
+items-center
+rounded-lg
+text-white
+font-semibold
+shadow-md
 `;
 
 const OptionContainer = tw.div`
