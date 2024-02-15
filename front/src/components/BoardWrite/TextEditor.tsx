@@ -58,7 +58,7 @@ function TextEditor(props: TextEditProps) {
     useState<ModifyBoardParams>(dummy2);
 
   const [isRoomValid, setIsRoomValid] = useState<boolean>(isValid);
-  const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("CHAT");
+  const [category, setCategory] = useState<FREE_BOARD_CATEGORY>("QUESTION");
 
   //쓰는 값
   const [title, setTitle] = useState<string>(editTitle || "");
@@ -152,6 +152,8 @@ function TextEditor(props: TextEditProps) {
     }
   };
 
+  console.log(category);
+
   return (
     <Wrapper>
       <Header>
@@ -164,7 +166,7 @@ function TextEditor(props: TextEditProps) {
           <SelectForm
             onChange={(data) => {
               //@ts-ignore
-              setCategory(data.target.selectedOptions[0].value);
+              setCategory(data.target.value);
             }}
           >
             {selectOption.map((option) => (
