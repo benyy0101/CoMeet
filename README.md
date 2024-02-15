@@ -310,7 +310,7 @@
 ##### 1. ERD
 ![ERD](./doc/ERD.png)
 
-##### [2. 요구 사항 명세서](https://www.notion.so/d8936d52d8b34c3fa1ae3326b29426b8)
+##### [2. 요구 사항 명세서](https://satin-turkey-70b.notion.site/d8936d52d8b34c3fa1ae3326b29426b8?pvs=4)
 ![Requirement](./doc/Requirement.png)
 
 
