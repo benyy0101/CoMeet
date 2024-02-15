@@ -126,7 +126,7 @@
         hibernate:
           format_sql: true
           dialect: org.hibernate.dialect.MySQL8Dialect
-          default_batch_fetch_size:
+          default_batch_fetch_size: 1000
 
     jwt:
       header: Authorization
