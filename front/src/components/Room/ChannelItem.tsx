@@ -1,10 +1,7 @@
+import { TrashIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import tw from "tailwind-styled-components";
-interface IChannel {
-  id: number;
-  roomId: number;
-  name: string;
-}
+
 interface IChannelItem {
   name: string;
   idx: number;
@@ -18,53 +15,51 @@ function ChannelItem(props: IChannelItem) {
   };
   return (
     <Wrapper>
-      <LeftContainer>
-        <Thumbnail />
-        <Title>{name}</Title>
-      </LeftContainer>
+      <Title>{name}</Title>
       <RightContainer>
-        <Destroy onClick={removeHandler}>삭제</Destroy>
+        <Destroy onClick={removeHandler}>
+          <CustomTrashIcon />
+        </Destroy>
       </RightContainer>
     </Wrapper>
   );
 }
 
 const Wrapper = tw.div`
-    bg-slate-500
-    w-96
-    h-full
-    p-4
-    rounded-md
-    flex
-    justify-between
-`;
-
-const LeftContainer = tw.div`
-    flex
-    gap-4
-`;
-
-const Thumbnail = tw.div`
-    w-8
-    h-8
-    bg-gray-300
-    rounded-full
+border-slate-500
+border
+w-96
+h-full
+p-3
+rounded-md
+flex
+justify-between
 `;
 
 const Title = tw.div`
-    flex
-    items-center
-    gap-1
+w-80
+max-w-80
+overflow-clip
+overflow-ellipsis
+break-words
+line-clamp-1
 `;
 
 const RightContainer = tw.div`
-    flex
-    gap-4
+flex
+gap-4
 `;
 
 const Destroy = tw.button`
-  text-red-800
-  text-lg
+text-lg
+`;
+
+const CustomTrashIcon = tw(TrashIcon)`
+text-red-500
+opacity-50
+hover:opacity-100
+w-6
+h-6
 `;
 
 export default ChannelItem;
