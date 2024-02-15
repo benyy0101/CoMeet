@@ -59,6 +59,7 @@ function FollowList(props: { option: string; toggleModal: () => void }) {
       {option === "following" && <Title>팔로잉</Title>}
       <ItemContainer>
         {option === "follower" &&
+          followerList.length !== 0 &&
           followerList.map((item, index) => (
             <FollowerItem
               key={item.memberId}
@@ -74,7 +75,12 @@ function FollowList(props: { option: string; toggleModal: () => void }) {
               toggleModal={toggleModal}
             />
           ))}
+
+        {option === "follower" && followerList.length === 0 && (
+          <NoContent>팔로워가 없습니다.</NoContent>
+        )}
         {option === "following" &&
+          followingList.length !== 0 &&
           followingList.map((item, index) => (
             <FollowerItem
               key={index}
@@ -83,13 +89,29 @@ function FollowList(props: { option: string; toggleModal: () => void }) {
               toggleModal={toggleModal}
             />
           ))}
+
+        {option === "following" && followingList.length === 0 && (
+          <NoContent>팔로잉이 없습니다.</NoContent>
+        )}
       </ItemContainer>
     </Wrapper>
   );
 }
 
+const NoContent = tw.div`
+flex
+self-center
+justify-center
+items-center
+text-center
+text-lg
+text-bold
+h-40
+w-40
+`;
+
 const Wrapper = tw.div`
-h-96
+max-h-96
 min-w-96
 bg-gradient-to-b
 from-sky-950

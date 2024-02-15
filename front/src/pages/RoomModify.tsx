@@ -130,6 +130,22 @@ export default function RoomModify() {
     }
   };
 
+  const deleteHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    eliminateRoom();
+  };
+
+  const eliminateRoom = async () => {
+    if (window.confirm("정말로 방을 삭제하시겠습니까?")) {
+      try {
+        const res = await deleteRoom({ roomId: parseInt(roomId!) });
+      } catch {
+        console.error("방 삭제 실패");
+      }
+    } else {
+    }
+  };
+
   return (
     <Wrapper>
       <CreateRoomContainer>
@@ -228,6 +244,7 @@ export default function RoomModify() {
             </InputUnit>
           </OptionContainer>
           <SubmitButtonContainer>
+            <DeleteButton onClick={deleteHandler}>방 삭제하기</DeleteButton>
             <SubmitButton>변경사항 저장</SubmitButton>
           </SubmitButtonContainer>
         </CreateRoomForm>
@@ -395,6 +412,19 @@ justify-end
 py-8
 border-t
 border-slate-400
+space-x-4
+`;
+
+const DeleteButton = tw.button`
+bg-red-700
+p-4
+flex
+justify-center
+items-center
+rounded-lg
+text-white
+font-semibold
+shadow-md
 `;
 
 const OptionContainer = tw.div`
