@@ -1,9 +1,6 @@
 # 🌠 개발자들을 위한 모각코 커뮤니티 사이트 COMEET
-![COMEET](./doc/COMEET.png){: width="600" height="350"}
-
+![COMEET](./doc/COMEET.png)
 <hr>
-
-여기에 메인 이미지
 
 
 ## 📌 서비스 소개
@@ -79,13 +76,11 @@
 
 <br/>
 
-## 🌐 포팅 메뉴얼
+## 🌐 Setting
 
-<details>
-<summary>포팅 메뉴얼 펼치기</summary>
-<div markdown="1">
 
-##### 1. 개발 환경 (Version)
+
+#### 1. 개발 환경 (Version)
 
 - Front
   - VS Code
@@ -97,20 +92,26 @@
   - MySQL : `8.2`
   - MySQL workbench : `8.0.21`
 
-##### 2. 주요 setting
+#### 2. 주요 setting
 
 - React
+    <details>
+    <summary>.env</summary>
+    <div markdown="1">
       
     ```
     REACT_APP_API_SERVER_URL = https://i10a506.p.ssafy.io/api
     REACT_APP_WEBSOCKET_SERVER_URL = https://i10a506.p.ssafy.io:8443/
     REACT_APP_SECRETKEY = {YOUR SECRET KEY}
     ```
+        </div>
+    </details>
 
 - Spring Boot
 
-  - application-secret.yml 파일을 만들어 .gitignore 에 관리하여 사용하였습니다.
-  - application.yml
+    <details>
+    <summary>application.yml</summary>
+    <div markdown="1">
 
     ```
     spring:
@@ -179,8 +180,10 @@
         auto: false
 
     ```
+    </div>
+    </details>
 
-##### 3. 빌드 및 실행
+#### 3. 빌드 및 실행
 
 - Front
   ```
@@ -200,9 +203,11 @@
   java -jar comeet-0.0.1-SNAPSHOT.jar
   ```
 
-##### 4. 배포
+#### 4. 배포
 
-- Nginx
+<details>
+    <summary>Nginx setting</summary>
+    <div markdown="1">
 
   ```
   upstream ssafy {
@@ -281,9 +286,10 @@
 
   }
   ```
-
 </div>
 </details>
+
+
 
 <br/>
 
@@ -294,15 +300,41 @@
 
 ## 💡 주요 기능
 
-(화면녹화해서 gif로 변환해서 넣을 예정)
+### 1. 로그인 & 소셜 로그인
+![로그인](./doc/1.로그인.gif)
+* 깃헙 소셜 로그인
 
-1. 로그인 & 소셜 로그인
-2. 일회용방, 지속방 구분
-3. 채팅 & 코드채팅
-4. 공유 코드 채팅 (중요)
-5. 캠공유 & 화면공유 & 필터 (중요)
-6. 방 & 게시판 검색
-7. 모집 게시판 & 가입링크 & 쪽지 전송 (중요)
+
+### 2. 방 생성 및 검색
+![방생성](./doc/2.방생성.gif)
+![모집게시판생성](./doc/2.모집게시판생성.gif)
+* 일회용 방, 지속성 방 설정하여 생성
+* 
+![방게시판조회](./doc/5.방게시판조회.gif)
+* 방 검색
+
+
+### 3. 방 가입 요청 및 승인
+![가입요청](./doc/6.가입요청.gif)
+![가입승인](./doc/6.가입승인.gif)
+* 다른 유저들이 모집 게시판에서 원하는 방의 모집게시판에서 가입 신청
+* 방장이 승인하여 방에 가입시킴
+
+### 4. 채팅 & 공유채팅
+![채팅과공유채팅](./doc/3.채팅과공유채팅.gif)
+* 공유채팅 사용 가능
+
+
+### 5. 캠&화면공유 with 필터
+![캠과필터](./doc/4.캠과필터.gif)
+* 캠과 화면 공유 가능
+* 다양한 필터 적용
+
+### 6. 마이페이지
+![마이페이지](./doc/7.마이페이지.gif) 
+* 사용자가 관심있는 개발 키워드 및 공부시간
+* TIL 작성 및 확인 
+* 팔로잉 팔로우
 
 <br/>
 
@@ -321,6 +353,3 @@
 ##### [4. 스터디](https://satin-turkey-70b.notion.site/16e7dd0673a44db6b94d53347d6714f5?pvs=4)
 
 <br/>
-
-## ⏰ 개발 기간
-- 24.01.08 ~ 24.02.15 (6주)
