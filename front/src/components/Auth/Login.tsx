@@ -7,13 +7,14 @@ import LoginBanner from "assets/img/login-banner.png";
 import tw from "tailwind-styled-components";
 import spinner from "assets/img/spinner.png";
 import { LoginResponse } from "models/Login.interface";
-import { login, storeMemberId } from "store/reducers/userSlice";
+import { login, storeMemberId, updateUserImg } from "store/reducers/userSlice";
 import { getKeywords } from "store/reducers/keywordSlice";
 import { searchKeyword } from "api/Keyword";
 // import { SearchKeywordResponse } from "models/Keyword.interface";
 import GithubIcon from "assets/img/githubIcons.png";
 import { githubLogin } from "api/Auth";
 import { useNavigate } from "react-router-dom";
+import { handleMember } from "api/Member";
 
 interface IProps {
   modalToggleHandler: () => void;
@@ -84,6 +85,12 @@ function Login({ modalToggleHandler }: IProps) {
           dispatch(getKeywords(data));
           return data;
         });
+
+        handleMember(memberId).then((data) => {
+          console.log(data);
+          dispatch(updateUserImg({ img: data.profileImage }));
+        });
+
         setMemberId("");
         setPassword("");
         modalToggleHandler();
@@ -107,7 +114,6 @@ function Login({ modalToggleHandler }: IProps) {
 
   return (
     <LoginWrapper>
-      <LoginImage src={LoginBanner} alt="LoginBanner" />
       <LoginContainer>
         <LoginTitle>로그인</LoginTitle>
         <LoginForm onSubmit={loginHandler}>

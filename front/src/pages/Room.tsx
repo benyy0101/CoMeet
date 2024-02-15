@@ -45,6 +45,7 @@ import { useDispatch } from "react-redux";
 import { setEnterRoom, setLeaveRoom } from "store/reducers/roomSlice";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import BasicRoom from "assets/img/basic-room.png";
+import { Background } from "components/Common/Backgruond";
 
 interface IProps {
   setRoomData: React.Dispatch<React.SetStateAction<RoomResponse | null>>;
@@ -374,6 +375,8 @@ export const Room = ({
     console.log("modal:", modal);
   };
 
+  console.log(userInfo);
+
   //여기에 채널 추가, 삭제 함수 추가
   const addChannel = async (props: string) => {
     try {
@@ -479,6 +482,7 @@ export const Room = ({
 
   return (
     <RoomContainer>
+      <Background />
       <RoomHeader>
         <RoomTitleContainer>
           <RoomTitleImgBorder>
@@ -495,11 +499,13 @@ export const Room = ({
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
-          <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
-            <RoomButton>
-              <Cog6ToothIcon className="w-8 h-8" />
-            </RoomButton>
-          </Link>
+          {roomData?.managerId === userInfo.user.memberId && (
+            <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
+              <RoomButton>
+                <Cog6ToothIcon className="w-8 h-8 hover:text-violet-700 transition-color" />
+              </RoomButton>
+            </Link>
+          )}
           <RoomButton onClick={onClickLeaveRoom}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
@@ -558,23 +564,25 @@ export const Room = ({
               </SideContentContainer>
             </SideWrapper>
           ) : null}
-          <RoomAddButton onClick={handleModal}>
-            <PlusIcon className="w-6 h-6"></PlusIcon>
-            <ModalPortal>
-              {modal ? (
-                <Modal
-                  channels={channels}
-                  removeChannel={removeChannel}
-                  addChannel={addChannel}
-                  toggleModal={handleModal}
-                  option="channelCreate"
-                  lounges={lounges}
-                  addLounge={addLounge}
-                  removeLounge={removeLounge}
-                ></Modal>
-              ) : null}
-            </ModalPortal>
-          </RoomAddButton>
+          {roomData?.managerId === userInfo.user.memberId && (
+            <RoomAddButton onClick={handleModal}>
+              <PlusIcon className="w-6 h-6"></PlusIcon>
+              <ModalPortal>
+                {modal ? (
+                  <Modal
+                    channels={channels}
+                    removeChannel={removeChannel}
+                    addChannel={addChannel}
+                    toggleModal={handleModal}
+                    option="channelCreate"
+                    lounges={lounges}
+                    addLounge={addLounge}
+                    removeLounge={removeLounge}
+                  ></Modal>
+                ) : null}
+              </ModalPortal>
+            </RoomAddButton>
+          )}
         </RoomSidebar>
         {currentLounge && (
           <ChannelBorder>
@@ -582,6 +590,7 @@ export const Room = ({
               <Lounge lounge={currentLounge} />
             ) : (
               <Channel
+                profileImg={userInfo.user.profileImage}
                 session={session}
                 mySessionName={mySessionName}
                 mySessionId={mySessionId}
@@ -667,10 +676,7 @@ h-[calc(100vh-48px)]
 flex
 flex-col
 relative
-bg-gradient-to-b
-from-[#0A031C]
-from-80%
-to-[#100530]
+
 
 `;
 

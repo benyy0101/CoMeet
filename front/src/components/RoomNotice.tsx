@@ -34,8 +34,14 @@ interface IProps {
 export const RoomNotice = ({ text }: IProps) => {
   return (
     <NoticeContainer>
-      <Title>모두 필독해주세요!</Title>
-      <Contents>{text}</Contents>
+      {text ? (
+        <>
+          <Title>공지</Title>
+          <Contents>{text}</Contents>
+        </>
+      ) : (
+        <Title>공지가 없습니다.</Title>
+      )}
     </NoticeContainer>
   );
 };

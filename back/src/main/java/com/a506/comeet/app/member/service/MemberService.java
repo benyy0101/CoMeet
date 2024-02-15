@@ -51,7 +51,7 @@ public class MemberService {
         nicknameDuplicateValidation(req);
         socialUserPasswordValidation(req, member);
 
-        S3ImageDelete(req, member);
+//        S3ImageDelete(req, member); // 유저 이미지 S3에서 삭제 X
         encodePassword(req);
 
         member.updateMember(req);

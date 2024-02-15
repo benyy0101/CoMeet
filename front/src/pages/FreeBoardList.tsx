@@ -22,30 +22,25 @@ import tw from "tailwind-styled-components";
 import { FreeBoardListLink } from "components/BoardList/FreeBoardListLink";
 import { Pagination } from "components/Common/Pagination";
 import { useQuery } from "@tanstack/react-query";
-import SearchBoardResponse, {
-  SearchBoardContent,
-  SearchBoardParams,
-} from "models/Board.interface";
+import SearchBoardResponse, { SearchBoardContent, SearchBoardParams } from "models/Board.interface";
 import { searchBoard } from "api/Board";
 import { BOARD_SORTBY, FREE_BOARD_CATEGORY } from "models/Enums.type";
+import { Background } from "components/Common/Backgruond";
 
 export const FreeBoardList = () => {
   //목록 리스트
   const [boardList, setBoardList] = React.useState<SearchBoardContent[]>([]);
-  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>(
-    {
-      boardType: "FREE",
-      sortBy: "LATEST",
-      page: 0,
-      size: 10,
-    }
-  );
+  const [searchBoardParams, setSearchBoardParams] = useState<SearchBoardParams>({
+    boardType: "FREE",
+    sortBy: "LATEST",
+    page: 0,
+    size: 10,
+  });
 
   //검색 단어
   const [searchWord, setSearchWord] = React.useState<string>("");
   type Condition = "제목+설명" | "작성자";
-  const [searchCondition, setSearchCondition] =
-    React.useState<Condition>("제목+설명");
+  const [searchCondition, setSearchCondition] = React.useState<Condition>("제목+설명");
 
   //정렬 - 최신순/좋아요순/모집률순 - 클릭 유무
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
@@ -148,70 +143,71 @@ export const FreeBoardList = () => {
 
   return (
     <TotalContainer>
+      <Background />
       <Wrapper>
         <LeftContainer>
-          {currentMenu === "ALL" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>
-              전체
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
-          )}
-          {currentMenu === "POPULAR" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("POPULAR")}>
-              <SideIconImg src={HotBlackBoardIcon} alt="" />
-              <SidebuttonTitle>인기글</SidebuttonTitle>
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("POPULAR")}>
-              <SideIconImg src={HotBoardIcon} alt="" />
-              <SidebuttonTitle>인기글</SidebuttonTitle>
-            </SideButton>
-          )}
-          {currentMenu === "CHAT" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={ChatBlackBoardIcon} alt="" />
-              <SidebuttonTitle>잡담</SidebuttonTitle>
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("CHAT")}>
-              <SideIconImg src={ChatBoardIcon} alt="" />
-              <SidebuttonTitle>잡담</SidebuttonTitle>
-            </SideButton>
-          )}
-          {currentMenu === "TIP" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("TIP")}>
-              <SideIconImg src={TipBlackBoardIcon} alt="" />
-              <SidebuttonTitle>팁/정보</SidebuttonTitle>
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("TIP")}>
-              <SideIconImg src={TipBoardIcon} alt="" />
-              <SidebuttonTitle>팁/정보</SidebuttonTitle>
-            </SideButton>
-          )}
-          {currentMenu === "PROMOTION" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("PROMOTION")}>
-              <SideIconImg src={PromBlackBoardIcon} alt="" />
-              <SidebuttonTitle>구인구직</SidebuttonTitle>
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("PROMOTION")}>
-              <SideIconImg src={PromBoardIcon} alt="" />
-              <SidebuttonTitle>구인구직</SidebuttonTitle>
-            </SideButton>
-          )}
-          {currentMenu === "QUESTION" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("QUESTION")}>
-              <SideIconImg src={AskBlackBoardIcon} alt="" />
-              <SidebuttonTitle>질문하기</SidebuttonTitle>
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("QUESTION")}>
-              <SideIconImg src={AskBoardIcon} alt="" />
-              <SidebuttonTitle>질문하기</SidebuttonTitle>
-            </SideButton>
-          )}
+          <div className="flex flex-col space-y-2 w-[20rem] fixed">
+            {currentMenu === "ALL" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("ALL")}>전체</SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("ALL")}>전체</SideButton>
+            )}
+            {currentMenu === "POPULAR" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("POPULAR")}>
+                <SideIconImg src={HotBlackBoardIcon} alt="" />
+                <SidebuttonTitle>인기글</SidebuttonTitle>
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("POPULAR")}>
+                <SideIconImg src={HotBoardIcon} alt="" />
+                <SidebuttonTitle>인기글</SidebuttonTitle>
+              </SideButton>
+            )}
+            {currentMenu === "CHAT" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("CHAT")}>
+                <SideIconImg src={ChatBlackBoardIcon} alt="" />
+                <SidebuttonTitle>잡담</SidebuttonTitle>
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("CHAT")}>
+                <SideIconImg src={ChatBoardIcon} alt="" />
+                <SidebuttonTitle>잡담</SidebuttonTitle>
+              </SideButton>
+            )}
+            {currentMenu === "TIP" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("TIP")}>
+                <SideIconImg src={TipBlackBoardIcon} alt="" />
+                <SidebuttonTitle>팁/정보</SidebuttonTitle>
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("TIP")}>
+                <SideIconImg src={TipBoardIcon} alt="" />
+                <SidebuttonTitle>팁/정보</SidebuttonTitle>
+              </SideButton>
+            )}
+            {currentMenu === "PROMOTION" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("PROMOTION")}>
+                <SideIconImg src={PromBlackBoardIcon} alt="" />
+                <SidebuttonTitle>구인구직</SidebuttonTitle>
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("PROMOTION")}>
+                <SideIconImg src={PromBoardIcon} alt="" />
+                <SidebuttonTitle>구인구직</SidebuttonTitle>
+              </SideButton>
+            )}
+            {currentMenu === "QUESTION" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("QUESTION")}>
+                <SideIconImg src={AskBlackBoardIcon} alt="" />
+                <SidebuttonTitle>질문하기</SidebuttonTitle>
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("QUESTION")}>
+                <SideIconImg src={AskBoardIcon} alt="" />
+                <SidebuttonTitle>질문하기</SidebuttonTitle>
+              </SideButton>
+            )}
+          </div>
         </LeftContainer>
         <CenterTotalContainer>
           <CoreTotalContainer>
@@ -296,9 +292,7 @@ export const FreeBoardList = () => {
                       </SortDropDown>
                     </ul>
                   )}
-                  <SortCountText>
-                    {currentSort === "LATEST" ? "최신순" : "좋아요순"}
-                  </SortCountText>
+                  <SortCountText>{currentSort === "LATEST" ? "최신순" : "좋아요순"}</SortCountText>
                 </SortCountButton>
               </SortCountContainer>
             </SortCountBothContainer>
@@ -335,7 +329,7 @@ flex
 
 w-full
 h-full
-bg-[#070311]
+
 pt-10
 pb-20
 min-h-svh
@@ -536,7 +530,6 @@ absolute
 inset-y-0
 left-[120px]
 items-center
-pl-3
 pointer-events-none
 z-index: 1;
 `;

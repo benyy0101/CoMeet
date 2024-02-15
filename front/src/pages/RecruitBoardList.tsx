@@ -197,23 +197,27 @@ export const RecruitBoardList = () => {
       <Background />
       <Wrapper>
         <LeftContainer>
-          {currentMenu === "전체" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("전체")}>전체</SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
-          )}
-          {currentMenu === "모집중" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>모집중</SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("모집중")}>모집중</SideButton>
-          )}
-          {currentMenu === "모집완료" ? (
-            <SideButtonSelected onClick={() => setCurrentMenu("모집완료")}>
-              모집완료
-            </SideButtonSelected>
-          ) : (
-            <SideButton onClick={() => setCurrentMenu("모집완료")}>모집완료</SideButton>
-          )}
+          <div className="flex flex-col space-y-2 w-80 fixed">
+            {currentMenu === "전체" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("전체")}>전체</SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("전체")}>전체</SideButton>
+            )}
+            {currentMenu === "모집중" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("모집중")}>
+                모집중
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("모집중")}>모집중</SideButton>
+            )}
+            {currentMenu === "모집완료" ? (
+              <SideButtonSelected onClick={() => setCurrentMenu("모집완료")}>
+                모집완료
+              </SideButtonSelected>
+            ) : (
+              <SideButton onClick={() => setCurrentMenu("모집완료")}>모집완료</SideButton>
+            )}
+          </div>
         </LeftContainer>
         <CenterTotalContainer>
           <CoreTotalContainer>
@@ -361,7 +365,9 @@ export const RecruitBoardList = () => {
         </CenterTotalContainer>
 
         <RightContainer>
-          <KeywordSearchBox sendKeyword={handleKeyword} />
+          <div className="flex flex-col space-y-2 w-80 fixed">
+            <KeywordSearchBox sendKeyword={handleKeyword} />
+          </div>
         </RightContainer>
       </Wrapper>
     </TotalContainer>
@@ -560,7 +566,7 @@ absolute
 inset-y-0
 left-[120px]
 items-center
-pl-3
+
 pointer-events-none
 z-index: 1;
 `;
@@ -604,7 +610,6 @@ const CenterTotalContainer = tw.div`
 flex-grow
 flex
 justify-center
-
 `;
 
 //진짜 모집게시판 리스트

@@ -16,9 +16,7 @@ interface IProps {
   setSortByLatest: React.Dispatch<React.SetStateAction<boolean>>;
   sortByLatest: boolean;
   // setPage: React.Dispatch<React.SetStateAction<number>>;
-  setConstraints: React.Dispatch<
-    React.SetStateAction<ROOM_CONSTRAINTS | "ALL">
-  >;
+  setConstraints: React.Dispatch<React.SetStateAction<ROOM_CONSTRAINTS | "ALL">>;
   setIsLockedHandler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -55,10 +53,8 @@ export default function FilterMenu({
           <SearchForm>
             <DropDowns onChange={dropDownHandler}>
               <DropdownOption value="ALL">모두</DropdownOption>
-              <DropdownOption value="VIDEOONMICOFF">
-                캠/화면공유 필수, 음소거 필수
-              </DropdownOption>
-              <DropdownOption value="VIDEOON">캠/화면공유 필수</DropdownOption>
+              <DropdownOption value="VIDEOONMICOFF">캠 공유, 음소거 필수</DropdownOption>
+              <DropdownOption value="VIDEOON">캠 공유 필수</DropdownOption>
               <DropdownOption value="MICOFF">음소거 필수</DropdownOption>
               <DropdownOption value="FREE">자유</DropdownOption>
             </DropDowns>
@@ -81,7 +77,7 @@ w-52
 const SearchOptionContainer = tw.div`
 w-full
 bg-gray-50
-border-[1px]
+border
 border-slate-200
 rounded-md
 shadow-sm
@@ -100,7 +96,13 @@ space-x-2
 
 const DropDowns = tw.select`
 h-10
-p-2
+w-full
+overflow-clip
+overflow-ellipsis
+break-words
+line-clamp-1
+text-sm
+p-1
 focus:outline-none
 bg-transparent
 text-black

@@ -16,17 +16,32 @@ export default function MySumTime(props: Props) {
     <TotalContainer>
       <TodaySum>
         <TitleTWM>오늘</TitleTWM>
-        <TimeTWM>{dayStudyHour?.toFixed(1)}</TimeTWM>
+        <TimeTWM>
+          {dayStudyHour !== undefined &&
+          parseFloat(dayStudyHour.toFixed(1)) === 0.0
+            ? 0
+            : dayStudyHour?.toFixed(1)}
+        </TimeTWM>
         <TimeTime>시간</TimeTime>
       </TodaySum>
       <WeekSum>
-        <TitleTWM>이번주</TitleTWM>
-        <TimeTWM>{weekStudyHour?.toFixed(1)}</TimeTWM>
+        <TitleTWM>최근 1주일</TitleTWM>
+        <TimeTWM>
+          {weekStudyHour !== undefined &&
+          parseFloat(weekStudyHour.toFixed(1)) === 0.0
+            ? 0
+            : weekStudyHour?.toFixed(1)}
+        </TimeTWM>
         <TimeTime>시간</TimeTime>
       </WeekSum>
       <MonthSum>
-        <TitleTWM>이번달</TitleTWM>
-        <TimeTWM>{monthStudyHour?.toFixed(1)}</TimeTWM>
+        <TitleTWM>최근 1달</TitleTWM>
+        <TimeTWM>
+          {monthStudyHour !== undefined &&
+          parseFloat(monthStudyHour.toFixed(1)) === 0.0
+            ? 0
+            : monthStudyHour?.toFixed(1)}
+        </TimeTWM>
         <TimeTime>시간</TimeTime>
       </MonthSum>
     </TotalContainer>
@@ -71,7 +86,7 @@ mr-4
 
 //오늘, 이번주, 이번달 타이틀
 const TitleTWM = tw.div`
-text-base
+text-lg
 font-bold
 self-center
 py-2

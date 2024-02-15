@@ -11,7 +11,6 @@ interface IProps {
 }
 
 export default function Lounge({ lounge }: IProps) {
-  const userInfo = useSelector((state: any) => state.user);
   const [message, setMessage] = useState<string>("");
 
   return (
@@ -27,7 +26,6 @@ export default function Lounge({ lounge }: IProps) {
         <Chat
           chatDomain={"lounge"}
           id={lounge.loungeId.toString()}
-          username={userInfo.user.nickname}
           setMessage={setMessage}
           message={message}
         />

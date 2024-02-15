@@ -20,6 +20,7 @@ import { current } from "@reduxjs/toolkit";
 import { setFollowed, setFollowing } from "store/reducers/followSlice";
 import { set } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 interface myProps {
   isMe: boolean;
@@ -157,6 +158,7 @@ export default function MyProfile({
     try {
       await unfollow({ memberId: memberId! });
       setIsFollow(!isFollow);
+      setFollowerList(followerList.filter((f) => f.memberId !== currentUser));
       toast.success("언팔로우 되었습니다.");
     } catch (e) {
       console.log(e);
@@ -167,6 +169,7 @@ export default function MyProfile({
     try {
       await follow({ memberId: memberId! });
       setIsFollow(!isFollow);
+      setFollowerList(followerList.concat(currentUser));
       toast.success("팔로우 되었습니다.");
     } catch (e) {
       console.log(e);
@@ -174,13 +177,6 @@ export default function MyProfile({
   };
   return (
     <TotalContainer>
-      {isMe ? (
-        <ProfileModButton>
-          <Link to="/profile-edit">
-            <ProfileModImg src={ProifleModify} alt="" />
-          </Link>
-        </ProfileModButton>
-      ) : null}
       <FullContainer>
         <LeftContainer>
           <ul ref={modifyImgRef}>
@@ -212,9 +208,7 @@ export default function MyProfile({
             {isModifyImg && (
               <ProfileDropdown>
                 {/* 변경 클릭시 이미지 업로드 모달 나오게 하기 */}
-                <DropdownButton onClick={handleModifyImgModal}>
-                  프로필 사진 변경
-                </DropdownButton>
+                <DropdownButton onClick={handleModifyImgModal}>프로필 사진 변경</DropdownButton>
                 {/* 제거 클릭시 ! 확인 모달 나오게 하기*/}
                 <DropdownButton onClick={handleDelteImg}>제거</DropdownButton>
               </ProfileDropdown>
@@ -230,37 +224,36 @@ export default function MyProfile({
             ) : null}
           </ul>
         </LeftContainer>
-        <RightContainer>
+        <RightContainer w-full>
           <FollowContainer>
             <SytleFollowing onClick={followingModalHandler}>
               {followingModal ? (
-                <Modal
-                  toggleModal={followingModalHandler}
-                  option={"following"}
-                ></Modal>
+                <Modal toggleModal={followingModalHandler} option={"following"}></Modal>
               ) : null}
               <FollowText>팔로잉</FollowText>
-              <FollowNumber>{followingCount}</FollowNumber>
+              <FollowNumber>{followingList.length}</FollowNumber>
             </SytleFollowing>
             <StyleFllower onClick={followerModalHandler}>
               {followerModal ? (
-                <Modal
-                  toggleModal={followerModalHandler}
-                  option={"follower"}
-                ></Modal>
+                <Modal toggleModal={followerModalHandler} option={"follower"}></Modal>
               ) : null}
               <FollowText>팔로워</FollowText>
-              <FollowNumber>{followerCount}</FollowNumber>
+              <FollowNumber>{followerList.length}</FollowNumber>
             </StyleFllower>
           </FollowContainer>
-          <div className="flex mb-2">
+          <div className="flex w-full mb-2 space-x-4 items-center">
             <StyleNickName>{nickname}</StyleNickName>
+            {isMe ? (
+              <ProfileModButton>
+                <Link to="/profile-edit">
+                  <ProfileModImg />
+                </Link>
+              </ProfileModButton>
+            ) : null}
 
             {/* isFollow: 내가 A의 페이지를 갔고, 내가 A를 팔로잉 하고 있을 때 팔로잉 버튼 활성화 / 팔로잉 안 하고 있으면 팔로우 버튼 활성화*/}
             {memberId !== currentUser && isFollow && (
-              <FollowingButton onClick={unfollowHandler}>
-                언팔로우
-              </FollowingButton>
+              <FollowingButton onClick={unfollowHandler}>언팔로우</FollowingButton>
             )}
             {memberId !== currentUser && !isFollow && (
               <FollowButton onClick={followingHandler}>팔로우</FollowButton>
@@ -304,9 +297,8 @@ relative
 
 //수정 버튼
 const ProfileModButton = tw.button`
-absolute
-right-0
-mb-auto
+text-slate-200/50
+hover:text-slate-200/80
 `;
 
 //팔로잉 버튼
@@ -336,16 +328,11 @@ ml-3
 `;
 
 //수정 버튼 이미지
-const ProfileModImg = tw.img`
-border
-w-7
-h-7
+const ProfileModImg = tw(PencilIcon)`
+w-6
+h-6
 mr-2
 mt-1
-rounded-full
-hover:filter
-hover:invert
-transition duration-300 ease-in-out
 `;
 
 //정보 수정 버튼, 접속 시간 제외한 모든 컨테이너
@@ -358,8 +345,8 @@ items-center
 
 //프로필 이미지 보여주는 왼쪽 컨테이너
 const LeftContainer = tw.div`
-    ml-16
-    mr-14
+ml-16
+mr-14
 `;
 
 //프로필 이미지
@@ -368,7 +355,6 @@ bg-white
 rounded-full
 w-32
 h-32
-relative
 bg-cover
 bg-center
 `;
@@ -467,7 +453,6 @@ text-base
 const StyleNickName = tw.div`
 font-extrabold
 text-3xl
-
 `;
 
 const StyleEdit = tw.img`

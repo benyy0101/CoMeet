@@ -8,16 +8,19 @@ import usePressEnterFetch from "../../hooks/usePressEnterFetch";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import ChatRow from "./ChatRow";
 import { formatDate } from "utils/FormatDate";
+import BasicProfile from "assets/img/basic-profile.svg";
+import { useSelector } from "react-redux";
 
 interface IProps {
   chatDomain: string;
   id: string;
-  username: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
 }
 
-export default function Chat({ chatDomain, id, username, setMessage, message }: IProps) {
+export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
+  const userInfo = useSelector((state: any) => state.user);
+
   const [rows, setRows] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const chatStompClient = useRef<any>(null);
@@ -78,13 +81,12 @@ export default function Chat({ chatDomain, id, username, setMessage, message }: 
 
     const data = {
       [`${chatDomain}Id`]: id,
-      memberId: "heeyeon3050",
-      nickname: username,
+      memberId: userInfo.user.memberId,
+      nickname: userInfo.user.nickname,
       message,
       imageUrl: "",
-      profileImage:
-        "https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/no-profile-picture-icon.png",
-      createdAt: formatDate(new Date()),
+      profileImage: `${userInfo.user.profileImage ? userInfo.user.profileImage : BasicProfile}`,
+      createdAt: formatDate(new Date(new Date().toLocaleString("en", { timeZone: "Asia/Seoul" }))),
     };
     // send(destination,헤더,페이로드)
     chatStompClient.current.send(`/app/chat/${chatDomain}/send`, {}, JSON.stringify(data));

@@ -48,6 +48,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
     roomTitle: "이건 테스d트",
     roomDescription: "요ㄴㄴ요",
     roomMcount: 1,
+    roomId: 1,
     roomCapacity: 10,
     roomImage: "default_room_image_letsgo",
     isLocked: false,
@@ -133,7 +134,7 @@ export const BoardDetailWritingTotal = (props: BoardDetailProps) => {
           roomDescription={boardDetail.roomDescription}
           roomMCount={boardDetail.roomMcount!}
           roomCapacity={boardDetail.roomCapacity}
-          roomId={boardDetail.id}
+          roomId={boardDetail.roomId}
           roomLink={boardDetail.roomLink!}
         ></BoardDetailRoomInfo>
       ) : null}
