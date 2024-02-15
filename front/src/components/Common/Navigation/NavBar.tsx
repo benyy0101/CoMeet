@@ -50,7 +50,7 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
-  const [userImg, setUserImg] = useState<string>("");
+  // const [userImg, setUserImg] = useState<string>("");
   const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
 
   const loginModalHandler = () => {
@@ -83,20 +83,20 @@ export const NavBar = ({
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
     const res = await handleMember(userInfo.user.memberId);
-    setUserImg(res.profileImage); // 데이터 상태로 설정
+    // setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
-  useEffect(() => {
-    setUserImg(userInfo.user.profileImage);
-  }, [userInfo.user.profileImage]);
+  // useEffect(() => {
+  //   setUserImg(userInfo.user.profileImage);
+  // }, [userInfo.user.profileImage]);
 
   //시작할 때 데이터 다 들고와
   useEffect(() => {
-    console.log(userImg);
+    // console.log(userImg);
     console.error(userInfo);
     if (userInfo.isLoggedIn) {
       fetchData();
-      dispatch(updateUserImg({ img: userImg }));
+      // dispatch(updateUserImg({ img: userImg }));
     }
     console.log(roomData);
   }, [userInfo.isLoggedIn]);
@@ -181,9 +181,7 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton
-                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
-                    >
+                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -194,18 +192,14 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>
-                접속중인 방이 없습니다.
-              </ServerContainer>
+              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && (
-                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
-              )}
+              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
@@ -221,7 +215,9 @@ export const NavBar = ({
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={userImg ? userImg : defaultProfile}
+                  src={
+                    userInfo.user.profileImage === "" ? defaultProfile : userInfo.user.profileImage
+                  }
                   alt={BasicProfile}
                 />
               </Link>
@@ -236,11 +232,7 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal
-                    toggleModal={signupModalHandler}
-                    option="signup"
-                    setting={null}
-                  />
+                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -248,11 +240,7 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               {loginModal === true ? (
                 <ModalPortal>
-                  <Modal
-                    toggleModal={loginModalHandler}
-                    option="login"
-                    setting={null}
-                  />
+                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
                 </ModalPortal>
               ) : null}
             </LoginSignup>
