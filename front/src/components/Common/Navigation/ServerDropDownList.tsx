@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import tw from "tailwind-styled-components";
 import RoomDefault from "assets/img/room-default.svg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import BasicRoom from "assets/img/basic-room.png";
+import { getMyRoomList } from "api/Room";
+import { formatRoom } from "store/reducers/userSlice";
+import { useEffect } from "react";
 
 interface IProps {
   setIsServerOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -12,6 +15,18 @@ interface IProps {
 export const ServerDropDownList = ({ setIsServerOpen }: IProps) => {
   const currentRoomId = useSelector((state: any) => state.room.roomId);
   const roomInfo = useSelector((state: any) => state.user.user.joinedRooms);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    roomFetch();
+  }, []);
+
+  const roomFetch = async () => {
+    try {
+      const res = await getMyRoomList();
+      dispatch(formatRoom(res));
+    } catch (e) {}
+  };
 
   return (
     <StyleDropdownMenu>
