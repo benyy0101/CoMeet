@@ -226,10 +226,7 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
-                <NavIcon
-                  src={userInfo.user.profileImage || defaultProfile}
-                  alt={BasicProfile}
-                />
+                <NavIcon src={userInfo.user.profileImage || defaultProfile} alt={BasicProfile} />
               </Link>
             </ProfileMenu>
             <button onClick={logoutHandler}>
@@ -264,12 +261,12 @@ export const NavBar = ({
 //NavBarContainer: 네비게이션바 전체 틀
 const NavBarContainer = tw.div<{ $transparent: boolean }>`
 ${(p) => (p.$transparent ? "bg-transparent" : "bg-[#1f1227]")}
-h-14
+h-16
 text-white
 flex
 items-center
 justify-between
-px-12
+px-5
 text-lg
 transition-colors
 ease-in-out
@@ -356,6 +353,7 @@ group-hover:flex
 `;
 
 const ProfileMenu = tw.div`
+
 `;
 
 const EnvelopMenu = tw.div`
