@@ -175,4 +175,6 @@
 
 #### [4. 스터디](https://satin-turkey-70b.notion.site/16e7dd0673a44db6b94d53347d6714f5?pvs=4)
 
+#### [5. 노션](https://satin-turkey-70b.notion.site/7416e76f0e5c47d39c3dbb7995d78eb5?pvs=4)
+
 <br/>
