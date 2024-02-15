@@ -49,7 +49,6 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
-  // const [userImg, setUserImg] = useState<string>("");
   const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
   const [transparent, setTransparent] = useState<boolean>(true);
 
@@ -76,6 +75,7 @@ export const NavBar = ({
 
   const roomInfo = useSelector((state: any) => state.room);
   const userInfo = useSelector((state: any) => state.user);
+
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
 
@@ -94,7 +94,7 @@ export const NavBar = ({
   //처음에 memeberId로 다 들고와
   const fetchData = async () => {
     const res = await handleMember(userInfo.user.memberId);
-    // setUserImg(res.profileImage); // 데이터 상태로 설정
+    //setUserImg(res.profileImage); // 데이터 상태로 설정
   };
 
   // useEffect(() => {
@@ -102,15 +102,15 @@ export const NavBar = ({
   // }, [userInfo.user.profileImage]);
 
   //시작할 때 데이터 다 들고와
-  useEffect(() => {
-    // console.log(userImg);
-    console.error(userInfo);
-    if (userInfo.isLoggedIn) {
-      fetchData();
-      // dispatch(updateUserImg({ img: userImg }));
-    }
-    console.log(roomData);
-  }, [userInfo.isLoggedIn]);
+  // useEffect(() => {
+  //   console.log(userImg);
+  //   console.error(userInfo);
+  //   if (userInfo.isLoggedIn) {
+  //     fetchData();
+  //     dispatch(updateUserImg({ img: userImg }));
+  //   }
+  //   console.log(roomData);
+  // }, [userInfo.isLoggedIn]);
 
   // useEffect(() => {
   //   if (roomData) {
@@ -136,6 +136,7 @@ export const NavBar = ({
     });
   };
 
+  console.log(userInfo.user.profileImage);
   return (
     <NavBarContainer $transparent={transparent}>
       <LeftContainer>
@@ -226,9 +227,7 @@ export const NavBar = ({
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
                 <NavIcon
-                  src={
-                    userInfo.user.profileImage === "" ? defaultProfile : userInfo.user.profileImage
-                  }
+                  src={userInfo.user.profileImage || defaultProfile}
                   alt={BasicProfile}
                 />
               </Link>
