@@ -1,4 +1,4 @@
-# 포팅 매뉴얼
+# 🌐 포팅 매뉴얼
 
 # 버전 정보
 
@@ -15,6 +15,7 @@
 - npm - `10.1.0`
 - Visual Studio Code - `1.86.1`
 - NodeJS - `20.9.0`
+- React - `18.2.0`
 - 다음 정보는 package.json에서 확인 가능
   ```jsx
   front@0.1.0 C:\Users\dongg\project\semester_second\comeet\front
@@ -109,69 +110,69 @@
 
   ```bash
   spring:
-  profiles:
+    profiles:
       include: secret
 
-  datasource:
-      url: jdbc:mysql://{SQL SERVER URL}:3200/comeet?serverTimezone=UTC
+    datasource:
+      url: jdbc:mysql://127.0.0.1:3306/comeet?serverTimezone=UTC
       username: {username}
       password: {password}
       driver-class-name: com.mysql.cj.jdbc.Driver
 
-  jpa:
+    jpa:
       hibernate:
-      ddl-auto: update
+        ddl-auto: update
       properties:
-      hibernate:
+        hibernate:
           format_sql: true
           dialect: org.hibernate.dialect.MySQL8Dialect
           default_batch_fetch_size:
 
-  jwt:
+    jwt:
       header: Authorization
       secret: {your secret SSL Encryption, create by `openssl rand -base64 60`}
       access-token-validity-in-seconds : 7200
       refresh-token-validity-in-seconds : 86400
 
-  data:
+    data:
       redis:
-      host: {REDIS SERVER URL}
-      port: 3201
+        host: localhost
+        port: 6379
       mongodb:
-      uri: {yourMongoDBURI}
+        uri: {yourMongoDBURI}
 
-  security:
+    security:
       oauth2:
-      client:
+        client:
           registration:
-          github:
+            github:
               client-id: {your github client Id}
               client-secret: {your github client secret}
-          password-salt: {your password-salt. create your own random value}
+            password-salt: {your password-salt. create your own random value}
 
-  servlet:
+    servlet:
       multipart:
-          max-file-size: -1
-          max-request-size: -1
+        max-file-size: -1
+        max-request-size: -1
 
   logging.level:
-  org.hibernate.SQL: debug
+    org.hibernate.SQL: debug
 
   aes:
-  secret-key: {your aes128 encryption secret key. create your own random value}
+    secret-key: {your aes128 encryption secret key. create your own random value}
 
   cloud:
-  aws:
+    aws:
       s3:
-      bucket: {your bucket}
+        bucket: {your bucket}
       credentials:
-      access-key: {your access-key}
-      secret-key: {your secret-key}
+        access-key: {your access-key}
+        secret-key: {your secret-key}
       region:
-      static: ap-northeast-2 # 한국 서버
-      auto: false
+        static: ap-northeast-2 # 한국 서버
+        auto: false
       stack:
-      auto: false
+        auto: false
   ```
 
 - 프론트
@@ -499,7 +500,7 @@
   serve -s /settings/build
   ```
 
-### Github OAuth
+## Github OAuth 사용법
 
 - Settings → Developer Settings → OAuth Apps → New OAuth App
 - Application name, Homepage URL, Authorization callback URL 지정하여 application 등록
