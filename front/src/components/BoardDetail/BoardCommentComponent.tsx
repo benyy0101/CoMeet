@@ -120,7 +120,7 @@ text-white
 flex-grow
 py-3
 px-3
-bg-gray-900
+bg-gray-800
 mx-1
 text-sm
 break-words
