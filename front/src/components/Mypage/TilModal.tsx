@@ -229,15 +229,16 @@ break-words
 mx-10
 rounded-md
 whitespace-pre-line
+overflow-y-scroll
 `;
 
 const TilContentWrite = tw.textarea`
 border
 flex-grow
 p-2
-break-words
 mx-10
 rounded-md
+overflow-y-scroll
 `;
 
 const TilContentEmpty = tw.div`
