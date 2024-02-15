@@ -52,7 +52,7 @@ export default function RoomItem(props: SearchRoomContent) {
           }}
         />
       </Column>
-      <Column className="flex-grow-[1] max-w-[30rem]">
+      <Column className="flex-grow-[1] max-w-[40rem]">
         <TitleContainer>
           <Title>{props.title}</Title>
           <Manager>{props.managerNickname}</Manager>
@@ -120,13 +120,13 @@ px-4
 
 const ProfileImg = tw.div`
 bg-slate-300
-w-20
-h-20
+w-24
+h-24
 rounded-full
 bg-cover
 bg-center
-bg-white
-border
+border-purple-400
+border-2
 `;
 
 const Title = tw.h1`
