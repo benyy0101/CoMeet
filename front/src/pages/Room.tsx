@@ -497,11 +497,13 @@ export const Room = ({
           </RoomNoticeButton>
         </RoomTitleContainer>
         <RoomButtonContainer>
-          <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
-            <RoomButton>
-              <Cog6ToothIcon className="w-8 h-8" />
-            </RoomButton>
-          </Link>
+          {roomData?.managerId === userInfo.user.memberId && (
+            <Link to={`/room-modify/${roomId}`} state={{ data: roomData }}>
+              <RoomButton>
+                <Cog6ToothIcon className="w-8 h-8 hover:text-violet-700 transition-color" />
+              </RoomButton>
+            </Link>
+          )}
           <RoomButton onClick={onClickLeaveRoom}>
             <ArrowRightStartOnRectangleIcon className="w-8 h-8" />
           </RoomButton>
