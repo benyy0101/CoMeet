@@ -76,9 +76,7 @@ export default function RoomItem(props: SearchRoomContent) {
           ) : (
             <VideoCameraSlashIcon className="w-6 h-6 text-slate-700" />
           )}
-          {props.isLocked && (
-            <LockClosedIcon className="w-6 h-6 text-slate-700" />
-          )}
+          {props.isLocked && <LockClosedIcon className="w-6 h-6 text-slate-700" />}
         </OptionContainer>
       </Column>
       <Column>
@@ -91,13 +89,7 @@ export default function RoomItem(props: SearchRoomContent) {
         </CountContainer>
       </Column>
 
-      {modal && (
-        <Modal
-          toggleModal={modalHandler}
-          option="confirm"
-          setting={props}
-        ></Modal>
-      )}
+      {modal && <Modal toggleModal={modalHandler} option="confirm" setting={props}></Modal>}
     </Wrapper>
   );
 }
@@ -186,13 +178,12 @@ gap-1
 `;
 
 const Keyword = tw.div`
-rounded-md
-p-1
+text-base
+font-medium
 px-2
-text-xs
-shadow-md
-bg-purple-800
-text-white
+rounded-lg
+bg-gray-600
+text-slate-200
 `;
 const OptionContainer = tw.div`
 flex
