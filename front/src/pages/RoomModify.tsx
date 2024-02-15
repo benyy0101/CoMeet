@@ -45,8 +45,8 @@ export default function RoomModify() {
 
     if (file) {
       //1메가 아래의 이미지만 업로드하게 하기 - 1메가 이상은 안 보내진다... 왜지?
-      if (file.size >= 1 * 1024 * 1024) {
-        alert("1mb 이하의 파일만 업로드 가능합니다.");
+      if (file.size >= 10 * 1024 * 1024) {
+        alert("10mb 이하의 파일만 업로드 가능합니다.");
         e.target.value = null;
       } else {
         //파일 선택시
