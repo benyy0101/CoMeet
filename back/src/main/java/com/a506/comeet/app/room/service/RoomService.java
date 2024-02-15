@@ -245,8 +245,12 @@ public class RoomService {
         }
     }
 
-    public List<ManagingRoomResponseDto> getManagingRoom(String memberId) {
+    public List<ManagingRoomResponseDto> getManagingRooms(String memberId) {
         return roomRepository.getManagingRoom(memberId);
+    }
+
+    public List<RoomSimpleResponseDto> getJoinedRooms(String memberId) {
+        return roomMemberRepository.getJoinedRooms(memberId);
     }
 
     private RoomResponseDto getRoomResponseDto(Long roomId) {
