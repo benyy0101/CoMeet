@@ -400,7 +400,7 @@ flex justify-between
 `;
 
 const DelteButton = tw.button`
-my-2 p-2 text-xs bg-gray-300 rounded-md text-white
+my-2 p-2 text-xs rounded-md text-gray-400 border-b
 `;
 
 const UpdateButton = tw.button`
