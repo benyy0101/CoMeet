@@ -24,7 +24,9 @@ import logo from "../../../assets/logo.svg";
 import { logout } from "store/reducers/userSlice";
 import { handleLogout } from "api/Login";
 import defaultProfile from "../../../assets/default_profile.svg";
-import { updateUserImg } from "store/reducers/userSlice";
+import { useQuery } from "@tanstack/react-query";
+import { searchNote } from "api/Note";
+import { set } from "react-hook-form";
 
 interface IProps {
   roomData: RoomResponse | null;
@@ -51,7 +53,9 @@ export const NavBar = ({
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
   const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
   const [transparent, setTransparent] = useState<boolean>(true);
+  const [unread, setUnread] = useState<number>(0);
 
+  //console.log(notes);
   useEffect(() => {
     function scrollHandler() {
       setTransparent(window.scrollY < 100);
@@ -75,6 +79,30 @@ export const NavBar = ({
 
   const roomInfo = useSelector((state: any) => state.room);
   const userInfo = useSelector((state: any) => state.user);
+
+  const {
+    data: notes,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["noteList"],
+    queryFn: () =>
+      searchNote({
+        page: 0,
+        size: 20,
+      }),
+    enabled: userInfo.isLoggedIn,
+    refetchInterval: 1000,
+    refetchIntervalInBackground: true,
+  });
+
+  useEffect(() => {
+    if (notes) {
+      const unreadNoteCount = notes.content.filter((note: any) => !note.isRead);
+      setUnread(unreadNoteCount.length);
+      //console.log(unreadNoteCount.length);
+    }
+  }, [notes]);
 
   //서버 이모티콘 클릭시
   const [isServerOpen, setIsServerOpen] = useState<boolean>(false);
@@ -135,8 +163,6 @@ export const NavBar = ({
       navigate("/", { replace: true });
     });
   };
-
-  console.log(userInfo.user.profileImage);
   return (
     <NavBarContainer $transparent={transparent}>
       <LeftContainer>
@@ -193,7 +219,9 @@ export const NavBar = ({
                         <SpeakerWaveIcon className="w-6 h-6" />
                       )}
                     </ControlPanelButton>
-                    <ControlPanelButton onClick={() => setIsVideoDisabled(!isVideoDisabled)}>
+                    <ControlPanelButton
+                      onClick={() => setIsVideoDisabled(!isVideoDisabled)}
+                    >
                       {isVideoDisabled ? (
                         <VideoCameraSlashIcon className="w-6 h-6 text-red-400" />
                       ) : (
@@ -204,20 +232,22 @@ export const NavBar = ({
                 )}
               </ServerContainer>
             ) : (
-              <ServerContainer $active={false}>접속중인 방이 없습니다.</ServerContainer>
+              <ServerContainer $active={false}>
+                접속중인 방이 없습니다.
+              </ServerContainer>
             )}
 
             <ServerMenu ref={serverRef}>
               <CustomButton onClick={showServerList}>
                 <ComputerDesktopIcon className="w-8 h-8" />
               </CustomButton>
-              {isServerOpen && <ServerDropDownList setIsServerOpen={setIsServerOpen} />}
+              {isServerOpen && (
+                <ServerDropDownList setIsServerOpen={setIsServerOpen} />
+              )}
             </ServerMenu>
             <EnvelopMenu onClick={messageModalHandler}>
               <EnvelopeIcon className="w-8 h-8" />
-              {userInfo.user.unreadNoteCount !== 0 ? (
-                <UnreadCount>{userInfo.user.unreadNoteCount}</UnreadCount>
-              ) : null}
+              {unread !== 0 ? <UnreadCount>{unread}</UnreadCount> : null}
               <ModalPortal>
                 {messageModal === true ? (
                   <Modal toggleModal={messageModalHandler} option="message" />
@@ -226,7 +256,10 @@ export const NavBar = ({
             </EnvelopMenu>
             <ProfileMenu>
               <Link to={`/userpage/${userInfo.user.memberId}`}>
-                <NavIcon src={userInfo.user.profileImage || defaultProfile} alt={BasicProfile} />
+                <NavIcon
+                  src={userInfo.user.profileImage || defaultProfile}
+                  alt={BasicProfile}
+                />
               </Link>
             </ProfileMenu>
             <button onClick={logoutHandler}>
@@ -239,7 +272,11 @@ export const NavBar = ({
               <CustomButton onClick={signupModalHandler}>회원가입</CustomButton>
               <ModalPortal>
                 {signupModal === true ? (
-                  <Modal toggleModal={signupModalHandler} option="signup" setting={null} />
+                  <Modal
+                    toggleModal={signupModalHandler}
+                    option="signup"
+                    setting={null}
+                  />
                 ) : null}
               </ModalPortal>
             </LoginSignup>
@@ -247,7 +284,11 @@ export const NavBar = ({
               <CustomButton onClick={loginModalHandler}>로그인</CustomButton>
               {loginModal === true ? (
                 <ModalPortal>
-                  <Modal toggleModal={loginModalHandler} option="login" setting={null} />
+                  <Modal
+                    toggleModal={loginModalHandler}
+                    option="login"
+                    setting={null}
+                  />
                 </ModalPortal>
               ) : null}
             </LoginSignup>
