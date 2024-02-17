@@ -190,10 +190,10 @@ function TextEditor(props: TextEditProps) {
         <ValidButtonContainer>
           {!isFree && (
             <>
-              <ValidButton isOn={isRoomValid} onClick={isValidHandler}>
+              <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>
                 모집중
               </ValidButton>
-              <ValidButton isOn={!isRoomValid} onClick={isValidHandler}>
+              <ValidButton isOn={isRoomValid} onClick={isValidHandler}>
                 모집완료
               </ValidButton>
             </>

@@ -51,7 +51,6 @@ export const NavBar = ({
   const [loginModal, setLoginModal] = React.useState<boolean>(false);
   const [signupModal, setSignupModal] = React.useState<boolean>(false);
   const [messageModal, setMessageModal] = React.useState<boolean>(false);
-  const [isUserInRoom, setIsUserInRoom] = useState<boolean>(true);
   const [transparent, setTransparent] = useState<boolean>(true);
   const [unread, setUnread] = useState<number>(0);
 
@@ -89,7 +88,7 @@ export const NavBar = ({
     queryFn: () =>
       searchNote({
         page: 0,
-        size: 20,
+        size: 100,
       }),
     enabled: userInfo.isLoggedIn,
     refetchInterval: 1000,
