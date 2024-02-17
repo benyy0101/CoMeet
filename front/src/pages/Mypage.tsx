@@ -45,6 +45,8 @@ export const Mypage = () => {
 
     if (memberId === userId) {
       setIsMe(true);
+    } else {
+      setIsMe(false);
     }
   }, [memberId]);
 

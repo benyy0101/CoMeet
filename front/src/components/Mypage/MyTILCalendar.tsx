@@ -100,6 +100,12 @@ export default function MyTILCalendar({ isMe, memberId }: tilsProp) {
     getTils();
   }, [activeMonth]);
 
+  //다른 유저페이지 갈 때 해당 유저 TIL 받아오고, 다른 유저페이지에서 마이페이지(프로필 이미지) 눌렀을때 모달 닫히게게
+  useEffect(() => {
+    getTils();
+    if (isTilClick) handleTilModal();
+  }, [memberId]);
+
   return (
     <TotalContainer>
       <StyledCalendar
