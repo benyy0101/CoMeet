@@ -9,6 +9,7 @@ import tw from "tailwind-styled-components";
 import styled from "styled-components";
 
 import Star from "assets/img/star.png";
+import { useParams } from "react-router-dom";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -20,14 +21,14 @@ interface til {
 
 interface tilsProp {
   isMe: boolean;
-  memberId: string;
 }
 
-export default function MyTILCalendar({ isMe, memberId }: tilsProp) {
+export default function MyTILCalendar({ isMe }: tilsProp) {
   //현재 선택한 날짜
   const [selectedDay, setSelectedDay] = useState<Value>(new Date());
   const [tilList, setTilLIst] = useState<til[]>();
 
+  const memberId = useParams<{ memberId: string }>().memberId || "";
   //클릭한 날짜의 tilId
   const [currentTilId, setCurrentTilId] = useState<number>(0);
 
