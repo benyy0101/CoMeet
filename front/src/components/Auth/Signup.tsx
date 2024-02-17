@@ -89,8 +89,6 @@ function Signup() {
             setErrorMessage("중복되지 않는 아이디를 입력해주세요");
           } else if (nicknameErr) {
             setErrorMessage("중복되지 않는 닉네임을 입력해주세요");
-          } else if (memberId.length < 4) {
-            setErrorMessage("아이디는 4자 이상 입력해주세요.");
           } else {
             setErrorMessage("빠진 입력이 있는지 확인해주세요");
           }
