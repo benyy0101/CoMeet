@@ -15,6 +15,7 @@ export const handleMember = async (memberId: string): Promise<MemberQuery> => {
 };
 
 export const handleSignup = async (req: SignupQuery): Promise<SignupQuery> => {
+  console.log(req);
   const response = await localAxios.post("/member", req);
   return response.data;
 };
