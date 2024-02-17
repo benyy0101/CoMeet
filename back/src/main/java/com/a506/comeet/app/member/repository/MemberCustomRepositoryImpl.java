@@ -27,14 +27,6 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public int getMemberDuplicationCount(MemberDuplicationRequestDto req) {
-        List<String> res = jpaQueryFactory.select(member.memberId)
-                .from(member).where(makeBooleanBuilder(req)).fetch();
-
-        return res.size();
-    }
-
-    @Override
     public Optional<MemberDetailResponseDto> getMemberDetail(String memberId) {
         MemberDetailResponseDto res = jpaQueryFactory
                 .select(Projections.constructor(

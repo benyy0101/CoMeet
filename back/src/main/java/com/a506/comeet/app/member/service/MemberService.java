@@ -64,7 +64,16 @@ public class MemberService {
     }
 
     public boolean duplicationValid(MemberDuplicationRequestDto req) {
-        return memberRepository.getMemberDuplicationCount(req) == 0;
+        if(req.getMemberId() != null){
+            return memberRepository.countByMemberIdDeletedIncluded(req.getMemberId()) == 0;
+        }
+        if (req.getEmail() != null){
+            return memberRepository.countByEmailDeletedIncluded(req.getEmail()) == 0;
+        }
+        if (req.getNickname() != null){
+            return memberRepository.countByNicknameDeletedIncluded(req.getNickname()) == 0;
+        }
+        throw new RestApiException(CommonErrorCode.WRONG_REQUEST, "중복 검사할 값이 주어지지 않았습니다");
     }
 
     @Transactional
