@@ -438,7 +438,6 @@ function App() {
 
             <Route path="/oauth" element={<Oauth />} />
           </Routes>
-          <ReactQueryDevtools initialIsOpen={false} />
         </RoutesContainer>
       </BrowserRouter>
     </div>

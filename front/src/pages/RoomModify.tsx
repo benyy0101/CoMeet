@@ -195,6 +195,7 @@ export default function RoomModify() {
 
   return (
     <Wrapper>
+      <div className="h-16 w-full bg-slate-800 fixed top-0 left-0"></div>
       <CreateRoomContainer>
         <TitleContainer>
           <Title>스터디 방 설정</Title>
