@@ -36,7 +36,7 @@ localAxios.interceptors.request.use(
 
 imageAxios.interceptors.request.use(
   (config) => {
-    console.log("interceptor");
+    //console.log("interceptor");
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -59,7 +59,7 @@ localAxios.interceptors.response.use(
       return response;
     } else if (response.data.code === "NOT_VALID_USER") {
       sessionStorage.removeItem("accessToken");
-      console.log(response.data.code);
+      //console.log(response.data.code);
       try {
         const refreshedResponse = await refreshAccessToken();
         return refreshedResponse;
@@ -73,7 +73,7 @@ localAxios.interceptors.response.use(
       //   sessionStorage.removeItem("refreshToken");
       //   return response;
     } else {
-      console.log("response", response);
+      //console.log("response", response);
       return response;
     }
   },

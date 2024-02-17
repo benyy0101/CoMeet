@@ -5,7 +5,7 @@ import {
   deleteRoom,
 } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
-import { RoomResponse } from "models/Room.interface";
+import { EnterRoomKeyword, RoomResponse } from "models/Room.interface";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -15,6 +15,7 @@ import BasicRoom from "assets/img/basic-room.png";
 import { useSelector } from "react-redux";
 import { Keyword } from "models/Util";
 import { set } from "react-hook-form";
+import { Background } from "components/Common/Backgruond";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -31,7 +32,7 @@ export default function RoomModify() {
   const [option, setOption] = useState<ROOM_CONSTRAINTS>(
     roomData?.constraints || "FREE"
   );
-
+  //모든 종류의 키워드
   const keywords = useSelector((state: any) => state.keyword.keywords);
 
   //selectedFile 현재 올린파일
@@ -41,9 +42,13 @@ export default function RoomModify() {
 
   //이미지 제거 했는지 확인
   const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
-
-  const [selectedKeyword, setSelectedKeyword] = useState<Keyword[]>([]);
-  const [modifiedNotice, setModifiedNotice] = useState<string>("");
+  //현재 선택한 키워드
+  const [selectedKeyword, setSelectedKeyword] = useState<EnterRoomKeyword[]>(
+    roomData?.keywords || []
+  );
+  const [modifiedNotice, setModifiedNotice] = useState<string>(
+    roomData?.notice || ""
+  );
 
   //이미지 바뀔 때 미리보기
   const onChangeImage = async (e: any) => {
@@ -75,7 +80,9 @@ export default function RoomModify() {
       alert("최소 인원을 현재 인원보다 적게 설정할 수 없습니다.");
     } else {
       e.preventDefault();
-      const keywordIds = selectedKeyword.map((keyword: Keyword) => keyword.id);
+      const keywordIds = selectedKeyword.map(
+        (keyword: EnterRoomKeyword) => keyword.keywordId
+      );
       const data: any = {
         roomId,
         title,
@@ -164,7 +171,7 @@ export default function RoomModify() {
     );
     if (
       !selectedKeyword.find(
-        (keyword: Keyword) => keyword.name === e.target.value
+        (keyword: EnterRoomKeyword) => keyword.name === e.target.value
       )
     ) {
       setSelectedKeyword((prev) => [...prev, newKeyword]);
@@ -181,13 +188,14 @@ export default function RoomModify() {
     );
     setSelectedKeyword(
       selectedKeyword.filter(
-        (keyword: Keyword) => keyword.name !== dropKeyword?.name
+        (keyword: EnterRoomKeyword) => keyword.name !== dropKeyword?.name
       )
     );
   };
 
   return (
     <Wrapper>
+      <div className="h-16 w-full bg-slate-800 fixed top-0 left-0"></div>
       <CreateRoomContainer>
         <TitleContainer>
           <Title>스터디 방 설정</Title>
@@ -471,8 +479,10 @@ border-slate-300
 rounded-lg
 focus:outline-none
 p-2
+bg-transparent
 focus:ring-2
 focus:ring-purple-900
+
 `;
 
 const Block = tw.div`
