@@ -54,6 +54,7 @@ export default function RoomCreate() {
 
   return (
     <Wrapper>
+      <div className="h-16 w-full bg-slate-800 absolute top-0 left-0"></div>
       <CreateRoomContainer>
         <TitleContainer>
           <Title>스터디 방 만들기</Title>
@@ -72,22 +73,32 @@ export default function RoomCreate() {
           </InputUnit>
           <RadioSelect>
             <RadioContainer onClick={() => setType("DISPOSABLE")}>
-              <RadioInput type="radio" checked={type === "DISPOSABLE"} readOnly />
+              <RadioInput
+                type="radio"
+                checked={type === "DISPOSABLE"}
+                readOnly
+              />
               <BoltIcon className="w-10 h-10" />
               <RadioTitleContainer>
                 <RadioTitle>일회성 스터디 방</RadioTitle>
                 <RadioDescription>
-                  일회성으로 스터디를 할 수 있으며 방 인원이 모두 나가게 되는 경우 방이 사라집니다.
+                  일회성으로 스터디를 할 수 있으며 방 인원이 모두 나가게 되는
+                  경우 방이 사라집니다.
                 </RadioDescription>
               </RadioTitleContainer>
             </RadioContainer>
             <RadioContainer onClick={() => setType("PERMANENT")}>
-              <RadioInput type="radio" checked={type === "PERMANENT"} readOnly />
+              <RadioInput
+                type="radio"
+                checked={type === "PERMANENT"}
+                readOnly
+              />
               <BuildingOffice2Icon className="w-10 h-10" />
               <RadioTitleContainer>
                 <RadioTitle>지속 스터디 방</RadioTitle>
                 <RadioDescription>
-                  지속적으로 스터디를 할 수 있으며 가입된 인원만 스터디 방에 참여할 수 있습니다.
+                  지속적으로 스터디를 할 수 있으며 가입된 인원만 스터디 방에
+                  참여할 수 있습니다.
                 </RadioDescription>
               </RadioTitleContainer>
             </RadioContainer>
@@ -100,7 +111,9 @@ export default function RoomCreate() {
                 <option value="FREE">자유</option>
                 <option value="MICOFF">음소거 필수</option>
                 <option value="VIDEOON">캠/화면공유 필수</option>
-                <option value="VIDEOONMICOFF">캠/화면공유 필수, 음소거 필수</option>
+                <option value="VIDEOONMICOFF">
+                  캠/화면공유 필수, 음소거 필수
+                </option>
               </SelectOption>
             </InputUnit>
             <InputUnit className="w-1/3 justify-around">

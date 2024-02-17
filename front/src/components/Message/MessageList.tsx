@@ -40,6 +40,16 @@ function MessageList(params: MessageListProps) {
   //이 친구로 페이지가 바뀌었는지 판단함
   const numberOfElements = useRef<number>(0);
 
+  const {
+    data: messageData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["messageList"],
+    queryFn: () => searchNote(searchNoteParams),
+  });
+  //console.log(messageData);
+
   const searchMessage = () => {
     searchNote(searchNoteParams)
       .then((data) => {
