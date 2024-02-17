@@ -80,7 +80,6 @@ public class MemberService {
     public void delete(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new RestApiException(CustomErrorCode.NO_MEMBER));
         member.delete();
-
         roomMemberRepository.deleteAll(member.getRoomMembers());
     }
 
