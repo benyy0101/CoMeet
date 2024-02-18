@@ -4,11 +4,7 @@ import { RoomItemProps } from "../types";
 import { useEffect, useRef, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
-import {
-  ChevronDoubleUpIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
+import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
 import {
   useQuery,
   useInfiniteQuery,
@@ -18,11 +14,7 @@ import {
 } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
-import {
-  SearchRoomContent,
-  SearchRoomParams,
-  SearchRoomResponse,
-} from "models/Room.interface";
+import { SearchRoomContent, SearchRoomParams, SearchRoomResponse } from "models/Room.interface";
 import { searchRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { Background } from "components/Common/Backgruond";
@@ -32,17 +24,12 @@ const size = 5;
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
-  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | "ALL">(
-    "ALL"
-  );
+  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | "ALL">("ALL");
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchtype, setSearchtype] = useState<string>("제목+설명");
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
-  const { data, isLoading, isError, refetch } = useQuery<
-    SearchRoomResponse,
-    Error
-  >({
+  const { data, isLoading, isError, refetch } = useQuery<SearchRoomResponse, Error>({
     queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", size],
     queryFn: () =>
       searchRoom({
@@ -58,12 +45,11 @@ export const RoomList = () => {
   useEffect(() => {
     last.current = false;
     page.current = 0;
-    console.log(constraints);
+    console.log("const", constraints);
     refetch();
   }, [sortByLatest, constraints, isLocked]);
 
   useEffect(() => {
-    console.log(data);
     if (data?.content) {
       setRoomList(data.content);
       last.current = data.last;
@@ -75,8 +61,8 @@ export const RoomList = () => {
   const [isScrolled, SetIsScrolled] = useState<number>(0);
 
   useEffect(() => {
-    console.log("isscroll", isScrolled);
-    console.log("sortByLatest:", sortByLatest);
+    // console.log("isscroll", isScrolled, data);
+    if (data === undefined) return;
     page.current++;
     searchRoom({
       page: page.current,
@@ -106,7 +92,6 @@ export const RoomList = () => {
   const handleObserver = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (target.isIntersecting) {
-      console.log("last value", last.current);
       if (!last.current) {
         SetIsScrolled((prev) => ++prev);
       }
