@@ -4,7 +4,11 @@ import { RoomItemProps } from "../types";
 import { useEffect, useRef, useState } from "react";
 import FilterMenu from "components/RoomList/FilterMenu";
 import { Link } from "react-router-dom";
-import { ChevronDoubleUpIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronDoubleUpIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
 import {
   useQuery,
   useInfiniteQuery,
@@ -14,7 +18,11 @@ import {
 } from "@tanstack/react-query";
 import { searchBoard } from "api/Board";
 import { SearchBoardParams } from "models/Board.interface";
-import { SearchRoomContent, SearchRoomParams, SearchRoomResponse } from "models/Room.interface";
+import {
+  SearchRoomContent,
+  SearchRoomParams,
+  SearchRoomResponse,
+} from "models/Room.interface";
 import { searchRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
 import { Background } from "components/Common/Backgruond";
@@ -24,12 +32,17 @@ const size = 5;
 export const RoomList = () => {
   const [roomList, setRoomList] = useState<SearchRoomContent[]>([]);
   const [sortByLatest, setSortByLatest] = useState<boolean>(true);
-  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | "ALL">("ALL");
+  const [constraints, setConstraints] = useState<ROOM_CONSTRAINTS | "ALL">(
+    "ALL"
+  );
   const [searchKeyword, setSearchKeyword] = useState<string>("");
   const [searchtype, setSearchtype] = useState<string>("제목+설명");
   const [isLocked, setIsLocked] = useState<boolean>(false);
 
-  const { data, isLoading, isError, refetch } = useQuery<SearchRoomResponse, Error>({
+  const { data, isLoading, isError, refetch } = useQuery<
+    SearchRoomResponse,
+    Error
+  >({
     queryKey: ["roomList", sortByLatest ? "LATEST" : "OLDEST", size],
     queryFn: () =>
       searchRoom({
@@ -184,20 +197,23 @@ relative
 `;
 
 const LeftContainer = tw.div`
-fixed
+xl:fixed
+xl:w-1/6
+xl:items-center
+xl:mt-20
 left-2
 flex
 flex-col
-w-1/6
 gap-3
-items-center
-mt-20
+w-[60rem]
 `;
 const ListContainer = tw.div`
 flex
 flex-col
 gap-5
 w-[60rem]
+mt-40
+xl:mt-0
 `;
 
 const MainContainer = tw.div`

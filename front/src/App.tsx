@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useSearchParams,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavBar } from "./components/Common/Navigation/NavBar";
 import { RoomList } from "./pages/RoomList";
 import { Mainpage } from "./pages/Mainpage";
@@ -90,7 +85,6 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.error("룸아이디 변경!", roomInfo);
     if (roomInfo.isRoomIn) {
       if (roomData === null) {
         getRoomHandler(roomInfo.roomId);
