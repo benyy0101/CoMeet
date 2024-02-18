@@ -1,4 +1,7 @@
-import { ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+  ChatBubbleOvalLeftEllipsisIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 
 import tw from "tailwind-styled-components";
 import Chat from "./Chat";
@@ -28,6 +31,7 @@ export default function Lounge({ lounge }: IProps) {
           id={lounge.loungeId.toString()}
           setMessage={setMessage}
           message={message}
+          title={lounge.name}
         />
       </ChatContainer>
     </ChannelContent>

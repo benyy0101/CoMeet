@@ -16,9 +16,16 @@ interface IProps {
   id: string;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   message: string;
+  title: string;
 }
 
-export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
+export default function Chat({
+  chatDomain,
+  id,
+  setMessage,
+  message,
+  title,
+}: IProps) {
   const userInfo = useSelector((state: any) => state.user);
 
   const [rows, setRows] = useState<any[]>([]);
@@ -39,7 +46,9 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
 
         if (chatStompClient.current === null) {
           chatStompClient.current = Stomp.over(() => {
-            const sock = new SockJS(`${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`);
+            const sock = new SockJS(
+              `${process.env.REACT_APP_WEBSOCKET_SERVER_URL}stomp`
+            );
             return sock;
           });
 
@@ -62,7 +71,9 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
 
     return () => {
       if (chatStompClient.current) {
-        chatStompClient.current.disconnect(() => console.log("방 웹소켓 연결 끊김!"));
+        chatStompClient.current.disconnect(() =>
+          console.log("방 웹소켓 연결 끊김!")
+        );
         chatStompClient.current = null;
       }
     };
@@ -75,7 +86,9 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
   }
 
   //메시지 브로커로 메시지 전송
-  const handleSubmit = (e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     e.preventDefault();
     if (message === "") return;
 
@@ -86,10 +99,16 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
       message,
       imageUrl: "",
       profileImage: `${userInfo.user.profileImage ? userInfo.user.profileImage : BasicProfile}`,
-      createdAt: formatDate(new Date(new Date().toLocaleString("en", { timeZone: "Asia/Seoul" }))),
+      createdAt: formatDate(
+        new Date(new Date().toLocaleString("en", { timeZone: "Asia/Seoul" }))
+      ),
     };
     // send(destination,헤더,페이로드)
-    chatStompClient.current.send(`/app/chat/${chatDomain}/send`, {}, JSON.stringify(data));
+    chatStompClient.current.send(
+      `/app/chat/${chatDomain}/send`,
+      {},
+      JSON.stringify(data)
+    );
     setMessage("");
   };
   const { handlePressEnterFetch } = usePressEnterFetch({
@@ -105,7 +124,9 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
     }
   }, [rows]);
 
-  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (e) => {
+  const onChangeMessage: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    e
+  ) => {
     setMessage(e.target.value);
   };
 
@@ -125,6 +146,17 @@ export default function Chat({ chatDomain, id, setMessage, message }: IProps) {
       </ChatInputContainer>
       <ChatContentContainer id="chatcontent">
         <ChatContent>
+          <IntroRow $chatDomain={chatDomain}>
+            <IntroTitle $chatDomain={chatDomain}>
+              {`'${title}'에 오신 것을 환영합니다!`}
+            </IntroTitle>
+            <IntroDescription $chatDomain={chatDomain}>
+              {chatDomain === "lounge"
+                ? `라운지의 시작입니다. 라운지는 자유롭게 채팅을 할 수 있는
+              공간이에요.`
+                : `채널 채팅의 시작입니다.`}
+            </IntroDescription>
+          </IntroRow>
           {rows.map((r) => (
             <ChatRow key={r.id} chat={r} />
           ))}
@@ -182,4 +214,27 @@ bg-red-800
 h-6
 w-10
 rounded-lg
+`;
+
+const IntroRow = tw.div<{ $chatDomain: string }>`
+w-full
+h-28
+flex
+flex-col
+items-center
+py-6
+${(p) => (p.$chatDomain === "lounge" ? "px-4" : "px-2")}
+space-y-2
+border-slate-200/30
+border-b
+`;
+
+const IntroTitle = tw.h1<{ $chatDomain: string }>`
+w-full
+${(p) => (p.$chatDomain === "lounge" ? "text-3xl" : "text-xl")}
+`;
+
+const IntroDescription = tw.p<{ $chatDomain: string }>`
+w-full
+${(p) => (p.$chatDomain === "lounge" ? "text-sm" : "text-sm")}
 `;

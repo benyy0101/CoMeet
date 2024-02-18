@@ -89,6 +89,11 @@ export const getRoom = async (params: GetRoomParams): Promise<RoomResponse> => {
   return response.data;
 };
 
+export const getMyRoomList = async (): Promise<SmallRoomdata[]> => {
+  const response = await localAxios.get("room/joined");
+  return response.data;
+};
+
 export const enterRoom = async (
   params: EnterRoomParams
 ): Promise<RoomResponse> => {

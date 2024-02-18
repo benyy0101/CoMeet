@@ -32,29 +32,32 @@ function Signup() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     if (password !== passwordCheck) {
       setPasswordCheckErr(true);
-    }
-  }, [passwordCheck]);
-
-  const passwordCheckHandler = () => {
-    if (password !== passwordCheck) {
-      setPasswordCheckErr(true);
     } else {
-      console.log("passwordCheckHandler");
       setPasswordCheckErr(false);
     }
-  };
+  }, [password, passwordCheck]);
 
   const validHandler = async (type: string) => {
     try {
       if (type === "memberId") {
         const res = await doubleCheckMemberId(memberId);
-        if (!res) setMemberIdErr(true);
+        if (!res) {
+          setMemberIdErr(true);
+        } else {
+          setMemberIdErr(false);
+        }
       } else if (type === "nickname") {
         const res = await doubleCheckNicname({ nickname: nickname });
-        if (!res) setNicknameErr(true);
+        if (!res) {
+          setNicknameErr(true);
+        } else {
+          setNicknameErr(false);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -71,10 +74,27 @@ function Signup() {
       password,
       nickname,
       email: `${email}@${domain}`,
-    }).then((res) => {
-      setIsLoading(false);
-      window.location.reload();
-    });
+    })
+      .then((res) => {
+        setIsLoading(false);
+        window.location.reload();
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setError(true);
+        if (error.response.data.errors) {
+          setErrorMessage(error.response.data.errors[0].message);
+        } else {
+          if (memberIdErr) {
+            setErrorMessage("중복되지 않는 아이디를 입력해주세요");
+          } else if (nicknameErr) {
+            setErrorMessage("중복되지 않는 닉네임을 입력해주세요");
+          } else {
+            setErrorMessage("빠진 입력이 있는지 확인해주세요");
+          }
+        }
+        console.log(error);
+      });
   };
 
   return (
@@ -96,6 +116,9 @@ function Signup() {
                 value={memberId}
                 $option={error}
                 onChange={(e) => setMemberId(e.target.value)}
+                onBlur={(e) => {
+                  validHandler("memberId");
+                }}
               />
             </InputContainer>
 
@@ -122,7 +145,6 @@ function Signup() {
                 type="text"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                onFocus={(e) => setNicknameErr(false)}
                 onBlur={(e) => {
                   validHandler("nickname");
                 }}
@@ -186,7 +208,6 @@ function Signup() {
                 onChange={(e) => {
                   setPasswordCheck(e.target.value);
                 }}
-                onBlur={passwordCheckHandler}
               />
             </InputContainer>
           </InputRightContainer>
@@ -202,7 +223,8 @@ function Signup() {
             <LoginButton>시작하기</LoginButton>
           )}
         </ButtonContainer>
-        {error ? <div>빠진 입력이 있는지 확인해주세요</div> : null}
+        {errorMessage}
+        {/* {error ? <div>빠진 입력이 있는지 확인해주세요</div> : null} */}
       </LoginForm>
     </LoginWrapper>
   );

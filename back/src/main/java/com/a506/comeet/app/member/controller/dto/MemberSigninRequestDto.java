@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class MemberSigninRequestDto {
     @NotNull
+    @Pattern(regexp = "[a-z0-9]*", message = "대문자는 사용할 수 없습니다")
     public String memberId;
     @NotNull
     public String name;

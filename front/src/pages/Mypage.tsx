@@ -45,6 +45,8 @@ export const Mypage = () => {
 
     if (memberId === userId) {
       setIsMe(true);
+    } else {
+      setIsMe(false);
     }
   }, [memberId]);
 
@@ -113,7 +115,7 @@ export const Mypage = () => {
       <FirstContainerRight>
         {/* TIL 캘린더 컨테이너 */}
         <TILCalendarContainer>
-          <MyTILCalendar isMe={isMe} memberId={memberId} />
+          <MyTILCalendar isMe={isMe} />
         </TILCalendarContainer>
         {/* 공부 합계 시간 컨테이너 */}
         <SumTimeContainer>

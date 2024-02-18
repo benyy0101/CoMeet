@@ -1,11 +1,6 @@
-import {
-  modifyRoom,
-  uploadRoomImage,
-  deleteRoomImage,
-  deleteRoom,
-} from "api/Room";
+import { modifyRoom, uploadRoomImage, deleteRoomImage, deleteRoom } from "api/Room";
 import { ROOM_CONSTRAINTS } from "models/Enums.type";
-import { RoomResponse } from "models/Room.interface";
+import { EnterRoomKeyword, RoomResponse } from "models/Room.interface";
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -15,6 +10,7 @@ import BasicRoom from "assets/img/basic-room.png";
 import { useSelector } from "react-redux";
 import { Keyword } from "models/Util";
 import { set } from "react-hook-form";
+import { Background } from "components/Common/Backgruond";
 
 export default function RoomModify() {
   const location = useLocation();
@@ -24,14 +20,10 @@ export default function RoomModify() {
   const roomData: RoomResponse | null = location.state.data;
 
   const [title, setTitle] = useState<string>(roomData?.title || "");
-  const [description, setDescription] = useState<string>(
-    roomData?.description || ""
-  );
+  const [description, setDescription] = useState<string>(roomData?.description || "");
   const [maxPeople, setMaxPeople] = useState<number>(roomData?.capacity || 10);
-  const [option, setOption] = useState<ROOM_CONSTRAINTS>(
-    roomData?.constraints || "FREE"
-  );
-
+  const [option, setOption] = useState<ROOM_CONSTRAINTS>(roomData?.constraints || "FREE");
+  //모든 종류의 키워드
   const keywords = useSelector((state: any) => state.keyword.keywords);
 
   //selectedFile 현재 올린파일
@@ -41,9 +33,11 @@ export default function RoomModify() {
 
   //이미지 제거 했는지 확인
   const [isRemoveImg, setIsRemoveImg] = useState<boolean>(false);
-
-  const [selectedKeyword, setSelectedKeyword] = useState<Keyword[]>([]);
-  const [modifiedNotice, setModifiedNotice] = useState<string>("");
+  //현재 선택한 키워드
+  const [selectedKeyword, setSelectedKeyword] = useState<EnterRoomKeyword[]>(
+    roomData?.keywords || []
+  );
+  const [modifiedNotice, setModifiedNotice] = useState<string>(roomData?.notice || "");
 
   //이미지 바뀔 때 미리보기
   const onChangeImage = async (e: any) => {
@@ -75,7 +69,7 @@ export default function RoomModify() {
       alert("최소 인원을 현재 인원보다 적게 설정할 수 없습니다.");
     } else {
       e.preventDefault();
-      const keywordIds = selectedKeyword.map((keyword: Keyword) => keyword.id);
+      const keywordIds = selectedKeyword.map((keyword: EnterRoomKeyword) => keyword.keywordId);
       const data: any = {
         roomId,
         title,
@@ -159,35 +153,24 @@ export default function RoomModify() {
 
   const selectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
-    const newKeyword = keywords?.find(
-      (keyword: Keyword) => keyword.name === e.target.value
-    );
-    if (
-      !selectedKeyword.find(
-        (keyword: Keyword) => keyword.name === e.target.value
-      )
-    ) {
-      setSelectedKeyword((prev) => [...prev, newKeyword]);
+    const newKeyword = keywords?.find((keyword: Keyword) => keyword.name === e.target.value);
+    if (!selectedKeyword.find((keyword: EnterRoomKeyword) => keyword.name === e.target.value)) {
+      const modifiedKeyword: EnterRoomKeyword = { keywordId: newKeyword.id, name: newKeyword.name };
+      setSelectedKeyword((prev) => [...prev, modifiedKeyword]);
     }
   };
 
-  const dropHandler = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    target: string
-  ) => {
+  const dropHandler = (e: React.MouseEvent<HTMLButtonElement>, target: string) => {
     e.preventDefault();
-    const dropKeyword = keywords?.find(
-      (keyword: Keyword) => keyword.name === target
-    );
+    const dropKeyword = keywords?.find((keyword: Keyword) => keyword.name === target);
     setSelectedKeyword(
-      selectedKeyword.filter(
-        (keyword: Keyword) => keyword.name !== dropKeyword?.name
-      )
+      selectedKeyword.filter((keyword: EnterRoomKeyword) => keyword.name !== dropKeyword?.name)
     );
   };
 
   return (
     <Wrapper>
+      <div className="h-16 w-full bg-slate-800 fixed top-0 left-0"></div>
       <CreateRoomContainer>
         <TitleContainer>
           <Title>스터디 방 설정</Title>
@@ -198,8 +181,7 @@ export default function RoomModify() {
             <ThumbImg
               id="profile"
               src={
-                (roomData?.room_image === "" && imagePreview === "") ||
-                isRemoveImg === true
+                (roomData?.room_image === "" && imagePreview === "") || isRemoveImg === true
                   ? BasicRoom
                   : imagePreview === ""
                     ? roomData?.room_image
@@ -214,9 +196,7 @@ export default function RoomModify() {
           </ThumbContainer>
         </ThumbLabel>
         {roomData?.room_image || imagePreview ? (
-          <ImageRemoveButton onClick={handleRoomImageRemove}>
-            이미지 제거
-          </ImageRemoveButton>
+          <ImageRemoveButton onClick={handleRoomImageRemove}>이미지 제거</ImageRemoveButton>
         ) : null}
         <input
           className="hidden"
@@ -250,10 +230,7 @@ export default function RoomModify() {
           )}
           <InputUnit>
             <Label>키워드</Label>
-            <select
-              className="w-40 border-[1px] rounded-md p-2"
-              onChange={selectHandler}
-            >
+            <select className="w-40 border-[1px] rounded-md p-2" onChange={selectHandler}>
               {keywords?.map((keyword: any) => (
                 <option key={keyword.keywordId} value={keyword.name}>
                   {keyword.name}
@@ -284,9 +261,7 @@ export default function RoomModify() {
                 <option value="FREE">자유</option>
                 <option value="MICOFF">음소거 필수</option>
                 <option value="VIDEOON">캠/화면공유 필수</option>
-                <option value="VIDEOONMICOFF">
-                  캠/화면공유 필수, 음소거 필수
-                </option>
+                <option value="VIDEOONMICOFF">캠/화면공유 필수, 음소거 필수</option>
               </SelectOption>
             </InputUnit>
             <InputUnit className="w-1/3 justify-around">
@@ -471,8 +446,10 @@ border-slate-300
 rounded-lg
 focus:outline-none
 p-2
+bg-transparent
 focus:ring-2
 focus:ring-purple-900
+
 `;
 
 const Block = tw.div`

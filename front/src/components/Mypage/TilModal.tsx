@@ -141,9 +141,9 @@ function TilModal(props: ModalProps) {
               onChange={handleWrite}
               value={writeContent}
             />
-            <WriteOrModifyContainer>
+            <WriteContainer>
               <WriteOrModify onClick={submitTil}>확인</WriteOrModify>
-            </WriteOrModifyContainer>
+            </WriteContainer>
           </>
         ) : (
           <>
@@ -153,18 +153,22 @@ function TilModal(props: ModalProps) {
               <TilContentEmpty>{tilContent}</TilContentEmpty>
             )}
             {props.isMe ? (
-              <WriteOrModifyContainer>
+              <>
                 {isTil ? (
                   <div>
-                    <WriteOrModify onClick={handleModifyTil}>
-                      수정
-                    </WriteOrModify>
-                    <Delete onClick={handleDelteTil}>삭제</Delete>
+                    <ModifyContainer>
+                      <WriteOrModify onClick={handleModifyTil}>
+                        수정
+                      </WriteOrModify>
+                      <Delete onClick={handleDelteTil}>삭제</Delete>
+                    </ModifyContainer>
                   </div>
                 ) : (
-                  <WriteOrModify onClick={handleWriteTil}>작성</WriteOrModify>
+                  <WriteContainer>
+                    <WriteOrModify onClick={handleWriteTil}>작성</WriteOrModify>
+                  </WriteContainer>
                 )}
-              </WriteOrModifyContainer>
+              </>
             ) : null}
           </>
         )}
@@ -183,7 +187,11 @@ h-6
 `;
 
 const XButton = tw.button`
-w-6
+flex
+justify-center
+items-center
+w-7
+h-7
 rounded-lg
 ml-auto
 mr-3
@@ -229,15 +237,16 @@ break-words
 mx-10
 rounded-md
 whitespace-pre-line
+overflow-y-scroll
 `;
 
 const TilContentWrite = tw.textarea`
 border
 flex-grow
 p-2
-break-words
 mx-10
 rounded-md
+overflow-y-scroll
 `;
 
 const TilContentEmpty = tw.div`
@@ -254,7 +263,14 @@ items-center
 justify-center
 `;
 
-const WriteOrModifyContainer = tw.div`
+const ModifyContainer = tw.div`
+flex
+justify-start
+mt-3
+mx-10
+`;
+
+const WriteContainer = tw.div`
 flex
 justify-end
 mt-3

@@ -128,9 +128,15 @@ public class RoomController {
     }
 
     @GetMapping("/managing")
-    public ResponseEntity<List<ManagingRoomResponseDto>> getMyManagerRoom() {
+    public ResponseEntity<List<ManagingRoomResponseDto>> getMyManagerRooms() {
         String memberId = MemberUtil.getMemberId();
-        return ResponseEntity.ok(roomService.getManagingRoom(memberId));
+        return ResponseEntity.ok(roomService.getManagingRooms(memberId));
+    }
+
+    @GetMapping("/joined")
+    public ResponseEntity<List<RoomSimpleResponseDto>> getJoinedRooms() {
+        String memberId = MemberUtil.getMemberId();
+        return ResponseEntity.ok(roomService.getJoinedRooms(memberId));
     }
 
 }
