@@ -15,6 +15,7 @@ export const handleMember = async (memberId: string): Promise<MemberQuery> => {
 };
 
 export const handleSignup = async (req: SignupQuery): Promise<SignupQuery> => {
+  console.log(req);
   const response = await localAxios.post("/member", req);
   return response.data;
 };
@@ -35,14 +36,17 @@ export const doubleCheckNicname = async (
   const url = `member/check${makeQuerystring({ nickname })}`;
 
   const response = await localAxios.get(url);
+  console.log(response.data);
   return response.data;
 };
 
+//아이디 중복 검사
 export const doubleCheckMemberId = async (
   memberId: string
 ): Promise<boolean> => {
   const url = `member/check${makeQuerystring({ memberId })}`;
 
+  console.log(memberId);
   const response = await localAxios.get(url);
   return response.data;
 };
