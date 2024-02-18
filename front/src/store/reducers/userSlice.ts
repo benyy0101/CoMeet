@@ -44,6 +44,9 @@ const userSlice = createSlice({
     addRoom: (state, action: PayloadAction<SmallRoomdata>) => {
       state.user.joinedRooms = [...state.user.joinedRooms, action.payload];
     },
+    formatRoom: (state, action: PayloadAction<SmallRoomdata[]>) => {
+      state.user.joinedRooms = action.payload;
+    },
     updateUserNickname: (
       state,
       action: PayloadAction<{ nickname: string }>
@@ -75,5 +78,6 @@ export const {
   addRoom,
   updateUserNickname,
   updateUserImg,
+  formatRoom,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { logout } from "store/reducers/userSlice";
 import { MemberQuery } from "models/Member.interface";
 import {
   handleMember,
@@ -15,6 +15,7 @@ import {
   doubleCheckNicname,
   deleteMember,
 } from "api/Member";
+import { handleLogout } from "api/Login";
 
 import tw from "tailwind-styled-components";
 import FeatureSelect from "./FeatureSelect";
@@ -190,8 +191,11 @@ function EditForm() {
   //회원 탈퇴
   const handleDelete = () => {
     deleteMember();
-    //여기 로그아웃도 해야 함...
-    navigate(`/mainpage`, { replace: true });
+    handleLogout().then(() => {
+      dispatch(logout());
+      console.log("success");
+      navigate("/", { replace: true });
+    });
   };
 
   //시작할 때 데이터 다 들고와
@@ -396,7 +400,7 @@ flex justify-between
 `;
 
 const DelteButton = tw.button`
-my-2 p-2 text-xs bg-gray-300 rounded-md text-white
+my-2 p-2 text-xs rounded-md text-gray-400 border-b
 `;
 
 const UpdateButton = tw.button`

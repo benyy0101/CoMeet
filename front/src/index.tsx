@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import queryClient from "./utils/QueryClient";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

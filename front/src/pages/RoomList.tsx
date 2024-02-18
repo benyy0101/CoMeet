@@ -58,12 +58,11 @@ export const RoomList = () => {
   useEffect(() => {
     last.current = false;
     page.current = 0;
-    console.log(constraints);
+    console.log("const", constraints);
     refetch();
   }, [sortByLatest, constraints, isLocked]);
 
   useEffect(() => {
-    console.log(data);
     if (data?.content) {
       setRoomList(data.content);
       last.current = data.last;
@@ -75,8 +74,8 @@ export const RoomList = () => {
   const [isScrolled, SetIsScrolled] = useState<number>(0);
 
   useEffect(() => {
-    console.log("isscroll", isScrolled);
-    console.log("sortByLatest:", sortByLatest);
+    // console.log("isscroll", isScrolled, data);
+    if (data === undefined) return;
     page.current++;
     searchRoom({
       page: page.current,
@@ -106,7 +105,6 @@ export const RoomList = () => {
   const handleObserver = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
     if (target.isIntersecting) {
-      console.log("last value", last.current);
       if (!last.current) {
         SetIsScrolled((prev) => ++prev);
       }
@@ -199,20 +197,23 @@ relative
 `;
 
 const LeftContainer = tw.div`
-fixed
+xl:fixed
+xl:w-1/6
+xl:items-center
+xl:mt-20
 left-2
 flex
 flex-col
-w-1/6
 gap-3
-items-center
-mt-20
+w-[60rem]
 `;
 const ListContainer = tw.div`
 flex
 flex-col
 gap-5
 w-[60rem]
+mt-40
+xl:mt-0
 `;
 
 const MainContainer = tw.div`
